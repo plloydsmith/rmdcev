@@ -16,7 +16,6 @@ data {
   	vector[I] weights; // user supplied weights
   	vector[I] M_factorial;
 	matrix[I, J + 1] nonzero;
-	matrix[I, J + 1] zero;
 	vector[I] M;	//  Number of consumed goods (including numeraire)
 }
 
@@ -83,7 +82,7 @@ transformed parameters {
 		v = exp(v / scale[k]);
 		sumv = v * ones_g;
 
-		vf = nonzero .* v ./ f + zero;
+		vf = nonzero .* v ./ f + (1 - nonzero);
 		pf = (nonzero .* price_full .* f) * ones_g;
 
 		for(i in 1:I){

@@ -38,11 +38,11 @@
 #'     and \code{rstan::sampling}.
 #' @export
 #'
-FitMDCEV <- function(stan.dat,
+FitMDCEV <- function(dat,
 					 dat_class = NULL,
 					 weights = NULL,
 					 price_num = NULL,
-					 model_specification = "gamma",
+					 model_specification = NULL,
 					 n_classes = 1,
 					 fixed_scale = 0,
 					 seed = 123,
@@ -53,9 +53,10 @@ FitMDCEV <- function(stan.dat,
 					 #mle_tol = 0.0001,
 					 hessian = TRUE,
 					 n_draws = 50,
+					 keep_loglik = 0,
 					 #subset = NULL,
-					 hb_random_parameters = "fixed",
-					 hb_iterations = 100, hb_chains = 4,
+					 hb_random_parameters = hb_random_parameters,
+					 n_iterations = 100, n_chains = 4,
 					 hb.max.tree.depth = 10, hb.adapt.delta = 0.8,
 					 hb.keep.samples = FALSE, hb.stanfit = TRUE,
 					 #					 hb.prior.mean = 0, hb.prior.sd = 5,
@@ -91,30 +92,18 @@ FitMDCEV <- function(stan.dat,
 
 	start.time <- proc.time()
 
-	if (model_specification == "les"){
-		model_type = 1
-	} else if (model_specification == "alpha"){
-		model_type = 2
-	} else if (model_specification == "gamma0"){
-		model_type = 4
-	} else
-		model_type = 3
-
-	dat <- processMDCEVdata(stan.dat, dat_class, n_classes, price_num)
+	stan_data <- processMDCEVdata(dat, dat_class, n_classes, price_num, model_specification, fixed_scale)
 
 	# Replace weights with vector of one's if missing
 	if (is.null(weights))
 		weights <-  rep(1, nobs)
 
-	dat$weights <- as.vector(weights)
-	dat$print_ll <- print_ll
-	dat$model_type <- model_type
-	dat$fixed_scale <- fixed_scale
+	stan_data$weights <- as.vector(weights)
+	stan_data$print_ll <- print_ll
 
 	if (algorithm == "HB")
 	{
-		result <- HierarchicalBayesMDCEV(dat,
-										 model_type,
+		result <- HierarchicalBayesMDCEV(stan_data,
 									  n_iterations,
 									  n_chains,
 									  n_cores,
@@ -131,14 +120,14 @@ FitMDCEV <- function(stan.dat,
 									  hb.lkj.prior.shape = hb.lkj.prior.shape)
 	} else if (algorithm == "MLE")
 	{
-		result <- maxlikeMDCEV(dat, n_classes, model_type, n_draws, seed,
+		result <- maxlikeMDCEV(stan_data, n_classes, n_draws, seed,
 							   initial.parameters, #lc.tolerance,
-							   hessian)
+							   hessian, keep_loglik)
 	}
 
 	end.time <- proc.time()
 
-	result$processed.data <- dat
+	result$stan_data <- stan_data
 	result$algorithm <- algorithm
 	result$n_classes <- n_classes
 	result$weights <- weights

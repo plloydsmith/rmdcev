@@ -1,4 +1,4 @@
-// saved as mdcev_fixed.stan
+// saved as mdcev_corr.stan
 data {
   int I; // number of Individuals
   int J; // number of non-numeraire alternatives
@@ -14,12 +14,13 @@ data {
   vector[I] weights; // user supplied weights
 	vector[I] M_factorial;
 	matrix[I, J + 1] nonzero;
-	matrix[I, J + 1] zero;
 	vector[I] M;	//  Number of consumed goods (including numeraire)
   int task[I]; // index for tasks
   int task_individual[I]; // index for individual
   int start[I]; // the starting observation for each task
   int end[I]; // the ending observation for each task
+  real<lower=1> lkj_shape; // shape parameter for LKJ prior
+
 }
 
 transformed data {
@@ -30,7 +31,6 @@ transformed data {
 	int RP_g;
 	int RP_a;
 	vector[G] ones_g = rep_vector(1, G);
-	vector[NPsi] ones_npsi = rep_vector(1, NPsi);
 	matrix[I, G] price_full = append_col(num_price, j_price);
 	matrix[I, G] quant_full = append_col(num_quant, j_quant);
 	matrix[I, J] log_price = log(j_price);
@@ -134,7 +134,7 @@ model {
   // priors on the parameters
 	to_vector(z) ~ normal(0, 1);
 	to_vector(mu) ~ normal(0, 1);
-	L_Omega ~ lkj_corr_cholesky(4);                 // lkj prior
+	L_Omega ~ lkj_corr_cholesky(lkj_shape);                 // lkj prior
 	scale ~ normal(1, 1);
 
   target += sum(log_like);//objective to target

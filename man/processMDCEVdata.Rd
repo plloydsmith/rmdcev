@@ -4,8 +4,8 @@
 \alias{processMDCEVdata}
 \title{processMDCEVdata}
 \usage{
-processMDCEVdata(stan.dat, dat_class = NULL, n_classes,
-  price_num = NULL)
+processMDCEVdata(dat, dat_class = NULL, n_classes, price_num = NULL,
+  model_specification, fixed_scale)
 }
 \description{
 Process MDCEV data

@@ -5,7 +5,7 @@
 \title{RunStanSampling}
 \usage{
 RunStanSampling(stan.dat, n_iterations, n_chains, max.tree.depth,
-  adapt.delta, seed, stan.model, keep.beta, pars = NULL, ...)
+  adapt.delta, seed, stan.model, keep.beta)
 }
 \arguments{
 \item{stan.dat}{The data to be passed to Stan.}

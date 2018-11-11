@@ -4,18 +4,16 @@
 \alias{FitMDCEV}
 \title{FitMDCEV}
 \usage{
-FitMDCEV(stan.dat, dat_class = NULL, weights = NULL,
-  price_num = NULL, model_specification = "gamma", n_classes = 1,
-  fixed_scale = 0, seed = 123, initial.parameters = NULL,
-  algorithm = "HB-Stan", print_ll = 0, hessian = TRUE,
-  n_draws = 50, hb_random_parameters = "fixed", hb_iterations = 100,
-  hb_chains = 4, hb.max.tree.depth = 10, hb.adapt.delta = 0.8,
+FitMDCEV(dat, dat_class = NULL, weights = NULL, price_num = NULL,
+  model_specification = NULL, n_classes = 1, fixed_scale = 0,
+  seed = 123, initial.parameters = NULL, algorithm = "HB-Stan",
+  print_ll = 0, hessian = TRUE, n_draws = 50, keep_loglik = 0,
+  hb_random_parameters = hb_random_parameters, n_iterations = 100,
+  n_chains = 4, hb.max.tree.depth = 10, hb.adapt.delta = 0.8,
   hb.keep.samples = FALSE, hb.stanfit = TRUE, hb.lkj.prior.shape = 4,
   hb.warnings = TRUE, hb.beta.draws.to.keep = 0)
 }
 \arguments{
-\item{stan.dat}{The data to be passed to Stan.}
-
 \item{weights}{An optional vector of sampling or frequency weights.}
 
 \item{n_classes}{The number of latent classes.}
@@ -51,6 +49,8 @@ favour less correlation (draws closer to the identity matrix).}
 
 \item{hb.beta.draws.to.keep}{Maximum number of beta draws per
 respondent to return in beta.draws.}
+
+\item{stan.dat}{The data to be passed to Stan.}
 
 \item{normal.covariance}{The form of the covariance matrix for
 Hierarchical Bayes. Can be 'Full, 'Spherical', 'Diagonal'.}

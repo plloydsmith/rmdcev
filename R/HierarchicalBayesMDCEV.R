@@ -5,7 +5,6 @@
 #' @export
 
 HierarchicalBayesMDCEV <- function(dat,
-								 model_type,
 								 n_iterations = 500,
 								 n_chains = 4,
 								 n_cores = 4,
@@ -16,7 +15,7 @@ HierarchicalBayesMDCEV <- function(dat,
 								 keep.samples = FALSE,
 								 n_classes = 1,
 								 include.stanfit = TRUE,
-								 hb_random_parameters = "fixed",
+								 hb_random_parameters = hb_random_parameters,
 								 show.stan.warnings = TRUE,
 #								 beta.draws.to.keep = 0,
 								 hb.lkj.prior.shape = hb.lkj.prior.shape)
@@ -41,28 +40,23 @@ HierarchicalBayesMDCEV <- function(dat,
 	dat$task_individual = indexes$task_individual
 	dat$task = indexes$task
 	dat$IJ = dat$I * dat$J
-	dat$hb.lkj.prior.shape = hb.lkj.prior.shape
-	dat$model_type = 4
-
-#	n_chains = 1
-#	n_iterations = 100
-#	n_cores = 1
+	dat$lkj_shape = hb.lkj.prior.shape
 
 #	initial.parameters2 <- list(initial.parameters)#, initial.parameters,initial.parameters,initial.parameters)
 #	initial.parameters2 <- list(list(scale = as.array(1, dim = 1)))#, initial.parameters,initial.parameters,initial.parameters)
 
 #	has.covariates <- !is.null(dat$covariates)
-	stan.model <- stanModel(n_classes, hb_random_parameters)
+	stan.model <- stanModel(hb_random_parameters)
 
-	on.warnings <- GetStanWarningHandler(show.stan.warnings)
-	on.error <- GetStanErrorHandler()
+#	on.warnings <- GetStanWarningHandler(show.stan.warnings)
+#	on.error <- GetStanErrorHandler()
 
 
 #	InterceptExceptions(
 #		{
-			stan.fit <- RunStanSampling(stan.dat, n_iterations, n.chains,
-										max.tree.depth, adapt.delta, seed,
-										stan.model, keep.beta, ...)
+	stan_fit <- RunStanSampling(dat, n_iterations, n_chains,
+								max.tree.depth, adapt.delta, seed,
+								stan.model, keep.beta)
 #		}, warning.handler = on.warnings, error.handler = on.error)
 
 #		result <- c(result, LogLikelihoodAndBIC(stan.fit, #n.hb.parameters,
@@ -102,8 +96,7 @@ HierarchicalBayesMDCEV <- function(dat,
 #' @import Rcpp
 #' @export
 RunStanSampling <- function(stan.dat, n_iterations, n_chains, max.tree.depth,
-							adapt.delta, seed, stan.model, keep.beta,
-							pars = NULL, ...)
+							adapt.delta, seed, stan.model, keep.beta)
 {
 #	if (is.null(pars))
 #		pars <- stanParameters(stan.dat, keep.beta, stan.model)
@@ -112,9 +105,8 @@ RunStanSampling <- function(stan.dat, n_iterations, n_chains, max.tree.depth,
 #			 pars = pars,
 			 iter = n_iterations, seed = seed,
 			 control = list(max_treedepth = max.tree.depth,
-			 			   adapt_delta = adapt.delta),
+			 			   adapt_delta = adapt.delta))
 #			 init = init,
-				...)
 }
 
 
@@ -142,7 +134,7 @@ RunStanSampling <- function(stan.dat, n_iterations, n_chains, max.tree.depth,
 #}
 
 
-stanModel <- function(n_classes, hb_random_parameters)
+stanModel <- function(hb_random_parameters)
 {
 	covariates.error.msg <- paste0("Covariates are not currently implemented ",
 								   "for the specified settings.")
@@ -151,8 +143,8 @@ stanModel <- function(n_classes, hb_random_parameters)
 		if (hb_random_parameters == "fixed")
 			stanmodels$mdcev
 		else if (hb_random_parameters == "uncorr")
-			stanmodels$mdcev_uncorr
+			stanmodels$mdcev_hb_uncorr
 		else if (hb_random_parameters == "corr")
-			stanmodels$mdcev_corr
+			stanmodels$mdcev_hb_corr
 #	}
 }

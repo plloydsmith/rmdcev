@@ -1,4 +1,4 @@
-// saved as mdcev_fixed.stan
+// saved as mdcev_uncorr.stan
 data {
   int I; // number of Individuals
   int J; // number of non-numeraire alternatives
@@ -14,7 +14,6 @@ data {
   vector[I] weights; // user supplied weights
 	vector[I] M_factorial;
 	matrix[I, J + 1] nonzero;
-	matrix[I, J + 1] zero;
 	vector[I] M;	//  Number of consumed goods (including numeraire)
   int task[I]; // index for tasks
   int task_individual[I]; // index for individual
@@ -30,7 +29,6 @@ transformed data {
 	int RP_g;
 	int RP_a;
 	vector[G] ones_g = rep_vector(1, G);
-	vector[NPsi] ones_npsi = rep_vector(1, NPsi);
 	matrix[I, G] price_full = append_col(num_price, j_price);
 	matrix[I, G] quant_full = append_col(num_quant, j_quant);
 	matrix[I, J] log_price = log(j_price);

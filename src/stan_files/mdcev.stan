@@ -14,7 +14,6 @@ data {
   vector[I] weights; // user supplied weights
 	vector[I] M_factorial;
 	matrix[I, J + 1] nonzero;
-	matrix[I, J + 1] zero;
 	vector[I] M;	//  Number of consumed goods (including numeraire)
 }
 

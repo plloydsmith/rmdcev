@@ -2,7 +2,9 @@
 
 export(FitMDCEV)
 export(HierarchicalBayesMDCEV)
+export(ReduceStanFitSize)
 export(RunStanSampling)
+export(cat_function)
 export(maxlikeMDCEV)
 export(processMDCEVdata)
 import(Rcpp)
