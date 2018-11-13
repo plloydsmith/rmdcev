@@ -16,6 +16,8 @@ psi_temp <- est_sim %>%
 
 psi_temp <- lapply(seq_len(ncol(psi_temp)), function(i) psi_temp[,i])
 
+psi <- matrix(data$dat_psi %*% psi_temp[[1]] , nrow = data$I, byrow = TRUE)
+
 psi_sim <- map(psi_temp, function(x){matrix(data$dat_psi %*% x , nrow = data$I, byrow = TRUE)})
 
 psi_sim <- do.call(cbind, psi_sim)

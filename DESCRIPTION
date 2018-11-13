@@ -19,7 +19,9 @@ Depends:
     methods,
     R (>= 3.4.0),
     Rcpp (>= 1.0.0),
-    dplyr
+    dplyr,
+    furrr,
+    purrr
 Imports: 
     rstan (>= 2.18.2),
     rstantools (>= 1.5.1)

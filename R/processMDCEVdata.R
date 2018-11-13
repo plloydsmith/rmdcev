@@ -13,8 +13,8 @@ processMDCEVdata <- function(dat,
 	NPsi <- length(dat$dat_psi)
 	dat_psi <- do.call(cbind, dat$dat_psi)
 
-	ngoods <- ncol(quant)
-	nobs <- nrow(quant)
+	J <- ncol(dat$quant)
+	I <- nrow(dat$quant)
 
 	if (fixed_scale == 1)
 		NScale <- 0
@@ -26,37 +26,37 @@ processMDCEVdata <- function(dat,
 	if (model_specification == "les"){
 		model_type <- 1
 		NAlpha <- 1
-		NGamma <- ngoods
+		NGamma <- J
 	} else if (model_specification == "alpha"){
 		model_type <- 2
-		NAlpha <- ngoods + 1
+		NAlpha <- J + 1
 		NGamma <- 0
 	} else if (model_specification == "gamma"){
 		model_type <- 3
 		NAlpha <- 1
-		NGamma <- ngoods
+		NGamma <- J
 	} else if (model_specification == "gamma0"){
 		model_type <- 4
 		NAlpha <- 0
-		NGamma <- ngoods
+		NGamma <- J
 	} else
 		stop("No model specificied. Choose a model_specification")
 
 	n_parameters <- NPsi + NGamma + NAlpha + NScale
 
 	if(is.null(price_num)) # default price numeraire is one
-		price_num <- rep(1, nobs)
+		price_num <- rep(1, I)
 
 	exp_num <- dat$inc - rowSums(dat$price * dat$quant)
 
-	nonzero <- cbind(1, quant != 0)
+	nonzero <- cbind(1, dat$quant != 0)
 	M <- rowSums(nonzero != 0)
 	M_factorial = factorial(M-1)
 
 	#------------------------------------#
 	# Put data into one list for rstan
 	stan_dat =
-		list(I = nobs, J = ngoods, NPsi = NPsi,
+		list(I = I, J = J, NPsi = NPsi,
 			 dat_psi = as.matrix(dat_psi),
 			 j_price = dat$price,
 			 j_quant = dat$quant,
@@ -72,7 +72,7 @@ processMDCEVdata <- function(dat,
 	if (n_classes > 1){
 
 		if (is.null(dat_class)) {# default constant if no membership variables
-			stan_dat$dat_class <- as.matrix(rep(1, nobs))
+			stan_dat$dat_class <- as.matrix(rep(1, dat$I))
 			stan_dat$L <- 1 # number of membership variables
 		} else {
 			stan_dat$dat_class <- dat_class

@@ -86,9 +86,6 @@ FitMDCEV <- function(dat,
 	if (identical(dim(price), dim(quant)) == FALSE)
 		stop("Price and quant dimension mismatch. Ensure dim(price) = dim(quant)")
 
-	if (nrow(price) != nrow(inc))
-		stop("Number of people with income . Ensure dim(price) = dim(quant)")
-
 
 	start.time <- proc.time()
 
@@ -96,7 +93,7 @@ FitMDCEV <- function(dat,
 
 	# Replace weights with vector of one's if missing
 	if (is.null(weights))
-		weights <-  rep(1, nobs)
+		weights <-  rep(1, stan_data$I)
 
 	stan_data$weights <- as.vector(weights)
 	stan_data$print_ll <- print_ll
