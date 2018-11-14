@@ -6,6 +6,7 @@ data {
   matrix[I * J, NPsi] dat_psi; // alt characteristics
   matrix[I, J] j_price; // non-numeraire price
   matrix[I, J] j_quant; // non-numeraire consumption
+  vector[I] income;
   vector[I] num_price; // numeraire price
   vector[I] num_quant; // numeraire consumption
   int<lower=0, upper=1> print_ll; //indicator to print log_lik at each iteration.
@@ -15,6 +16,7 @@ data {
 	vector[I] M_factorial;
 	matrix[I, J + 1] nonzero;
 	vector[I] M;	//  Number of consumed goods (including numeraire)
+  int<lower=0, upper=1> trunc_data; //indicator to correct estimation for truncated data
 }
 
 transformed data {
@@ -25,6 +27,7 @@ transformed data {
 	matrix[I, G] quant_full = append_col(num_quant, j_quant);
 	matrix[I, J] log_price = log(j_price);
 	vector[I] log_num = log(num_quant ./ num_price);
+	vector[I] log_inc = log(income);
 
  	if (model_type == 1 || model_type == 3)
  		A = 1;
@@ -45,12 +48,15 @@ transformed parameters {
 	vector[I] log_like;
 	{
 	matrix[I, J] lpsi = to_matrix(dat_psi[] * psi, I, J, 0);
+	matrix[I, J] v_j;
 	matrix[I, G] f;
 	matrix[I, G] v;
 	matrix[I, G] vf;
+	matrix[I, G] v_m;
 	vector[I] sumv;
 	vector[I] pf;
 	vector[I] prodvf;
+	vector[I] prodv;
 	vector[G] gamma_full;
 	vector[G] alpha_full;
 	real scale_full;
@@ -70,9 +76,9 @@ transformed parameters {
 	else
 	  gamma_full = append_row(0, gamma);
 
-	lpsi = lpsi + rep_matrix(alpha_full[2:G]'- 1, I) .* log(j_quant ./ rep_matrix(gamma_full[2:G]', I) + 1) - log_price;
+	v_j = lpsi + rep_matrix(alpha_full[2:G]'- 1, I) .* log(j_quant ./ rep_matrix(gamma_full[2:G]', I) + 1) - log_price;
 	f = (quant_full + rep_matrix(gamma_full', I)) ./ rep_matrix((1 - alpha_full)', I);
-	v = append_col((alpha_full[1] - 1) * log_num, lpsi);
+	v = append_col((alpha_full[1] - 1) * log_num, v_j);
 	v = exp(v / scale_full);
 	sumv = v * ones_g;
 
@@ -84,7 +90,31 @@ transformed parameters {
 		prodvf[i] = prod(vf[i]);
 	}
 
-	log_like = log((prodvf .* pf .* M_factorial) ./ sumv) .* weights;
+	if (trunc_data == 1){
+		vector[I] like_temp;
+		vector[I] like_trunc;
+		like_temp = prodvf .* pf .* M_factorial ./ sumv;
+
+		v = append_col((alpha_full[1] - 1) * log_inc, lpsi - log_price);
+		v = exp(v / scale_full);
+		sumv = v * ones_g;
+
+		v_m = nonzero .* v + (1 - nonzero);
+
+		for(i in 1:I){
+			sumv[i] = pow(sumv[i], M[i]) * pow(scale_full, M[i] - 1);
+			prodv[i] = prod(v_m[i]);
+		}
+
+		like_trunc = prodv ./ sumv .* M_factorial;
+
+		for(i in 1:I)
+			like_trunc[i] = like_trunc[i] < 1 ? like_trunc[i] : 0;
+
+		log_like = log(like_temp ./ ( 1- like_trunc)) .* weights;
+
+	} else
+		log_like = log((prodvf .* pf .* M_factorial) ./ sumv) .* weights;
 	}
 }
 

@@ -3,24 +3,19 @@
 #' @import rstan
 #' @import dplyr
 #' @export
+#'
 
 HierarchicalBayesMDCEV <- function(dat,
-								 n_iterations = 500,
-								 n_chains = 4,
-								 n_cores = 4,
-								 initial.parameters = initial.parameters,
+								   model_option,
+								   hb_options,
 								 seed = 123,
-								 max.tree.depth = 10,
-								 adapt.delta = 0.8,
+								 initial.parameters = initial.parameters,
 								 keep.samples = FALSE,
-								 n_classes = 1,
 								 include.stanfit = TRUE,
 								 hb_random_parameters = hb_random_parameters,
-								 show.stan.warnings = TRUE,
-#								 beta.draws.to.keep = 0,
-								 hb.lkj.prior.shape = hb.lkj.prior.shape)
+								 show.stan.warnings = TRUE)
 {
-	if (n_iterations <= 0)
+	if (model_option$n_iterations <= 0)
 		stop("The specified number of iterations must be greater than 0.")
 
 	# allows Stan chains to run in parallel on multiprocessor machines
@@ -40,7 +35,7 @@ HierarchicalBayesMDCEV <- function(dat,
 	dat$task_individual = indexes$task_individual
 	dat$task = indexes$task
 	dat$IJ = dat$I * dat$J
-	dat$lkj_shape = hb.lkj.prior.shape
+	dat$lkj_shape = hb_option$hb.lkj.prior.shape
 
 #	initial.parameters2 <- list(initial.parameters)#, initial.parameters,initial.parameters,initial.parameters)
 #	initial.parameters2 <- list(list(scale = as.array(1, dim = 1)))#, initial.parameters,initial.parameters,initial.parameters)
@@ -54,8 +49,8 @@ HierarchicalBayesMDCEV <- function(dat,
 
 #	InterceptExceptions(
 #		{
-	stan_fit <- RunStanSampling(dat, n_iterations, n_chains,
-								max.tree.depth, adapt.delta, seed,
+	stan_fit <- RunStanSampling(dat, hb_option$n_iterations, hb_option$n_chains,
+								hb_option$max.tree.depth, hb_option$adapt.delta, seed,
 								stan.model, keep.beta)
 #		}, warning.handler = on.warnings, error.handler = on.error)
 

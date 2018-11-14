@@ -4,34 +4,30 @@
 #' @export
 
 maxlikeMDCEV <- function(dat,
-						 n_classes = 1,
-						 n_draws = 50,
-						 seed = 123,
-						 initial.parameters = NULL,
-#						 mle_tol = 0.0001,
-						 hessian = TRUE,
-						keep_loglik)
+						 seed = seed,
+						 model_options,
+						 initial.parameters = NULL)
 {
 
 	stan.model <- stanmodels$mdcev
 	stan_fit <- optimizing(stan.model, data = dat, as_vector = FALSE,
-						   draws = n_draws, hessian = hessian)
+						   draws = model_options$n_draws, hessian = model_options$hessian)
 
 	result <- list()
 
-	if (keep_loglik == 0)
+	if (model_options$keep_loglik == 0)
 		stan_fit <- ReduceStanFitSize(stan_fit)
 
 	result$stan_fit <- stan_fit
 	n_parameters <- dat$n_parameters
 	result$log.likelihood <- stan_fit[["par"]][["sum_log_lik"]]
-	result$effective.sample.size <- ess <- sum(weights)
+	result$effective.sample.size <- ess <- sum(dat$weights)
 #	n_parameters <- n_classes * n_parameters + n_classes - 1
 	result$bic <- -2 * result$log.likelihood + log(ess) * n_parameters
 stan_fit <- result$stan_fit
 #dat <- result$processed.data
 #dat$K <- n_classes
-	if (n_classes > 1){
+	if (model_options$n_classes > 1){
 		result$mdcev_fit <- stan_fit
 		result$mdcev_log.likelihood <- result$log.likelihood
 		result$mdcev_bic <- result$bic
@@ -68,7 +64,7 @@ stan_fit <- result$stan_fit
 		stan.model <- stanmodels$mdcev_lc
 
 		stan_fit <- optimizing(stan.model, data = dat, as_vector = FALSE, init = init,
-							   draws = n_draws, hessian = hessian)
+							   draws = model_options$n_draws, hessian = model_options$hessian)
 
 		if (keep_loglik == 0)
 			stan_fit <- ReduceStanFitSize(stan_fit)
@@ -76,7 +72,7 @@ stan_fit <- result$stan_fit
 		result$stan_fit <- stan_fit
 		n_parameters <- ncol(stan_fit[["hessian"]])
 		result$log.likelihood <- stan_fit[["par"]][["sum_log_lik"]]
-		result$effective.sample.size <- ess <- sum(weights)
+		result$effective.sample.size <- ess <- sum(dat$weights)
 		result$bic <- -2 * result$log.likelihood + log(ess) * n_parameters
 		class_probabilities <- exp(tbl_df(t(stan_fit$par["theta"]$theta)))
 		colnames(class_probabilities) = gsub("V", "class", colnames(class_probabilities))

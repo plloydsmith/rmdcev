@@ -583,45 +583,6 @@ matrix Calcmdemand2_rng(real inc, vector price,
 return(mdemand_out);
 }
 
-
-// Overall code
-matrix Calcmdemand3_rng(real inc, vector price,
-						vector psi_sims, vector gamma_sims, vector alpha_sims, real scale_sims,
-						int ngoods, int nerrs, int nsims,
-						int algo_gen){
-
-	matrix[nerrs, ngoods + 1] mdemand;
-
-	for (sim in 1:nsims){
-		vector[ngoods] psi_j = psi_sims;
-		vector[ngoods + 1] gamma = append_row(1, gamma_sims);
-		vector[ngoods + 1] alpha = alpha_sims;
-		real scale = scale_sims;
-		vector[ngoods + 1] error[nerrs];
-
-		for(err in 1:nerrs)
-			for(j in 1:ngoods+1)
-				error[err, j] = -log(-log(uniform_rng(0, 1))) * scale; //uniform(0,1) draws
-
-		// Compute Marshallian demands and baseline utility
-		for (err in 1:nerrs){
-			vector[ngoods + 1] MUzero_b;
-			vector[ngoods + 1] psi_b_err;
-			psi_b_err = exp(append_row(0, psi_j) + error[err]);
-			MUzero_b = psi_b_err ./ price;
-
-		if (algo_gen == 1)
-			mdemand[err] = MarshallianDemandGeneral(inc, price, MUzero_b, gamma, alpha, ngoods)';
-		else if (algo_gen == 0)
-			mdemand[err] = MarshallianDemandHybrid(inc, price, MUzero_b, gamma, alpha[1], ngoods)';
-
-		}
-	}
-
-return(mdemand);
-}
-
-
 }
 data{}
 model{}

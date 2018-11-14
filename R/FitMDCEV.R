@@ -45,6 +45,7 @@ FitMDCEV <- function(dat,
 					 model_specification = NULL,
 					 n_classes = 1,
 					 fixed_scale = 0,
+					 trunc_data = 0,
 					 seed = 123,
 					 initial.parameters = NULL,
 					 algorithm = "HB-Stan", # MLE
@@ -86,10 +87,28 @@ FitMDCEV <- function(dat,
 	if (identical(dim(price), dim(quant)) == FALSE)
 		stop("Price and quant dimension mismatch. Ensure dim(price) = dim(quant)")
 
+	model_options <- list(fixed_scale = fixed_scale,
+						  model_specification = model_specification,
+						  n_classes = n_classes,
+						  fixed_scale = fixed_scale,
+						  trunc_data = trunc_data,
+						  print_ll = print_ll,
+						  hessian = TRUE,
+						  n_draws = 50,
+						  keep_loglik = 0)
+
+	hb_options <- list(n_iterations = n_iterations, n_chains = n_chains,
+						  hb.max.tree.depth = 10, hb.adapt.delta = 0.8,
+						  hb.keep.samples = FALSE, hb.stanfit = TRUE,
+						  #					 hb.prior.mean = 0, hb.prior.sd = 5,
+						  #					 hb.sigma.prior.shape = 1.39435729464721,
+						  #					 hb.sigma.prior.scale = 0.39435729464721,
+						  hb.lkj.prior.shape = 4,
+						  hb.warnings = TRUE, hb.beta.draws.to.keep = 0)
 
 	start.time <- proc.time()
 
-	stan_data <- processMDCEVdata(dat, dat_class, n_classes, price_num, model_specification, fixed_scale)
+	stan_data <- processMDCEVdata(dat, dat_class, price_num, model_options)
 
 	# Replace weights with vector of one's if missing
 	if (is.null(weights))
@@ -100,26 +119,18 @@ FitMDCEV <- function(dat,
 
 	if (algorithm == "HB")
 	{
-		result <- HierarchicalBayesMDCEV(stan_data,
-									  n_iterations,
-									  n_chains,
-									  n_cores,
+		result <- HierarchicalBayesMDCEV(stan_data, model_options, hb_options,
 										initial.parameters = initial.parameters,
 										seed = seed,
-										max.tree.depth = 10,
-										adapt.delta = 0.8,
 										keep.samples = FALSE,
-										n_classes = 1,
 										include.stanfit = TRUE,
 										hb_random_parameters = hb_random_parameters,
-									  show.stan.warnings = TRUE,
-									  #								 beta.draws.to.keep = 0,
-									  hb.lkj.prior.shape = hb.lkj.prior.shape)
+									  show.stan.warnings = TRUE)
 	} else if (algorithm == "MLE")
 	{
-		result <- maxlikeMDCEV(stan_data, n_classes, n_draws, seed,
-							   initial.parameters, #lc.tolerance,
-							   hessian, keep_loglik)
+
+	result <- maxlikeMDCEV(stan_data, seed, model_options,
+						   initial.parameters) #lc.tolerance
 	}
 
 	end.time <- proc.time()
