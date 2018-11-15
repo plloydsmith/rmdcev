@@ -51,15 +51,16 @@ transformed parameters {
 	matrix[I, J] v_j;
 	matrix[I, G] f;
 	matrix[I, G] v;
+	matrix[I, G] v_1;
 	matrix[I, G] vf;
-	matrix[I, G] v_m;
 	vector[I] sumv;
 	vector[I] pf;
 	vector[I] prodvf;
-	vector[I] prodv;
 	vector[G] gamma_full;
 	vector[G] alpha_full;
 	real scale_full;
+	vector[I] like_cond;
+	vector[I] like_trunc;
 	scale_full = fixed_scale == 0 ? scale[1] : 1.0;
 
 	if (model_type == 1)
@@ -91,30 +92,22 @@ transformed parameters {
 	}
 
 	if (trunc_data == 1){
-		vector[I] like_temp;
-		vector[I] like_trunc;
-		like_temp = prodvf .* pf .* M_factorial ./ sumv;
+		like_cond = prodvf .* pf .* M_factorial ./ sumv;
 
-		v = append_col((alpha_full[1] - 1) * log_inc, lpsi - log_price);
-		v = exp(v / scale_full);
-		sumv = v * ones_g;
+		v_1 = append_col((alpha_full[1] - 1) * log_inc, lpsi - log_price);
+		v_1 = exp(v_1 / scale_full);
+		sumv = v_1 * ones_g;
 
-		v_m = nonzero .* v + (1 - nonzero);
+		like_trunc = col(v_1, 1) ./ sumv;
 
-		for(i in 1:I){
-			sumv[i] = pow(sumv[i], M[i]) * pow(scale_full, M[i] - 1);
-			prodv[i] = prod(v_m[i]);
-		}
+//		for(i in 1:I)
+//			like_trunc[i] = like_trunc[i] < 1 ? like_trunc[i] : 1;
 
-		like_trunc = prodv ./ sumv .* M_factorial;
+		log_like = log(like_cond ./ (1 - like_trunc)) .* weights;
 
-		for(i in 1:I)
-			like_trunc[i] = like_trunc[i] < 1 ? like_trunc[i] : 0;
-
-		log_like = log(like_temp ./ ( 1- like_trunc)) .* weights;
-
-	} else
+	} else if (trunc_data == 0){
 		log_like = log((prodvf .* pf .* M_factorial) ./ sumv) .* weights;
+	}
 	}
 }
 

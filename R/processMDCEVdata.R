@@ -64,7 +64,7 @@ processMDCEVdata <- function(dat,
 			 M = M,
 			 M_factorial = M_factorial,
 			 nonzero = nonzero,
-			 model_type = model_options$model_type,
+			 model_type = model_type,
 			 fixed_scale = model_options$fixed_scale,
 			 n_parameters = n_parameters,
 			 trunc_data = model_options$trunc_data)

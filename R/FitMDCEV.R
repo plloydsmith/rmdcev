@@ -45,7 +45,7 @@ FitMDCEV <- function(dat,
 					 model_specification = NULL,
 					 n_classes = 1,
 					 fixed_scale = 0,
-					 trunc_data = 0,
+					 trunc_data = trunc_data,
 					 seed = 123,
 					 initial.parameters = NULL,
 					 algorithm = "HB-Stan", # MLE
@@ -107,6 +107,8 @@ FitMDCEV <- function(dat,
 						  hb.warnings = TRUE, hb.beta.draws.to.keep = 0)
 
 	start.time <- proc.time()
+
+#	dat <- stan.dat
 
 	stan_data <- processMDCEVdata(dat, dat_class, price_num, model_options)
 
