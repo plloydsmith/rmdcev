@@ -40,7 +40,7 @@ vector[] DrawError_rng(real quant_num, vector quant_j, vector price_j,
 vector MarshallianDemandHybrid(real inc, vector price,
 							vector MUzero, vector gamma, real alpha_1,
 							int ngoods) {
-// Function to Draw conditional or unconditional errors
+// Function to simulate Marshallian Demans using Hybrid approach
 
 	vector[ngoods+1] mdemand;
 
@@ -116,6 +116,7 @@ real ComputeE(int M, real lambda, vector a, vector b, vector c, vector d){
 vector MarshallianDemandGeneral(real inc, vector price,
 							vector MUzero, vector gamma, vector alpha,
 							int ngoods) {
+// Function to simulate Marshallian Demans using General approach
 
 	vector[ngoods+1] mdemand;
 	real tol_e = 1e-20;
@@ -393,7 +394,7 @@ vector HicksianDemandGeneral(real util, vector price,
 
 		// Compute demands (using eq. 12 in Pinjari and Bhat)
 		for (m in 1:M)
-		X[m] = ((lambda1 / mu[m]) ^ (1 / (a[m]-1))  -d[m]) * g[m];
+		X[m] = ((lambda1 / mu[m]) ^ (1 / (a[m] - 1))  - d[m]) * g[m];
 		exit = 1;
 
 		} else if (util_new < util && M + 1 < ngoods + 1)
@@ -488,7 +489,7 @@ return(wtp);
 
 
 // Overall code
-matrix Calcmdemand_rng(real inc, vector quant_j, vector price,
+matrix Calcmdemand2_rng(real inc, vector quant_j, vector price,
 						matrix psi_sims, vector[] gamma_sims, vector[] alpha_sims, vector scale_sims,
 						int ngoods, int nerrs, int nsims,
 						int cond_error, int algo_gen){
@@ -539,7 +540,7 @@ return(mdemand_out);
 
 
 // Overall code
-matrix Calcmdemand2_rng(real inc, vector price,
+matrix Calcmdemand_rng(real inc, vector price,
 						vector psi_sims, vector gamma_sims, vector alpha_sims, real scale_sims,
 						int ngoods, int nerrs, int nsims,
 						int algo_gen){
