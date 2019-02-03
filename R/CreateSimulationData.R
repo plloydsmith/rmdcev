@@ -1,7 +1,9 @@
-CreateSimulationData <- function(est_sim, nsims, data, data_psi_p){
+
+CreateSimulationData <- function(est_sim, nsims, npols, data, data_psi_p){
 #data <- result$stan_data
 #data_psi_p <- dat_psi_list
-gamma_sim <- est_sim %>%
+
+	gamma_sim <- est_sim %>%
 	filter(str_detect(parms, "gamma")) %>%
 	spread(sim_id, value) %>%
 	select(-parms) %>%
@@ -14,31 +16,23 @@ psi_temp <- est_sim %>%
 	select(-parms) %>%
 	as.matrix(.)
 
-psi_temp <- lapply(seq_len(ncol(psi_temp)), function(i) psi_temp[,i])
 
-psi <- matrix(data$dat_psi %*% psi_temp[[1]] , nrow = data$I, byrow = TRUE)
+psi_temp <- CreateListsCol(psi_temp)
+psi_sim <- map(psi_temp, MultiplyMatrix, mat_temp = data$dat_psi, nrows = data$I)
 
-psi_sim <- map(psi_temp, function(x){matrix(data$dat_psi %*% x , nrow = data$I, byrow = TRUE)})
-
-psi_sim <- do.call(cbind, psi_sim)
-psi_sim <- lapply(seq_len(nrow(psi_sim)), function(i) psi_sim[i,])
+psi_sim <- DoCbind(psi_sim)
+psi_sim <- CreateListsRow(psi_sim)
 psi_sim <- map(psi_sim, function(x){matrix(x , nrow = nsims, byrow = TRUE)})
 
-#psi_p_sim <- map(data_psi_p, function(data_p){ map(psi_temp, function(x){matrix(data_p %*% x , nrow = data$I, byrow = TRUE)})})
-psi_p_sim <- map(psi_temp, function(psi){ map(data_psi_p, function(x){matrix(x %*% psi , nrow = data$I, byrow = TRUE)})})
-
-psi_p_sim <- map(psi_p_sim, function(x){do.call(cbind, x)})
-psi_p_sim <- do.call(cbind, psi_p_sim)
-psi_p_sim <- lapply(seq_len(nrow(psi_p_sim)), function(i) psi_p_sim[i,])
+psi_p_sim <- map(psi_temp, function(psi){ map(data_psi_p, MultiplyMatrix, x = psi, nrows = data$I)})
+psi_p_sim <- map(psi_p_sim, DoCbind)
+psi_p_sim <- DoCbind(psi_p_sim)
+psi_p_sim <- CreateListsRow(psi_p_sim)
 psi_p_sim <- map(psi_p_sim, function(x){aperm(array(x , dim = c(data$J, npols, nsims)), perm=c(2,1,3))})
+
+# Ensure psi_p+sim is a list of J lists each with nsims lists of npol X ngood matrices
 psi_p_sim <- map(psi_p_sim, function(x){lapply(seq_len(nsims), function(i) x[,,i])})
 
-#psi_p_sim <- map(psi_temp, function(x){matrix(data$dat_psi %*% x , nrow = data$I, byrow = TRUE)})
-
-#psi_p_sim <- do.call(cbind, psi_p_sim)
-
-#psi_p_sim <- map(psi_p_sim, function(x){lapply(seq_len(data$I), function(i) x[i,])})
-#psi_p_sim <- map(psi_p_sim, function(data_p){map(data_p, function(x){matrix(x , nrow = nsims, byrow = TRUE)})})
 
 if (data$model_type != 4){
 	alpha_sim <- est_sim %>%

@@ -6,65 +6,61 @@
 \usage{
 FitMDCEV(dat, dat_class = NULL, weights = NULL, price_num = NULL,
   model_specification = NULL, n_classes = 1, fixed_scale = 0,
-  seed = 123, initial.parameters = NULL, algorithm = "HB-Stan",
-  print_ll = 0, hessian = TRUE, n_draws = 50, keep_loglik = 0,
-  hb_random_parameters = hb_random_parameters, n_iterations = 100,
-  n_chains = 4, hb.max.tree.depth = 10, hb.adapt.delta = 0.8,
-  hb.keep.samples = FALSE, hb.stanfit = TRUE, hb.lkj.prior.shape = 4,
-  hb.warnings = TRUE, hb.beta.draws.to.keep = 0)
+  trunc_data = trunc_data, seed = 123, algorithm = "MLE",
+  print_ll = 0, hessian = TRUE, n_draws = 50, keep_loglik = 0)
 }
 \arguments{
+\item{dat}{The data to be passed to Stan. Must include quant, price, income, and dat_psi.}
+
+\item{dat_class}{The data for class membership to be passed to Stan.}
+
 \item{weights}{An optional vector of sampling or frequency weights.}
+
+\item{price_num}{An optional vector containing price of numeraire or outside good (default is 1).}
+
+\item{model_specification}{A string indicating which model specification is estimated.
+The options are "les","alpha", "gamma", and "gamma0"}
 
 \item{n_classes}{The number of latent classes.}
 
-\item{seed}{Random seed.}
+\item{fixed_scale}{Whether to fix scale at 1.}
 
-\item{initial.parameters}{Specify initial parameters intead of
+\item{trunc_data}{Whether the estimation should be adjusted for truncation}
+
+\item{seed}{Random seed.
 starting at random in latent class analysis. The initial
 parameters need to be supplied as list consisting of a matrix
 called class.parameters whose columns are the parameters of the
 classes, and a vector called class.sizes containing the class
 size parameters.}
 
-\item{algorithm}{Either "HB" for Hierarchical Bayes or "MLE"
-for latent class analysis.}
+\item{algorithm}{Either "HB-Stan" for Hierarchical Bayes or "MLE"
+for maximum liklihood estimation.}
 
-\item{hb.max.tree.depth}{http://mc-stan.org/misc/warnings.html#maximum-treedepth-exceeded}
+\item{print_ll}{Whether to print logliklihood at each iteration}
 
-\item{hb.adapt.delta}{http://mc-stan.org/misc/warnings.html#divergent-transitions-after-warmup}
-
-\item{hb.keep.samples}{Whether to keep the samples of all the
-parameters in the output.}
-
-\item{hb.stanfit}{Whether to include the stanfit property.}
-
-\item{hb.lkj.prior.shape}{Real number greater than one; the shape
+\item{hessian}{Wheter to keep the Hessian matrix
+    Hierarchical Bayes. Can be 'uncorr, 'corr'.
+    Bayes.
+    http://mc-stan.org/misc/warnings.html#maximum-treedepth-exceeded
+    http://mc-stan.org/misc/warnings.html#divergent-transitions-after-warmup
+    parameters in the output.
     hyperparameter for the LKJ prior used for the correlation matrix
     of the respondent coefficients distribution. A value of one gives
 equal probability weight to all possible correlation matrices. Larger values
-favour less correlation (draws closer to the identity matrix).}
+favour less correlation (draws closer to the identity matrix).
+    respondent to return in beta.draws.
+    alternative-specific parameters.}
 
-\item{hb.warnings}{Whether to show warnings from Stan.}
+\item{n_draws}{The number of MVN draws for standard error calculations}
 
-\item{hb.beta.draws.to.keep}{Maximum number of beta draws per
-respondent to return in beta.draws.}
-
-\item{stan.dat}{The data to be passed to Stan.}
-
-\item{normal.covariance}{The form of the covariance matrix for
-Hierarchical Bayes. Can be 'Full, 'Spherical', 'Diagonal'.}
-
-\item{hb.iterations}{The number of iterations in Hierarchical
-Bayes.}
-
-\item{hb.chains}{The number of chains in Hierarchical Bayes.}
-
-\item{include.choice.parameters}{Whether to include
-alternative-specific parameters.}
+\item{keep_loglik}{Whether to keep the log_lik calculations}
 
 \item{...}{Additional parameters to pass on to \code{rstan::stan}
 and \code{rstan::sampling}.}
+}
+\value{
+A stanfit object
 }
 \description{
 Fit a MDCEV model using MLE or HB

@@ -4,9 +4,8 @@
 \alias{maxlikeMDCEV}
 \title{maxlikeMDCEV}
 \usage{
-maxlikeMDCEV(dat, n_classes = 1, n_draws = 50, seed = 123,
-  initial.parameters = NULL, hessian = TRUE, keep_loglik)
+maxlikeMDCEV(dat, seed, model_options)
 }
 \description{
-Fit a MDCEV model MLE
+Fit a MDCEV model with MLE
 }

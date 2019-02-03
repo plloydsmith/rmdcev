@@ -1,11 +1,11 @@
 #include <Rcpp.h>
 using namespace Rcpp ;
-#include "mdcev_hb_uncorr.hpp"
+#include "SimulationFunctions.hpp"
 
-RCPP_MODULE(stan_fit4mdcev_hb_uncorr_mod) {
+RCPP_MODULE(stan_fit4SimulationFunctions_mod) {
 
 
-    class_<rstan::stan_fit<stan_model, boost::random::ecuyer1988> >("model_mdcev_hb_uncorr")
+    class_<rstan::stan_fit<stan_model, boost::random::ecuyer1988> >("model_SimulationFunctions")
 
     .constructor<SEXP,SEXP,SEXP>()
 

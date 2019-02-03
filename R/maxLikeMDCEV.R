@@ -1,16 +1,16 @@
 #' @title maxlikeMDCEV
-#' @description Fit a MDCEV model MLE
-#' @import rstan
-#' @export
-
-maxlikeMDCEV <- function(dat,
-						 seed = seed,
-						 model_options,
-						 initial.parameters = NULL)
+#' @description Fit a MDCEV model with MLE
+maxlikeMDCEV <- function(dat, initial.parameters = NULL,
+						 seed,
+						 model_options)
 {
-
 	stan.model <- stanmodels$mdcev
-	stan_fit <- optimizing(stan.model, data = dat, as_vector = FALSE,
+
+	if (is.null(initial.parameters))
+		stan_fit <- optimizing(stan.model, data = dat, as_vector = FALSE,
+							   draws = model_options$n_draws, hessian = model_options$hessian)
+	else
+		stan_fit <- optimizing(stan.model, data = dat, as_vector = FALSE, init = initial.parameters,
 						   draws = model_options$n_draws, hessian = model_options$hessian)
 
 	result <- list()
@@ -24,7 +24,7 @@ maxlikeMDCEV <- function(dat,
 	result$effective.sample.size <- ess <- sum(dat$weights)
 #	n_parameters <- n_classes * n_parameters + n_classes - 1
 	result$bic <- -2 * result$log.likelihood + log(ess) * n_parameters
-stan_fit <- result$stan_fit
+	stan_fit <- result$stan_fit
 #dat <- result$processed.data
 #dat$K <- n_classes
 	if (model_options$n_classes > 1){
@@ -53,7 +53,7 @@ stan_fit <- result$stan_fit
 
 		if (dat$model_type == 1 || dat$model_type == 3){
 			init$alpha <- matrix(rep(init.par$alpha, dat$K), nrow=dat$K, ncol=1)
-			init$gamma <- init.par$gamma
+			init$gamma <- matrix(rep(init.par$gamma, dat$K), nrow=dat$K, ncol=1)
 		} else if (dat$model_type == 2){
 			init$alpha <- matrix(rep(init.par$alpha, dat$K), nrow=dat$K, ncol=dat$J)
 		} else if (dat$model_type == 4){
@@ -66,7 +66,7 @@ stan_fit <- result$stan_fit
 		stan_fit <- optimizing(stan.model, data = dat, as_vector = FALSE, init = init,
 							   draws = model_options$n_draws, hessian = model_options$hessian)
 
-		if (keep_loglik == 0)
+		if (model_options$keep_loglik == 0)
 			stan_fit <- ReduceStanFitSize(stan_fit)
 
 		result$stan_fit <- stan_fit
@@ -89,7 +89,7 @@ stan_fit <- result$stan_fit
 #' @title ReduceStanFitSize
 #' @description This function reduces the size of the stan.fit object to reduce the time
 #' it takes to return it from the R server.
-#' @param stan.fit A stanfit object.
+#' @param stan_fit A stanfit object.
 #' @return A stanfit object with a reduced size.
 #' @export
 ReduceStanFitSize <- function(stan_fit)

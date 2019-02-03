@@ -7,7 +7,7 @@
 ReduceStanFitSize(stan_fit)
 }
 \arguments{
-\item{stan.fit}{A stanfit object.}
+\item{stan_fit}{A stanfit object.}
 }
 \value{
 A stanfit object with a reduced size.

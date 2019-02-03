@@ -45,8 +45,6 @@ processMDCEVdata <- function(dat,
 	if(is.null(price_num)) # default price numeraire is one
 		price_num <- rep(1, I)
 
-	exp_num <- dat$inc - rowSums(dat$price * dat$quant)
-
 	nonzero <- cbind(1, dat$quant != 0)
 	M <- rowSums(nonzero != 0)
 	M_factorial = factorial(M-1)
@@ -60,10 +58,7 @@ processMDCEVdata <- function(dat,
 			 j_quant = dat$quant,
 			 num_price = as.vector(price_num),
 			 income = as.vector(dat$inc),
-			 num_quant = as.vector(exp_num),
-			 M = M,
 			 M_factorial = M_factorial,
-			 nonzero = nonzero,
 			 model_type = model_type,
 			 fixed_scale = model_options$fixed_scale,
 			 n_parameters = n_parameters,

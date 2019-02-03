@@ -1,4 +1,4 @@
-// saved as mdcev_fixed.stan
+// saved as mdcev.stan
 data {
   int I; // number of Individuals
   int J; // number of non-numeraire alternatives
@@ -8,15 +8,12 @@ data {
   matrix[I, J] j_quant; // non-numeraire consumption
   vector[I] income;
   vector[I] num_price; // numeraire price
-  vector[I] num_quant; // numeraire consumption
-  int<lower=0, upper=1> print_ll; //indicator to print log_lik at each iteration.
+  vector[I] M_factorial;
   int<lower = 1, upper = 4> model_type; // 1 is les, 2 is alpha, 3 gamma (one alpha for all), 4 alpha's set to 0
   int<lower=0, upper=1> fixed_scale; // indicator to fix scale
+   int<lower=0, upper=1> trunc_data; //indicator to correct estimation for truncated data
+ int<lower=0, upper=1> print_ll; //indicator to print log_lik at each iteration.
   vector[I] weights; // user supplied weights
-	vector[I] M_factorial;
-	matrix[I, J + 1] nonzero;
-	vector[I] M;	//  Number of consumed goods (including numeraire)
-  int<lower=0, upper=1> trunc_data; //indicator to correct estimation for truncated data
 }
 
 transformed data {
@@ -24,10 +21,24 @@ transformed data {
 	int A;
 	vector[G] ones_g = rep_vector(1, G);
 	matrix[I, G] price_full = append_col(num_price, j_price);
-	matrix[I, G] quant_full = append_col(num_quant, j_quant);
+	matrix[I, G] quant_full;
 	matrix[I, J] log_price = log(j_price);
-	vector[I] log_num = log(num_quant ./ num_price);
 	vector[I] log_inc = log(income);
+  	vector[I] num_quant; // numeraire consumption
+	vector[I] log_num;
+	matrix[I, G] nonzero = rep_matrix(rep_vector(1, G)',I);
+	vector[I] M;	//  Number of consumed goods (including numeraire)
+
+	for(i in 1:I){
+		num_quant[i] = (income[i] - j_price[i] * j_quant[i]') / num_price[i];
+		for(g in 2:G){
+			nonzero[i,g] = j_quant[i,g - 1] > 0 ? 1 : 0;
+		}
+  		M[i] = sum(nonzero[i]);
+	}
+
+	log_num = log(num_quant ./ num_price);
+	quant_full = append_col(num_quant, j_quant);
 
  	if (model_type == 1 || model_type == 3)
  		A = 1;
@@ -51,7 +62,6 @@ transformed parameters {
 	matrix[I, J] v_j;
 	matrix[I, G] f;
 	matrix[I, G] v;
-	matrix[I, G] v_1;
 	matrix[I, G] vf;
 	vector[I] sumv;
 	vector[I] pf;
@@ -59,8 +69,6 @@ transformed parameters {
 	vector[G] gamma_full;
 	vector[G] alpha_full;
 	real scale_full;
-	vector[I] like_cond;
-	vector[I] like_trunc;
 	scale_full = fixed_scale == 0 ? scale[1] : 1.0;
 
 	if (model_type == 1)
@@ -92,6 +100,9 @@ transformed parameters {
 	}
 
 	if (trunc_data == 1){
+		matrix[I, G] v_1;
+		vector[I] like_cond;
+		vector[I] like_trunc;
 		like_cond = prodvf .* pf .* M_factorial ./ sumv;
 
 		v_1 = append_col((alpha_full[1] - 1) * log_inc, lpsi - log_price);
@@ -100,8 +111,8 @@ transformed parameters {
 
 		like_trunc = col(v_1, 1) ./ sumv;
 
-//		for(i in 1:I)
-//			like_trunc[i] = like_trunc[i] < 1 ? like_trunc[i] : 1;
+		for(i in 1:I)
+			like_trunc[i] = like_trunc[i] < 1 ? like_trunc[i] : 1;
 
 		log_like = log(like_cond ./ (1 - like_trunc)) .* weights;
 
