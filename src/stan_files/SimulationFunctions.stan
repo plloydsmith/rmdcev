@@ -1,7 +1,5 @@
-
-//stan_wtp <- "
+//Code for MDCEV Simulation Functions <- "
 functions {
-
 /**
  * Draw conditional or unconditional error draws *
  * @param N Number of rows correspond to data items
@@ -12,17 +10,15 @@ functions {
 vector[] DrawError_rng(real quant_num, vector quant_j, vector price_j,
 					vector psi_j, vector gamma_j, vector alpha, real scale,
 					int ngoods, int nerrs, int cond_error){
-// Function to Draw conditional or unconditional errors
+
 	vector[ngoods+1] error[nerrs];
 
-	// Unconditional Error Draws
-	if (cond_error == 0){
+	if (cond_error == 0){	// Unconditional
 		for(err in 1:nerrs)
 			for(j in 1:ngoods+1)
 				error[err, j] = -log(-log(uniform_rng(0, 1))) * scale; //uniform(0,1) draws
 
-	// Conditional Error Draws
-	} else if (cond_error == 1){
+	} else if (cond_error == 1){	// Conditional
 		// Cacluate the demand function, g
 		vector[ngoods + 1] cond_demand = append_row(quant_num, quant_j);
 		// compute vk and v1
@@ -33,8 +29,7 @@ vector[] DrawError_rng(real quant_num, vector quant_j, vector price_j,
 		e = append_row(0, (v1 - vk) / scale);
 
 		// Calculate errors
-		// For unvisited alternatives, draw from truncated multivariate
-		// logistic distribution
+		// For unvisited alternatives, draw from truncated multivariate logistic distribution
 		for(err in 1:nerrs)
 			for(j in 1:ngoods+1)
 				error[err, j] = cond_demand[j] > 0 ? e[j] * scale :
@@ -55,6 +50,7 @@ int[] CalcGoodOrder(vector MUzero, int ngoods) {
 	int order_x[ngoods+1];
 	vector[ngoods] ord_goods;
 	int order_MU[ngoods] = sort_indices_desc(MUzero[2:ngoods+1]);
+
 	for (j in 1:ngoods)
 		ord_goods[j] = j;
 
@@ -77,149 +73,20 @@ matrix SortParmMatrix(vector MUzero, vector price, vector gamma, vector alpha, i
 return(parm_matrix);
 }
 
-vector MarshallianDemandHybrid(real inc, vector price,
-							vector MUzero, vector gamma, vector alpha,
-							int ngoods) {
-// Function to simulate Marshallian Demands using Hybrid approach
-
-	vector[ngoods+1] mdemand;
-	int M = 1; // Indicator of which ordered alteratives (<=M) are being considered
-	int exit = 0;
-	int order_x[ngoods+1] = CalcGoodOrder(MUzero, ngoods);
-	real lambda_num;
-	real lambda_den;
-	real lambda;
-	real alpha_1;
-	vector[ngoods+1] X = rep_vector(0, ngoods+1);
-	vector[ngoods+1] a;
-	vector[ngoods+1] b;
-	vector[ngoods+1] c;
-	vector[ngoods+1] d = append_row(0, rep_vector(1, ngoods));
-	vector[ngoods+1] mu;
-	vector[ngoods+1] g;
-	matrix[ngoods+1, 4] parm_matrix = SortParmMatrix(MUzero, price, gamma, alpha, ngoods);
-
-	mu = col(parm_matrix, 1);
-	g = col(parm_matrix, 3);
-	a = g .* col(parm_matrix, 2);
-	alpha_1 = alpha[1];
-
-	for (j in 1:ngoods+1)
-		b[j] = pow(mu[j], inv(1 - alpha_1));
-
-	c = a .* b;
-
-	while (exit == 0){
-		// Calculate lambda equal to MUzero(M+1)
-		lambda_num = inc + sum(a[1:M]) - 1; // minus one for numeraire
-		lambda_den = sum(c[1:M]);
-		lambda = pow(lambda_num / lambda_den, alpha_1 - 1);
-
-		//Compare lambda to baseline utility of the next lowest alternative
-		//(M+1). If lambda exceeds this value then all lower-valued
-		//alternatives have zero demand.
-
-		if (lambda > mu[min(M + 1, ngoods + 1)] || M == ngoods+1){
-			// Compute demands (using eq. 12 in Pinjari and Bhat)
-			for (m in 1:M)
-				X[m] = (pow(lambda / mu[m], 1 / (alpha_1 - 1)) - d[m]) * g[m];
-			exit = 1;
-
-		} else if ( M < ngoods + 1)
-			M = M + 1;
-	}
-
-		// This code puts the choices back in their original
-		// order and exports demands
-	mdemand = X[order_x];
-return(mdemand);
-}
-
-real ComputeE(int M, real lambda, vector a, vector b, vector c, vector d){
+real ComputeE(int M, real lambda, vector g_price, vector b, vector c, vector d){
 	real output;
 	vector[M] temp;
 	for (m in 1:M)
-		temp[m] = a[m] * (lambda ^ b[m] / c[m] -d[m]);
+		temp[m] = g_price[m] * (lambda ^ b[m] / c[m] -d[m]);
 	output =  sum(temp);
 return(output);
 }
 
-vector MarshallianDemandGeneral(real inc, vector price,
-							vector MUzero, vector gamma, vector alpha,
-							int ngoods) {
-// Function to simulate Marshallian Demans using General approach
-
-	vector[ngoods+1] mdemand;
-	real tol_e = 1e-20;
-	int max_loop = 999;
-	int M = 1; // Indicator of which ordered alteratives (<=M) are being considered
-	int exit = 0;
-	real E;
-	int order_x[ngoods+1] = CalcGoodOrder(MUzero, ngoods);
-	real lambda_l;
-	real lambda_u;
-	real lambda;
-	vector[ngoods+1] X = rep_vector(0, ngoods+1);
-	vector[ngoods+1] a;
-	vector[ngoods+1] b;
-	vector[ngoods+1] c;
-	vector[ngoods+1] d = append_row(0, rep_vector(1, ngoods));
-	vector[ngoods+1] mu;
-	vector[ngoods+1] g;
-	matrix[ngoods+1, 4] parm_matrix = SortParmMatrix(MUzero, price, gamma, alpha, ngoods);
-
-	mu = col(parm_matrix, 1);
-	g = col(parm_matrix, 3);
-	a = g .* col(parm_matrix, 2);
-	b = col(parm_matrix, 4);
-	b = inv(append_row(b[1], b[2:ngoods+1]) - 1);
-
-	for (j in 1:ngoods+1)
-		c[j] = mu[j] ^ b[j];
-
-	while (exit == 0){
-		// Calculate lambda equal to MUzero(M+1)
-		lambda = mu[M + 1];
-		// Calculate E
-		E = ComputeE(M, lambda, a, b, c, d);
-
-		if (E >= inc || M+1 == ngoods+1){
-			M = E < inc ? M + 1 : M;
-			lambda_l = E < inc ? 0 : lambda;
-			lambda_u = mu[M];
-			lambda = (lambda_l + lambda_u) / 2;
-
-			for (n in 1:max_loop){
-				E = ComputeE(M, lambda, a, b, c, d);
-
-				// Update lambdas's
-				lambda_u = E > inc ? lambda_u : (lambda_l + lambda_u) / 2;
-				lambda_l = E < inc ? lambda_l : (lambda_l + lambda_u) / 2;
-				lambda = (lambda_l + lambda_u) / 2;
-
-				if (fabs(E - inc) < tol_e) break;
-				}
-
-			// Compute demands (using eq. 12 in Pinjari and Bhat)
-			for (m in 1:M)
-				X[m] = ((lambda / mu[m]) ^ b[m] -d[m]) * g[m];
-			exit = 1;
-
-		} else if (E < inc && M + 1 < ngoods + 1)
-			M = M + 1;
-	}
-
-	// This code puts the choices back in their original
-	// order and exports demands
-	mdemand = X[order_x];
-return(mdemand);
-}
-
-vector MarshallianDemand(real inc, vector price,
-							vector MUzero, vector gamma, vector alpha,
+vector MarshallianDemand(real inc, vector price, vector MUzero, vector gamma, vector alpha,
 							int ngoods, int algo_gen) {
 
 	vector[ngoods+1] mdemand;
+	real lambda;
 	int M = 1; // Indicator of which ordered alteratives (<=M) are being considered
 	int exit = 0;
 	real E;
@@ -229,25 +96,23 @@ vector MarshallianDemand(real inc, vector price,
 	matrix[ngoods+1, 4] parm_matrix = SortParmMatrix(MUzero, price, gamma, alpha, ngoods);
 	vector[ngoods+1] mu = col(parm_matrix, 1); // obtain mu
 	vector[ngoods+1] g = col(parm_matrix, 3); // obtain gamma
-	vector[ngoods+1] a = g .* col(parm_matrix, 2);
+	vector[ngoods+1] g_price = g .* col(parm_matrix, 2);
 
 	if (algo_gen == 0) { //Hybrid
 		real lambda_num;
 		real lambda_den;
-		real lambda;
 		real alpha_1 = alpha[1];
-		vector[ngoods+1] g_psi = g .* mu .* col(parm_matrix, 2); // obtain gamma_psi
 		vector[ngoods+1] b;
 		vector[ngoods+1] c;
 
 		for (j in 1:ngoods+1)
 			b[j] = pow(mu[j], inv(1 - alpha_1));
 
-		c = a .* b;
+		c = g_price .* b;
 
 		while (exit == 0){
 			// Calculate lambda equal to MUzero(M+1)
-			lambda_num = inc + sum(a[1:M]) - 1; // minus one for numeraire
+			lambda_num = inc + sum(g_price[1:M]) - 1; // minus one for numeraire
 			lambda_den = sum(c[1:M]);
 			lambda = pow(lambda_num / lambda_den, alpha_1 - 1);
 
@@ -270,19 +135,17 @@ vector MarshallianDemand(real inc, vector price,
 		int max_loop = 999;
 		real lambda_l;
 		real lambda_u;
-		real lambda;
-		vector[ngoods+1] b = col(parm_matrix, 4);
 		vector[ngoods+1] c;
+		vector[ngoods+1] b = col(parm_matrix, 4);
 		b = inv(append_row(b[1], b[2:ngoods+1]) - 1);
 
 		for (j in 1:ngoods+1)
 			c[j] = mu[j] ^ b[j];
 
 		while (exit == 0){
-			// Calculate lambda equal to MUzero(M+1)
-			lambda = mu[M + 1];
-			// Calculate E
-			E = ComputeE(M, lambda, a, b, c, d);
+			lambda = mu[M + 1];	// Calculate lambda equal to MUzero(M+1)
+
+			E = ComputeE(M, lambda, g_price, b, c, d);			// Calculate E
 
 			if (E >= inc || M+1 == ngoods+1){
 				M = E < inc ? M + 1 : M;
@@ -291,7 +154,7 @@ vector MarshallianDemand(real inc, vector price,
 				lambda = (lambda_l + lambda_u) / 2;
 
 				for (n in 1:max_loop){
-					E = ComputeE(M, lambda, a, b, c, d);
+					E = ComputeE(M, lambda, g_price, b, c, d);
 
 					// Update lambdas's
 					lambda_u = E > inc ? lambda_u : (lambda_l + lambda_u) / 2;
@@ -558,8 +421,8 @@ vector HicksianDemand(real util, vector price,
 			mu_a_a_1[j] = pow(inv(mu[j]), a_a_1[j]);
 
 		while (exit == 0){
-			// Calculate lambda equal to MUzero(M+1)
-			lambda1 = mu[M + 1];
+			lambda1 = mu[M + 1];// Calculate lambda1 equal to MUzero(M+1)
+
 			// Calculate new utility
 			util_new = ComputeUtilM(M, lambda1, g_psi_a, a_a_1, mu_a_a_1, psi, g, price_ord, d, model_type);
 
@@ -582,11 +445,11 @@ vector HicksianDemand(real util, vector price,
 
 			// Compute demands (using eq. 12 in Pinjari and Bhat)
 			for (m in 1:M)
-				X[m] = ((lambda1 / mu[m]) ^ (1 / (a[m]-1))  -d[m]) * g[m];
+				X[m] = ((lambda1 / mu[m]) ^ (1 / (a[m] - 1))  -d[m]) * g[m];
 
 			exit = 1;
 
-			} else if (util_new < util && M + 1 < ngoods + 1)
+			} else if (util_new < util && M+1 < ngoods+1)
 			M = M + 1;
 		}
 	}
@@ -594,62 +457,6 @@ vector HicksianDemand(real util, vector price,
 	hdemand = X[order_x];
 return(hdemand);
 }
-
-// Overall code
-vector CalcTest_rng(real inc, vector quant_j, vector price, //vector error,
-						vector[] price_p, matrix[] psi_p_sims,
-						matrix psi_sims, vector[] gamma_sims, vector[] alpha_sims, vector scale_sims,
-						int ngoods, int nsims, int nerrs, int npols,
-						int cond_error, int algo_gen, int model_type){
-
-	matrix[nsims, npols] wtp;
-	real quant_num = inc - quant_j' * price[2:ngoods+1];
-	vector[nsims] util;
-
-	for (sim in 1:nsims){
-		vector[ngoods] psi_j = psi_sims[sim]';
-		matrix[npols, ngoods] psi_p = psi_p_sims[sim];
-		vector[ngoods + 1] gamma = append_row(1, gamma_sims[sim]);
-		vector[ngoods + 1] alpha = alpha_sims[sim];
-		real scale = scale_sims[sim];
-		vector[ngoods + 1] error[nerrs];
-//		vector[ngoods + 1] psi_b_err[nerrs]; // keep psi for use in policies
-		vector[npols] wtp_policy;
-		vector[nerrs] util_s;
-
-		error = DrawError_rng(quant_num, quant_j, price[2:ngoods+1],
-							psi_j, gamma[2:ngoods+1], alpha, scale,
-							ngoods, nerrs, cond_error);
-
-		// Compute Marshallian demands and baseline utility
-		for (err in 1:nerrs){
-			vector[ngoods + 1] mdemand;
-			vector[ngoods + 1] MUzero_b;
-			vector[ngoods + 1] psi_b_err;
-			psi_b_err = exp(append_row(0, psi_j) + error[err]);
-			MUzero_b = psi_b_err ./ price;
-
-			if (cond_error == 1){
-				mdemand = append_row(quant_num, quant_j);
-			} else if(cond_error == 0)	{
-
-				if (algo_gen == 1)
-					mdemand = MarshallianDemandGeneral(inc, price, MUzero_b, gamma, alpha, ngoods);
-				else if (algo_gen == 0)
-					mdemand = MarshallianDemandHybrid(inc, price, MUzero_b, gamma, alpha, ngoods);
-			}
-
-			util_s[err] = ComputeUtilJ(inc, mdemand[2:ngoods+1], price[2:ngoods+1],
-									psi_b_err[2:ngoods+1], gamma[2:ngoods+1], alpha,
-									ngoods, model_type);
-		}
-
-		util[sim] = mean(util_s);
-	}
-
-return(util);
-}
-
 
 // Overall code
 matrix CalchdemandTest_rng(real inc, vector quant_j, vector price,
@@ -689,14 +496,9 @@ matrix CalchdemandTest_rng(real inc, vector quant_j, vector price,
 									psi_b_err[2:ngoods+1], gamma[2:ngoods+1], alpha,
 									ngoods, model_type);
 
-			if (algo_gen == 1)
-				hdemand[err] = HicksianDemandGeneral(util, price_p_policy, MUzero_p, gamma, alpha,
-										ngoods, model_type)';
-			else if (algo_gen == 0)
-				hdemand[err] = HicksianDemandHybrid(util, price_p_policy, MUzero_p, gamma, alpha,
-										ngoods, model_type)';
+			hdemand[err] = HicksianDemand(util, price_p_policy, MUzero_p, gamma, alpha,
+										ngoods, algo_gen, model_type)';
 		}
-
 		hdemand_trans = hdemand';
 
 		for(g in 1:ngoods+1)
@@ -739,10 +541,8 @@ matrix CalcmdemandTest_rng(real inc, vector quant, vector price,
 			psi_b_err = exp(append_row(0, psi_j) + error[err]);
 			MUzero_b = psi_b_err ./ price;
 
-			if (algo_gen == 1)
-				mdemand[err] = MarshallianDemandGeneral(inc, price, MUzero_b, gamma, alpha, ngoods)';
-			else if (algo_gen == 0)
-				mdemand[err] = MarshallianDemandHybrid(inc, price, MUzero_b, gamma, alpha, ngoods)';
+			mdemand[err] = MarshallianDemand(inc, price, MUzero_b, gamma, alpha, ngoods, algo_gen )';
+
 		}
 		mdemand_trans = mdemand';
 
@@ -785,10 +585,7 @@ matrix Calcmdemand_rng(real inc, vector price,
 			psi_b_err = exp(append_row(0, psi_j) + error[err]);
 			MUzero_b = psi_b_err ./ price;
 
-		if (algo_gen == 1)
-			mdemand[err] = MarshallianDemandGeneral(inc, price, MUzero_b, gamma, alpha, ngoods)';
-		else if (algo_gen == 0)
-			mdemand[err] = MarshallianDemandHybrid(inc, price, MUzero_b, gamma, alpha, ngoods)';
+			mdemand[err] = MarshallianDemand(inc, price, MUzero_b, gamma, alpha, ngoods, algo_gen)';
 		}
 		mdemand_trans = mdemand';
 
@@ -837,13 +634,8 @@ matrix CalcWTP_rng(real inc, vector quant_j, vector price,
 
 			if (cond_error == 1){
 				mdemand = append_row(quant_num, quant_j);
-			} else if(cond_error == 0)	{
-
-				if (algo_gen == 1)
-					mdemand = MarshallianDemandGeneral(inc, price, MUzero_b, gamma, alpha, ngoods);
-				else if (algo_gen == 0)
-					mdemand = MarshallianDemandHybrid(inc, price, MUzero_b, gamma, alpha, ngoods);
-			}
+			} else if(cond_error == 0)
+				mdemand = MarshallianDemand(inc, price, MUzero_b, gamma, alpha, ngoods, algo_gen);
 
 			util[err] = ComputeUtilJ(inc, mdemand[2:ngoods+1], price[2:ngoods+1],
 									psi_b_err[2:ngoods+1], gamma[2:ngoods+1], alpha,
