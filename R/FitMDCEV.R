@@ -154,8 +154,8 @@ FitMDCEV <- function(data,
 	result$n_classes <- n_classes
 	result$weights <- weights
 	#	result$weights.description <- if (is.null(weights)) NULL else Labels(weights)
-	result$n_respondents <- dat$I
-	result$n_alternatives <- dat$n_alternatives
+	result$n_respondents <- data$I
+	result$n_alternatives <- data$n_alternatives
 	result$time.taken <- (end.time - start.time)[3]
 	class(result) <- "EstimateMDCEV"
 	result
