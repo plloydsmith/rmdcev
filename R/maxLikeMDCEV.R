@@ -25,8 +25,7 @@ maxlikeMDCEV <- function(dat, initial.parameters = NULL,
 #	n_parameters <- n_classes * n_parameters + n_classes - 1
 	result$bic <- -2 * result$log.likelihood + log(ess) * n_parameters
 	stan_fit <- result$stan_fit
-#dat <- result$processed.data
-#dat$K <- n_classes
+
 	if (model_options$n_classes > 1){
 		result$mdcev_fit <- stan_fit
 		result$mdcev_log.likelihood <- result$log.likelihood

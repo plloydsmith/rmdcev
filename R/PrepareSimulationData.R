@@ -4,8 +4,7 @@ PrepareSimulationData <- function(result, policies){
 	###########################################################################
 
 	price_p_list <- policies$price_p
-
-	dat_psi_list <- policies$dat_psi
+	dat_psi_p_list <- policies$dat_psi
 
 	###########################################################################
 	# Get parameter estimates in matrix form
@@ -25,7 +24,7 @@ PrepareSimulationData <- function(result, policies){
 	#	filter(sim_id != 30)
 
 	#nsims = nsims - 1
-	parms_sim <- CreateSimulationData(est_sim, nsims, npols, result$stan_data, dat_psi_list)
+	parms_sim <- CreateSimulationData(est_sim, nsims, npols, result$stan_data, dat_psi_p_list)
 
 	# Put in a list for each simulation
 	gamma_sim_list <- CreateListsRow(parms_sim[["gamma_sim"]]) # ngoods length
