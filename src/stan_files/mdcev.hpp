@@ -634,7 +634,7 @@ public:
                 stan::math::assign(alpha_full, rep_vector(get_base1(alpha,1,"alpha",1),G));
             } else {
                 current_statement_begin__ = 81;
-                stan::math::assign(alpha_full, rep_vector(0,G));
+                stan::math::assign(alpha_full, rep_vector(9.9999999999999995e-007,G));
             }
             current_statement_begin__ = 83;
             if (as_bool(logical_eq(model_type,2))) {
@@ -958,7 +958,7 @@ public:
                 stan::math::assign(alpha_full, rep_vector(get_base1(alpha,1,"alpha",1),G));
             } else {
                 current_statement_begin__ = 81;
-                stan::math::assign(alpha_full, rep_vector(0,G));
+                stan::math::assign(alpha_full, rep_vector(9.9999999999999995e-007,G));
             }
             current_statement_begin__ = 83;
             if (as_bool(logical_eq(model_type,2))) {

@@ -70,34 +70,6 @@ PrepareSimulationData <- function(result, policies){
 
 
 
-SimulateWTP <- function(df_indiv, df_common, sim_options,
-						wtpcppcode){
-
-	## Check models
-	model <- sim_options$model_type
-	algo_gen <- sim_options$algo_gen
-	if (model < 3 && algo_gen == 0) stop("Can't use hybrid algorithm with model_type = 1 or 2. Choose algo_gen ==1")
-
-wtpcppcode <- stanc("src/stan_files/SimulationFunctions.stan",
-				model_name = "SimulationFunctions")
-
-expose_stan_functions(wtpcppcode)
-
-	wtp <- pmap(df_indiv, CalcWTP_rng,
-					   price_p=df_common$price_p_list,
-					   gamma_sim=df_common$gamma_sim_list,
-					   alpha_sim=df_common$alpha_sim_list,
-					   scale_sim=df_common$scale_sim,
-					   ngoods=sim_options$ngoods, nsims=sim_options$nsims,
-					   nerrs=sim_options$nerrs, npols=sim_options$npols,
-					   cond_error=sim_options$cond_error, algo_gen=sim_options$algo_gen,
-					   model_type=sim_options$model_type)#,
-					  # wtpcppcode = wtpcppcode,
-					  # .progress = TRUE,
-					#   .options = future_options(packages=c("rstan"), globals = FALSE))
-	return(wtp)
-}
-
 
 SimulateWTPParallel <- function(inc, quant_j, price, price_p, psi_p_sim,
 						psi_j_sim, gamma_j_sim, alpha_sim, scale_sim,

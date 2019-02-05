@@ -12,7 +12,7 @@ data {
 	vector[I] income;
 	vector[I] num_price; // numeraire price
 	vector[I] M_factorial;
-	int<lower = 1, upper = 4> model_type; // 1 is les, 2 is alpha, 3 gamma (one alpha for all), 4 alpha's set to 0
+	int<lower = 1, upper = 4> model_type; // 1 is les, 2 is alpha, 3 gamma (one alpha for all), 4 alpha's set to 1e-6
 	int<lower=0, upper=1> fixed_scale; // indicator to fix scale
 	int<lower=0, upper=1> trunc_data; //indicator to correct estimation for truncated data
 	int<lower=0, upper=1> print_ll; //indicator to print log_lik at each iteration.
@@ -85,7 +85,7 @@ transformed parameters {
 		else if (model_type == 3)
 	  		alpha_full = rep_vector(alpha[k, 1], G);
 		else
-	  		alpha_full = rep_vector(0, G);
+	  		alpha_full = rep_vector(1e-6, G);
 
 		if (model_type == 2)
 	  		gamma_full = append_row(0, rep_vector(1, J));

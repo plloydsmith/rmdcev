@@ -190,19 +190,14 @@ real ComputeUtilJ(real inc, vector quant_j, vector price_j,
 	real util_num; // numeraire
 	vector[ngoods] util_j;
 
-	if (model_type != 4){
-		util_num = 1 / alpha[1] * pow(inc -  price_j' * quant_j, alpha[1]);
+	util_num = 1 / alpha[1] * pow(inc -  price_j' * quant_j, alpha[1]);
 
-		if (model_type == 1){
-			util_j = psi_j .* gamma_j .* log(quant_j ./ gamma_j + 1);
-		} else if (model_type != 1){
-			for (n in 1:ngoods)
-				util_j[n] = (psi_j[n] * gamma_j[n]) / alpha[n+1] *
-				(pow(quant_j[n] / gamma_j[n] + 1, alpha[n+1]) - 1);
-		}
-	} else if (model_type == 4){
-		util_num = log(inc -  price_j' * quant_j);
+	if (model_type == 1){
 		util_j = psi_j .* gamma_j .* log(quant_j ./ gamma_j + 1);
+	} else if (model_type != 1){
+		for (n in 1:ngoods)
+			util_j[n] = (psi_j[n] * gamma_j[n]) / alpha[n+1] *
+			(pow(quant_j[n] / gamma_j[n] + 1, alpha[n+1]) - 1);
 	}
 
 	output = util_num + sum(util_j);
