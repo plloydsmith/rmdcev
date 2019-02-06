@@ -62,7 +62,7 @@ FitMDCEV <- function(data,
 					 print_ll = 0,
 					 #mle_tol = 0.0001,
 					 hessian = TRUE,
-					 n_draws = 50,
+					 n_draws = 30,
 					 keep_loglik = 0)#,
 					 #subset = NULL,
 #					 hb_random_parameters = hb_random_parameters,
@@ -105,9 +105,9 @@ FitMDCEV <- function(data,
 						  fixed_scale = fixed_scale,
 						  trunc_data = trunc_data,
 						  print_ll = print_ll,
-						  hessian = TRUE,
-						  n_draws = 50,
-						  keep_loglik = 0)
+						  hessian = hessian,
+						  n_draws = n_draws,
+						  keep_loglik = keep_loglik)
 
 #	hb_options <- list(n_iterations = n_iterations, n_chains = n_chains,
 #						  hb.max.tree.depth = 10, hb.adapt.delta = 0.8,
@@ -124,7 +124,7 @@ FitMDCEV <- function(data,
 
 	stan_data <- processMDCEVdata(data, data_class, price_num, model_options)
 
-	# Replace weights with vector of one's if missing
+	# If no user supplied weights, replace weights with vector of ones
 	if (is.null(weights))
 		weights <-  rep(1, stan_data$I)
 
@@ -152,6 +152,7 @@ FitMDCEV <- function(data,
 	result$stan_data <- stan_data
 	result$algorithm <- algorithm
 	result$n_classes <- n_classes
+	result$n_draws <- n_draws
 	result$weights <- weights
 	#	result$weights.description <- if (is.null(weights)) NULL else Labels(weights)
 	result$n_respondents <- data$I

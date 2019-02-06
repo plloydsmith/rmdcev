@@ -1,21 +1,17 @@
-PrepareSimulationData <- function(result, policies){
-	###########################################################################
-	# Create policy scenarios (can affect price only at this point)
-	###########################################################################
+PrepareSimulationData <- function(stan_est, policies, nsims){
 
 	price_p_list <- policies$price_p
-	dat_psi_p_list <- policies$dat_psi
 
 	###########################################################################
 	# Get parameter estimates in matrix form
 	###########################################################################
-	est_pars <- tbl_df(result[["stan_fit"]][["theta_tilde"]]) %>%
+	est_pars <- tbl_df(stan_est[["stan_fit"]][["theta_tilde"]]) %>%
 		select(-starts_with("log_like"), -starts_with("sum_log_lik")) %>%
 		rowid_to_column("sim_id") %>%
 		gather(parms, value, -sim_id, factor_key=TRUE)
 
 	# Sample from draws
-	est_sim <- result$est_pars %>%
+	est_sim <- stan_est$est_pars %>%
 		distinct(sim_id) %>%
 		sample_n(., nsims ) %>%
 		left_join(est_pars, by = "sim_id")
@@ -24,7 +20,7 @@ PrepareSimulationData <- function(result, policies){
 	#	filter(sim_id != 30)
 
 	#nsims = nsims - 1
-	parms_sim <- CreateSimulationData(est_sim, nsims, npols, result$stan_data, dat_psi_p_list)
+	parms_sim <- CreateSimulationData(est_sim, nsims, npols, stan_est$stan_data, policies$dat_psi)
 
 	# Put in a list for each simulation
 	gamma_sim_list <- CreateListsRow(parms_sim[["gamma_sim"]]) # ngoods length
@@ -43,13 +39,13 @@ PrepareSimulationData <- function(result, policies){
 	# Set baseline data into lists
 	###########################################################################
 
-	inc <- list(as.list(result$stan_data$inc))
+	inc <- list(as.list(stan_est$stan_data$inc))
 	names(inc) <- "inc"
 
-	quant_j <- list(CreateListsRow(result$stan_data$j_quant))
+	quant_j <- list(CreateListsRow(stan_est$stan_data$j_quant))
 	names(quant_j) <- "quant_j"
 
-	price <- cbind(1, result$stan_data$j_price) #add numeraire price to price matrix (<-1)
+	price <- cbind(1, stan_est$stan_data$j_price) #add numeraire price to price matrix (<-1)
 	price <- list(CreateListsRow(price))
 	names(price) <- "price"
 
@@ -67,39 +63,3 @@ PrepareSimulationData <- function(result, policies){
 
 	return(out)
 }
-
-
-
-
-SimulateWTPParallel <- function(inc, quant_j, price, price_p, psi_p_sim,
-						psi_j_sim, gamma_j_sim, alpha_sim, scale_sim,
-						ngoods, nerrs, nsims, npols,
-						cond_error, algo_gen, model_type,
-						wtpcppcode){
-	require(rstan)
-	expose_stan_functions(wtpcppcode)
-
-	out <- CalcWTP_rng(inc, quant_j, price, price_p, psi_p_sim,
-					   psi_j_sim, gamma_j_sim, alpha_sim, scale_sim,
-					   ngoods, nerrs, npols, nsims,
-					   cond_error, algo_gen, model_type)
-
-	return(out)
-}
-
-StartWTPParallel <- function(df_input){
-
-	wtp <- future_pmap(df_input, SimulateWTP,
-					   price_p=price_p_list,
-					   gamma_j_sim=gamma_j_sim_list,
-					   alpha_sim=alpha_sim_list,
-					   scale_sim=scale_sim,
-					   ngoods=ngoods, nerrs=nerrs, nsims=nsims, npols=npols,
-					   cond_error=cond_error, algo_gen=algo_gen, model_type=model_type,
-					   wtpcppcode = wtpcppcode,
-					   .progress = TRUE,
-					   .options = future_options(packages=c("rstan"), globals = FALSE))
-	return(wtp)
-}
-
-
