@@ -1,10 +1,14 @@
 #' @title FitMDCEV
 #' @description Fit a MDCEV model using MLE or HB
-#' @param data The data to be passed to Stan. Must include quant (IxJ), price (IxJ), income (Ix1), and dat_psi(IJxNPsi).
+#' @param data The data to be passed to Stan.
+#' Must include quant (IxJ),
+#' price (IxJ),
+#' income (Ix1), and
+#' dat_psi(IJxNPsi).
 #' @param data_class The data for class membership to be passed to Stan.
 #' @param weights An optional vector of sampling or frequency weights.
 #' @param price_num An optional vector containing price of numeraire or outside good (default is 1).
-#' @param model_specification A string indicating which model specification is estimated.
+#' @param model A string indicating which model specification is estimated.
 #' The options are "alpha","les", "gamma", and "gamma0".
 #' @param n_classes The number of latent classes.
 #' @param fixed_scale Whether to fix scale at 1.
@@ -51,7 +55,7 @@ FitMDCEV <- function(data,
 					 data_class = NULL,
 					 weights = NULL,
 					 price_num = NULL,
-					 model_specification = NULL,
+					 model = c("alpha", "les", "gamma", "gamma0"),
 					 n_classes = 1,
 					 fixed_scale = 0,
 					 trunc_data = trunc_data,
@@ -100,7 +104,7 @@ FitMDCEV <- function(data,
 		stop("Price and quant dimension mismatch. Ensure dim(price) = dim(quant)")
 
 	model_options <- list(fixed_scale = fixed_scale,
-						  model_specification = model_specification,
+						  model = model,
 						  n_classes = n_classes,
 						  fixed_scale = fixed_scale,
 						  trunc_data = trunc_data,
@@ -120,7 +124,7 @@ FitMDCEV <- function(data,
 
 	start.time <- proc.time()
 
-#	dat <- stan.dat
+#	data <- stan.dat
 
 	stan_data <- processMDCEVdata(data, data_class, price_num, model_options)
 
@@ -158,6 +162,6 @@ FitMDCEV <- function(data,
 	result$n_respondents <- data$I
 	result$n_alternatives <- data$n_alternatives
 	result$time.taken <- (end.time - start.time)[3]
-	class(result) <- "EstimateMDCEV"
+	class(result) <- "mdcev"
 	result
 }

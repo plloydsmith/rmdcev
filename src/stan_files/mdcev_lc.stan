@@ -8,11 +8,11 @@ data {
 	matrix[I * J, NPsi] dat_psi; // alt characteristics
 	matrix[I, J] j_price; // non-numeraire price
 	matrix[I, J] j_quant; // non-numeraire consumption
-	vector[L] dat_class[I];   // predictors for component membership
+	vector[L] data_class[I];   // predictors for component membership
 	vector[I] income;
 	vector[I] num_price; // numeraire price
 	vector[I] M_factorial;
-	int<lower = 1, upper = 4> model_type; // 1 is les, 2 is alpha, 3 gamma (one alpha for all), 4 alpha's set to 1e-6
+	int<lower = 1, upper = 4> model_num; // 1 is les, 2 is alpha, 3 gamma (one alpha for all), 4 alpha's set to 1e-6
 	int<lower=0, upper=1> fixed_scale; // indicator to fix scale
 	int<lower=0, upper=1> trunc_data; //indicator to correct estimation for truncated data
 	int<lower=0, upper=1> print_ll; //indicator to print log_lik at each iteration.
@@ -43,17 +43,17 @@ transformed data {
 	log_num = log(num_quant ./ num_price);
 	quant_full = append_col(num_quant, j_quant);
 
- 	if (model_type == 1 || model_type == 3)
+ 	if (model_num == 1 || model_num == 3)
  		A = 1;
-	else if (model_type == 2)
+	else if (model_num == 2)
 	 	A = G;
-	else if (model_type == 4)
+	else if (model_num == 4)
 		A = 0;
 }
 
 parameters {
 	vector[NPsi] psi[K];
-	vector<lower=0 >[model_type == 2 ? 0 : J] gamma[K];
+	vector<lower=0 >[model_num == 2 ? 0 : J] gamma[K];
 	vector<lower=0, upper=1>[A] alpha[K];
 	vector<lower=0>[fixed_scale == 0 ? K : 0] scale;
 //	vector<lower=0>[K] scale;
@@ -78,16 +78,16 @@ transformed parameters {
 		real scale_full;
 		scale_full = fixed_scale == 0 ? scale[k] : 1.0;
 
-		if (model_type == 1)
+		if (model_num == 1)
 	  		alpha_full = append_row(alpha[k], rep_vector(0, J));
-		else if (model_type == 2)
+		else if (model_num == 2)
 	  		alpha_full = alpha[k];
-		else if (model_type == 3)
+		else if (model_num == 3)
 	  		alpha_full = rep_vector(alpha[k, 1], G);
 		else
 	  		alpha_full = rep_vector(1e-6, G);
 
-		if (model_type == 2)
+		if (model_num == 2)
 	  		gamma_full = append_row(0, rep_vector(1, J));
 		else
 	  		gamma_full = append_row(0, gamma[k]);
@@ -129,7 +129,7 @@ transformed parameters {
 	}
 
 	for(i in 1:I){
-		vector[K] ltheta = log_softmax(append_row(0, beta_m * dat_class[i])); // class membership equation
+		vector[K] ltheta = log_softmax(append_row(0, beta_m * data_class[i])); // class membership equation
 		vector[K] lps;
 		for (k in 1:K){
 			lps[k] = ltheta[k] + log_like[k,i];
@@ -155,7 +155,7 @@ generated quantities{
 	real sum_log_lik = 0;
 	vector[I] theta[K];
 	for(i in 1:I){
-  		vector[K] theta1 = log_softmax(append_row(0, beta_m * dat_class[i]));
+  		vector[K] theta1 = log_softmax(append_row(0, beta_m * data_class[i]));
 		sum_log_lik = sum_log_lik + log_like_all[i];
 		for(k in 1:K)
   			theta[k,i] =theta1[k];

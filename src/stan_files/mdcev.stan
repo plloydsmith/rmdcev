@@ -8,8 +8,8 @@ data {
   matrix[I, J] j_quant; // non-numeraire consumption
   vector[I] income;
   vector[I] num_price; // numeraire price
-  vector[I] M_factorial;
-  int<lower = 1, upper = 4> model_type; // 1 is les, 2 is alpha, 3 gamma (one alpha for all), 4 alpha's set to 1e-06
+  vector[I] M_factorial; // (M-1)!
+  int<lower = 1, upper = 4> model_num; // 1 is les, 2 is alpha, 3 gamma (one alpha for all), 4 alpha's set to 1e-06
   int<lower=0, upper=1> fixed_scale; // indicator to fix scale
    int<lower=0, upper=1> trunc_data; //indicator to correct estimation for truncated data
  int<lower=0, upper=1> print_ll; //indicator to print log_lik at each iteration.
@@ -40,17 +40,17 @@ transformed data {
 	log_num = log(num_quant ./ num_price);
 	quant_full = append_col(num_quant, j_quant);
 
- 	if (model_type == 1 || model_type == 3)
+ 	if (model_num == 1 || model_num == 3)
  		A = 1;
-	else if (model_type == 2)
+	else if (model_num == 2)
 	 	A = G;
-	else if (model_type == 4)
+	else if (model_num == 4)
 		A = 0;
 }
 
 parameters {
 	vector[NPsi] psi;
-	vector<lower=0>[model_type == 2 ? 0 : J] gamma;
+	vector<lower=0>[model_num == 2 ? 0 : J] gamma;
 	vector<lower=0, upper=1>[A] alpha;
 	vector<lower=0>[fixed_scale == 0 ? 1 : 0] scale;
 }
@@ -71,16 +71,16 @@ transformed parameters {
 	real scale_full;
 	scale_full = fixed_scale == 0 ? scale[1] : 1.0;
 
-	if (model_type == 1)
+	if (model_num == 1)
 	  alpha_full = append_row(alpha, rep_vector(0, J));
-	else if (model_type == 2)
+	else if (model_num == 2)
 	  alpha_full = alpha;
-	else if (model_type == 3)
+	else if (model_num == 3)
 	  alpha_full = rep_vector(alpha[1], G);
 	else
 	  alpha_full = rep_vector(1e-06, G);
 
-	if (model_type == 2)
+	if (model_num == 2)
 	  gamma_full = append_row(0, rep_vector(1, J));
 	else
 	  gamma_full = append_row(0, gamma);

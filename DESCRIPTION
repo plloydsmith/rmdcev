@@ -1,7 +1,7 @@
 Package: rmdcev
 Type: Package
 Title: An implementation of the Multiple-Discrete Continuous Extreme Value Model
-Version: 0.1.0
+Version: 0.2.0
 Authors@R: 
     person(given = "Patrick",
            family = "Lloyd-Smith",
@@ -16,17 +16,17 @@ Description: The rmdcev R package estimates different multiple discrete-continuo
 	supports Phaneuf and von Haefen's Kuhn-Tucker model specification.
 License: GPL (>=3)
 Depends: 
-    R (>= 3.4.0),
+    R (>= 3.4.0)
+Imports: 
+    rstan (>= 2.18.2),
     Rcpp (>= 1.0.0),
+    rstantools (>= 1.5.1),
     methods,
     dplyr (>= 0.7.8),
     stringr,
     furrr (>= 0.1.0),
     purrr,
     testthat
-Imports: 
-    rstan (>= 2.18.2),
-    rstantools (>= 1.5.1)
 LinkingTo: 
     BH (>= 1.66.0-1),
     Rcpp (>= 1.0.0),

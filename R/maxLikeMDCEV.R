@@ -1,17 +1,18 @@
 #' @title maxlikeMDCEV
 #' @description Fit a MDCEV model with MLE
-maxlikeMDCEV <- function(dat, initial.parameters = NULL,
+maxlikeMDCEV <- function(data, initial.parameters = NULL,
 						 seed,
 						 model_options)
 {
 	stan.model <- stanmodels$mdcev
 
-	if (is.null(initial.parameters))
-		stan_fit <- optimizing(stan.model, data = dat, as_vector = FALSE,
+	if (is.null(initial.parameters)){
+		stan_fit <- optimizing(stan.model, data = data, as_vector = FALSE,
 							   draws = model_options$n_draws, hessian = model_options$hessian)
-	else
-		stan_fit <- optimizing(stan.model, data = dat, as_vector = FALSE, init = initial.parameters,
+	} else {
+		stan_fit <- optimizing(stan.model, data = data, as_vector = FALSE, init = initial.parameters,
 						   draws = model_options$n_draws, hessian = model_options$hessian)
+	}
 
 	result <- list()
 
@@ -19,9 +20,9 @@ maxlikeMDCEV <- function(dat, initial.parameters = NULL,
 		stan_fit <- ReduceStanFitSize(stan_fit)
 
 	result$stan_fit <- stan_fit
-	n_parameters <- dat$n_parameters
+	n_parameters <- data$n_parameters
 	result$log.likelihood <- stan_fit[["par"]][["sum_log_lik"]]
-	result$effective.sample.size <- ess <- sum(dat$weights)
+	result$effective.sample.size <- ess <- sum(data$weights)
 #	n_parameters <- n_classes * n_parameters + n_classes - 1
 	result$bic <- -2 * result$log.likelihood + log(ess) * n_parameters
 	stan_fit <- result$stan_fit
@@ -38,31 +39,31 @@ maxlikeMDCEV <- function(dat, initial.parameters = NULL,
 		init.psi <- init.par$psi
 
 		# add shift to psi values values
-		init.shift <- seq(-0.02, 0.02, length.out = dat$NPsi)
-		for (i in 1:dat$NPsi) {
+		init.shift <- seq(-0.02, 0.02, length.out = data$NPsi)
+		for (i in 1:data$NPsi) {
 			init.psi[i] <- init.psi[i] + init.shift[i]
 		}
 
-		init.psi <- matrix(init.psi, nrow=dat$K,  ncol=length(init.psi), byrow=TRUE)
+		init.psi <- matrix(init.psi, nrow=data$K,  ncol=length(init.psi), byrow=TRUE)
 
 		init = list(psi = init.psi)
 
-		if (dat$fixed_scale == 0)
-			init$scale <- rep(stan_fit$par[["scale"]], dat$K)
+		if (data$fixed_scale == 0)
+			init$scale <- rep(stan_fit$par[["scale"]], data$K)
 
-		if (dat$model_type == 1 || dat$model_type == 3){
-			init$alpha <- matrix(rep(init.par$alpha, dat$K), nrow=dat$K, ncol=1)
-			init$gamma <- matrix(rep(init.par$gamma, dat$K), nrow=dat$K, ncol=1)
-		} else if (dat$model_type == 2){
-			init$alpha <- matrix(rep(init.par$alpha, dat$K), nrow=dat$K, ncol=dat$J)
-		} else if (dat$model_type == 4){
-#			init$alpha <- matrix(rep(0, dat$K), nrow=dat$K, ncol=0)
+		if (data$model_num == 1 || data$model_num == 3){
+			init$alpha <- matrix(rep(init.par$alpha, data$K), nrow=data$K, ncol=1)
+			init$gamma <- matrix(rep(init.par$gamma, data$K), nrow=data$K, ncol=data$J)
+		} else if (data$model_num == 2){
+			init$alpha <- matrix(rep(init.par$alpha, data$K), nrow=data$K, ncol=data$J)
+		} else if (data$model_num == 4){
+#			init$alpha <- matrix(rep(0, data$K), nrow=data$K, ncol=0)
 			init$gamma <- init.par$gamma
 		}
 
 		stan.model <- stanmodels$mdcev_lc
 
-		stan_fit <- optimizing(stan.model, data = dat, as_vector = FALSE, init = init,
+		stan_fit <- optimizing(stan.model, data = data, as_vector = FALSE, init = init,
 							   draws = model_options$n_draws, hessian = model_options$hessian)
 
 		if (model_options$keep_loglik == 0)
@@ -71,15 +72,15 @@ maxlikeMDCEV <- function(dat, initial.parameters = NULL,
 		result$stan_fit <- stan_fit
 		n_parameters <- ncol(stan_fit[["hessian"]])
 		result$log.likelihood <- stan_fit[["par"]][["sum_log_lik"]]
-		result$effective.sample.size <- ess <- sum(dat$weights)
+		result$effective.sample.size <- ess <- sum(data$weights)
 		result$bic <- -2 * result$log.likelihood + log(ess) * n_parameters
-		class_probabilities <- exp(tbl_df(t(stan_fit$par["theta"]$theta)))
-		colnames(class_probabilities) = gsub("V", "class", colnames(class_probabilities))
+		class_probabilities <- exp(t(stan_fit[["par"]][["theta"]]))
+		colnames(class_probabilities) <- paste0("class", c(1:model_options$n_classes))
 		result$class_probabilities <- class_probabilities
 	}
 
 #	result$class.parameters <- pars$class.parameters
-#	result$coef <- createCoefOutput(pars, dat$par.names, dat$all.names)
+#	result$coef <- createCoefOutput(pars, data$par.names, data$all.names)
 #	result$lca.data <- lca.data
 	result
 }

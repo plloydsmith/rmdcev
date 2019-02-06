@@ -1,5 +1,5 @@
 context("First test")
-
+Sys.setenv("R_TESTS" = "")
 #data(eggs, package = "rmdcev")
 
 test_that("basic test", {

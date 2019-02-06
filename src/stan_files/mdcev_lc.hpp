@@ -51,11 +51,11 @@ private:
     matrix_d dat_psi;
     matrix_d j_price;
     matrix_d j_quant;
-    vector<vector_d> dat_class;
+    vector<vector_d> data_class;
     vector_d income;
     vector_d num_price;
     vector_d M_factorial;
-    int model_type;
+    int model_num;
     int fixed_scale;
     int trunc_data;
     int print_ll;
@@ -186,19 +186,19 @@ public:
                 }
             }
             current_statement_begin__ = 11;
-            validate_non_negative_index("dat_class", "I", I);
-            validate_non_negative_index("dat_class", "L", L);
-            context__.validate_dims("data initialization", "dat_class", "vector_d", context__.to_vec(I,L));
-            validate_non_negative_index("dat_class", "I", I);
-            validate_non_negative_index("dat_class", "L", L);
-            dat_class = std::vector<vector_d>(I,vector_d(static_cast<Eigen::VectorXd::Index>(L)));
-            vals_r__ = context__.vals_r("dat_class");
+            validate_non_negative_index("data_class", "I", I);
+            validate_non_negative_index("data_class", "L", L);
+            context__.validate_dims("data initialization", "data_class", "vector_d", context__.to_vec(I,L));
+            validate_non_negative_index("data_class", "I", I);
+            validate_non_negative_index("data_class", "L", L);
+            data_class = std::vector<vector_d>(I,vector_d(static_cast<Eigen::VectorXd::Index>(L)));
+            vals_r__ = context__.vals_r("data_class");
             pos__ = 0;
-            size_t dat_class_i_vec_lim__ = L;
-            for (size_t i_vec__ = 0; i_vec__ < dat_class_i_vec_lim__; ++i_vec__) {
-                size_t dat_class_limit_0__ = I;
-                for (size_t i_0__ = 0; i_0__ < dat_class_limit_0__; ++i_0__) {
-                    dat_class[i_0__][i_vec__] = vals_r__[pos__++];
+            size_t data_class_i_vec_lim__ = L;
+            for (size_t i_vec__ = 0; i_vec__ < data_class_i_vec_lim__; ++i_vec__) {
+                size_t data_class_limit_0__ = I;
+                for (size_t i_0__ = 0; i_0__ < data_class_limit_0__; ++i_0__) {
+                    data_class[i_0__][i_vec__] = vals_r__[pos__++];
             }
             }
             current_statement_begin__ = 12;
@@ -235,11 +235,11 @@ public:
                 M_factorial[i_vec__] = vals_r__[pos__++];
             }
             current_statement_begin__ = 15;
-            context__.validate_dims("data initialization", "model_type", "int", context__.to_vec());
-            model_type = int(0);
-            vals_i__ = context__.vals_i("model_type");
+            context__.validate_dims("data initialization", "model_num", "int", context__.to_vec());
+            model_num = int(0);
+            vals_i__ = context__.vals_i("model_num");
             pos__ = 0;
-            model_type = vals_i__[pos__++];
+            model_num = vals_i__[pos__++];
             current_statement_begin__ = 16;
             context__.validate_dims("data initialization", "fixed_scale", "int", context__.to_vec());
             fixed_scale = int(0);
@@ -284,8 +284,8 @@ public:
             current_statement_begin__ = 13;
             current_statement_begin__ = 14;
             current_statement_begin__ = 15;
-            check_greater_or_equal(function__,"model_type",model_type,1);
-            check_less_or_equal(function__,"model_type",model_type,4);
+            check_greater_or_equal(function__,"model_num",model_num,1);
+            check_less_or_equal(function__,"model_num",model_num,4);
             current_statement_begin__ = 16;
             check_greater_or_equal(function__,"fixed_scale",fixed_scale,0);
             check_less_or_equal(function__,"fixed_scale",fixed_scale,1);
@@ -378,13 +378,13 @@ public:
             current_statement_begin__ = 44;
             stan::math::assign(quant_full, append_col(num_quant,j_quant));
             current_statement_begin__ = 46;
-            if (as_bool((primitive_value(logical_eq(model_type,1)) || primitive_value(logical_eq(model_type,3))))) {
+            if (as_bool((primitive_value(logical_eq(model_num,1)) || primitive_value(logical_eq(model_num,3))))) {
                 current_statement_begin__ = 47;
                 stan::math::assign(A, 1);
-            } else if (as_bool(logical_eq(model_type,2))) {
+            } else if (as_bool(logical_eq(model_num,2))) {
                 current_statement_begin__ = 49;
                 stan::math::assign(A, G);
-            } else if (as_bool(logical_eq(model_type,4))) {
+            } else if (as_bool(logical_eq(model_num,4))) {
                 current_statement_begin__ = 51;
                 stan::math::assign(A, 0);
             }
@@ -410,9 +410,9 @@ public:
             validate_non_negative_index("psi", "K", K);
             num_params_r__ += NPsi * K;
             current_statement_begin__ = 56;
-            validate_non_negative_index("gamma", "(logical_eq(model_type,2) ? 0 : J )", (logical_eq(model_type,2) ? 0 : J ));
+            validate_non_negative_index("gamma", "(logical_eq(model_num,2) ? 0 : J )", (logical_eq(model_num,2) ? 0 : J ));
             validate_non_negative_index("gamma", "K", K);
-            num_params_r__ += (logical_eq(model_type,2) ? 0 : J ) * K;
+            num_params_r__ += (logical_eq(model_num,2) ? 0 : J ) * K;
             current_statement_begin__ = 57;
             validate_non_negative_index("alpha", "A", A);
             validate_non_negative_index("alpha", "K", K);
@@ -467,10 +467,10 @@ public:
         vals_r__ = context__.vals_r("gamma");
         pos__ = 0U;
         validate_non_negative_index("gamma", "K", K);
-        validate_non_negative_index("gamma", "(logical_eq(model_type,2) ? 0 : J )", (logical_eq(model_type,2) ? 0 : J ));
-        context__.validate_dims("initialization", "gamma", "vector_d", context__.to_vec(K,(logical_eq(model_type,2) ? 0 : J )));
-        std::vector<vector_d> gamma(K,vector_d(static_cast<Eigen::VectorXd::Index>((logical_eq(model_type,2) ? 0 : J ))));
-        for (int j1__ = 0U; j1__ < (logical_eq(model_type,2) ? 0 : J ); ++j1__)
+        validate_non_negative_index("gamma", "(logical_eq(model_num,2) ? 0 : J )", (logical_eq(model_num,2) ? 0 : J ));
+        context__.validate_dims("initialization", "gamma", "vector_d", context__.to_vec(K,(logical_eq(model_num,2) ? 0 : J )));
+        std::vector<vector_d> gamma(K,vector_d(static_cast<Eigen::VectorXd::Index>((logical_eq(model_num,2) ? 0 : J ))));
+        for (int j1__ = 0U; j1__ < (logical_eq(model_num,2) ? 0 : J ); ++j1__)
             for (int i0__ = 0U; i0__ < K; ++i0__)
                 gamma[i0__](j1__) = vals_r__[pos__++];
         for (int i0__ = 0U; i0__ < K; ++i0__)
@@ -578,9 +578,9 @@ public:
             gamma.reserve(dim_gamma_0__);
             for (size_t k_0__ = 0; k_0__ < dim_gamma_0__; ++k_0__) {
                 if (jacobian__)
-                    gamma.push_back(in__.vector_lb_constrain(0,(logical_eq(model_type,2) ? 0 : J ),lp__));
+                    gamma.push_back(in__.vector_lb_constrain(0,(logical_eq(model_num,2) ? 0 : J ),lp__));
                 else
-                    gamma.push_back(in__.vector_lb_constrain(0,(logical_eq(model_type,2) ? 0 : J )));
+                    gamma.push_back(in__.vector_lb_constrain(0,(logical_eq(model_num,2) ? 0 : J )));
             }
 
             vector<Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,1> > alpha;
@@ -714,13 +714,13 @@ public:
                 current_statement_begin__ = 79;
                 stan::math::assign(scale_full, (logical_eq(fixed_scale,0) ? stan::math::promote_scalar<local_scalar_t__>(get_base1(scale,k,"scale",1)) : stan::math::promote_scalar<local_scalar_t__>(1.0) ));
                 current_statement_begin__ = 81;
-                if (as_bool(logical_eq(model_type,1))) {
+                if (as_bool(logical_eq(model_num,1))) {
                     current_statement_begin__ = 82;
                     stan::math::assign(alpha_full, append_row(get_base1(alpha,k,"alpha",1),rep_vector(0,J)));
-                } else if (as_bool(logical_eq(model_type,2))) {
+                } else if (as_bool(logical_eq(model_num,2))) {
                     current_statement_begin__ = 84;
                     stan::math::assign(alpha_full, get_base1(alpha,k,"alpha",1));
-                } else if (as_bool(logical_eq(model_type,3))) {
+                } else if (as_bool(logical_eq(model_num,3))) {
                     current_statement_begin__ = 86;
                     stan::math::assign(alpha_full, rep_vector(get_base1(get_base1(alpha,k,"alpha",1),1,"alpha",2),G));
                 } else {
@@ -728,7 +728,7 @@ public:
                     stan::math::assign(alpha_full, rep_vector(9.9999999999999995e-007,G));
                 }
                 current_statement_begin__ = 90;
-                if (as_bool(logical_eq(model_type,2))) {
+                if (as_bool(logical_eq(model_num,2))) {
                     current_statement_begin__ = 91;
                     stan::math::assign(gamma_full, append_row(0,rep_vector(1,J)));
                 } else {
@@ -834,7 +834,7 @@ public:
 
                 stan::math::initialize(ltheta, DUMMY_VAR__);
                 stan::math::fill(ltheta,DUMMY_VAR__);
-                stan::math::assign(ltheta,log_softmax(append_row(0,multiply(beta_m,get_base1(dat_class,i,"dat_class",1)))));
+                stan::math::assign(ltheta,log_softmax(append_row(0,multiply(beta_m,get_base1(data_class,i,"data_class",1)))));
                 current_statement_begin__ = 133;
                 validate_non_negative_index("lps", "K", K);
                 Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,1>  lps(static_cast<Eigen::VectorXd::Index>(K));
@@ -949,7 +949,7 @@ public:
         dimss__.push_back(dims__);
         dims__.resize(0);
         dims__.push_back(K);
-        dims__.push_back((logical_eq(model_type,2) ? 0 : J ));
+        dims__.push_back((logical_eq(model_num,2) ? 0 : J ));
         dimss__.push_back(dims__);
         dims__.resize(0);
         dims__.push_back(K);
@@ -1000,7 +1000,7 @@ public:
         vector<vector_d> gamma;
         size_t dim_gamma_0__ = K;
         for (size_t k_0__ = 0; k_0__ < dim_gamma_0__; ++k_0__) {
-            gamma.push_back(in__.vector_lb_constrain(0,(logical_eq(model_type,2) ? 0 : J )));
+            gamma.push_back(in__.vector_lb_constrain(0,(logical_eq(model_num,2) ? 0 : J )));
         }
         vector<vector_d> alpha;
         size_t dim_alpha_0__ = K;
@@ -1014,7 +1014,7 @@ public:
                 vars__.push_back(psi[k_0__][k_1__]);
                 }
             }
-            for (int k_1__ = 0; k_1__ < (logical_eq(model_type,2) ? 0 : J ); ++k_1__) {
+            for (int k_1__ = 0; k_1__ < (logical_eq(model_num,2) ? 0 : J ); ++k_1__) {
                 for (int k_0__ = 0; k_0__ < K; ++k_0__) {
                 vars__.push_back(gamma[k_0__][k_1__]);
                 }
@@ -1147,13 +1147,13 @@ public:
                 current_statement_begin__ = 79;
                 stan::math::assign(scale_full, (logical_eq(fixed_scale,0) ? stan::math::promote_scalar<local_scalar_t__>(get_base1(scale,k,"scale",1)) : stan::math::promote_scalar<local_scalar_t__>(1.0) ));
                 current_statement_begin__ = 81;
-                if (as_bool(logical_eq(model_type,1))) {
+                if (as_bool(logical_eq(model_num,1))) {
                     current_statement_begin__ = 82;
                     stan::math::assign(alpha_full, append_row(get_base1(alpha,k,"alpha",1),rep_vector(0,J)));
-                } else if (as_bool(logical_eq(model_type,2))) {
+                } else if (as_bool(logical_eq(model_num,2))) {
                     current_statement_begin__ = 84;
                     stan::math::assign(alpha_full, get_base1(alpha,k,"alpha",1));
-                } else if (as_bool(logical_eq(model_type,3))) {
+                } else if (as_bool(logical_eq(model_num,3))) {
                     current_statement_begin__ = 86;
                     stan::math::assign(alpha_full, rep_vector(get_base1(get_base1(alpha,k,"alpha",1),1,"alpha",2),G));
                 } else {
@@ -1161,7 +1161,7 @@ public:
                     stan::math::assign(alpha_full, rep_vector(9.9999999999999995e-007,G));
                 }
                 current_statement_begin__ = 90;
-                if (as_bool(logical_eq(model_type,2))) {
+                if (as_bool(logical_eq(model_num,2))) {
                     current_statement_begin__ = 91;
                     stan::math::assign(gamma_full, append_row(0,rep_vector(1,J)));
                 } else {
@@ -1267,7 +1267,7 @@ public:
 
                 stan::math::initialize(ltheta, DUMMY_VAR__);
                 stan::math::fill(ltheta,DUMMY_VAR__);
-                stan::math::assign(ltheta,log_softmax(append_row(0,multiply(beta_m,get_base1(dat_class,i,"dat_class",1)))));
+                stan::math::assign(ltheta,log_softmax(append_row(0,multiply(beta_m,get_base1(data_class,i,"data_class",1)))));
                 current_statement_begin__ = 133;
                 validate_non_negative_index("lps", "K", K);
                 Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,1>  lps(static_cast<Eigen::VectorXd::Index>(K));
@@ -1336,7 +1336,7 @@ public:
 
                 stan::math::initialize(theta1, DUMMY_VAR__);
                 stan::math::fill(theta1,DUMMY_VAR__);
-                stan::math::assign(theta1,log_softmax(append_row(0,multiply(beta_m,get_base1(dat_class,i,"dat_class",1)))));
+                stan::math::assign(theta1,log_softmax(append_row(0,multiply(beta_m,get_base1(data_class,i,"data_class",1)))));
 
 
                 current_statement_begin__ = 159;
@@ -1415,7 +1415,7 @@ public:
                 param_names__.push_back(param_name_stream__.str());
             }
         }
-        for (int k_1__ = 1; k_1__ <= (logical_eq(model_type,2) ? 0 : J ); ++k_1__) {
+        for (int k_1__ = 1; k_1__ <= (logical_eq(model_num,2) ? 0 : J ); ++k_1__) {
             for (int k_0__ = 1; k_0__ <= K; ++k_0__) {
                 param_name_stream__.str(std::string());
                 param_name_stream__ << "gamma" << '.' << k_0__ << '.' << k_1__;
@@ -1485,7 +1485,7 @@ public:
                 param_names__.push_back(param_name_stream__.str());
             }
         }
-        for (int k_1__ = 1; k_1__ <= (logical_eq(model_type,2) ? 0 : J ); ++k_1__) {
+        for (int k_1__ = 1; k_1__ <= (logical_eq(model_num,2) ? 0 : J ); ++k_1__) {
             for (int k_0__ = 1; k_0__ <= K; ++k_0__) {
                 param_name_stream__.str(std::string());
                 param_name_stream__ << "gamma" << '.' << k_0__ << '.' << k_1__;

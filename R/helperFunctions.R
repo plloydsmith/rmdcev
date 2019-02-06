@@ -4,7 +4,6 @@
 #' @export
 #'
 CreateListsRow <- function(x){
-	#
 	out <- lapply(seq_len(nrow(x)), function(i) x[i,])
 	return(out)
 }
@@ -13,7 +12,6 @@ CreateListsRow <- function(x){
 #' @description Convert matrix x to a list with each row as an element
 #' @export
 CreateListsCol <- function(x){
-	#
 	out <- lapply(seq_len(ncol(x)), function(i) x[,i])
 	return(out)
 }
@@ -22,9 +20,6 @@ CreateListsCol <- function(x){
 #' @description Convert list to matrix by row
 #' @export
 MultiplyMatrix <- function(mat_temp, x, nrows){
-	# m - matrix
-	# x - vector
-	# nrows - number of rows in m
 	out <- matrix(mat_temp %*% x , nrow = nrows, byrow = TRUE)
 	return(out)
 }

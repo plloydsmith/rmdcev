@@ -1,44 +1,76 @@
-PrepareSimulationData <- function(stan_est, policies, nsims){
+PrepareSimulationData <- function(est_sim, stan_est, policies, nsims){
 
-	price_p_list <- policies$price_p
+	gamma_sim <- est_sim %>%
+		filter(str_detect(parms, "gamma")) %>%
+		spread(sim_id, value) %>%
+		select(-parms) %>%
+		as.matrix(.) %>%
+		t(.)
 
-	###########################################################################
-	# Get parameter estimates in matrix form
-	###########################################################################
-	est_pars <- tbl_df(stan_est[["stan_fit"]][["theta_tilde"]]) %>%
-		select(-starts_with("log_like"), -starts_with("sum_log_lik")) %>%
-		rowid_to_column("sim_id") %>%
-		gather(parms, value, -sim_id, factor_key=TRUE)
+	if (stan_est$stan_data$model_num != 4){
+		alpha_sim <- est_sim %>%
+			filter(str_detect(parms, "alpha")) %>%
+			spread(sim_id, value) %>%
+			select(-parms) %>%
+			as.matrix(.) %>%
+			t(.)
+		if (stan_est$stan_data$model_num == 1){
+			alpha_sim <- cbind(alpha_sim, matrix(0, nsims, stan_est$stan_data$J) )
+		} else if (stan_est$stan_data$model_num == 3)
+			alpha_sim <- matrix(rep(alpha_sim,each=stan_est$stan_data$J+1), ncol=stan_est$stan_data$J+1, byrow=TRUE)
 
-	# Sample from draws
-	est_sim <- stan_est$est_pars %>%
-		distinct(sim_id) %>%
-		sample_n(., nsims ) %>%
-		left_join(est_pars, by = "sim_id")
+	} else if (stan_est$stan_data$model_num ==4)
+		alpha_sim = matrix(1e-6, nsims, stan_est$stan_data$J+1)
 
-	#est_sim <- est_sim %>%
-	#	filter(sim_id != 30)
+	if (stan_est$stan_data$fixed_scale == 0){
+		scale_sim <- est_sim %>%
+			filter(str_detect(parms, "scale")) %>%
+			spread(sim_id, value) %>%
+			select(-parms) %>%
+			as.matrix(.) %>%
+			t(.)
+	} else if (stan_est$stan_data$fixed_scale == 1){
+		scale_sim = matrix(1, nsims, 1)
+	}
 
-	#nsims = nsims - 1
-	parms_sim <- CreateSimulationData(est_sim, nsims, npols, stan_est$stan_data, policies$dat_psi)
+	psi_temp <- est_sim %>%
+		filter(str_detect(parms, "psi")) %>%
+		spread(sim_id, value) %>%
+		select(-parms) %>%
+		as.matrix(.)
+
+	npols <- length(policies$price_p)
+
+	psi_temp <- CreateListsCol(psi_temp)
+	psi_sim <- map(psi_temp, MultiplyMatrix, mat_temp = stan_est$stan_data$dat_psi, nrows = stan_est$stan_data$I)
+
+	psi_sim <- DoCbind(psi_sim)
+	psi_sim <- CreateListsRow(psi_sim)
+	psi_sim <- map(psi_sim, function(x){matrix(x , nrow = nsims, byrow = TRUE)})
+
+	psi_p_sim <- map(psi_temp, function(psi){ map(policies[["dat_psi_p"]], MultiplyMatrix, x = psi, nrows = stan_est$stan_data$I)})
+	psi_p_sim <- map(psi_p_sim, DoCbind)
+	psi_p_sim <- DoCbind(psi_p_sim)
+	psi_p_sim <- CreateListsRow(psi_p_sim)
+	psi_p_sim <- map(psi_p_sim, function(x){aperm(array(x, dim = c(stan_est$stan_data$J, npols, nsims)), perm=c(2,1,3))})
+
+	# Ensure psi_p_sim is a list of J lists each with nsims lists of npol X ngood matrices
+	psi_p_sim <- map(psi_p_sim, function(x){lapply(seq_len(nsims), function(i) x[,,i])})
+
 
 	# Put in a list for each simulation
-	gamma_sim_list <- CreateListsRow(parms_sim[["gamma_sim"]]) # ngoods length
+	gamma_sim_list <- CreateListsRow(gamma_sim)
+	alpha_sim_list <- CreateListsRow(alpha_sim)
+	scale_sim <- scale_sim
 
-	alpha_sim_list <- CreateListsRow(parms_sim[["alpha_sim"]]) # ngoods+1 length
-	#alpha_sim <- matrix(0.000001, nsims, ngoods+1)
-	scale_sim <- parms_sim[["scale_sim"]]
-
-	psi_sim <- list(parms_sim[["psi_sim"]])
+	psi_sim <- list(psi_sim)
 	names(psi_sim) <- "psi_sim"
 
-	psi_p_sim <- list(parms_sim[["psi_p_sim"]])
+	psi_p_sim <- list(psi_p_sim)
 	names(psi_p_sim) <- "psi_p_sim"
 
 	###########################################################################
 	# Set baseline data into lists
-	###########################################################################
-
 	inc <- list(as.list(stan_est$stan_data$inc))
 	names(inc) <- "inc"
 
@@ -51,15 +83,13 @@ PrepareSimulationData <- function(stan_est, policies, nsims){
 
 	###########################################################################
 	# Pull individual level data into one list
-	###########################################################################
-
 	df_indiv <- c(inc, quant_j, price, psi_sim, psi_p_sim)
 
 	out <- list(df_indiv = df_indiv,
-				price_p_list = price_p_list,
+				price_p_list = policies$price_p,
 				gamma_sim_list = gamma_sim_list,
 				alpha_sim_list = alpha_sim_list,
 				scale_sim = scale_sim)
-
 	return(out)
 }
+

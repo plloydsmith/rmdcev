@@ -136,8 +136,8 @@ vector MarshallianDemand(real inc, vector price, vector MUzero, vector gamma, ve
 		real lambda_l;
 		real lambda_u;
 		vector[ngoods+1] c;
-		vector[ngoods+1] b = col(parm_matrix, 4);
-		b = inv(append_row(b[1], b[2:ngoods+1]) - 1);
+		vector[ngoods+1] b_temp = col(parm_matrix, 4);
+		vector[ngoods+1] b = inv(append_row(b_temp[1], b_temp[2:ngoods+1]) - 1);
 
 		for (j in 1:ngoods+1)
 			c[j] = mu[j] ^ b[j];
@@ -148,17 +148,25 @@ vector MarshallianDemand(real inc, vector price, vector MUzero, vector gamma, ve
 			E = ComputeE(M, lambda, g_price, b, c, d);			// Calculate E
 
 			if (E >= inc || M+1 == ngoods+1){
-				M = E < inc ? M + 1 : M;
+				if(E < inc)
+					M += 1;
+//				M = E < inc ? M + 1 : M;
 				lambda_l = E < inc ? 0 : lambda;
 				lambda_u = mu[M];
 				lambda = (lambda_l + lambda_u) / 2;
 
 				for (n in 1:max_loop){
+					real lambda_mid = (lambda_l + lambda_u) / 2;
+
 					E = ComputeE(M, lambda, g_price, b, c, d);
 
 					// Update lambdas's
-					lambda_u = E > inc ? lambda_u : (lambda_l + lambda_u) / 2;
-					lambda_l = E < inc ? lambda_l : (lambda_l + lambda_u) / 2;
+					if (E < inc)
+						lambda_u = lambda_mid;
+					else if (E > inc)
+						lambda_l = lambda_mid;
+//					lambda_u = E > inc ? lambda_u : (lambda_l + lambda_u) / 2;
+//					lambda_l = E < inc ? lambda_l : (lambda_l + lambda_u) / 2;
 					lambda = (lambda_l + lambda_u) / 2;
 
 					if (fabs(E - inc) < tol_e) break;
@@ -184,7 +192,7 @@ return(mdemand);
  */
 real ComputeUtilJ(real inc, vector quant_j, vector price_j,
 					vector psi_j, vector gamma_j, vector alpha,
-					int ngoods, int model_type) {
+					int ngoods, int model_num) {
 
 	real output;
 	real util_num; // numeraire
@@ -192,9 +200,9 @@ real ComputeUtilJ(real inc, vector quant_j, vector price_j,
 
 	util_num = 1 / alpha[1] * pow(inc -  price_j' * quant_j, alpha[1]);
 
-	if (model_type == 1){
+	if (model_num == 1){
 		util_j = psi_j .* gamma_j .* log(quant_j ./ gamma_j + 1);
-	} else if (model_type != 1){
+	} else if (model_num != 1){
 		for (n in 1:ngoods)
 			util_j[n] = (psi_j[n] * gamma_j[n]) / alpha[n+1] *
 			(pow(quant_j[n] / gamma_j[n] + 1, alpha[n+1]) - 1);
@@ -208,15 +216,15 @@ return(output);
  * @return utility value
  */
 real ComputeUtilM(int M, real lambda1, vector g_psi_a, vector a_a_1, vector mu_a_a_1,
-					vector psi, vector g, vector price, vector d, int model_type){
+					vector psi, vector g, vector price, vector d, int model_num){
 	real output;
 	vector[M] temp;
 	temp[1] = g_psi_a[1] * (pow(lambda1, a_a_1[1]) * mu_a_a_1[1] - d[1]); // compute numeraire util
 	if (M > 1){
 		for (m in 2:M){
-			if (model_type == 1)
+			if (model_num == 1)
 				temp[m] = psi[m] * g[m] * log(psi[m] / (lambda1 * price[m]));
-			 else if (model_type != 1)
+			 else if (model_num != 1)
 			 	temp[m] = g_psi_a[m] * (pow(lambda1, a_a_1[m]) * mu_a_a_1[m] - d[m]);
 		}
 	}
@@ -229,7 +237,7 @@ return(output);
  */
 vector HicksianDemand(real util, vector price,
 				vector MUzero, vector gamma, vector alpha,
-				int ngoods, int algo_gen, int model_type) {
+				int ngoods, int algo_gen, int model_num) {
 
 	vector[ngoods+1] hdemand;
 	int M = 1; // Indicator of which ordered alteratives (<=M) are being considered
@@ -296,20 +304,26 @@ vector HicksianDemand(real util, vector price,
 			lambda1 = mu[M + 1];// Calculate lambda1 equal to MUzero(M+1)
 
 			// Calculate new utility
-			util_new = ComputeUtilM(M, lambda1, g_psi_a, a_a_1, mu_a_a_1, psi, g, price_ord, d, model_type);
+			util_new = ComputeUtilM(M, lambda1, g_psi_a, a_a_1, mu_a_a_1, psi, g, price_ord, d, model_num);
 
 			if (util_new >= util || M+1 == ngoods+1){
-				M = util_new < util ? M + 1 : M;
+				if(util_new < util)
+					M += 1;
 				lambda_l = util_new < util ? 0 : lambda1;
 				lambda_u = mu[M];
 				lambda1 = (lambda_l + lambda_u) / 2;
 
 				for (n in 1:max_loop){
-					util_new = ComputeUtilM(M, lambda1, g_psi_a, a_a_1, mu_a_a_1, psi, g, price_ord, d, model_type);
+					real lambda_mid = (lambda_l + lambda_u) / 2;
+
+					util_new = ComputeUtilM(M, lambda1, g_psi_a, a_a_1, mu_a_a_1, psi, g, price_ord, d, model_num);
 
 					// Update lambdas's
-					lambda_u = util_new > util ? lambda_u : (lambda_l + lambda_u) / 2;
-					lambda_l = util_new < util ? lambda_l : (lambda_l + lambda_u) / 2;
+					if (util_new < util)
+						lambda_u = lambda_mid;
+					else if (util_new > util)
+						lambda_l = lambda_mid;
+
 					lambda1 = (lambda_l + lambda_u) / 2;
 
 					if (fabs((lambda_l - lambda_u) / (lambda_l + lambda_u) * 0.5) < tol_l) break;
@@ -334,7 +348,7 @@ return(hdemand);
 matrix CalchdemandTest_rng(real inc, vector quant_j, vector price,
 						vector price_p, vector psi_p_sims,
 						vector psi_sims, vector gamma_sims, vector alpha_sims, real scale_sims,
-						int nerrs, int cond_error, int algo_gen, int model_type){
+						int nerrs, int cond_error, int algo_gen, int model_num){
 
 	int ngoods = num_elements(quant_j);
 	int nsims = 1;
@@ -368,10 +382,10 @@ matrix CalchdemandTest_rng(real inc, vector quant_j, vector price,
 
 			util = ComputeUtilJ(inc, quant_j, price[2:ngoods+1],
 									psi_b_err[2:ngoods+1], gamma[2:ngoods+1], alpha,
-									ngoods, model_type);
+									ngoods, model_num);
 
 			hdemand[err] = HicksianDemand(util, price_p_policy, MUzero_p, gamma, alpha,
-										ngoods, algo_gen, model_type)';
+										ngoods, algo_gen, model_num)';
 		}
 		hdemand_trans = hdemand';
 
@@ -491,7 +505,7 @@ return(mdemand_out);
 matrix CalcWTP_rng(real inc, vector quant_j, vector price,
 						vector[] price_p_policy, matrix[] psi_p_sims,
 						matrix psi_sims, vector[] gamma_sims, vector[] alpha_sims, vector scale_sims,
-						int nerrs, int cond_error, int algo_gen, int model_type){
+						int nerrs, int cond_error, int algo_gen, int model_num){
 
 	int ngoods = num_elements(quant_j);
 	int nsims = num_elements(scale_sims);
@@ -531,7 +545,7 @@ matrix CalcWTP_rng(real inc, vector quant_j, vector price,
 
 			util[err] = ComputeUtilJ(inc, mdemand[2:ngoods+1], price[2:ngoods+1],
 									psi_b_err[2:ngoods+1], gamma[2:ngoods+1], alpha,
-									ngoods, model_type); // add err to psi_b if no psi_p
+									ngoods, model_num); // add err to psi_b if no psi_p
 		}
 
 		for (policy in 1:npols){
@@ -545,7 +559,7 @@ matrix CalcWTP_rng(real inc, vector quant_j, vector price,
 				vector[ngoods + 1] hdemand;
 
 				hdemand = HicksianDemand(util[err], price_p, MUzero_p, gamma, alpha,
-										ngoods, algo_gen, model_type);
+										ngoods, algo_gen, model_num);
 
 				wtp_err[err] = inc - price_p' * hdemand;
 			}
@@ -559,7 +573,7 @@ return(wtp);
 vector CalcWTPOneP_rng(real inc, vector quant_j, vector price,
 						vector price_p_policy, vector psi_p_sims,
 						vector psi_sims, vector gamma_sims, vector alpha_sims, real scale_sims,
-						int nerrs, int cond_error, int algo_gen, int model_type){
+						int nerrs, int cond_error, int algo_gen, int model_num){
 
 	int ngoods = num_elements(quant_j);
 	int nsims = 1;
@@ -601,10 +615,10 @@ vector CalcWTPOneP_rng(real inc, vector quant_j, vector price,
 
 			util[err] = ComputeUtilJ(inc, mdemand[2:ngoods+1], price[2:ngoods+1],
 									psi_b_err[2:ngoods+1], gamma[2:ngoods+1], alpha,
-									ngoods, model_type); // add err to psi_b if no psi_p
+									ngoods, model_num); // add err to psi_b if no psi_p
 
 			hdemand = HicksianDemand(util[err], price_p, MUzero_p, gamma, alpha,
-									ngoods, algo_gen, model_type);
+									ngoods, algo_gen, model_num);
 
 			wtp_err[err] = inc - price_p' * hdemand;
 		}

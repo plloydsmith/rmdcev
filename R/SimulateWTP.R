@@ -1,9 +1,11 @@
 #' @title SimulateWTP
 #' @description Simulate WTP for MDCEV model
 #' @param stan_est Stan fit model from FitMDCEV
-#' @param policies list of price_p with additive price increases and dat_psi_p with new psi data
-#' @param nsims Number of simulations to use for standard errors
-#' @param nerrs Number of error draws
+#' @param policies list containing
+#' price_p with additive price increases, and
+#' dat_psi_p with new psi data
+#' @param nsims Number of simulation draws to use for parameter uncertainty
+#' @param nerrs Number of error draws for welfare analysis
 #' @param cond_error Choose whether to draw errors conditional on actual demand or not.
 #' Conditional error draws (=1) or unconditional error draws.
 #' @param algo_gen Type of algorhitm for simulation. algo_gen = 0 for Hybrid Approach (i.e. constant alphas,
@@ -15,56 +17,94 @@ SimulateWTP <- function(stan_est, policies,
 						nerrs = 30,
 						nsims = 30,
 						cond_error = 1,
-						algo_gen = NULL,
-						parralel = FALSE,
-						n_workers = 4){
+						algo_gen = NULL){#,
+#						parralel = FALSE,
+#						n_workers = 4){
 
-	start.time <- Sys.time()
-
+	start.time <- proc.time()
 
 	# Checks on simulation options
-	model_type <- stan_est$stan_data$model_type
+	model_num <- stan_est$stan_data$model_num
 
 	if (!is.null(algo_gen))
-		if (model_type < 3 && algo_gen == 0) stop("Can't use hybrid algorithm with model_type = 1 or 2. Choose algo_gen ==1")
-
-	if (is.null(algo_gen)) {# ensure
-		if (model_type == 3 || model_type == 4)
+		if (model_num < 3 && algo_gen == 0){
+			warning("Can't use hybrid algorithm with model_num = 1 or 2. Changing to general approach.")
+			algo_gen <- 1
+	} else if (is.null(algo_gen)) {
+		if (model_num == 3 || model_num == 4)
 			algo_gen <- 0
-		else if (model_type == 1 || model_type == 2)
+		else if (model_num == 1 || model_num == 2)
 			algo_gen <- 1
 	}
 
-	if (nsims > stan_est$n_draws) {# ensure
+	if (nsims > stan_est$n_draws) {
 		nsims <- stan_est$n_draws
 		warning("Number of simulations > Number of Draws from stan_est. nsims has been set to: ", nsims)
 	}
 
-	if (algo_gen == 1) # ensure
+	if (algo_gen == 1) {
 		cat("Using general approach to simulation")
-	else if (algo_gen == 1)
+	} else if (algo_gen == 0){
 		cat("Using hybrid approach to simulation")
-
+	}
 	# Organize options in list
 	sim_options <- list(nerrs = nerrs,
 						cond_error = cond_error,
 						algo_gen = algo_gen,
-						model_type = model_type)
+						model_num = model_num)
 
 	# Prepare sim data
-	sim_welfare <- PrepareSimulationData(stan_est, policies, nsims)
+	###########################################################################
+	# Get parameter estimates in matrix form
+	est_pars <- tbl_df(stan_est[["stan_fit"]][["theta_tilde"]]) %>%
+		select(-starts_with("log_like"), -starts_with("sum_log_lik")) %>%
+		rowid_to_column("sim_id") %>%
+		gather(parms, value, -sim_id, factor_key=TRUE)
 
-	df_common <- sim_welfare
-	df_common$df_indiv <- NULL
+	# Sample from parameter estimate draws
+	est_sim <- est_pars %>%
+		distinct(sim_id) %>%
+		sample_n(., nsims ) %>%
+		left_join(est_pars, by = "sim_id")
 
-	df_indiv <- sim_welfare$df_indiv
+	if(stan_est$n_classes == 1){
+		sim_welfare <- PrepareSimulationData(est_sim, stan_est, policies, nsims)
+		df_common <- sim_welfare
+		df_common$df_indiv <- NULL
 
+		df_indiv <- sim_welfare$df_indiv
 
-	wtp <- StanWTP(df_indiv, df_common, sim_options, parralel)
+		wtp <- StanWTP(df_indiv, df_common, sim_options)#, parralel)
 
-	time <- Sys.time() - start.time
+	} else if(stan_est$n_classes > 1){
+
+	est_sim_lc <- suppressWarnings(est_sim %>% # suppress warnings about scale not having a class parameter
+		filter(!str_detect(parms, "beta")) %>%
+		separate(parms, into = c("parms", "class", "good")) %>%
+		mutate(good = ifelse(is.na(as.numeric(good)), "0", good )) %>%
+		unite(parms, parms, good))
+
+	est_sim_lc <- split( est_sim_lc , f = est_sim_lc$class )
+	names(est_sim_lc) <- rep("est_sim", stan_est$n_classes)
+
+	est_sim_lc <- map(est_sim_lc, function(x){ x %>%
+			select(-class)})
+
+	sim_welfare <- map(est_sim_lc, PrepareSimulationData, stan_est, policies, nsims)
+
+	df_common <- map(sim_welfare, `[`, c("price_p_list", "gamma_sim_list", "alpha_sim_list", "scale_sim"))
+	names(df_common) <- rep("df_common", stan_est$n_classes)
+
+	df_indiv <- flatten(map(sim_welfare, `[`, c("df_indiv")))
+
+	wtp <- map2(df_indiv, df_common, StanWTP, sim_options)#, parralel)
+	names(wtp) <- paste0("class", c(1:stan_est$n_classes))
+	}
+
+	time <- proc.time() - start.time
 	n_simulations <- length(unlist(wtp)) * nerrs
-	cat(formatC(n_simulations, format = "e", digits = 2), "simulations finished in", round(time/60, 2), "minutes")
+	cat("\n", formatC(n_simulations, format = "e", digits = 2), "simulations finished in", round(time[3]/60, 2), "minutes.",
+		"(",round(n_simulations/time[3], 0),"/second)")
 
 	return(wtp)
 }
@@ -78,12 +118,14 @@ SimulateWTP <- function(stan_est, policies,
 #' @return wtp list
 #' @export
 #'
-StanWTP <- function(df_indiv, df_common, sim_options, parralel){
+StanWTP <- function(df_indiv, df_common, sim_options){#, parralel){
 
+#	df_indiv <- df_indiv$df_indiv
+#	df_common <- df_common$df_common
 	wtpcppcode <- stanc("src/stan_files/SimulationFunctions.stan",
 						model_name = "SimulationFunctions")
 
-	if (parralel == FALSE){
+#	if (parralel == FALSE){
 		expose_stan_functions(wtpcppcode)
 
 	wtp <- pmap(df_indiv, CalcWTP_rng,
@@ -94,36 +136,36 @@ StanWTP <- function(df_indiv, df_common, sim_options, parralel){
 				nerrs=sim_options$nerrs,
 				cond_error=sim_options$cond_error,
 				algo_gen=sim_options$algo_gen,
-				model_type=sim_options$model_type)#,
+				model_num=sim_options$model_num)
 
-	} else if (parralel == TRUE){
-		wtp <- future_pmap(df_indiv, SimulateWTPParallel,
-						   price_p=df_common$price_p_list,
-						   gamma_sim=df_common$gamma_sim_list,
-						   alpha_sim=df_common$alpha_sim_list,
-						   scale_sim=df_common$scale_sim,
-						   nerrs=sim_options$nerrs,
-						   cond_error=sim_options$cond_error,
-						   algo_gen=sim_options$algo_gen,
-						   model_type=sim_options$model_type,
-						   wtpcppcode = wtpcppcode,
-						   .progress = TRUE,
-						   .options = future_options(packages=c("rstan"), globals = FALSE))
-	}
+#	} else if (parralel == TRUE){
+#		wtp <- future_pmap(df_indiv, SimulateWTPParallel,
+#						   price_p=df_common$price_p_list,
+#						   gamma_sim=df_common$gamma_sim_list,
+#						   alpha_sim=df_common$alpha_sim_list,
+#						   scale_sim=df_common$scale_sim,
+#						   nerrs=sim_options$nerrs,
+#						   cond_error=sim_options$cond_error,
+#						   algo_gen=sim_options$algo_gen,
+#						   model_num=sim_options$model_num,
+#						   wtpcppcode = wtpcppcode,
+#						   .progress = TRUE,
+#						   .options = future_options(packages=c("rstan"), globals = FALSE))
+#	}
 	return(wtp)
 }
 
-SimulateWTPParallel <- function(inc, quant_j, price, price_p, psi_p_sim,
-								psi_sim, gamma_sim, alpha_sim, scale_sim,
-								nerrs, cond_error, algo_gen, model_type,
-								wtpcppcode){
-	require(rstan)
-	expose_stan_functions(wtpcppcode)
+# SimulateWTPParallel <- function(inc, quant_j, price, price_p, psi_p_sim,
+#								psi_sim, gamma_sim, alpha_sim, scale_sim,
+#								nerrs, cond_error, algo_gen, model_num,
+#								wtpcppcode){
+#	require(rstan)
+#	expose_stan_functions(wtpcppcode)
+#
+#	out <- CalcWTP_rng(inc, quant_j, price, price_p, psi_p_sim,
+#					   psi_sim, gamma_sim, alpha_sim, scale_sim,
+#					   nerrs, cond_error, algo_gen, model_num)
 
-	out <- CalcWTP_rng(inc, quant_j, price, price_p, psi_p_sim,
-					   psi_sim, gamma_sim, alpha_sim, scale_sim,
-					   nerrs, cond_error, algo_gen, model_type)
-
-	return(out)
-}
+#	return(out)
+#}
 
