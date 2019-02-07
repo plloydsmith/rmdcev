@@ -5,9 +5,10 @@ The _rmdcev_ R package estimates and simulates multiple discrete-continuous extr
 
 ## Installation
 
-You can install the released version of rmdcev from GitHub
+You can install the released version of rmdcev from GitHub using devtools
 
 ``` r
+library(devtools)
 install_github("plloydsmith/rmdcev")
 ```
 
