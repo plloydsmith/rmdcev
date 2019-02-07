@@ -1,10 +1,12 @@
 #' @title FitMDCEV
 #' @description Fit a MDCEV model using MLE or HB
 #' @param data The data to be passed to Stan.
-#' Must include quant (IxJ),
-#' price (IxJ),
-#' income (Ix1), and
-#' dat_psi(IJxNPsi).
+#' Must include:
+#' quant (IxJ) where each row is individual and each column is good
+#' price (IxJ) where each row is individual and each column is good
+#' income (Ix1) where each row is individual
+#' dat_psi(IJxNPsi) where order is
+#' Notes I is number of individuals and J is number of non-numeraire goods.
 #' @param data_class The data for class membership to be passed to Stan.
 #' @param weights An optional vector of sampling or frequency weights.
 #' @param price_num An optional vector containing price of numeraire or outside good (default is 1).
@@ -67,7 +69,7 @@ FitMDCEV <- function(data,
 					 keep_loglik = 0,
 					 #subset = NULL,
 					 hb_random_parameters = "fixed",
-					 n_iterations = 100, n_chains = 4)#,
+					 n_iterations = 200, n_chains = 4)#,
 #					 hb.max.tree.depth = 10, hb.adapt.delta = 0.8,
 #					 hb.keep.samples = FALSE, hb.stanfit = TRUE,
 					 #					 hb.prior.mean = 0, hb.prior.sd = 5,
@@ -91,7 +93,7 @@ FitMDCEV <- function(data,
 #	if (algorithm == "HB")
 #		stop("Not set up for HB yet.")
 
-		if (algorithm == "HB" && !is.null(weights))
+	if (algorithm == "HB" && !is.null(weights))
 		stop("Weights are not able to be applied for Hierarchical Bayes.")
 
 	if (algorithm == "HB" && n_classes > 1)
@@ -99,6 +101,9 @@ FitMDCEV <- function(data,
 
 	if (identical(dim(data$price), dim(data$quant)) == FALSE)
 		stop("Price and quant dimension mismatch. Ensure dim(price) = dim(quant)")
+
+	if (identical(length(data$dat_psi), ncol(data$quant)*nrow(quant) )  == FALSE)
+		stop("Psi variable not I x J")
 
 	mle_options <- list(fixed_scale = fixed_scale,
 						  model = model,

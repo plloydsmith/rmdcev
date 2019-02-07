@@ -41,3 +41,20 @@ CreateBlankPolicies <- function(npols, ngoods, dat_psi){
 	out <- list(price_p = price_p, dat_psi_p = dat_psi_p)
 	return(out)
 }
+
+#' @title CreatePsiMatrix
+#' @param psi_j matrix (JXn_psi_j) of good-specific attributes
+#' @param psi_i matrix (IXn_psi_i) of people-specific attributes
+#' @description Creates the Psi data matrix for use in mdcev model
+#' @export
+CreatePsiMatrix <- function(psi_j = NULL, psi_i = NULL){
+	if(!is.na(psi_i))
+		psi_i <- map(psi_i, function(x) {rep(x, each= nrow(psi_j))})
+	if(!is.na(psi_j))
+		psi_j <- map(psi_j, function(x) {rep(x, times=nrow(psi_i))})
+
+	dat_psi <- c(psi_j, psi_i)
+out(dat_psi)
+}
+
+

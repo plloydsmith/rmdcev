@@ -9,14 +9,16 @@ FitMDCEV(data, data_class = NULL, weights = NULL, price_num = NULL,
   fixed_scale = 0, trunc_data = trunc_data, seed = 123,
   initial.parameters = NULL, algorithm = c("MLE", "HB"),
   print_ll = 0, hessian = TRUE, n_draws = 30, keep_loglik = 0,
-  hb_random_parameters = "fixed", n_iterations = 100, n_chains = 4)
+  hb_random_parameters = "fixed", n_iterations = 200, n_chains = 4)
 }
 \arguments{
 \item{data}{The data to be passed to Stan.
-Must include quant (IxJ),
-price (IxJ),
-income (Ix1), and
-dat_psi(IJxNPsi).}
+Must include:
+quant (IxJ) where each row is individual and each column is good
+price (IxJ) where each row is individual and each column is good
+income (Ix1) where each row is individual
+dat_psi(IJxNPsi) where order is
+Notes I is number of individuals and J is number of non-numeraire goods.}
 
 \item{data_class}{The data for class membership to be passed to Stan.}
 

@@ -12,7 +12,8 @@
 #' only model 3/4) alog_gen = 1 for General approach (i.e. heterogeneous alpha's, all models)
 #' @return wtp a list for each individual holding a nsims x npols matrix of wtp
 #' @export
-#'
+#' @importFrom stats quantile sd
+
 SimulateWTP <- function(stan_est, policies,
 						nerrs = 30,
 						nsims = 30,
@@ -138,7 +139,7 @@ StanWTP <- function(df_indiv, df_common, sim_options){#, parralel){
 	#					model_name = "SimulationFunctions")
 
 #	if (parralel == FALSE){
-	expose_stan_functions(rmdcev:::stanmodels$SimulationFunctions)
+	expose_stan_functions(stanmodels$SimulationFunctions)
 			#				  wtpcppcode)
 
 	wtp <- pmap(df_indiv, CalcWTP_rng,
