@@ -18,33 +18,25 @@ The rmdcev R package estimates and simulates multiple discrete-continuous extrem
 
 ## Installation
 
-You can install the released version of rmdcev from [CRAN](https://CRAN.R-project.org) with:
+You can install the released version of rmdcev from GitHub
 
 ``` r
-install.packages("rmdcev")
+install_github("plloydsmith/rmdcev")
 ```
 
-## Example
+Development is in progress. Currently users can estimate the following models:
 
-This is a basic example which shows you how to solve a common problem:
+1. Fixed parameter models
+2. Latent class models
 
-```{r example}
-## basic example code
-```
+Under development
+1. Random parameters models
+2. Phaneuf/von Haefen Kuhn Tucker model
 
-What is special about using `README.Rmd` instead of just `README.md`? You can include R chunks like so:
+For more details on the model specification and estimation:
 
-```{r cars}
-summary(cars)
-```
+Bhat, C.R. (2008) ["The Multiple Discrete-Continuous Extreme Value (MDCEV) Model: Role of Utility Function Parameters, Identification Considerations, and Model Extensions."](https://www.sciencedirect.com/science/article/pii/S0191261507000677) Transportation Research Part B, 42(3): 274-303. 
 
-You'll still need to render `README.Rmd` regularly, to keep `README.md` up-to-date.
+For more details on the welfare simulation:
 
-You can also embed plots, for example:
-
-```{r pressure, echo = FALSE}
-plot(pressure)
-```
-
-In that case, don't forget to commit and push the resulting figure files, so they display on GitHub!
-
+Lloyd-Smith, P (2018). ["A New Approach to Calculating Welfare Measures in Kuhn-Tucker Demand Models."](https://www.sciencedirect.com/science/article/pii/S1755534517300994) Journal of Choice Modeling, 26: 19-27
