@@ -98,7 +98,7 @@ SimulateWTP <- function(stan_est, policies,
 	time <- proc.time() - start.time
 	n_simulations <- length(unlist(wtp)) * nerrs
 	cat("\n", formatC(n_simulations, format = "e", digits = 2), "simulations finished in", round(time[3]/60, 2), "minutes.",
-		"(",round(n_simulations/time[3], 0),"/second)")
+		"(",round(n_simulations/time[3], 0),"per second)")
 
 
 	wtp_sum <- apply(simplify2array(wtp),1:2, mean)
