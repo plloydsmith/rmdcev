@@ -19,7 +19,7 @@ Depends:
     R (>= 3.4.0)
 Imports: 
     rstan (>= 2.18.2),
-    Rcpp (>= 1.0.0),
+    Rcpp,
     rstantools (>= 1.5.1),
     methods,
     dplyr (>= 0.7.8),
@@ -29,7 +29,7 @@ Imports:
     testthat
 LinkingTo: 
     BH (>= 1.66.0-1),
-    Rcpp (>= 1.0.0),
+    Rcpp,
     RcppEigen (>= 0.3.3.4.0),
     rstan (>= 2.18.2),
     StanHeaders (>= 2.18.0)

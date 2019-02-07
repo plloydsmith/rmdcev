@@ -33,5 +33,6 @@ stanmodels <- lapply(stan_files, function(f) {
   }
 )
 names(stanmodels) <- sub("\\.stan$", "", basename(stan_files))
+
 rm(MODELS_HOME)
 # nocov end

@@ -1,9 +1,5 @@
 //Code for MDCEV Simulation Functions <- "
 functions {
-/**
- * Draw conditional or unconditional error draws *
- * @return Matrix of nerrs X ngood errors
- */
 vector[] DrawError_rng(real quant_num, vector quant_j, vector price_j,
 					vector psi_j, vector gamma_j, vector alpha, real scale,
 					int ngoods, int nerrs, int cond_error){

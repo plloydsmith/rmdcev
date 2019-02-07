@@ -1,12 +1,16 @@
 PrepareSimulationData <- function(est_sim, stan_est, policies, nsims){
 
-	gamma_sim <- est_sim %>%
-		filter(str_detect(parms, "gamma")) %>%
-		spread(sim_id, value) %>%
-		select(-parms) %>%
-		as.matrix(.) %>%
-		t(.)
+	if (stan_est$stan_data$model_num == 2){
+		gamma_sim <- matrix(1, nsims, stan_est$stan_data$J)
 
+	} else if (stan_est$stan_data$model_num != 2){
+		gamma_sim <- est_sim %>%
+			filter(str_detect(parms, "gamma")) %>%
+			spread(sim_id, value) %>%
+			select(-parms) %>%
+			as.matrix(.) %>%
+			t(.)
+	}
 	if (stan_est$stan_data$model_num != 4){
 		alpha_sim <- est_sim %>%
 			filter(str_detect(parms, "alpha")) %>%
@@ -20,7 +24,7 @@ PrepareSimulationData <- function(est_sim, stan_est, policies, nsims){
 			alpha_sim <- matrix(rep(alpha_sim,each=stan_est$stan_data$J+1), ncol=stan_est$stan_data$J+1, byrow=TRUE)
 
 	} else if (stan_est$stan_data$model_num ==4)
-		alpha_sim = matrix(1e-6, nsims, stan_est$stan_data$J+1)
+		alpha_sim <- matrix(1e-6, nsims, stan_est$stan_data$J+1)
 
 	if (stan_est$stan_data$fixed_scale == 0){
 		scale_sim <- est_sim %>%

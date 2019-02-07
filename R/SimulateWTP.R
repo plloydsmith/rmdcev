@@ -26,10 +26,11 @@ SimulateWTP <- function(stan_est, policies,
 	# Checks on simulation options
 	model_num <- stan_est$stan_data$model_num
 
-	if (!is.null(algo_gen))
+	if (!is.null(algo_gen)){
 		if (model_num < 3 && algo_gen == 0){
 			warning("Can't use hybrid algorithm with model_num = 1 or 2. Changing to general approach.")
 			algo_gen <- 1
+		}
 	} else if (is.null(algo_gen)) {
 		if (model_num == 3 || model_num == 4)
 			algo_gen <- 0
@@ -67,7 +68,7 @@ SimulateWTP <- function(stan_est, policies,
 
 		df_indiv <- sim_welfare$df_indiv
 
-		wtp <- StanWTP(df_indiv, df_common, sim_options)#, parralel)
+		wtp <- StanWTP(df_indiv, df_common, sim_options)
 
 	} else if(stan_est$n_classes > 1){
 
@@ -101,7 +102,7 @@ SimulateWTP <- function(stan_est, policies,
 
 
 	wtp_sum <- apply(simplify2array(wtp),1:2, mean)
-	colnames(wtp_sum)<- paste0(rep("policy",npols), 1:npols)
+	colnames(wtp_sum)<- paste0(rep("policy",ncol(wtp_sum)), 1:ncol(wtp_sum))
 	wtp_sum <- tbl_df(wtp_sum) %>%
 		gather(policy, wtp) %>%
 		group_by(policy) %>%
@@ -133,11 +134,12 @@ StanWTP <- function(df_indiv, df_common, sim_options){#, parralel){
 
 #	df_indiv <- df_indiv$df_indiv
 #	df_common <- df_common$df_common
-	wtpcppcode <- stanc("src/stan_files/SimulationFunctions.stan",
-						model_name = "SimulationFunctions")
+	#wtpcppcode <- stanc("src/stan_files/SimulationFunctions.stan",
+	#					model_name = "SimulationFunctions")
 
 #	if (parralel == FALSE){
-		expose_stan_functions(wtpcppcode)
+	expose_stan_functions(rmdcev:::stanmodels$SimulationFunctions)
+			#				  wtpcppcode)
 
 	wtp <- pmap(df_indiv, CalcWTP_rng,
 				price_p=df_common$price_p_list,
