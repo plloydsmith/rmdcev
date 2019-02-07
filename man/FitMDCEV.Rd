@@ -4,22 +4,28 @@
 \alias{FitMDCEV}
 \title{FitMDCEV}
 \usage{
-FitMDCEV(dat, dat_class = NULL, weights = NULL, price_num = NULL,
-  model_specification = NULL, n_classes = 1, fixed_scale = 0,
-  trunc_data = trunc_data, seed = 123, algorithm = "MLE",
-  print_ll = 0, hessian = TRUE, n_draws = 50, keep_loglik = 0)
+FitMDCEV(data, data_class = NULL, weights = NULL, price_num = NULL,
+  model = c("alpha", "les", "gamma", "gamma0"), n_classes = 1,
+  fixed_scale = 0, trunc_data = trunc_data, seed = 123,
+  initial.parameters = NULL, algorithm = c("MLE", "HB"),
+  print_ll = 0, hessian = TRUE, n_draws = 30, keep_loglik = 0,
+  hb_random_parameters = "fixed", n_iterations = 100, n_chains = 4)
 }
 \arguments{
-\item{dat}{The data to be passed to Stan. Must include quant, price, income, and dat_psi.}
+\item{data}{The data to be passed to Stan.
+Must include quant (IxJ),
+price (IxJ),
+income (Ix1), and
+dat_psi(IJxNPsi).}
 
-\item{dat_class}{The data for class membership to be passed to Stan.}
+\item{data_class}{The data for class membership to be passed to Stan.}
 
 \item{weights}{An optional vector of sampling or frequency weights.}
 
 \item{price_num}{An optional vector containing price of numeraire or outside good (default is 1).}
 
-\item{model_specification}{A string indicating which model specification is estimated.
-The options are "les","alpha", "gamma", and "gamma0"}
+\item{model}{A string indicating which model specification is estimated.
+The options are "alpha","les", "gamma", and "gamma0".}
 
 \item{n_classes}{The number of latent classes.}
 
@@ -27,34 +33,27 @@ The options are "les","alpha", "gamma", and "gamma0"}
 
 \item{trunc_data}{Whether the estimation should be adjusted for truncation}
 
-\item{seed}{Random seed.
-starting at random in latent class analysis. The initial
-parameters need to be supplied as list consisting of a matrix
-called class.parameters whose columns are the parameters of the
-classes, and a vector called class.sizes containing the class
-size parameters.}
+\item{seed}{Random seed.}
 
-\item{algorithm}{Either "HB-Stan" for Hierarchical Bayes or "MLE"
+\item{initial.parameters}{Specify initial parameters intead of
+starting at random.}
+
+\item{algorithm}{Either "HB" for Hierarchical Bayes or "MLE"
 for maximum liklihood estimation.}
 
 \item{print_ll}{Whether to print logliklihood at each iteration}
 
-\item{hessian}{Wheter to keep the Hessian matrix
-    Hierarchical Bayes. Can be 'uncorr, 'corr'.
-    Bayes.
-    http://mc-stan.org/misc/warnings.html#maximum-treedepth-exceeded
-    http://mc-stan.org/misc/warnings.html#divergent-transitions-after-warmup
-    parameters in the output.
-    hyperparameter for the LKJ prior used for the correlation matrix
-    of the respondent coefficients distribution. A value of one gives
-equal probability weight to all possible correlation matrices. Larger values
-favour less correlation (draws closer to the identity matrix).
-    respondent to return in beta.draws.
-    alternative-specific parameters.}
+\item{hessian}{Wheter to keep the Hessian matrix}
 
 \item{n_draws}{The number of MVN draws for standard error calculations}
 
 \item{keep_loglik}{Whether to keep the log_lik calculations}
+
+\item{hb_random_parameters}{The form of the covariance matrix for}
+
+\item{n_iterations}{The number of iterations in Hierarchical Bayes.}
+
+\item{n_chains}{The number of chains in Hierarchical Bayes.}
 
 \item{...}{Additional parameters to pass on to \code{rstan::stan}
 and \code{rstan::sampling}.}

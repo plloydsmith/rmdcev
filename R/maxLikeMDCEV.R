@@ -2,21 +2,21 @@
 #' @description Fit a MDCEV model with MLE
 maxlikeMDCEV <- function(data, initial.parameters = NULL,
 						 seed,
-						 model_options)
+						 mle_options)
 {
 	stan.model <- stanmodels$mdcev
 
 	if (is.null(initial.parameters)){
 		stan_fit <- optimizing(stan.model, data = data, as_vector = FALSE,
-							   draws = model_options$n_draws, hessian = model_options$hessian)
+							   draws = mle_options$n_draws, hessian = mle_options$hessian)
 	} else {
 		stan_fit <- optimizing(stan.model, data = data, as_vector = FALSE, init = initial.parameters,
-						   draws = model_options$n_draws, hessian = model_options$hessian)
+						   draws = mle_options$n_draws, hessian = mle_options$hessian)
 	}
 
 	result <- list()
 
-	if (model_options$keep_loglik == 0)
+	if (mle_options$keep_loglik == 0)
 		stan_fit <- ReduceStanFitSize(stan_fit)
 
 	result$stan_fit <- stan_fit
@@ -27,7 +27,7 @@ maxlikeMDCEV <- function(data, initial.parameters = NULL,
 	result$bic <- -2 * result$log.likelihood + log(ess) * n_parameters
 	stan_fit <- result$stan_fit
 
-	if (model_options$n_classes > 1){
+	if (mle_options$n_classes > 1){
 		result$mdcev_fit <- stan_fit
 		result$mdcev_log.likelihood <- result$log.likelihood
 		result$mdcev_bic <- result$bic
@@ -64,9 +64,9 @@ maxlikeMDCEV <- function(data, initial.parameters = NULL,
 		stan.model <- stanmodels$mdcev_lc
 
 		stan_fit <- optimizing(stan.model, data = data, as_vector = FALSE, init = init,
-							   draws = model_options$n_draws, hessian = model_options$hessian)
+							   draws = mle_options$n_draws, hessian = mle_options$hessian)
 
-		if (model_options$keep_loglik == 0)
+		if (mle_options$keep_loglik == 0)
 			stan_fit <- ReduceStanFitSize(stan_fit)
 
 		result$stan_fit <- stan_fit
@@ -75,7 +75,7 @@ maxlikeMDCEV <- function(data, initial.parameters = NULL,
 		result$effective.sample.size <- ess <- sum(data$weights)
 		result$bic <- -2 * result$log.likelihood + log(ess) * n_parameters
 		class_probabilities <- exp(t(stan_fit[["par"]][["theta"]]))
-		colnames(class_probabilities) <- paste0("class", c(1:model_options$n_classes))
+		colnames(class_probabilities) <- paste0("class", c(1:mle_options$n_classes))
 		result$class_probabilities <- class_probabilities
 	}
 

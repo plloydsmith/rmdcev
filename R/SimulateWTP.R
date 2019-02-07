@@ -54,18 +54,11 @@ SimulateWTP <- function(stan_est, policies,
 						model_num = model_num)
 
 	# Prepare sim data
-	###########################################################################
-	# Get parameter estimates in matrix form
-	est_pars <- tbl_df(stan_est[["stan_fit"]][["theta_tilde"]]) %>%
-		select(-starts_with("log_like"), -starts_with("sum_log_lik")) %>%
-		rowid_to_column("sim_id") %>%
-		gather(parms, value, -sim_id, factor_key=TRUE)
-
 	# Sample from parameter estimate draws
-	est_sim <- est_pars %>%
+	est_sim <- stan_est$est_pars %>%
 		distinct(sim_id) %>%
 		sample_n(., nsims ) %>%
-		left_join(est_pars, by = "sim_id")
+		left_join(stan_est$est_pars, by = "sim_id")
 
 	if(stan_est$n_classes == 1){
 		sim_welfare <- PrepareSimulationData(est_sim, stan_est, policies, nsims)
@@ -106,7 +99,25 @@ SimulateWTP <- function(stan_est, policies,
 	cat("\n", formatC(n_simulations, format = "e", digits = 2), "simulations finished in", round(time[3]/60, 2), "minutes.",
 		"(",round(n_simulations/time[3], 0),"/second)")
 
-	return(wtp)
+
+	wtp_sum <- apply(simplify2array(wtp),1:2, mean)
+	colnames(wtp_sum)<- paste0(rep("policy",npols), 1:npols)
+	wtp_sum <- tbl_df(wtp_sum) %>%
+		gather(policy, wtp) %>%
+		group_by(policy) %>%
+		mutate(sim = seq(n())) %>%
+		ungroup(.)
+
+	wtp_sum <- wtp_sum %>%
+		group_by(policy) %>%
+		summarise(mean = mean(wtp),
+				  sd = sd(wtp),
+				  cl_lo = quantile(wtp, c(.05)),
+				  cl_hi = quantile(wtp, c(.95)),
+				  tstat = mean / sd)
+
+	return(wtp = list(wtp_all = wtp,
+					  wtp_sum = wtp_sum))
 }
 
 

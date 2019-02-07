@@ -14,7 +14,7 @@
 #' @param fixed_scale Whether to fix scale at 1.
 #' @param trunc_data Whether the estimation should be adjusted for truncation
 #' @param seed Random seed.
-#' @param algorithm Either "HB-Stan" for Hierarchical Bayes or "MLE"
+#' @param algorithm Either "HB" for Hierarchical Bayes or "MLE"
 #'     for maximum liklihood estimation.
 #' @param print_ll Whether to print logliklihood at each iteration
 #' @param n_draws The number of MVN draws for standard error calculations
@@ -22,13 +22,10 @@
 #' @param hessian Wheter to keep the Hessian matrix
 #' @param initial.parameters Specify initial parameters intead of
 #'     starting at random.
-# #' @param n_iterations The number of iterations in Hierarchical Bayes.
-# #' @param n_chains The number of chains in Hierarchical Bayes.
-# #' @param hb_random_parameters The form of the covariance matrix for
+#' @param n_iterations The number of iterations in Hierarchical Bayes.
+#' @param n_chains The number of chains in Hierarchical Bayes.
+#' @param hb_random_parameters The form of the covariance matrix for
 # #'     Hierarchical Bayes. Can be 'uncorr, 'corr'.
-# #' @param hb.iterations The number of iterations in Hierarchical
-# #'     Bayes.
-# #' @param hb.chains The number of chains in Hierarchical Bayes.
 # #' @param hb.max.tree.depth
 # #'     http://mc-stan.org/misc/warnings.html#maximum-treedepth-exceeded
 # #' @param hb.adapt.delta
@@ -61,16 +58,16 @@ FitMDCEV <- function(data,
 					 trunc_data = trunc_data,
 					 seed = 123,
 					 initial.parameters = NULL,
-					 algorithm = "MLE", # HB-Stan", # MLE
+					 algorithm = c("MLE", "HB"),
 					 #	std_errors = "draws", # still need to implement
 					 print_ll = 0,
 					 #mle_tol = 0.0001,
 					 hessian = TRUE,
 					 n_draws = 30,
-					 keep_loglik = 0)#,
+					 keep_loglik = 0,
 					 #subset = NULL,
-#					 hb_random_parameters = hb_random_parameters,
-#					 n_iterations = 100, n_chains = 4,
+					 hb_random_parameters = "fixed",
+					 n_iterations = 100, n_chains = 4)#,
 #					 hb.max.tree.depth = 10, hb.adapt.delta = 0.8,
 #					 hb.keep.samples = FALSE, hb.stanfit = TRUE,
 					 #					 hb.prior.mean = 0, hb.prior.sd = 5,
@@ -86,47 +83,54 @@ FitMDCEV <- function(data,
 #synthetic.sample.size = NULL,
 #tasks.left.out = 0,
 #lc.tolerance = 0.0001,
-
+#data <-stan.dat
 #include.choice.parameters = TRUE,
 #respondent.ids = NULL, ...
 
 {
-	if (algorithm == "HB-Stan")
-		stop("Not set up for HB yet.")
+#	if (algorithm == "HB")
+#		stop("Not set up for HB yet.")
 
-		if (algorithm == "HB-Stan" && !is.null(weights))
+		if (algorithm == "HB" && !is.null(weights))
 		stop("Weights are not able to be applied for Hierarchical Bayes.")
 
-	if (algorithm == "HB-Stan" && n_classes > 1)
+	if (algorithm == "HB" && n_classes > 1)
 		stop("Hierarchical Bayes can only be used with one class. Switch algorithm to MLE")
 
 	if (identical(dim(data$price), dim(data$quant)) == FALSE)
 		stop("Price and quant dimension mismatch. Ensure dim(price) = dim(quant)")
 
-	model_options <- list(fixed_scale = fixed_scale,
+	mle_options <- list(fixed_scale = fixed_scale,
 						  model = model,
 						  n_classes = n_classes,
-						  fixed_scale = fixed_scale,
 						  trunc_data = trunc_data,
 						  print_ll = print_ll,
 						  hessian = hessian,
 						  n_draws = n_draws,
 						  keep_loglik = keep_loglik)
 
-#	hb_options <- list(n_iterations = n_iterations, n_chains = n_chains,
-#						  hb.max.tree.depth = 10, hb.adapt.delta = 0.8,
-#						  hb.keep.samples = FALSE, hb.stanfit = TRUE,
-						  #					 hb.prior.mean = 0, hb.prior.sd = 5,
-						  #					 hb.sigma.prior.shape = 1.39435729464721,
-						  #					 hb.sigma.prior.scale = 0.39435729464721,
-#						  hb.lkj.prior.shape = 4,
-#						  hb.warnings = TRUE, hb.beta.draws.to.keep = 0)
+	hb_options <- list(fixed_scale = fixed_scale,
+					   model = model,
+					   n_classes = n_classes,
+					   trunc_data = trunc_data,
+					   n_iterations = n_iterations,
+					   n_chains = n_chains,
+					   keep_loglik = keep_loglik,
+					   hb_random_parameters = hb_random_parameters,
+					   seed = seed,
+						  hb.max.tree.depth = 10, hb.adapt.delta = 0.8,
+						  hb.keep.samples = FALSE, hb.stanfit = TRUE,
+						  hb.prior.mean = 0, hb.prior.sd = 5,
+						  hb.sigma.prior.shape = 1.39435729464721,
+						  hb.sigma.prior.scale = 0.39435729464721,
+						  hb.lkj.prior.shape = 4,
+						  hb.warnings = TRUE, hb.beta.draws.to.keep = 0)
 
 	start.time <- proc.time()
 
 #	data <- stan.dat
 
-	stan_data <- processMDCEVdata(data, data_class, price_num, model_options)
+	stan_data <- processMDCEVdata(data, data_class, price_num, mle_options)
 
 	# If no user supplied weights, replace weights with vector of ones
 	if (is.null(weights))
@@ -135,21 +139,37 @@ FitMDCEV <- function(data,
 	stan_data$weights <- as.vector(weights)
 	stan_data$print_ll <- print_ll
 
-#	if (algorithm == "HB")
-#	{
-#		result <- HierarchicalBayesMDCEV(stan_data, model_options, hb_options,
-#										initial.parameters = initial.parameters,
-#										seed = seed,
-#										keep.samples = FALSE,
-#										include.stanfit = TRUE,
-#										hb_random_parameters = hb_random_parameters,
-#									  show.stan.warnings = TRUE)
-#	} else if (algorithm == "MLE")
-#	{
+	if (algorithm == "HB") {
+		result <- HierarchicalBayesMDCEV(stan_data, hb_options,
+										initial.parameters,
+										keep.samples = FALSE,
+										include.stanfit = TRUE,
+									  show.stan.warnings = TRUE)
 
-	result <- maxlikeMDCEV(stan_data, initial.parameters, seed, model_options)
-						    #lc.tolerance
-#	}
+	###########################################################################
+	# Get parameter estimates in matrix form
+	result$est_pars <- extract(result$stan_fit, permuted = TRUE, inc_warmup = FALSE) %>%
+			as.data.frame() %>%
+			select(-starts_with("log_like"), -starts_with("sum_log_lik"), -lp__) %>%
+			rowid_to_column("sim_id") %>%
+			gather(parms, value, -sim_id, factor_key=TRUE)
+
+	} else if (algorithm == "MLE") {
+
+	result <- maxlikeMDCEV(stan_data, initial.parameters, seed, mle_options)
+
+	###########################################################################
+	# Get parameter estimates in matrix form
+	result$est_pars <- tbl_df(result[["stan_fit"]][["theta_tilde"]]) %>%
+		select(-starts_with("log_like"), -starts_with("sum_log_lik")) %>%
+		rowid_to_column("sim_id") %>%
+		gather(parms, value, -sim_id, factor_key=TRUE)
+
+	result[["stan_fit"]][["theta_tilde"]] <- NULL
+
+	}
+
+
 
 	end.time <- proc.time()
 
@@ -157,7 +177,6 @@ FitMDCEV <- function(data,
 	result$algorithm <- algorithm
 	result$n_classes <- n_classes
 	result$n_draws <- n_draws
-	result$weights <- weights
 	#	result$weights.description <- if (is.null(weights)) NULL else Labels(weights)
 	result$n_respondents <- data$I
 	result$n_alternatives <- data$n_alternatives

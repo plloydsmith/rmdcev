@@ -4,7 +4,7 @@
 \alias{processMDCEVdata}
 \title{processMDCEVdata}
 \usage{
-processMDCEVdata(dat, dat_class = NULL, price_num = NULL,
+processMDCEVdata(data, data_class = NULL, price_num = NULL,
   model_options)
 }
 \description{
