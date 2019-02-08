@@ -1,15 +1,14 @@
 #' @title FitMDCEV
 #' @description Fit a MDCEV model using MLE or HB
-#' @param data The data to be passed to Stan.
-#' Must include:
-#' quant (IxJ) where each row is individual and each column is good
-#' price (IxJ) where each row is individual and each column is good
-#' income (Ix1) where each row is individual
-#' dat_psi(IJxNPsi) where order is
+#' @param data The data to be passed to Stan including
+#' 1) quant (IxJ) where each row is individual and each column is good,
+#' 2) price (IxJ) where each row is individual and each column is good,
+#' 3) income (Ix1) where each row is individual, and
+#' 4) dat_psi(IJxNPsi) where each row is a individual-good combination.
 #' Notes I is number of individuals and J is number of non-numeraire goods.
 #' @param data_class The data for class membership to be passed to Stan.
 #' @param weights An optional vector of sampling or frequency weights.
-#' @param price_num An optional vector containing price of numeraire or outside good (default is 1).
+#' @param num_price An optional vector containing price of numeraire or outside good (default is 1).
 #' @param model A string indicating which model specification is estimated.
 #' The options are "alpha","les", "gamma", and "gamma0".
 #' @param n_classes The number of latent classes.
@@ -53,7 +52,7 @@
 FitMDCEV <- function(data,
 					 data_class = NULL,
 					 weights = NULL,
-					 price_num = NULL,
+					 num_price = NULL,
 					 model = c("alpha", "les", "gamma", "gamma0"),
 					 n_classes = 1,
 					 fixed_scale = 0,
@@ -92,18 +91,13 @@ FitMDCEV <- function(data,
 {
 #	if (algorithm == "HB")
 #		stop("Not set up for HB yet.")
+	CheckMdcevData(data)
 
 	if (algorithm == "HB" && !is.null(weights))
 		stop("Weights are not able to be applied for Hierarchical Bayes.")
 
 	if (algorithm == "HB" && n_classes > 1)
 		stop("Hierarchical Bayes can only be used with one class. Switch algorithm to MLE")
-
-	if (identical(dim(data$price), dim(data$quant)) == FALSE)
-		stop("Price and quant dimension mismatch. Ensure dim(price) = dim(quant)")
-
-	if (identical(length(data$dat_psi), ncol(data$quant)*nrow(quant) )  == FALSE)
-		stop("Psi variable not I x J")
 
 	mle_options <- list(fixed_scale = fixed_scale,
 						  model = model,
@@ -135,7 +129,7 @@ FitMDCEV <- function(data,
 
 #	data <- stan.dat
 
-	stan_data <- processMDCEVdata(data, data_class, price_num, mle_options)
+	stan_data <- processMDCEVdata(data, data_class, num_price, mle_options)
 
 	# If no user supplied weights, replace weights with vector of ones
 	if (is.null(weights))
@@ -155,9 +149,7 @@ FitMDCEV <- function(data,
 	# Get parameter estimates in matrix form
 	result$est_pars <- extract(result$stan_fit, permuted = TRUE, inc_warmup = FALSE) %>%
 			as.data.frame() %>%
-			select(-starts_with("log_like"), -starts_with("sum_log_lik"), -lp__) %>%
-			rowid_to_column("sim_id") %>%
-			gather(parms, value, -sim_id, factor_key=TRUE)
+			select(-starts_with("log_like"), -starts_with("sum_log_lik"), -.data$lp__)
 
 	} else if (algorithm == "MLE") {
 
@@ -166,17 +158,18 @@ FitMDCEV <- function(data,
 	###########################################################################
 	# Get parameter estimates in matrix form
 	result$est_pars <- tbl_df(result[["stan_fit"]][["theta_tilde"]]) %>%
-		select(-starts_with("log_like"), -starts_with("sum_log_lik")) %>%
-		rowid_to_column("sim_id") %>%
-		gather(parms, value, -sim_id, factor_key=TRUE)
+		select(-starts_with("log_like"), -starts_with("sum_log_lik"))
 
 	result[["stan_fit"]][["theta_tilde"]] <- NULL
 
 	}
-
-
-
 	end.time <- proc.time()
+
+	result$est_pars <- result$est_pars %>%
+		rowid_to_column("sim_id") %>%
+		gather(parms, value, -sim_id)
+#		gather_(key_col = 'parms',
+#				value_col = 'value', -sim_id, factor_key=TRUE)
 
 	result$stan_data <- stan_data
 	result$algorithm <- algorithm

@@ -396,7 +396,7 @@ return(hdemand_out);
 
 
 // Overall code
-matrix CalcmdemandTest_rng(real inc, vector quant, vector price,
+matrix CalcmdemandOneTest_rng(real inc, vector quant, vector price,
 						vector psi_sims, vector gamma_sims, vector alpha_sims, real scale_sims,
 						int nerrs, int cond_error, int algo_gen){
 
@@ -442,7 +442,7 @@ return(mdemand_out);
 
 
 // Overall code
-matrix Calcmdemand_rng(real inc, vector price,
+matrix CalcmdemandOne_rng(real inc, vector price,
 						vector psi_sims, vector gamma_sims, vector alpha_sims, real scale_sims,
 						int nerrs, int algo_gen){
 

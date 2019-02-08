@@ -1,16 +1,19 @@
 #' @title maxlikeMDCEV
 #' @description Fit a MDCEV model with MLE
-maxlikeMDCEV <- function(data, initial.parameters = NULL,
-						 seed,
-						 mle_options)
+#' @param stan_data data for model
+#' @inheritParams FitMDCEV
+#' @param mle_options modeling options for MLE
+
+maxlikeMDCEV <- function(stan_data, initial.parameters,
+						 seed, mle_options)
 {
 	stan.model <- stanmodels$mdcev
 
 	if (is.null(initial.parameters)){
-		stan_fit <- optimizing(stan.model, data = data, as_vector = FALSE,
+		stan_fit <- optimizing(stan.model, data = stan_data, as_vector = FALSE,
 							   draws = mle_options$n_draws, hessian = mle_options$hessian)
 	} else {
-		stan_fit <- optimizing(stan.model, data = data, as_vector = FALSE, init = initial.parameters,
+		stan_fit <- optimizing(stan.model, data = stan_data, as_vector = FALSE, init = initial.parameters,
 						   draws = mle_options$n_draws, hessian = mle_options$hessian)
 	}
 
@@ -20,9 +23,9 @@ maxlikeMDCEV <- function(data, initial.parameters = NULL,
 		stan_fit <- ReduceStanFitSize(stan_fit)
 
 	result$stan_fit <- stan_fit
-	n_parameters <- data$n_parameters
+	n_parameters <- stan_data$n_parameters
 	result$log.likelihood <- stan_fit[["par"]][["sum_log_lik"]]
-	result$effective.sample.size <- ess <- sum(data$weights)
+	result$effective.sample.size <- ess <- sum(stan_data$weights)
 #	n_parameters <- n_classes * n_parameters + n_classes - 1
 	result$bic <- -2 * result$log.likelihood + log(ess) * n_parameters
 	stan_fit <- result$stan_fit
@@ -39,8 +42,8 @@ maxlikeMDCEV <- function(data, initial.parameters = NULL,
 		init.psi <- init.par$psi
 
 		# add shift to psi values values
-		init.shift <- seq(-0.02, 0.02, length.out = data$NPsi)
-		for (i in 1:data$NPsi) {
+		init.shift <- seq(-0.02, 0.02, length.out = stan_data$NPsi)
+		for (i in 1:stan_data$NPsi) {
 			init.psi[i] <- init.psi[i] + init.shift[i]
 		}
 
@@ -49,15 +52,15 @@ maxlikeMDCEV <- function(data, initial.parameters = NULL,
 		init = list(psi = init.psi)
 
 		if (data$fixed_scale == 0)
-			init$scale <- rep(stan_fit$par[["scale"]], data$K)
+			init$scale <- rep(stan_fit$par[["scale"]], stan_data$K)
 
-		if (data$model_num == 1 || data$model_num == 3){
-			init$alpha <- matrix(rep(init.par$alpha, data$K), nrow=data$K, ncol=1)
-			init$gamma <- matrix(rep(init.par$gamma, data$K), nrow=data$K, ncol=data$J)
-		} else if (data$model_num == 2){
-			init$alpha <- matrix(rep(init.par$alpha, data$K), nrow=data$K, ncol=data$J)
-		} else if (data$model_num == 4){
-#			init$alpha <- matrix(rep(0, data$K), nrow=data$K, ncol=0)
+		if (stan_data$model_num == 1 || stan_data$model_num == 3){
+			init$alpha <- matrix(rep(init.par$alpha, stan_data$K), nrow=stan_data$K, ncol=1)
+			init$gamma <- matrix(rep(init.par$gamma, stan_data$K), nrow=stan_data$K, ncol=stan_data$J)
+		} else if (stan_data$model_num == 2){
+			init$alpha <- matrix(rep(init.par$alpha, stan_data$K), nrow=stan_data$K, ncol=stan_data$J)
+		} else if (stan_data$model_num == 4){
+#			init$alpha <- matrix(rep(0, stan_data$K), nrow=stan_data$K, ncol=0)
 			init$gamma <- init.par$gamma
 		}
 
@@ -72,7 +75,7 @@ maxlikeMDCEV <- function(data, initial.parameters = NULL,
 		result$stan_fit <- stan_fit
 		n_parameters <- ncol(stan_fit[["hessian"]])
 		result$log.likelihood <- stan_fit[["par"]][["sum_log_lik"]]
-		result$effective.sample.size <- ess <- sum(data$weights)
+		result$effective.sample.size <- ess <- sum(stan_data$weights)
 		result$bic <- -2 * result$log.likelihood + log(ess) * n_parameters
 		class_probabilities <- exp(t(stan_fit[["par"]][["theta"]]))
 		colnames(class_probabilities) <- paste0("class", c(1:mle_options$n_classes))
@@ -80,7 +83,7 @@ maxlikeMDCEV <- function(data, initial.parameters = NULL,
 	}
 
 #	result$class.parameters <- pars$class.parameters
-#	result$coef <- createCoefOutput(pars, data$par.names, data$all.names)
+#	result$coef <- createCoefOutput(pars, stan_data$par.names, stan_data$all.names)
 #	result$lca.data <- lca.data
 	result
 }

@@ -6,6 +6,13 @@
 \usage{
 CreateBlankPolicies(npols, ngoods, dat_psi)
 }
+\arguments{
+\item{npols}{Number of policies to simulate}
+
+\item{ngoods}{Number of non-numeraire goods}
+
+\item{dat_psi}{Psi data matrix used in estimation}
+}
 \description{
 Create 'zero effect' policies that can be modified
 }

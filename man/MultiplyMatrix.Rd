@@ -4,7 +4,14 @@
 \alias{MultiplyMatrix}
 \title{MultiplyMatrix}
 \usage{
-MultiplyMatrix(mat_temp, x, nrows)
+MultiplyMatrix(mat_temp, x, n_rows)
+}
+\arguments{
+\item{mat_temp}{matrix A to be multipled}
+
+\item{x}{matrix B to be multiplied}
+
+\item{z}{number of rows for final matrix}
 }
 \description{
 Convert list to matrix by row

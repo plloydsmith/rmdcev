@@ -4,7 +4,17 @@
 \alias{maxlikeMDCEV}
 \title{maxlikeMDCEV}
 \usage{
-maxlikeMDCEV(data, initial.parameters = NULL, seed, mle_options)
+maxlikeMDCEV(stan_data, initial.parameters, seed, mle_options)
+}
+\arguments{
+\item{stan_data}{data for model}
+
+\item{initial.parameters}{Specify initial parameters intead of
+starting at random.}
+
+\item{seed}{Random seed.}
+
+\item{mle_options}{modeling options for MLE}
 }
 \description{
 Fit a MDCEV model with MLE

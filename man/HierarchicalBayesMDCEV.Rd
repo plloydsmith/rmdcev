@@ -8,6 +8,20 @@ HierarchicalBayesMDCEV(stan_data, hb_options, initial.parameters,
   keep.samples = FALSE, include.stanfit = TRUE,
   show.stan.warnings = TRUE)
 }
+\arguments{
+\item{stan_data}{data for model}
+
+\item{hb_options}{list of HB options}
+
+\item{initial.parameters}{Specify initial parameters intead of
+starting at random.}
+
+\item{keep.samples}{default is FALSE,}
+
+\item{include.stanfit}{default isTRUE,}
+
+\item{show.stan.warnings}{= TRUE}
+}
 \description{
 Fit a MDCEV model HB
 }

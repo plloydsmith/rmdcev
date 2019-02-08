@@ -6,6 +6,9 @@
 \usage{
 CreateListsCol(x)
 }
+\arguments{
+\item{x}{matrix to be converted to list}
+}
 \description{
 Convert matrix x to a list with each row as an element
 }

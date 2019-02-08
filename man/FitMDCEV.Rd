@@ -4,7 +4,7 @@
 \alias{FitMDCEV}
 \title{FitMDCEV}
 \usage{
-FitMDCEV(data, data_class = NULL, weights = NULL, price_num = NULL,
+FitMDCEV(data, data_class = NULL, weights = NULL, num_price = NULL,
   model = c("alpha", "les", "gamma", "gamma0"), n_classes = 1,
   fixed_scale = 0, trunc_data = trunc_data, seed = 123,
   initial.parameters = NULL, algorithm = c("MLE", "HB"),
@@ -12,19 +12,18 @@ FitMDCEV(data, data_class = NULL, weights = NULL, price_num = NULL,
   hb_random_parameters = "fixed", n_iterations = 200, n_chains = 4)
 }
 \arguments{
-\item{data}{The data to be passed to Stan.
-Must include:
-quant (IxJ) where each row is individual and each column is good
-price (IxJ) where each row is individual and each column is good
-income (Ix1) where each row is individual
-dat_psi(IJxNPsi) where order is
+\item{data}{The data to be passed to Stan including
+1) quant (IxJ) where each row is individual and each column is good,
+2) price (IxJ) where each row is individual and each column is good,
+3) income (Ix1) where each row is individual, and
+4) dat_psi(IJxNPsi) where each row is a individual-good combination.
 Notes I is number of individuals and J is number of non-numeraire goods.}
 
 \item{data_class}{The data for class membership to be passed to Stan.}
 
 \item{weights}{An optional vector of sampling or frequency weights.}
 
-\item{price_num}{An optional vector containing price of numeraire or outside good (default is 1).}
+\item{num_price}{An optional vector containing price of numeraire or outside good (default is 1).}
 
 \item{model}{A string indicating which model specification is estimated.
 The options are "alpha","les", "gamma", and "gamma0".}

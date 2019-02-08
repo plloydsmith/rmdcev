@@ -6,6 +6,9 @@
 \usage{
 DoCbind(x)
 }
+\arguments{
+\item{x}{list to be converted}
+}
 \description{
 Convert list to matrix
 }

@@ -1507,16 +1507,16 @@ struct CalchdemandTest_rng_functor__ {
 
 template <typename T0__, typename T1__, typename T2__, typename T3__, typename T4__, typename T5__, typename T6__, class RNG>
 Eigen::Matrix<typename boost::math::tools::promote_args<T0__, T1__, T2__, T3__, typename boost::math::tools::promote_args<T4__, T5__, T6__>::type>::type, Eigen::Dynamic,Eigen::Dynamic>
-CalcmdemandTest_rng(const T0__& inc,
-                        const Eigen::Matrix<T1__, Eigen::Dynamic,1>& quant,
-                        const Eigen::Matrix<T2__, Eigen::Dynamic,1>& price,
-                        const Eigen::Matrix<T3__, Eigen::Dynamic,1>& psi_sims,
-                        const Eigen::Matrix<T4__, Eigen::Dynamic,1>& gamma_sims,
-                        const Eigen::Matrix<T5__, Eigen::Dynamic,1>& alpha_sims,
-                        const T6__& scale_sims,
-                        const int& nerrs,
-                        const int& cond_error,
-                        const int& algo_gen, RNG& base_rng__, std::ostream* pstream__) {
+CalcmdemandOneTest_rng(const T0__& inc,
+                           const Eigen::Matrix<T1__, Eigen::Dynamic,1>& quant,
+                           const Eigen::Matrix<T2__, Eigen::Dynamic,1>& price,
+                           const Eigen::Matrix<T3__, Eigen::Dynamic,1>& psi_sims,
+                           const Eigen::Matrix<T4__, Eigen::Dynamic,1>& gamma_sims,
+                           const Eigen::Matrix<T5__, Eigen::Dynamic,1>& alpha_sims,
+                           const T6__& scale_sims,
+                           const int& nerrs,
+                           const int& cond_error,
+                           const int& algo_gen, RNG& base_rng__, std::ostream* pstream__) {
     typedef typename boost::math::tools::promote_args<T0__, T1__, T2__, T3__, typename boost::math::tools::promote_args<T4__, T5__, T6__>::type>::type local_scalar_t__;
     typedef local_scalar_t__ fun_return_scalar_t__;
     const static bool propto__ = true;
@@ -1681,33 +1681,33 @@ CalcmdemandTest_rng(const T0__& inc,
 }
 
 
-struct CalcmdemandTest_rng_functor__ {
+struct CalcmdemandOneTest_rng_functor__ {
     template <typename T0__, typename T1__, typename T2__, typename T3__, typename T4__, typename T5__, typename T6__, class RNG>
         Eigen::Matrix<typename boost::math::tools::promote_args<T0__, T1__, T2__, T3__, typename boost::math::tools::promote_args<T4__, T5__, T6__>::type>::type, Eigen::Dynamic,Eigen::Dynamic>
     operator()(const T0__& inc,
-                        const Eigen::Matrix<T1__, Eigen::Dynamic,1>& quant,
-                        const Eigen::Matrix<T2__, Eigen::Dynamic,1>& price,
-                        const Eigen::Matrix<T3__, Eigen::Dynamic,1>& psi_sims,
-                        const Eigen::Matrix<T4__, Eigen::Dynamic,1>& gamma_sims,
-                        const Eigen::Matrix<T5__, Eigen::Dynamic,1>& alpha_sims,
-                        const T6__& scale_sims,
-                        const int& nerrs,
-                        const int& cond_error,
-                        const int& algo_gen, RNG& base_rng__, std::ostream* pstream__) const {
-        return CalcmdemandTest_rng(inc, quant, price, psi_sims, gamma_sims, alpha_sims, scale_sims, nerrs, cond_error, algo_gen, base_rng__, pstream__);
+                           const Eigen::Matrix<T1__, Eigen::Dynamic,1>& quant,
+                           const Eigen::Matrix<T2__, Eigen::Dynamic,1>& price,
+                           const Eigen::Matrix<T3__, Eigen::Dynamic,1>& psi_sims,
+                           const Eigen::Matrix<T4__, Eigen::Dynamic,1>& gamma_sims,
+                           const Eigen::Matrix<T5__, Eigen::Dynamic,1>& alpha_sims,
+                           const T6__& scale_sims,
+                           const int& nerrs,
+                           const int& cond_error,
+                           const int& algo_gen, RNG& base_rng__, std::ostream* pstream__) const {
+        return CalcmdemandOneTest_rng(inc, quant, price, psi_sims, gamma_sims, alpha_sims, scale_sims, nerrs, cond_error, algo_gen, base_rng__, pstream__);
     }
 };
 
 template <typename T0__, typename T1__, typename T2__, typename T3__, typename T4__, typename T5__, class RNG>
 Eigen::Matrix<typename boost::math::tools::promote_args<T0__, T1__, T2__, T3__, typename boost::math::tools::promote_args<T4__, T5__>::type>::type, Eigen::Dynamic,Eigen::Dynamic>
-Calcmdemand_rng(const T0__& inc,
-                    const Eigen::Matrix<T1__, Eigen::Dynamic,1>& price,
-                    const Eigen::Matrix<T2__, Eigen::Dynamic,1>& psi_sims,
-                    const Eigen::Matrix<T3__, Eigen::Dynamic,1>& gamma_sims,
-                    const Eigen::Matrix<T4__, Eigen::Dynamic,1>& alpha_sims,
-                    const T5__& scale_sims,
-                    const int& nerrs,
-                    const int& algo_gen, RNG& base_rng__, std::ostream* pstream__) {
+CalcmdemandOne_rng(const T0__& inc,
+                       const Eigen::Matrix<T1__, Eigen::Dynamic,1>& price,
+                       const Eigen::Matrix<T2__, Eigen::Dynamic,1>& psi_sims,
+                       const Eigen::Matrix<T3__, Eigen::Dynamic,1>& gamma_sims,
+                       const Eigen::Matrix<T4__, Eigen::Dynamic,1>& alpha_sims,
+                       const T5__& scale_sims,
+                       const int& nerrs,
+                       const int& algo_gen, RNG& base_rng__, std::ostream* pstream__) {
     typedef typename boost::math::tools::promote_args<T0__, T1__, T2__, T3__, typename boost::math::tools::promote_args<T4__, T5__>::type>::type local_scalar_t__;
     typedef local_scalar_t__ fun_return_scalar_t__;
     const static bool propto__ = true;
@@ -1874,18 +1874,18 @@ Calcmdemand_rng(const T0__& inc,
 }
 
 
-struct Calcmdemand_rng_functor__ {
+struct CalcmdemandOne_rng_functor__ {
     template <typename T0__, typename T1__, typename T2__, typename T3__, typename T4__, typename T5__, class RNG>
         Eigen::Matrix<typename boost::math::tools::promote_args<T0__, T1__, T2__, T3__, typename boost::math::tools::promote_args<T4__, T5__>::type>::type, Eigen::Dynamic,Eigen::Dynamic>
     operator()(const T0__& inc,
-                    const Eigen::Matrix<T1__, Eigen::Dynamic,1>& price,
-                    const Eigen::Matrix<T2__, Eigen::Dynamic,1>& psi_sims,
-                    const Eigen::Matrix<T3__, Eigen::Dynamic,1>& gamma_sims,
-                    const Eigen::Matrix<T4__, Eigen::Dynamic,1>& alpha_sims,
-                    const T5__& scale_sims,
-                    const int& nerrs,
-                    const int& algo_gen, RNG& base_rng__, std::ostream* pstream__) const {
-        return Calcmdemand_rng(inc, price, psi_sims, gamma_sims, alpha_sims, scale_sims, nerrs, algo_gen, base_rng__, pstream__);
+                       const Eigen::Matrix<T1__, Eigen::Dynamic,1>& price,
+                       const Eigen::Matrix<T2__, Eigen::Dynamic,1>& psi_sims,
+                       const Eigen::Matrix<T3__, Eigen::Dynamic,1>& gamma_sims,
+                       const Eigen::Matrix<T4__, Eigen::Dynamic,1>& alpha_sims,
+                       const T5__& scale_sims,
+                       const int& nerrs,
+                       const int& algo_gen, RNG& base_rng__, std::ostream* pstream__) const {
+        return CalcmdemandOne_rng(inc, price, psi_sims, gamma_sims, alpha_sims, scale_sims, nerrs, algo_gen, base_rng__, pstream__);
     }
 };
 

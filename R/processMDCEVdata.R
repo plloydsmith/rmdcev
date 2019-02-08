@@ -1,15 +1,13 @@
 #' @title processMDCEVdata
 #' @description Process MDCEV data
+#' @inheritParams FitMDCEV
+#' @param model_options list of model options
 #' @export
-
 processMDCEVdata <- function(data,
-							 data_class = NULL,
-							 price_num = NULL,
-							 model_options)
-{
-
-	NPsi <- length(data$dat_psi)
-	dat_psi <- do.call(cbind, data$dat_psi)
+							 data_class,
+							 num_price,
+							 model_options){
+	NPsi <- ncol(data$dat_psi)
 
 	J <- ncol(data$quant)
 	I <- nrow(data$quant)
@@ -40,8 +38,8 @@ processMDCEVdata <- function(data,
 
 	n_parameters <- NPsi + NGamma + NAlpha + NScale
 
-	if(is.null(price_num)) # default price numeraire is one
-		price_num <- rep(1, I)
+	if(is.null(num_price)) # default price numeraire is one
+		num_price <- rep(1, I)
 
 	nonzero <- cbind(1, data$quant != 0)
 	M <- rowSums(nonzero != 0)
@@ -50,10 +48,10 @@ processMDCEVdata <- function(data,
 	# Put data into one list for rstan
 	stan_data =
 		list(I = I, J = J, NPsi = NPsi,
-			 dat_psi = as.matrix(dat_psi),
+			 dat_psi = as.matrix(data$dat_psi),
 			 j_price = data$price,
 			 j_quant = data$quant,
-			 num_price = as.vector(price_num),
+			 num_price = as.vector(num_price),
 			 income = as.vector(data$inc),
 			 M_factorial = M_factorial,
 			 model_num = model_num,

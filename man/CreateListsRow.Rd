@@ -6,6 +6,9 @@
 \usage{
 CreateListsRow(x)
 }
+\arguments{
+\item{x}{matrix to be converted to list}
+}
 \value{
 A list
 }

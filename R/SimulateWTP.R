@@ -18,7 +18,7 @@ SimulateWTP <- function(stan_est, policies,
 						nerrs = 30,
 						nsims = 30,
 						cond_error = 1,
-						algo_gen = NULL){#,
+						algo_gen = NULL){
 #						parralel = FALSE,
 #						n_workers = 4){
 
@@ -58,7 +58,7 @@ SimulateWTP <- function(stan_est, policies,
 	# Prepare sim data
 	# Sample from parameter estimate draws
 	est_sim <- stan_est$est_pars %>%
-		distinct(sim_id) %>%
+		distinct(.data$sim_id) %>%
 		sample_n(., nsims ) %>%
 		left_join(stan_est$est_pars, by = "sim_id")
 
@@ -73,27 +73,27 @@ SimulateWTP <- function(stan_est, policies,
 
 	} else if(stan_est$n_classes > 1){
 
-	est_sim_lc <- suppressWarnings(est_sim %>% # suppress warnings about scale not having a class parameter
-		filter(!str_detect(parms, "beta")) %>%
-		separate(parms, into = c("parms", "class", "good")) %>%
-		mutate(good = ifelse(is.na(as.numeric(good)), "0", good )) %>%
-		unite(parms, parms, good))
+		est_sim_lc <- suppressWarnings(est_sim %>% # suppress warnings about scale not having a class parameter
+			filter(!str_detect(.data$parms, "beta")) %>%
+			separate_(.data$parms, into = c("parms", "class", "good")) %>%
+			mutate(good = ifelse(is.na(as.numeric(.data$good)), "0", .data$good )) %>%
+			unite_(parms, parms, good))
 
-	est_sim_lc <- split( est_sim_lc , f = est_sim_lc$class )
-	names(est_sim_lc) <- rep("est_sim", stan_est$n_classes)
+		est_sim_lc <- split( est_sim_lc , f = est_sim_lc$class )
+		names(est_sim_lc) <- rep("est_sim", stan_est$n_classes)
 
-	est_sim_lc <- map(est_sim_lc, function(x){ x %>%
-			select(-class)})
+		est_sim_lc <- map(est_sim_lc, function(x){ x %>%
+				select(-class)})
 
-	sim_welfare <- map(est_sim_lc, PrepareSimulationData, stan_est, policies, nsims)
+		sim_welfare <- map(est_sim_lc, PrepareSimulationData, stan_est, policies, nsims)
 
-	df_common <- map(sim_welfare, `[`, c("price_p_list", "gamma_sim_list", "alpha_sim_list", "scale_sim"))
-	names(df_common) <- rep("df_common", stan_est$n_classes)
+		df_common <- map(sim_welfare, `[`, c("price_p_list", "gamma_sim_list", "alpha_sim_list", "scale_sim"))
+		names(df_common) <- rep("df_common", stan_est$n_classes)
 
-	df_indiv <- flatten(map(sim_welfare, `[`, c("df_indiv")))
+		df_indiv <- flatten(map(sim_welfare, `[`, c("df_indiv")))
 
-	wtp <- map2(df_indiv, df_common, StanWTP, sim_options)#, parralel)
-	names(wtp) <- paste0("class", c(1:stan_est$n_classes))
+		wtp <- map2(df_indiv, df_common, StanWTP, sim_options)#, parralel)
+		names(wtp) <- paste0("class", c(1:stan_est$n_classes))
 	}
 
 	time <- proc.time() - start.time
@@ -101,27 +101,31 @@ SimulateWTP <- function(stan_est, policies,
 	cat("\n", formatC(n_simulations, format = "e", digits = 2), "simulations finished in", round(time[3]/60, 2), "minutes.",
 		"(",round(n_simulations/time[3], 0),"per second)")
 
+return(wtp)
+}
+
+#' @title SummaryWelfare
+#' @description Provide a summary of welfare changes for each policy
+#' @param wtp list of welfare changes from SimulateWTP
+#' @param ci confidence interval (for 95\% input 0.95)
+#' @return wtp_sum summary table of welfare results
+SummaryWelfare <- function(wtp, ci = 0.95){
 
 	wtp_sum <- apply(simplify2array(wtp),1:2, mean)
 	colnames(wtp_sum)<- paste0(rep("policy",ncol(wtp_sum)), 1:ncol(wtp_sum))
+
 	wtp_sum <- tbl_df(wtp_sum) %>%
 		gather(policy, wtp) %>%
-		group_by(policy) %>%
-		mutate(sim = seq(n())) %>%
-		ungroup(.)
-
-	wtp_sum <- wtp_sum %>%
+#		gather_(., "policy","wtp") %>%
+#		gather_(key_col = "policy", value_col = "wtp") %>%
 		group_by(policy) %>%
 		summarise(mean = mean(wtp),
 				  sd = sd(wtp),
-				  cl_lo = quantile(wtp, c(.05)),
-				  cl_hi = quantile(wtp, c(.95)),
-				  tstat = mean / sd)
-
-	return(wtp = list(wtp_all = wtp,
-					  wtp_sum = wtp_sum))
+				  cl_lo = quantile(wtp, (1-ci)/2),
+				  cl_hi = quantile(wtp, ci+(1-ci)/2),
+				  zstat = mean / sd)
+	return(wtp_sum)
 }
-
 
 #' @title StanWTP
 #' @description Use Stan functions to simulate WTP

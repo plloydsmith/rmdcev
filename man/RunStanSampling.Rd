@@ -7,24 +7,11 @@
 RunStanSampling(stan_data, stan.model, hb_options)
 }
 \arguments{
+\item{stan_data}{data for model}
+
 \item{stan.model}{Complied Stan model}
 
-\item{stan.dat}{The data to be passed to Stan.}
-
-\item{n_iterations}{The number of iterations in the analysis.}
-
-\item{n_chains}{The number of chains in the analysis.}
-
-\item{max.tree.depth}{Maximum tree depth setting. See Stan documentation.}
-
-\item{adapt.delta}{Adapt delta setting. See Stan documentation.}
-
-\item{seed}{Random seed.}
-
-\item{keep.beta}{Whether retain the beta draws in the output.}
-
-\item{pars}{Stan parameters whose draws to retain. If NULL, a default
-selection of parameters is used instead.}
+\item{hb_options}{list of HB options}
 
 \item{...}{Additional parameters to pass on to \code{rstan::stan} and
 \code{rstan::sampling}.}

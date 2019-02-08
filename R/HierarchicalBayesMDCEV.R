@@ -1,5 +1,11 @@
 #' @title HierarchicalBayesMDCEV
 #' @description Fit a MDCEV model HB
+#' @param hb_options list of HB options
+#' @param stan_data data for model
+#' @inheritParams FitMDCEV
+#' @param keep.samples default is FALSE,
+#' @param include.stanfit default isTRUE,
+#' @param show.stan.warnings = TRUE
 #' @import rstan
 #' @import dplyr
 #' @export
@@ -21,7 +27,7 @@ HierarchicalBayesMDCEV <- function(stan_data, hb_options,
 	indexes <- data_frame(individual = rep(1:stan_data$I, each = stan_data$J),
 						  task = rep(1:stan_data$I, each = stan_data$J),
 						  row = 1:(stan_data$I*stan_data$J)) %>%
-		group_by(task) %>%
+		group_by_(task) %>%
 		summarise(task_individual = first(individual),
 				  start = first(row),
 				  end = last(row))
@@ -68,16 +74,8 @@ HierarchicalBayesMDCEV <- function(stan_data, hb_options,
 #' @title RunStanSampling
 #' @description Wrapper function for \code{rstan:stan} and
 #' \code{rstan:sampling} to run Stan HB analysis.
-#' @param stan.dat The data to be passed to Stan.
-#' @param n_iterations The number of iterations in the analysis.
-#' @param n_chains The number of chains in the analysis.
-#' @param max.tree.depth Maximum tree depth setting. See Stan documentation.
-#' @param adapt.delta Adapt delta setting. See Stan documentation.
-#' @param seed Random seed.
+#' @inheritParams HierarchicalBayesMDCEV
 #' @param stan.model Complied Stan model
-#' @param keep.beta Whether retain the beta draws in the output.
-#' @param pars Stan parameters whose draws to retain. If NULL, a default
-#'     selection of parameters is used instead.
 #' @param ... Additional parameters to pass on to \code{rstan::stan} and
 #' \code{rstan::sampling}.
 #' @return A stanfit object.
