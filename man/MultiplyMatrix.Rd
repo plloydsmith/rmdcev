@@ -11,7 +11,7 @@ MultiplyMatrix(mat_temp, x, n_rows)
 
 \item{x}{matrix B to be multiplied}
 
-\item{z}{number of rows for final matrix}
+\item{n_rows}{number of rows for final matrix}
 }
 \description{
 Convert list to matrix by row
