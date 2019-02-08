@@ -22,7 +22,7 @@ CreateListsCol <- function(x){
 #' @description Convert list to matrix by row
 #' @param x matrix B to be multiplied
 #' @param mat_temp matrix A to be multipled
-#' @param z number of rows for final matrix
+#' @param n_rows number of rows for final matrix
 #' @export
 MultiplyMatrix <- function(mat_temp, x, n_rows){
 	out <- matrix(mat_temp %*% x , nrow = n_rows, byrow = TRUE)
