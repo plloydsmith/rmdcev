@@ -8,7 +8,8 @@ CheckMdcevData(data)
 }
 \arguments{
 \item{data}{The (IxJ) data to be passed to Stan arranged by id then good including
-1) quant2) price 3) income. Notes I is number of individuals and J is number of non-numeraire goods.}
+1) quant2) price 3) income and columns for psi variables.
+Notes I is number of individuals and J is number of non-numeraire goods.}
 }
 \description{
 Check MDCEV data

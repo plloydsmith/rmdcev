@@ -4,10 +4,10 @@
 \alias{SimulateMdcevData}
 \title{SimulateMdcevData}
 \usage{
-SimulateMdcevData(model, nobs = 1000, ngoods = 10, inc_lo = 75000,
-  inc_hi = 1e+05, price_lo = 5, price_hi = 100, alpha_parms = 0.8,
-  scale_parms = 1, gamma_parms = 1 + runif(ngoods, 0, 2),
-  psi_i_parms = c(-1.5, 3, -2, 1, 2), psi_j_parms = c(-5, 0.5, 2),
+SimulateMdcevData(model, nobs = 1000, ngoods = 10, inc_lo = 1e+05,
+  inc_hi = 150000, price_lo = 10, price_hi = 105,
+  alpha_parms = 0.5, scale_parms = 1, gamma_parms = runif(ngoods, 1,
+  3), psi_i_parms = c(-1.5, 3, -2, 1, 2), psi_j_parms = c(-5, 0.5, 2),
   nerrs = 3)
 }
 \arguments{
@@ -16,15 +16,15 @@ The options are "alpha","les", "gamma", and "gamma0".}
 
 \item{nobs}{Number of individuals}
 
-\item{ngoods}{Number of non-nuemraire goods}
+\item{ngoods}{Number of non-numeraire goods}
 
-\item{inc_lo}{Mean income}
+\item{inc_lo}{Low bound of income for uniform draw}
 
-\item{inc_hi}{Standard deviation of income}
+\item{inc_hi}{High bound of income for uniform draw}
 
-\item{price_lo}{Mean price for non-numeraire goods}
+\item{price_lo}{Low bound of price for uniform draw}
 
-\item{price_hi}{Standard deviation of price}
+\item{price_hi}{High bound of price for uniform draw}
 
 \item{alpha_parms}{Parameter value for alpha term}
 
@@ -39,7 +39,7 @@ The options are "alpha","les", "gamma", and "gamma0".}
 \item{nerrs}{Number of error draws for demand simulation}
 }
 \value{
-data for stan model
+list with data for stan model and parms_true with parameter values
 }
 \description{
 Simulate data for MDCEV model

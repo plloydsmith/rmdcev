@@ -6,14 +6,15 @@
 \usage{
 FitMDCEV(data, psi_formula = NULL, lc_formula = NULL, weights = NULL,
   num_price = NULL, model = c("alpha", "les", "gamma", "gamma0"),
-  n_classes = 1, fixed_scale = 0, trunc_data = trunc_data,
-  seed = 123, initial.parameters = NULL, algorithm = c("MLE", "HB"),
+  n_classes = 1, fixed_scale = 0, trunc_data = 0, seed = 123,
+  initial.parameters = NULL, algorithm = c("MLE", "HB"),
   print_ll = 0, hessian = TRUE, n_draws = 30, keep_loglik = 0,
   hb_random_parameters = "fixed", n_iterations = 200, n_chains = 4)
 }
 \arguments{
 \item{data}{The (IxJ) data to be passed to Stan arranged by id then good including
-1) quant2) price 3) income. Notes I is number of individuals and J is number of non-numeraire goods.}
+1) quant2) price 3) income and columns for psi variables.
+Notes I is number of individuals and J is number of non-numeraire goods.}
 
 \item{psi_formula}{Formula for psi}
 

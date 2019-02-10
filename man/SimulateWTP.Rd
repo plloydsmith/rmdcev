@@ -4,19 +4,12 @@
 \alias{SimulateWTP}
 \title{SimulateWTP}
 \usage{
-SimulateWTP(stan_est, policies, nerrs = 30, nsims = 30,
-  cond_error = 1, algo_gen = NULL)
+SimulateWTP(df_wtp, nerrs = 30, cond_error = 1, algo_gen = NULL)
 }
 \arguments{
-\item{stan_est}{Stan fit model from FitMDCEV}
-
-\item{policies}{list containing
-price_p with additive price increases, and
-dat_psi_p with new psi data}
+\item{df_wtp}{Prepared data from PrepareSimulationData}
 
 \item{nerrs}{Number of error draws for welfare analysis}
-
-\item{nsims}{Number of simulation draws to use for parameter uncertainty}
 
 \item{cond_error}{Choose whether to draw errors conditional on actual demand or not.
 Conditional error draws (=1) or unconditional error draws.}
