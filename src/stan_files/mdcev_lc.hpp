@@ -635,7 +635,7 @@ public:
 
                 stan::math::initialize(lpsi, DUMMY_VAR__);
                 stan::math::fill(lpsi,DUMMY_VAR__);
-                stan::math::assign(lpsi,to_matrix(multiply(stan::model::rvalue(dat_psi, stan::model::cons_list(stan::model::index_omni(), stan::model::nil_index_list()), "dat_psi"),get_base1(psi,k,"psi",1)),I,J,0));
+                stan::math::assign(lpsi,to_matrix(multiply(dat_psi,get_base1(psi,k,"psi",1)),I,J,0));
                 current_statement_begin__ = 69;
                 validate_non_negative_index("f", "I", I);
                 validate_non_negative_index("f", "G", G);
@@ -1068,7 +1068,7 @@ public:
 
                 stan::math::initialize(lpsi, DUMMY_VAR__);
                 stan::math::fill(lpsi,DUMMY_VAR__);
-                stan::math::assign(lpsi,to_matrix(multiply(stan::model::rvalue(dat_psi, stan::model::cons_list(stan::model::index_omni(), stan::model::nil_index_list()), "dat_psi"),get_base1(psi,k,"psi",1)),I,J,0));
+                stan::math::assign(lpsi,to_matrix(multiply(dat_psi,get_base1(psi,k,"psi",1)),I,J,0));
                 current_statement_begin__ = 69;
                 validate_non_negative_index("f", "I", I);
                 validate_non_negative_index("f", "G", G);

@@ -4,22 +4,20 @@
 \alias{FitMDCEV}
 \title{FitMDCEV}
 \usage{
-FitMDCEV(data, data_class = NULL, weights = NULL, num_price = NULL,
-  model = c("alpha", "les", "gamma", "gamma0"), n_classes = 1,
-  fixed_scale = 0, trunc_data = trunc_data, seed = 123,
-  initial.parameters = NULL, algorithm = c("MLE", "HB"),
+FitMDCEV(data, psi_formula = NULL, lc_formula = NULL, weights = NULL,
+  num_price = NULL, model = c("alpha", "les", "gamma", "gamma0"),
+  n_classes = 1, fixed_scale = 0, trunc_data = trunc_data,
+  seed = 123, initial.parameters = NULL, algorithm = c("MLE", "HB"),
   print_ll = 0, hessian = TRUE, n_draws = 30, keep_loglik = 0,
   hb_random_parameters = "fixed", n_iterations = 200, n_chains = 4)
 }
 \arguments{
-\item{data}{The data to be passed to Stan including
-1) quant (IxJ) where each row is individual and each column is good,
-2) price (IxJ) where each row is individual and each column is good,
-3) income (Ix1) where each row is individual, and
-4) dat_psi(IJxNPsi) where each row is a individual-good combination.
-Notes I is number of individuals and J is number of non-numeraire goods.}
+\item{data}{The (IxJ) data to be passed to Stan arranged by id then good including
+1) quant2) price 3) income. Notes I is number of individuals and J is number of non-numeraire goods.}
 
-\item{data_class}{The data for class membership to be passed to Stan.}
+\item{psi_formula}{Formula for psi}
+
+\item{lc_formula}{Formula for latent class}
 
 \item{weights}{An optional vector of sampling or frequency weights.}
 

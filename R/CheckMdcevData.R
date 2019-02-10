@@ -5,17 +5,33 @@
 CheckMdcevData <- function(data){
 
 	message("Checking data...")
-	I <- nrow(data$price)
-	J <- ncol(data$price)
 
-	if (identical(dim(data$price), dim(data$quant)) == FALSE)
-		stop("price and quant dimension mismatch. Ensure dim(price) = dim(quant)")
+	if(!"id" %in% colnames(data))
+		stop("Data must have id column for individual")
 
-	if (identical(nrow(data$dat_psi), I*J )  == FALSE)
-		stop("dat_psi not I x J")
+	if(!"good" %in% colnames(data))
+		stop("Data must have good column for non-numeraire alternatives")
 
-	if (identical(length(data$inc), I )  == FALSE)
-		stop("inc data not length I")
+	if(!"quant" %in% colnames(data))
+		stop("Data must have quant column for consumption")
+
+	if(!"price" %in% colnames(data))
+		stop("Data must have price column for non-numeraire alternatives")
+
+	if(!"inc" %in% colnames(data))
+		stop("Data must have inc column for individual's income")
+
+	check <- tbl_df(data) %>%
+		mutate(expend = price * quant) %>%
+		group_by(id) %>%
+		summarise(numeraire = mean(inc) - sum(expend)) %>%
+		select(numeraire)
+
+	if (sum(check$numeraire < 0) > 0)
+		stop("Numeraire is less than 0 for at least one individual")
+
+	if (sum(data$price <= 0) > 0)
+		stop("Price is less than or equal to 0 for at least one individual good")
 
 	message("Data is good")
 }

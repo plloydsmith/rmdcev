@@ -2,15 +2,19 @@
 #' @description Process MDCEV data
 #' @inheritParams FitMDCEV
 #' @param model_options list of model options
+#' @importFrom stats model.matrix
+
 #' @export
-processMDCEVdata <- function(data,
-							 data_class,
+processMDCEVdata <- function(data, psi_formula, lc_formula,
 							 num_price,
 							 model_options){
-	NPsi <- ncol(data$dat_psi)
 
-	J <- ncol(data$quant)
-	I <- nrow(data$quant)
+	dat_psi <- model.matrix(psi_formula, data)
+
+	NPsi <- ncol(dat_psi)
+
+	J <- length(unique(data$good))
+	I <- length(unique(data$id))
 
 	if (model_options$fixed_scale == 1)
 		NScale <- 0
@@ -41,18 +45,23 @@ processMDCEVdata <- function(data,
 	if(is.null(num_price)) # default price numeraire is one
 		num_price <- rep(1, I)
 
-	nonzero <- cbind(1, data$quant != 0)
+	# convert quant/price to matrices
+	price <- matrix(data$price, ncol = J, byrow = TRUE)
+	quant <- matrix(data$quant, ncol = J, byrow = TRUE)
+	inc <- matrix(data$inc, ncol = J, byrow = TRUE)[,1]
+
+	nonzero <- cbind(1, quant != 0)
 	M <- rowSums(nonzero != 0)
 	M_factorial = factorial(M-1)
 
 	# Put data into one list for rstan
 	stan_data =
 		list(I = I, J = J, NPsi = NPsi,
-			 dat_psi = as.matrix(data$dat_psi),
-			 j_price = data$price,
-			 j_quant = data$quant,
+			 dat_psi = as.matrix(dat_psi),
+			 j_price = price,
+			 j_quant = quant,
 			 num_price = as.vector(num_price),
-			 income = as.vector(data$inc),
+			 income = as.vector(inc),
 			 M_factorial = M_factorial,
 			 model_num = model_num,
 			 fixed_scale = model_options$fixed_scale,
@@ -60,13 +69,11 @@ processMDCEVdata <- function(data,
 			 trunc_data = model_options$trunc_data)
 
 	if (model_options$n_classes > 1){
-		if (is.null(data_class)) {# default constant if no membership variables
-			stan_data$data_class <- as.matrix(rep(1, I))
-			stan_data$L <- 1 # number of membership variables
-		} else {
-			stan_data$data_class <- data_class
-			stan_data$L <- ncol(data_class) # number of membership variables
-		}
+		data_class <- tbl_df(data) %>%
+			distinct(id, .keep_all = T) %>%
+			model.matrix(lc_formula, .)
+		stan_data$data_class <- as.matrix(data_class)
+		stan_data$L <- ncol(data_class) # number of membership variables
 		stan_data$K <- model_options$n_classes
 	}
 return(stan_data)

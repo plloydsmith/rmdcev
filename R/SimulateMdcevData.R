@@ -3,20 +3,27 @@
 #' @inheritParams FitMDCEV
 #' @param nobs Number of individuals
 #' @param ngoods Number of non-nuemraire goods
-#' @param inc_mean Mean income
-#' @param inc_sd Standard deviation of income
-#' @param price_mean Mean price for non-numeraire goods
-#' @param price_sd Standard deviation of price
+#' @param inc_lo Mean income
+#' @param inc_hi Standard deviation of income
+#' @param price_lo Mean price for non-numeraire goods
+#' @param price_hi Standard deviation of price
+#' @param alpha_parms Parameter value for alpha term
+#' @param scale_parms Parameter value for scale term
+#' @param gamma_parms Parameter value for gamma terms
+#' @param psi_i_parms Parameter value for psi terms that vary by individual
+#' @param psi_j_parms Parameter value for psi terms that vary by good
+#' @param nerrs Number of error draws for demand simulation
+#' @importFrom stats runif
 #' @return data for stan model
 SimulateMdcevData <- function(model, nobs = 1000, ngoods = 10,
-							  inc_mean = 100000, inc_sd = 50000,
-							  price_mean = 5, price_sd = 100,
+							  inc_lo = 100000, inc_hi = 50000,
+							  price_lo = 5, price_hi = 100,
 							  alpha_parms = 0.8,
 							  scale_parms = 1,
 							  gamma_parms = 1 + runif(ngoods, 0, 2),
 							  psi_i_parms = c(-1.5, 3, -2, 1, 2),
 							  psi_j_parms = c(-5, 0.5, 2),
-					 nerrs = 15){
+					 			nerrs = 15){
 
 #nobs = 100
 #ngoods = 10
@@ -30,8 +37,8 @@ SimulateMdcevData <- function(model, nobs = 1000, ngoods = 10,
 #psi_i_parms = c(-1.5, 3, -2, 1, 2)
 #psi_j_parms = c(-5, 0.5, 2)
 #nerrs = 15
-	inc <- inc_mean + runif(nobs, 0, inc_sd) # budget
-	price <- price_mean + matrix(runif(nobs*ngoods, 0, price_sd), nobs, ngoods)  # price of non-numeraire good
+	inc <- inc_lo + runif(nobs, 0, inc_hi) # budget
+	price <- price_lo + matrix(runif(nobs*ngoods, 0, price_hi), nobs, ngoods)  # price of non-numeraire good
 
 #	psi_names <- c(paste(rep('psi_j',length(psi_j_parms)),1:length(psi_j_parms),sep=""),
 #				   paste(rep('psi_i',length(psi_i_parms)),1:length(psi_i_parms),sep=""))

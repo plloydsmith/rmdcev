@@ -65,7 +65,7 @@ transformed parameters {
 	vector[I] log_like_all;
 
 	for (k in 1:K){
-		matrix[I, J] lpsi = to_matrix(dat_psi[] * psi[k], I, J, 0);
+		matrix[I, J] lpsi = to_matrix(dat_psi * psi[k], I, J, 0);
 		matrix[I, G] f;
 		matrix[I, G] v;
 		matrix[I, J] v_j;

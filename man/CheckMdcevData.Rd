@@ -7,12 +7,8 @@
 CheckMdcevData(data)
 }
 \arguments{
-\item{data}{The data to be passed to Stan including
-1) quant (IxJ) where each row is individual and each column is good,
-2) price (IxJ) where each row is individual and each column is good,
-3) income (Ix1) where each row is individual, and
-4) dat_psi(IJxNPsi) where each row is a individual-good combination.
-Notes I is number of individuals and J is number of non-numeraire goods.}
+\item{data}{The (IxJ) data to be passed to Stan arranged by id then good including
+1) quant2) price 3) income. Notes I is number of individuals and J is number of non-numeraire goods.}
 }
 \description{
 Check MDCEV data

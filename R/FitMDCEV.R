@@ -1,12 +1,9 @@
 #' @title FitMDCEV
 #' @description Fit a MDCEV model using MLE or HB
-#' @param data The data to be passed to Stan including
-#' 1) quant (IxJ) where each row is individual and each column is good,
-#' 2) price (IxJ) where each row is individual and each column is good,
-#' 3) income (Ix1) where each row is individual, and
-#' 4) dat_psi(IJxNPsi) where each row is a individual-good combination.
-#' Notes I is number of individuals and J is number of non-numeraire goods.
-#' @param data_class The data for class membership to be passed to Stan.
+#' @param psi_formula Formula for psi
+#' @param lc_formula Formula for latent class
+#' @param data The (IxJ) data to be passed to Stan arranged by id then good including
+#' 1) quant2) price 3) income. Notes I is number of individuals and J is number of non-numeraire goods.
 #' @param weights An optional vector of sampling or frequency weights.
 #' @param num_price An optional vector containing price of numeraire or outside good (default is 1).
 #' @param model A string indicating which model specification is estimated.
@@ -50,7 +47,8 @@
 #' @export
 #'
 FitMDCEV <- function(data,
-					 data_class = NULL,
+					 psi_formula = NULL,
+					 lc_formula = NULL,
 					 weights = NULL,
 					 num_price = NULL,
 					 model = c("alpha", "les", "gamma", "gamma0"),
@@ -129,7 +127,7 @@ FitMDCEV <- function(data,
 
 #	data <- stan.dat
 
-	stan_data <- processMDCEVdata(data, data_class, num_price, mle_options)
+	stan_data <- processMDCEVdata(data, psi_formula, lc_formula, num_price, mle_options)
 
 	# If no user supplied weights, replace weights with vector of ones
 	if (is.null(weights))

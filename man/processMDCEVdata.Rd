@@ -4,17 +4,15 @@
 \alias{processMDCEVdata}
 \title{processMDCEVdata}
 \usage{
-processMDCEVdata(data, data_class, num_price, model_options)
+processMDCEVdata(data, psi_formula, lc_formula, num_price, model_options)
 }
 \arguments{
-\item{data}{The data to be passed to Stan including
-1) quant (IxJ) where each row is individual and each column is good,
-2) price (IxJ) where each row is individual and each column is good,
-3) income (Ix1) where each row is individual, and
-4) dat_psi(IJxNPsi) where each row is a individual-good combination.
-Notes I is number of individuals and J is number of non-numeraire goods.}
+\item{data}{The (IxJ) data to be passed to Stan arranged by id then good including
+1) quant2) price 3) income. Notes I is number of individuals and J is number of non-numeraire goods.}
 
-\item{data_class}{The data for class membership to be passed to Stan.}
+\item{psi_formula}{Formula for psi}
+
+\item{lc_formula}{Formula for latent class}
 
 \item{num_price}{An optional vector containing price of numeraire or outside good (default is 1).}
 
