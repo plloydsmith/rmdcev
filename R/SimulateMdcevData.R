@@ -2,11 +2,11 @@
 #' @description Simulate data for MDCEV model
 #' @inheritParams FitMDCEV
 #' @param nobs Number of individuals
-#' @param ngoods Number of non-nuemraire goods
-#' @param inc_lo Mean income
-#' @param inc_hi Standard deviation of income
-#' @param price_lo Mean price for non-numeraire goods
-#' @param price_hi Standard deviation of price
+#' @param ngoods Number of non-numeraire goods
+#' @param inc_lo Low bound of income for uniform draw
+#' @param inc_hi High bound of income for uniform draw
+#' @param price_lo Low bound of price for uniform draw
+#' @param price_hi High bound of price for uniform draw
 #' @param alpha_parms Parameter value for alpha term
 #' @param scale_parms Parameter value for scale term
 #' @param gamma_parms Parameter value for gamma terms
@@ -14,32 +14,20 @@
 #' @param psi_j_parms Parameter value for psi terms that vary by good
 #' @param nerrs Number of error draws for demand simulation
 #' @importFrom stats runif
-#' @return data for stan model
+#' @return list with data for stan model and parms_true with parameter values
+#' @export
 SimulateMdcevData <- function(model, nobs = 1000, ngoods = 10,
-							  inc_lo = 75000, inc_hi = 100000,
-							  price_lo = 5, price_hi = 100,
-							  alpha_parms = 0.8,
+							  inc_lo = 100000, inc_hi = 150000,
+							  price_lo = 10, price_hi = 105,
+							  alpha_parms = 0.5,
 							  scale_parms = 1,
-							  gamma_parms = 1 + runif(ngoods, 0, 2),
+							  gamma_parms = runif(ngoods, 1, 3),
 							  psi_i_parms = c(-1.5, 3, -2, 1, 2),
 							  psi_j_parms = c(-5, 0.5, 2),
-					 			nerrs = 3){
+					 		  nerrs = 3){
 
-#nobs = 1000
-#ngoods = 10
-#inc_lo = 50000
-#inc_hi = 100000
-#price_lo = 5
-#price_hi = 100
-#alpha_parms = 0.8
-#scale_parms = 1
-#gamma_parms = 1 + runif(ngoods, 0, 2)
-#psi_i_parms = c(-1.5, 3, -2, 1, 2)
-#psi_j_parms = c(-5, 0.5, 2)
-#nerrs = 1
-
-	inc <- inc_lo + runif(nobs, 0, inc_hi) # budget
-	price <- price_lo + matrix(runif(nobs*ngoods, 0, price_hi), nobs, ngoods)  # price of non-numeraire good
+	inc <-  runif(nobs, inc_lo, inc_hi)
+	price <- matrix(runif(nobs*ngoods, price_lo, price_hi), nobs, ngoods)
 
 	true <- gamma_parms
 	parms <- c(paste(rep('gamma', ngoods), 1:ngoods, sep=""))
@@ -50,18 +38,20 @@ SimulateMdcevData <- function(model, nobs = 1000, ngoods = 10,
 	scale_true <- cbind(parms, true)
 
 	# Create psi variables that vary over alternatives
-	psi_j <- cbind(rep(1,ngoods),matrix(runif(ngoods*(length(psi_j_parms)-1), 0 , 1), nrow = ngoods))
+	psi_j <- cbind(rep(1,ngoods), # add constant term
+				   matrix(runif(ngoods*(length(psi_j_parms)-1), 0 , 1), nrow = ngoods))
 	psi_j <-  rep(1, nobs) %x% psi_j
 
-	psi_i <- 2 * matrix(runif(nobs * length(psi_i_parms)), nobs,length(psi_i_parms))
+	psi_i <- matrix(2 * runif(nobs * length(psi_i_parms)), nobs,length(psi_i_parms))
 	psi_i <- psi_i %x% rep(1, ngoods)
 
 	dat_psi = cbind(psi_j, psi_i)
-
-	colnames(dat_psi) <- c(paste(rep('psi', ncol(dat_psi)), 1:ncol(dat_psi), sep=""))
+	colnames(dat_psi) <- c(paste(rep('b', ncol(dat_psi)), 1:ncol(dat_psi), sep=""))
 
 	true <- c(psi_j_parms, psi_i_parms)
-	parms <- colnames(dat_psi)
+
+	parms <- paste0(rep('psi', length(true)), sep="_",
+					colnames(dat_psi))
 	parms_true <- cbind(parms, true)
 
 	if (model == "les"){
@@ -98,8 +88,8 @@ SimulateMdcevData <- function(model, nobs = 1000, ngoods = 10,
 		stop("No model specificied. Choose a model")
 
 	psi_parms <- c(psi_j_parms, psi_i_parms)
-	psi_sims <- matrix(dat_psi %*% psi_parms, ncol = ngoods, byrow = TRUE)
 
+	psi_sims <- matrix(dat_psi %*% psi_parms, ncol = ngoods, byrow = TRUE)
 	psi_sims <- CreateListsRow(psi_sims)
 	psi_sims <- list(psi_sims )
 	names(psi_sims) <- "psi_sims"
@@ -113,7 +103,7 @@ SimulateMdcevData <- function(model, nobs = 1000, ngoods = 10,
 
 	df_indiv <- c(inc_list, price_list, psi_sims)
 
-	expose_stan_functions(rmdcev:::stanmodels$SimulationFunctions)
+	expose_stan_functions(stanmodels$SimulationFunctions)
 
 	quant <- pmap(df_indiv, CalcmdemandOne_rng,
 				  gamma_sim=gamma_parms,
@@ -123,14 +113,13 @@ SimulateMdcevData <- function(model, nobs = 1000, ngoods = 10,
 
 	# Convert simulated data into estimation data
 	quant <- matrix(unlist(quant), nrow = nobs, byrow = TRUE)
-
 	quant <- quant[,2:(ncol(quant))]
 	quant <- as.vector(t(quant))
 	price <- as.vector(t(price))
 
 	id <- rep(1:nobs, each = ngoods)
 	good <- rep(1:ngoods, times = nobs)
-	inc <- rep(inc, each = ngoods) # budget
+	inc <- rep(inc, each = ngoods)
 
 	data <- as.data.frame(cbind(id, good, quant, price, dat_psi, inc))
 

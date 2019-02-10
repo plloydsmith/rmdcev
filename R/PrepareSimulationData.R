@@ -1,8 +1,74 @@
+#' @title PrepareSimulationData
+#' @description Prepare Data for WTP simulation
+#' @param stan_est Stan fit model from FitMDCEV
+#' @param policies list containing
+#' price_p with additive price increases, and
+#' dat_psi_p with new psi data
+#' @param nsims Number of simulation draws to use for parameter uncertainty
+#' @return A list with individual-specific data (df_indiv) and common data (df_common)
+#' and n_classes for number of classes and model_num for model type
+#' @export
+
+PrepareSimulationData <- function(stan_est, policies, nsims = 30){
+
+	# Checks on simulation options
+	model_num <- stan_est$stan_data$model_num
+
+	if (nsims > stan_est$n_draws) {
+		nsims <- stan_est$n_draws
+		warning("Number of simulations > Number of Draws from stan_est. nsims has been set to: ", nsims)
+	}
+
+	# Sample from parameter estimate draws
+	est_sim <- stan_est$est_pars %>%
+		distinct(.data$sim_id) %>%
+		sample_n(., nsims ) %>%
+		left_join(stan_est$est_pars, by = "sim_id")
+
+	if(stan_est$n_classes == 1){
+		sim_welfare <- ProcessSimulationData(est_sim, stan_est, policies, nsims)
+		df_common <- sim_welfare
+		df_common$df_indiv <- NULL
+
+		df_indiv <- sim_welfare$df_indiv
+
+	} else if(stan_est$n_classes > 1){
+
+		est_sim_lc <- suppressWarnings(est_sim %>% # suppress warnings about scale not having a class parameter
+									   	filter(!str_detect(.data$parms, "beta")) %>%
+									   	separate_(.data$parms, into = c("parms", "class", "good")) %>%
+									   	mutate(good = ifelse(is.na(as.numeric(.data$good)), "0", .data$good )) %>%
+									   	unite_(parms, parms, good))
+
+		est_sim_lc <- split( est_sim_lc , f = est_sim_lc$class )
+		names(est_sim_lc) <- rep("est_sim", stan_est$n_classes)
+
+		est_sim_lc <- map(est_sim_lc, function(x){ x %>%
+				select(-class)})
+
+		sim_welfare <- map(est_sim_lc, ProcessSimulationData, stan_est, policies, nsims)
+
+		df_common <- map(sim_welfare, `[`, c("price_p_list", "gamma_sim_list", "alpha_sim_list", "scale_sim"))
+		names(df_common) <- rep("df_common", stan_est$n_classes)
+
+		df_indiv <- flatten(map(sim_welfare, `[`, c("df_indiv")))
+
+
+	}
+	df_wtp <- list(df_indiv = df_indiv,
+				   df_common = df_common,
+				   n_classes = stan_est$n_classes,
+				   model_num = model_num)
+return(df_wtp)
+}
+
+
+
 #'@importFrom rlang .data
 #'
 #'
 #'
-PrepareSimulationData <- function(est_sim, stan_est, policies, nsims){
+ProcessSimulationData <- function(est_sim, stan_est, policies, nsims){
 
 	J <- stan_est$stan_data$J
 	I <- stan_est$stan_data$I

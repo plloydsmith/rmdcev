@@ -3,7 +3,8 @@
 #' @param psi_formula Formula for psi
 #' @param lc_formula Formula for latent class
 #' @param data The (IxJ) data to be passed to Stan arranged by id then good including
-#' 1) quant2) price 3) income. Notes I is number of individuals and J is number of non-numeraire goods.
+#' 1) quant2) price 3) income and columns for psi variables.
+#' Notes I is number of individuals and J is number of non-numeraire goods.
 #' @param weights An optional vector of sampling or frequency weights.
 #' @param num_price An optional vector containing price of numeraire or outside good (default is 1).
 #' @param model A string indicating which model specification is estimated.
@@ -54,7 +55,7 @@ FitMDCEV <- function(data,
 					 model = c("alpha", "les", "gamma", "gamma0"),
 					 n_classes = 1,
 					 fixed_scale = 0,
-					 trunc_data = trunc_data,
+					 trunc_data = 0,
 					 seed = 123,
 					 initial.parameters = NULL,
 					 algorithm = c("MLE", "HB"),
@@ -143,26 +144,34 @@ FitMDCEV <- function(data,
 										include.stanfit = TRUE,
 									  show.stan.warnings = TRUE)
 
-	###########################################################################
-	# Get parameter estimates in matrix form
-	result$est_pars <- extract(result$stan_fit, permuted = TRUE, inc_warmup = FALSE) %>%
-			as.data.frame() %>%
-			select(-starts_with("log_like"), -starts_with("sum_log_lik"), -.data$lp__)
+		# Get parameter estimates in matrix form
+		result$est_pars <- extract(result$stan_fit, permuted = TRUE, inc_warmup = FALSE) %>%
+				as.data.frame() %>%
+				select(-starts_with("log_like"), -starts_with("sum_log_lik"), -.data$lp__)
 
 	} else if (algorithm == "MLE") {
 
-	result <- maxlikeMDCEV(stan_data, initial.parameters, seed, mle_options)
+		result <- maxlikeMDCEV(stan_data, initial.parameters, seed, mle_options)
 
-	###########################################################################
-	# Get parameter estimates in matrix form
-	result$est_pars <- tbl_df(result[["stan_fit"]][["theta_tilde"]]) %>%
-		select(-starts_with("log_like"), -starts_with("sum_log_lik"))
+		# Get parameter estimates in matrix form
+		result$est_pars <- tbl_df(result[["stan_fit"]][["theta_tilde"]]) %>%
+			select(-starts_with("log_like"), -starts_with("sum_log_lik"))
 
-	result[["stan_fit"]][["theta_tilde"]] <- NULL
+		result[["stan_fit"]][["theta_tilde"]] <- NULL
 
 	}
 	end.time <- proc.time()
+	# Rename psi variables
 
+	psi.names <- paste0(rep('psi', ncol(stan_data[["dat_psi"]])), sep="_",
+						colnames(stan_data[["dat_psi"]]))
+	original.names <- colnames(result$est_pars)
+	new.names <- c(psi.names, original.names[-c(1:length(psi.names))])
+	colnames(result$est_pars) <- new.names
+	# LC names still to do
+#	class.names <- colnames(stan_est[["stan_data"]][["data_class"]])
+#	parms <- c(paste(rep('betam', length(class.names)), 1:length(class.names), sep=""))
+#	names <- cbind(parms, paste(rep(class, class.names)
 	result$est_pars <- result$est_pars %>%
 		rowid_to_column("sim_id") %>%
 		gather(parms, value, -sim_id)
