@@ -4,11 +4,11 @@
 \alias{SimulateMdcevData}
 \title{SimulateMdcevData}
 \usage{
-SimulateMdcevData(model, nobs = 1000, ngoods = 10, inc_lo = 1e+05,
-  inc_hi = 50000, price_lo = 5, price_hi = 100, alpha_parms = 0.8,
+SimulateMdcevData(model, nobs = 1000, ngoods = 10, inc_lo = 75000,
+  inc_hi = 1e+05, price_lo = 5, price_hi = 100, alpha_parms = 0.8,
   scale_parms = 1, gamma_parms = 1 + runif(ngoods, 0, 2),
   psi_i_parms = c(-1.5, 3, -2, 1, 2), psi_j_parms = c(-5, 0.5, 2),
-  nerrs = 15)
+  nerrs = 3)
 }
 \arguments{
 \item{model}{A string indicating which model specification is estimated.
