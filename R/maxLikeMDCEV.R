@@ -16,7 +16,12 @@ maxlikeMDCEV <- function(stan_data, initial.parameters,
 		stan_fit <- optimizing(stan.model, data = stan_data, as_vector = FALSE, init = initial.parameters,
 						   draws = mle_options$n_draws, hessian = mle_options$hessian)
 	}
-
+#	compiled_mle <- stan(file = "C:/Dropbox/Research/code/rmdcev/src/stan_files/mdcev.stan",
+#						 data=stan_data,
+#						 chains = 0, iter = 0)
+#	stan_fit <- optimizing(object=get_stanmodel(compiled_mle),
+#						   data = stan_data, as_vector = FALSE,
+#						   draws = mle_options$n_draws, hessian = mle_options$hessian)
 	result <- list()
 
 	if (mle_options$keep_loglik == 0)
@@ -47,11 +52,11 @@ maxlikeMDCEV <- function(stan_data, initial.parameters,
 			init.psi[i] <- init.psi[i] + init.shift[i]
 		}
 
-		init.psi <- matrix(init.psi, nrow=data$K,  ncol=length(init.psi), byrow=TRUE)
+		init.psi <- matrix(init.psi, nrow=stan_data$K,  ncol=length(init.psi), byrow=TRUE)
 
 		init = list(psi = init.psi)
 
-		if (data$fixed_scale == 0)
+		if (stan_data$fixed_scale == 0)
 			init$scale <- rep(stan_fit$par[["scale"]], stan_data$K)
 
 		if (stan_data$model_num == 1 || stan_data$model_num == 3){
@@ -61,12 +66,12 @@ maxlikeMDCEV <- function(stan_data, initial.parameters,
 			init$alpha <- matrix(rep(init.par$alpha, stan_data$K), nrow=stan_data$K, ncol=stan_data$J)
 		} else if (stan_data$model_num == 4){
 #			init$alpha <- matrix(rep(0, stan_data$K), nrow=stan_data$K, ncol=0)
-			init$gamma <- init.par$gamma
+			init$gamma <- matrix(rep(init.par$gamma, stan_data$K), nrow=stan_data$K, ncol=stan_data$J)
 		}
 
 		stan.model <- stanmodels$mdcev_lc
 
-		stan_fit <- optimizing(stan.model, data = data, as_vector = FALSE, init = init,
+		stan_fit <- optimizing(stan.model, data = stan_data, as_vector = FALSE, init = init,
 							   draws = mle_options$n_draws, hessian = mle_options$hessian)
 
 		if (mle_options$keep_loglik == 0)
