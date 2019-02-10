@@ -16,33 +16,31 @@
 #' @importFrom stats runif
 #' @return data for stan model
 SimulateMdcevData <- function(model, nobs = 1000, ngoods = 10,
-							  inc_lo = 100000, inc_hi = 50000,
+							  inc_lo = 75000, inc_hi = 100000,
 							  price_lo = 5, price_hi = 100,
 							  alpha_parms = 0.8,
 							  scale_parms = 1,
 							  gamma_parms = 1 + runif(ngoods, 0, 2),
 							  psi_i_parms = c(-1.5, 3, -2, 1, 2),
 							  psi_j_parms = c(-5, 0.5, 2),
-					 			nerrs = 15){
+					 			nerrs = 3){
 
-#nobs = 100
+#nobs = 1000
 #ngoods = 10
-#inc_mean = 100000
-#inc_sd = 50000
-#price_mean = 5
-#price_sd = 100
+#inc_lo = 50000
+#inc_hi = 100000
+#price_lo = 5
+#price_hi = 100
 #alpha_parms = 0.8
 #scale_parms = 1
 #gamma_parms = 1 + runif(ngoods, 0, 2)
 #psi_i_parms = c(-1.5, 3, -2, 1, 2)
 #psi_j_parms = c(-5, 0.5, 2)
-#nerrs = 15
+#nerrs = 1
+
 	inc <- inc_lo + runif(nobs, 0, inc_hi) # budget
 	price <- price_lo + matrix(runif(nobs*ngoods, 0, price_hi), nobs, ngoods)  # price of non-numeraire good
 
-#	psi_names <- c(paste(rep('psi_j',length(psi_j_parms)),1:length(psi_j_parms),sep=""),
-#				   paste(rep('psi_i',length(psi_i_parms)),1:length(psi_i_parms),sep=""))
-#	scale_names <- c('scale')
 	true <- gamma_parms
 	parms <- c(paste(rep('gamma', ngoods), 1:ngoods, sep=""))
 	gamma_true <- cbind(parms, true)
@@ -50,15 +48,6 @@ SimulateMdcevData <- function(model, nobs = 1000, ngoods = 10,
 	true <- scale_parms
 	parms <- 'scale1'
 	scale_true <- cbind(parms, true)
-	# depending on model specification
-#	if (model_type == 2){
-#		alpha_names <- c(paste(rep('alpha',ngoods),1:(ngoods+1),sep=""))
-#	} else if (model_type == 4) {
-#		alpha_names <- NULL
-#	} else alpha_names <- "alpha"
-
-	# order is important
-#	names <- c(psi_i_names, psi_j_names, gamma_names, alpha_names, scale_names)
 
 	# Create psi variables that vary over alternatives
 	psi_j <- cbind(rep(1,ngoods),matrix(runif(ngoods*(length(psi_j_parms)-1), 0 , 1), nrow = ngoods))
