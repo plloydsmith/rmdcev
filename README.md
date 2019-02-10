@@ -32,7 +32,7 @@ Lloyd-Smith, P (2018). ["A New Approach to Calculating Welfare Measures in Kuhn-
 
 ## Estimation
 
-As an example, let's simulate some data using Gamma specification.
+As an example, we can simulate some data using the Gamma specification.
 
 ```{r} 
 
@@ -41,7 +41,6 @@ p_load(tidyverse, rmdcev)
 model <- "gamma"
 sim.data <- SimulateMdcevData(model = model, nobs = 1000, ngoods = 10)
 ```
-
 
 Estimate model using MLE
 ``` {r}
