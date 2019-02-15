@@ -5,7 +5,11 @@ The _rmdcev_ R package estimates and simulates multiple discrete-continuous extr
 
 ## Installation
 
-You can install the released version of rmdcev from GitHub using devtools
+I recommend you first install rstan following these steps:
+
+https://github.com/stan-dev/rstan/wiki/RStan-Getting-Started
+
+Once rstan is installed, you can install the released version of rmdcev from GitHub using devtools
 
 ``` r
 library(devtools)
