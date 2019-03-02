@@ -3,23 +3,12 @@
 
 The _rmdcev_ R package estimates and simulates multiple discrete-continuous extreme value (MDCEV) demand models with observed and unobserved individual heterogneity. Fixed parameter, latent class, and random parameter models can be estimated. These models are estimated using maximum likelihood or Bayesian estimation techniques and are implemented in Stan, which is a C++ package for performing full Bayesian inference (see http://mc-stan.org/). The package also supports Phaneuf and von Haefen's Kuhn-Tucker model specification.
 
-## Installation
-
-I recommend you first install rstan following these steps:
-
-https://github.com/stan-dev/rstan/wiki/RStan-Getting-Started
-
-Once rstan is installed, you can install the released version of rmdcev from GitHub using devtools
-
-``` r
-library(devtools)
-install_github("plloydsmith/rmdcev")
-```
+## Current Status
 
 Development is in progress. Currently users can estimate the following models:
 
-1. Fixed parameter models
-2. Latent class models
+1. Fixed parameter models (maximum likelihood or Bayesian)
+2. Latent class models (maximum likelihood)
 
 Under development
 1. Random parameters models
@@ -33,6 +22,19 @@ For more details on the welfare simulation:
 
 Lloyd-Smith, P (2018). ["A New Approach to Calculating Welfare Measures in Kuhn-Tucker Demand Models."](https://www.sciencedirect.com/science/article/pii/S1755534517300994) Journal of Choice Modeling, 26: 19-27
 
+
+## Installation
+
+I recommend you first install rstan following these steps:
+
+https://github.com/stan-dev/rstan/wiki/RStan-Getting-Started
+
+Once rstan is installed, you can install the released version of rmdcev from GitHub using devtools
+
+``` r
+library(devtools)
+install_github("plloydsmith/rmdcev")
+```
 
 ## Estimation
 
