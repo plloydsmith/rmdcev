@@ -9,6 +9,8 @@ maxlikeMDCEV <- function(stan_data, initial.parameters,
 {
 	stan.model <- stanmodels$mdcev
 
+	message("Using MLE to estimate model")
+
 	if (is.null(initial.parameters)){
 		stan_fit <- optimizing(stan.model, data = stan_data, as_vector = FALSE,
 							   draws = mle_options$n_draws, hessian = mle_options$hessian)
@@ -70,6 +72,8 @@ maxlikeMDCEV <- function(stan_data, initial.parameters,
 		}
 
 		stan.model <- stanmodels$mdcev_lc
+
+		message("Using MLE to estimate LC model")
 
 		stan_fit <- optimizing(stan.model, data = stan_data, as_vector = FALSE, init = init,
 							   draws = mle_options$n_draws, hessian = mle_options$hessian)

@@ -12,8 +12,8 @@ FitMDCEV(data, psi_formula = NULL, lc_formula = NULL, weights = NULL,
   hb_random_parameters = "fixed", n_iterations = 200, n_chains = 4)
 }
 \arguments{
-\item{data}{The (IxJ) data to be passed to Stan arranged by id then good including
-1) quant2) price 3) income and columns for psi variables.
+\item{data}{The (IxJ) data to be passed to Stan including 1) id, 2) good, 3) quant,
+4) price, 5) income, and columns for psi variables. Arrange data by id then good.
 Notes I is number of individuals and J is number of non-numeraire goods.}
 
 \item{psi_formula}{Formula for psi}

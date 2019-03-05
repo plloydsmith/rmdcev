@@ -24,10 +24,10 @@ HierarchicalBayesMDCEV <- function(stan_data, hb_options,
 	options(mc.cores = parallel::detectCores())
 
 	# Create indices for individual level psi parameters
-	indexes <- data_frame(individual = rep(1:stan_data$I, each = stan_data$J),
+	indexes <- tibble(individual = rep(1:stan_data$I, each = stan_data$J),
 						  task = rep(1:stan_data$I, each = stan_data$J),
 						  row = 1:(stan_data$I*stan_data$J)) %>%
-		group_by_(task) %>%
+		group_by(task) %>%
 		summarise(task_individual = first(individual),
 				  start = first(row),
 				  end = last(row))
@@ -48,6 +48,7 @@ HierarchicalBayesMDCEV <- function(stan_data, hb_options,
 #	on.warnings <- GetStanWarningHandler(show.stan.warnings)
 #	on.error <- GetStanErrorHandler()
 
+	message("Using HB to estimate model")
 
 #	InterceptExceptions(
 #		{

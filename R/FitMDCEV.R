@@ -2,8 +2,8 @@
 #' @description Fit a MDCEV model using MLE or HB
 #' @param psi_formula Formula for psi
 #' @param lc_formula Formula for latent class
-#' @param data The (IxJ) data to be passed to Stan arranged by id then good including
-#' 1) quant2) price 3) income and columns for psi variables.
+#' @param data The (IxJ) data to be passed to Stan including 1) id, 2) good, 3) quant,
+#' 4) price, 5) income, and columns for psi variables. Arrange data by id then good.
 #' Notes I is number of individuals and J is number of non-numeraire goods.
 #' @param weights An optional vector of sampling or frequency weights.
 #' @param num_price An optional vector containing price of numeraire or outside good (default is 1).
@@ -83,7 +83,6 @@ FitMDCEV <- function(data,
 #synthetic.sample.size = NULL,
 #tasks.left.out = 0,
 #lc.tolerance = 0.0001,
-#data <-stan.dat
 #include.choice.parameters = TRUE,
 #respondent.ids = NULL, ...
 
@@ -183,8 +182,7 @@ FitMDCEV <- function(data,
 	result$n_classes <- n_classes
 	result$n_draws <- n_draws
 	#	result$weights.description <- if (is.null(weights)) NULL else Labels(weights)
-	result$n_respondents <- data$I
-	result$n_alternatives <- data$n_alternatives
+	result$n_respondents <- stan_data$I
 	result$time.taken <- (end.time - start.time)[3]
 	class(result) <- "mdcev"
 	result
