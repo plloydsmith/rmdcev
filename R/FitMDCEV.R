@@ -21,10 +21,15 @@
 #' @param hessian Wheter to keep the Hessian matrix
 #' @param initial.parameters Specify initial parameters intead of
 #'     starting at random.
+#' @param prior_psi_sd standard deviation for normal prior with mean 0.
+#' @param prior_gamma_sd standard deviation for normal prior with mean 0.
+#' @param prior_alpha_sd standard deviation for normal prior with mean 0.5.
+#' @param prior_scale_sd standard deviation for normal prior with mean 1.
+#' @param prior_beta_m_sd standard deviation for normal prior with mean 0.
 #' @param n_iterations The number of iterations in Hierarchical Bayes.
 #' @param n_chains The number of chains in Hierarchical Bayes.
 #' @param hb_random_parameters The form of the covariance matrix for
-# #'     Hierarchical Bayes. Can be 'uncorr, 'corr'.
+# #'     Hierarchical Bayes. Can be 'fixed', 'uncorr, 'corr'.
 # #' @param hb.max.tree.depth
 # #'     http://mc-stan.org/misc/warnings.html#maximum-treedepth-exceeded
 # #' @param hb.adapt.delta
@@ -63,6 +68,11 @@ FitMDCEV <- function(data,
 					 print_ll = 0,
 					 #mle_tol = 0.0001,
 					 hessian = TRUE,
+					 prior_psi_sd = 10,
+					 prior_gamma_sd = 10,
+					 prior_alpha_sd = 0.5,
+					 prior_scale_sd = 1,
+					 prior_beta_m_sd = 10,
 					 n_draws = 30,
 					 keep_loglik = 0,
 					 #subset = NULL,
@@ -104,13 +114,14 @@ FitMDCEV <- function(data,
 						  print_ll = print_ll,
 						  hessian = hessian,
 						  n_draws = n_draws,
-						  keep_loglik = keep_loglik)
+						  keep_loglik = keep_loglik,
+						prior_psi_sd = prior_psi_sd,
+						prior_gamma_sd = prior_gamma_sd,
+						prior_alpha_sd = prior_alpha_sd,
+						prior_scale_sd = prior_scale_sd,
+						prior_beta_m_sd = prior_beta_m_sd)
 
-	hb_options <- list(fixed_scale = fixed_scale,
-					   model = model,
-					   n_classes = n_classes,
-					   trunc_data = trunc_data,
-					   n_iterations = n_iterations,
+	hb_options <- list(n_iterations = n_iterations,
 					   n_chains = n_chains,
 					   keep_loglik = keep_loglik,
 					   hb_random_parameters = hb_random_parameters,

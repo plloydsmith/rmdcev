@@ -4,7 +4,8 @@
 \alias{PrepareSimulationData}
 \title{PrepareSimulationData}
 \usage{
-PrepareSimulationData(stan_est, policies, nsims = 30)
+PrepareSimulationData(stan_est, policies, nsims = 30,
+  price_change_only = FALSE)
 }
 \arguments{
 \item{stan_est}{Stan fit model from FitMDCEV}
@@ -14,6 +15,8 @@ price_p with additive price increases, and
 dat_psi_p with new psi data}
 
 \item{nsims}{Number of simulation draws to use for parameter uncertainty}
+
+\item{price_change_only}{Choose if there is no change in dat_psi_p variables}
 }
 \value{
 A list with individual-specific data (df_indiv) and common data (df_common)

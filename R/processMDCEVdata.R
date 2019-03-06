@@ -63,12 +63,18 @@ processMDCEVdata <- function(data, psi_formula, lc_formula,
 			 num_price = as.vector(num_price),
 			 income = as.vector(inc),
 			 M_factorial = M_factorial,
+			 prior_psi = model_options$prior_psi,
+			 prior_gamma = model_options$prior_gamma,
+			 prior_alpha = model_options$prior_alpha,
+			 prior_scale = model_options$prior_scale,
 			 model_num = model_num,
 			 fixed_scale = model_options$fixed_scale,
 			 n_parameters = n_parameters,
 			 trunc_data = model_options$trunc_data)
 
 	if (model_options$n_classes > 1){
+		stan_data$prior_beta_m <- model_options$prior_beta_m
+
 		data_class <- tbl_df(data) %>%
 			distinct(id, .keep_all = T) %>%
 			model.matrix(lc_formula, .)

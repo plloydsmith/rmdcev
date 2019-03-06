@@ -1,6 +1,7 @@
 #' @title SimulateWTP
 #' @description Simulate WTP for MDCEV model
-#' @param df_wtp Prepared data from PrepareSimulationData
+#' @param df_indiv Prepared individual level data from PrepareSimulationData
+#' @param df_common Prepared common data from PrepareSimulationData
 #' @param nerrs Number of error draws for welfare analysis
 #' @param cond_error Choose whether to draw errors conditional on actual demand or not.
 #' Conditional error draws (=1) or unconditional error draws.
@@ -9,17 +10,15 @@
 #' @return wtp a list for each individual holding a nsims x npols matrix of wtp
 #' @importFrom stats quantile sd
 #' @export
-SimulateWTP <- function(df_wtp,
+SimulateWTP <- function(df_indiv, df_common,
 						nerrs = 30,
 						cond_error = 1,
 						algo_gen = NULL){
-#						parralel = FALSE,
-#						n_workers = 4){
 
 	start.time <- proc.time()
 
 	# Checks on simulation options
-	model_num <- df_wtp$model_num
+	model_num <- df_common$model_num
 
 	if (!is.null(algo_gen)){
 		if (model_num < 3 && algo_gen == 0){
@@ -44,12 +43,12 @@ SimulateWTP <- function(df_wtp,
 						algo_gen = algo_gen,
 						model_num = model_num)
 
-	if(df_wtp$n_classes == 1){
-		wtp <- StanWTP(df_wtp$df_indiv, df_wtp$df_common, sim_options)
+	if(df_common$n_classes == 1){
+		wtp <- StanWTP(df_indiv, df_common, sim_options)
 
-	} else if(df_wtp$n_classes > 1){
-		wtp <- map2(df_wtp$df_indiv, df_wtp$df_common, StanWTP, sim_options)#, parralel)
-		names(wtp) <- paste0("class", c(1:df_wtp$n_classes))
+	} else if(df_common$n_classes > 1){
+		wtp <- map2(df_indiv, df_common, StanWTP, sim_options)
+		names(wtp) <- paste0("class", c(1:df_common$n_classes))
 	}
 
 	time <- proc.time() - start.time
@@ -91,17 +90,17 @@ SummaryWelfare <- function(wtp, ci = 0.95){
 #' @param sim_options list of simualtion options
 #' @return wtp list
 #' @export
-StanWTP <- function(df_indiv, df_common, sim_options){#, parralel){
+StanWTP <- function(df_indiv, df_common, sim_options){
 
 #	df_indiv <- df_indiv$df_indiv
 #	df_common <- df_common$df_common
-	#wtpcppcode <- stanc("src/stan_files/SimulationFunctions.stan",
-	#					model_name = "SimulationFunctions")
 
-#	if (parralel == FALSE){
+	message("Compiling simulation code")
 	expose_stan_functions(stanmodels$SimulationFunctions)
-			#				  wtpcppcode)
 
+	message("Simulating...")
+
+	if (df_common$price_change_only == FALSE){
 	wtp <- pmap(df_indiv, CalcWTP_rng,
 				price_p=df_common$price_p_list,
 				gamma_sim=df_common$gamma_sim_list,
@@ -111,35 +110,16 @@ StanWTP <- function(df_indiv, df_common, sim_options){#, parralel){
 				cond_error=sim_options$cond_error,
 				algo_gen=sim_options$algo_gen,
 				model_num=sim_options$model_num)
-
-#	} else if (parralel == TRUE){
-#		wtp <- future_pmap(df_indiv, SimulateWTPParallel,
-#						   price_p=df_common$price_p_list,
-#						   gamma_sim=df_common$gamma_sim_list,
-#						   alpha_sim=df_common$alpha_sim_list,
-#						   scale_sim=df_common$scale_sim,
-#						   nerrs=sim_options$nerrs,
-#						   cond_error=sim_options$cond_error,
-#						   algo_gen=sim_options$algo_gen,
-#						   model_num=sim_options$model_num,
-#						   wtpcppcode = wtpcppcode,
-#						   .progress = TRUE,
-#						   .options = future_options(packages=c("rstan"), globals = FALSE))
-#	}
+	} else if (df_common$price_change_only == TRUE){
+		wtp <- pmap(df_indiv, CalcWTPPriceOnly_rng,
+					price_p=df_common$price_p_list,
+					gamma_sim=df_common$gamma_sim_list,
+					alpha_sim=df_common$alpha_sim_list,
+					scale_sim=df_common$scale_sim,
+					nerrs=sim_options$nerrs,
+					cond_error=sim_options$cond_error,
+					algo_gen=sim_options$algo_gen,
+					model_num=sim_options$model_num)
+	}
 	return(wtp)
 }
-
-# SimulateWTPParallel <- function(inc, quant_j, price, price_p, psi_p_sim,
-#								psi_sim, gamma_sim, alpha_sim, scale_sim,
-#								nerrs, cond_error, algo_gen, model_num,
-#								wtpcppcode){
-#	require(rstan)
-#	expose_stan_functions(wtpcppcode)
-#
-#	out <- CalcWTP_rng(inc, quant_j, price, price_p, psi_p_sim,
-#					   psi_sim, gamma_sim, alpha_sim, scale_sim,
-#					   nerrs, cond_error, algo_gen, model_num)
-
-#	return(out)
-#}
-

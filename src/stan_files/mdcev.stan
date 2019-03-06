@@ -9,6 +9,10 @@ data {
   vector[I] income;
   vector[I] num_price; // numeraire price
   vector[I] M_factorial; // (M-1)!
+  real prior_psi_sd;
+  real prior_gamma_sd;
+  real prior_alpha_sd;
+  real prior_scale_sd;
   int<lower = 1, upper = 4> model_num; // 1 is les, 2 is alpha, 3 gamma (one alpha for all), 4 alpha's set to 1e-06
   int<lower=0, upper=1> fixed_scale; // indicator to fix scale
    int<lower=0, upper=1> trunc_data; //indicator to correct estimation for truncated data
@@ -124,10 +128,10 @@ transformed parameters {
 
 model {
   // priors on the parameters
-  psi ~ normal(0, 10);
-  gamma ~ normal(0, 10);
-  alpha ~ normal(.5, .5);
-  scale ~ normal(1, 1);
+  psi ~ normal(0, prior_psi_sd);
+  gamma ~ normal(0, prior_gamma_sd);
+  alpha ~ normal(.5, prior_alpha_sd);
+  scale ~ normal(1, prior_scale_sd);
 
   target += sum(log_like);//objective to target
 }

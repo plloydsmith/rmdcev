@@ -566,6 +566,81 @@ matrix CalcWTP_rng(real inc, vector quant_j, vector price,
 return(wtp);
 }
 
+/**
+ * Calculate WTP for each individual, simulation, and policy using only price changes
+ * @param inc income
+ * @param quant_j non-numeraire consumption amounts
+ * @param price full price vector
+ * @param psi_p_sims list of length sims constaining npols X ngoods matrices of policy psi
+ * @param psi_sims matrix of length nsims x ngoods containing baseline psi
+ * @param gamma_sims list of length nsims containing vectors of length ngoods
+ * @param alpha_sims list of length nsims containing vectors of length ngoods
+ * @param scale_sims vector of length nsims
+ * @param rest of model parameter options
+ * @return Matrix of nsims x npols wtp
+ */
+matrix CalcWTPPriceOnly_rng(real inc, vector quant_j, vector price,
+						vector[] price_p_policy,
+						matrix psi_sims, vector[] gamma_sims, vector[] alpha_sims, vector scale_sims,
+						int nerrs, int cond_error, int algo_gen, int model_num){
+
+	int ngoods = num_elements(quant_j);
+	int nsims = num_elements(scale_sims);
+	int npols = size(price_p_policy);
+	matrix[nsims, npols] wtp;
+	real quant_num = inc - quant_j' * price[2:ngoods+1];
+
+	for (sim in 1:nsims){
+		vector[ngoods] psi_j = psi_sims[sim]';
+		vector[ngoods + 1] psi_b_err[nerrs]; // keep psi for use in policies
+		vector[ngoods + 1] gamma = append_row(1, gamma_sims[sim]);
+		vector[ngoods + 1] alpha = alpha_sims[sim];
+		real scale = scale_sims[sim];
+		vector[ngoods + 1] error[nerrs];
+		vector[npols] wtp_policy;
+		vector[nerrs] util;
+
+		error = DrawError_rng(quant_num, quant_j, price[2:ngoods+1],
+							psi_j, gamma[2:ngoods+1], alpha, scale,
+							ngoods, nerrs, cond_error);
+
+		// Compute Marshallian demands and baseline utility
+		for (err in 1:nerrs){
+			vector[ngoods + 1] mdemand;
+			vector[ngoods + 1] MUzero_b;
+			psi_b_err[err] = exp(append_row(0, psi_j) + error[err]); //change for no psi_p
+			MUzero_b = psi_b_err[err] ./ price; //change for no psi_p
+
+			if (cond_error == 1){
+				mdemand = append_row(quant_num, quant_j);
+			} else if(cond_error == 0)
+				mdemand = MarshallianDemand(inc, price, MUzero_b, gamma, alpha, ngoods, algo_gen);
+
+			util[err] = ComputeUtilJ(inc, mdemand[2:ngoods+1], price[2:ngoods+1],
+									psi_b_err[err, 2:ngoods+1], gamma[2:ngoods+1], alpha,
+									ngoods, model_num);
+		}
+
+		for (policy in 1:npols){
+			vector[ngoods + 1] price_p = price + price_p_policy[policy]; // add price increase
+			vector[nerrs] wtp_err;
+
+			for (err in 1:nerrs){
+				vector[ngoods + 1] MUzero_p = psi_b_err[err] ./ price_p;
+				vector[ngoods + 1] hdemand;
+
+				hdemand = HicksianDemand(util[err], price_p, MUzero_p, gamma, alpha,
+										ngoods, algo_gen, model_num);
+
+				wtp_err[err] = inc - price_p' * hdemand;
+			}
+			wtp_policy[policy] = mean(wtp_err);
+		}
+	wtp[sim] = wtp_policy';
+	}
+return(wtp);
+}
+
 vector CalcWTPOneP_rng(real inc, vector quant_j, vector price,
 						vector price_p_policy, vector psi_p_sims,
 						vector psi_sims, vector gamma_sims, vector alpha_sims, real scale_sims,

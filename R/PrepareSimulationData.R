@@ -5,11 +5,12 @@
 #' price_p with additive price increases, and
 #' dat_psi_p with new psi data
 #' @param nsims Number of simulation draws to use for parameter uncertainty
+#' @param price_change_only Choose if there is no change in dat_psi_p variables
 #' @return A list with individual-specific data (df_indiv) and common data (df_common)
 #' and n_classes for number of classes and model_num for model type
 #' @export
 
-PrepareSimulationData <- function(stan_est, policies, nsims = 30){
+PrepareSimulationData <- function(stan_est, policies, nsims = 30, price_change_only = FALSE){
 
 	# Checks on simulation options
 	model_num <- stan_est$stan_data$model_num
@@ -26,7 +27,7 @@ PrepareSimulationData <- function(stan_est, policies, nsims = 30){
 		left_join(stan_est$est_pars, by = "sim_id")
 
 	if(stan_est$n_classes == 1){
-		sim_welfare <- ProcessSimulationData(est_sim, stan_est, policies, nsims)
+		sim_welfare <- ProcessSimulationData(est_sim, stan_est, policies, nsims, price_change_only)
 		df_common <- sim_welfare
 		df_common$df_indiv <- NULL
 
@@ -46,7 +47,7 @@ PrepareSimulationData <- function(stan_est, policies, nsims = 30){
 		est_sim_lc <- map(est_sim_lc, function(x){ x %>%
 				select(-class)})
 
-		sim_welfare <- map(est_sim_lc, ProcessSimulationData, stan_est, policies, nsims)
+		sim_welfare <- map(est_sim_lc, ProcessSimulationData, stan_est, policies, nsims, price_change_only)
 
 		df_common <- map(sim_welfare, `[`, c("price_p_list", "gamma_sim_list", "alpha_sim_list", "scale_sim"))
 		names(df_common) <- rep("df_common", stan_est$n_classes)
@@ -55,10 +56,13 @@ PrepareSimulationData <- function(stan_est, policies, nsims = 30){
 
 
 	}
+	df_common$n_classes = stan_est$n_classes
+	df_common$model_num = model_num
+	df_common$price_change_only = price_change_only
+
 	df_wtp <- list(df_indiv = df_indiv,
-				   df_common = df_common,
-				   n_classes = stan_est$n_classes,
-				   model_num = model_num)
+			   df_common = df_common)
+
 return(df_wtp)
 }
 
@@ -68,7 +72,7 @@ return(df_wtp)
 #'
 #'
 #'
-ProcessSimulationData <- function(est_sim, stan_est, policies, nsims){
+ProcessSimulationData <- function(est_sim, stan_est, policies, nsims, price_change_only){
 
 	J <- stan_est$stan_data$J
 	I <- stan_est$stan_data$I
@@ -116,6 +120,7 @@ ProcessSimulationData <- function(est_sim, stan_est, policies, nsims){
 	psi_sim <- list(psi_sim)
 	names(psi_sim) <- "psi_sim"
 
+	if (price_change_only == FALSE) {
 	# psi_p
 	psi_p_sim <- map(psi_temp, function(psi){ map(policies[["dat_psi_p"]], MultiplyMatrix, x = psi, n_rows = I)})
 	psi_p_sim <- map(psi_p_sim, DoCbind)
@@ -128,6 +133,10 @@ ProcessSimulationData <- function(est_sim, stan_est, policies, nsims){
 
 	psi_p_sim <- list(psi_p_sim)
 	names(psi_p_sim) <- "psi_p_sim"
+
+	} else if (price_change_only == TRUE){
+		psi_p_sim <- NULL
+	}
 
 	# Set baseline individual data into lists
 	inc <- list(as.list(stan_est$stan_data$inc))

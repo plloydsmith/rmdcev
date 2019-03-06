@@ -4,10 +4,13 @@
 \alias{SimulateWTP}
 \title{SimulateWTP}
 \usage{
-SimulateWTP(df_wtp, nerrs = 30, cond_error = 1, algo_gen = NULL)
+SimulateWTP(df_indiv, df_common, nerrs = 30, cond_error = 1,
+  algo_gen = NULL)
 }
 \arguments{
-\item{df_wtp}{Prepared data from PrepareSimulationData}
+\item{df_indiv}{Prepared individual level data from PrepareSimulationData}
+
+\item{df_common}{Prepared common data from PrepareSimulationData}
 
 \item{nerrs}{Number of error draws for welfare analysis}
 
