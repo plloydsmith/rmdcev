@@ -33,9 +33,9 @@ SimulateWTP <- function(df_indiv, df_common,
 	}
 
 	if (algo_gen == 1) {
-		cat("Using general approach to simulation")
+		message("Using general approach to simulation")
 	} else if (algo_gen == 0){
-		cat("Using hybrid approach to simulation")
+		message("Using hybrid approach to simulation")
 	}
 	# Organize options in list
 	sim_options <- list(nerrs = nerrs,
