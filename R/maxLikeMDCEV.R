@@ -5,17 +5,18 @@
 #' @param mle_options modeling options for MLE
 
 maxlikeMDCEV <- function(stan_data, initial.parameters,
-						 seed, mle_options)
+						 mle_options)
 {
 	stan.model <- stanmodels$mdcev
 
 	message("Using MLE to estimate model")
 
 	if (is.null(initial.parameters)){
-		stan_fit <- optimizing(stan.model, data = stan_data, as_vector = FALSE,
+		stan_fit <- optimizing(stan.model, data = stan_data, as_vector = FALSE, seed = mle_options$seed,
 							   draws = mle_options$n_draws, hessian = mle_options$hessian)
 	} else {
-		stan_fit <- optimizing(stan.model, data = stan_data, as_vector = FALSE, init = initial.parameters,
+		stan_fit <- optimizing(stan.model, data = stan_data, as_vector = FALSE, seed = mle_options$seed,
+							   init = initial.parameters,
 						   draws = mle_options$n_draws, hessian = mle_options$hessian)
 	}
 #	compiled_mle <- stan(file = "C:/Dropbox/Research/code/rmdcev/src/stan_files/mdcev.stan",
@@ -75,7 +76,8 @@ maxlikeMDCEV <- function(stan_data, initial.parameters,
 
 		message("Using MLE to estimate LC model")
 
-		stan_fit <- optimizing(stan.model, data = stan_data, as_vector = FALSE, init = init,
+		stan_fit <- optimizing(stan.model, data = stan_data, as_vector = FALSE,
+							   seed = mle_options$seed, init = init,
 							   draws = mle_options$n_draws, hessian = mle_options$hessian)
 
 		if (mle_options$keep_loglik == 0)

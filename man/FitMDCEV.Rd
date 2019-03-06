@@ -6,7 +6,7 @@
 \usage{
 FitMDCEV(data, psi_formula = NULL, lc_formula = NULL, weights = NULL,
   num_price = NULL, model = c("alpha", "les", "gamma", "gamma0"),
-  n_classes = 1, fixed_scale = 0, trunc_data = 0, seed = 123,
+  n_classes = 1, fixed_scale = 0, trunc_data = 0, seed = "123",
   initial.parameters = NULL, algorithm = c("MLE", "HB"),
   print_ll = 0, hessian = TRUE, prior_psi_sd = 10,
   prior_gamma_sd = 10, prior_alpha_sd = 0.5, prior_scale_sd = 1,

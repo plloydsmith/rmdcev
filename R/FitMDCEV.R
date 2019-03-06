@@ -61,7 +61,7 @@ FitMDCEV <- function(data,
 					 n_classes = 1,
 					 fixed_scale = 0,
 					 trunc_data = 0,
-					 seed = 123,
+					 seed = "123",
 					 initial.parameters = NULL,
 					 algorithm = c("MLE", "HB"),
 					 #	std_errors = "draws", # still need to implement
@@ -111,6 +111,7 @@ FitMDCEV <- function(data,
 						  model = model,
 						  n_classes = n_classes,
 						  trunc_data = trunc_data,
+						seed = seed,
 						  print_ll = print_ll,
 						  hessian = hessian,
 						  n_draws = n_draws,
@@ -161,7 +162,7 @@ FitMDCEV <- function(data,
 
 	} else if (algorithm == "MLE") {
 
-		result <- maxlikeMDCEV(stan_data, initial.parameters, seed, mle_options)
+		result <- maxlikeMDCEV(stan_data, initial.parameters, mle_options)
 
 		# Get parameter estimates in matrix form
 		result$est_pars <- tbl_df(result[["stan_fit"]][["theta_tilde"]]) %>%
