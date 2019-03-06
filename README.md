@@ -103,7 +103,7 @@ Simulate welfare changes
 ```{r}
 df_wtp <- PrepareSimulationData(stan_est, policies)
 
-wtp <- SimulateWTP(df_wtp)
+wtp <- SimulateWTP(df_indiv, df_common)
 
 SummaryWelfare(wtp)
 ```
