@@ -173,12 +173,13 @@ FitMDCEV <- function(data,
 	}
 	end.time <- proc.time()
 	# Rename psi variables
-
-	psi.names <- paste0(rep('psi', ncol(stan_data[["dat_psi"]])), sep="_",
-						colnames(stan_data[["dat_psi"]]))
-	original.names <- colnames(result$est_pars)
-	new.names <- c(psi.names, original.names[-c(1:length(psi.names))])
-	colnames(result$est_pars) <- new.names
+	if (n_classes == 1){
+		psi.names <- paste0(rep('psi', ncol(stan_data[["dat_psi"]])), sep="_",
+							colnames(stan_data[["dat_psi"]]))
+		original.names <- colnames(result$est_pars)
+		new.names <- c(psi.names, original.names[-c(1:length(psi.names))])
+		colnames(result$est_pars) <- new.names
+	}
 	# LC names still to do
 #	class.names <- colnames(stan_est[["stan_data"]][["data_class"]])
 #	parms <- c(paste(rep('betam', length(class.names)), 1:length(class.names), sep=""))
