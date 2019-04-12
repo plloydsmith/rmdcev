@@ -96,7 +96,7 @@ StanWTP <- function(df_indiv, df_common, sim_options){
 #	df_common <- df_common$df_common
 
 	message("Compiling simulation code")
-	expose_stan_functions(stanmodels$SimulationFunctions)
+#	expose_stan_functions(stanmodels$SimulationFunctions)
 
 	message("Simulating...")
 

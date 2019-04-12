@@ -45,7 +45,7 @@ SimulateMdcevData <- function(model, nobs = 1000, ngoods = 10,
 	psi_i <- matrix(2 * runif(nobs * length(psi_i_parms)), nobs,length(psi_i_parms))
 	psi_i <- psi_i %x% rep(1, ngoods)
 
-	dat_psi = cbind(psi_j, psi_i)
+	dat_psi <- cbind(psi_j, psi_i)
 	colnames(dat_psi) <- c(paste(rep('b', ncol(dat_psi)), 1:ncol(dat_psi), sep=""))
 
 	true <- c(psi_j_parms, psi_i_parms)
