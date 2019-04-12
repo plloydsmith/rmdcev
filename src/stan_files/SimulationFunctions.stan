@@ -16,17 +16,16 @@ vector[] DrawError_rng(real quant_num, vector quant_j, vector price_j,
 		vector[ngoods + 1] cond_demand = append_row(quant_num, quant_j);
 		// compute vk and v1
 		real v1 = (alpha[1] - 1) * log(quant_num);
-		vector[ngoods + 1] e;
 		vector[ngoods] vk = psi_j + (alpha[2:ngoods+1] - 1) .* log(quant_j ./ gamma_j + 1) - log(price_j);
 		// ek = v1 - vk and assume error term is zero for outside good
-		e = append_row(0, (v1 - vk) / scale);
+		vector[ngoods + 1] ek = append_row(0, (v1 - vk) / scale);
 
 		// Calculate errors
 		// For unvisited alternatives, draw from truncated multivariate logistic distribution
 		for(err in 1:nerrs)
 			for(j in 1:ngoods+1)
-				error[err, j] = cond_demand[j] > 0 ? e[j] * scale :
-							-log(-log(uniform_rng(0, 1) * exp(-exp(-e[j])))) * scale;
+				error[err, j] = cond_demand[j] > 0 ? ek[j] * scale :
+							-log(-log(uniform_rng(0, 1) * exp(-exp(-ek[j])))) * scale;
 		}
 return(error);
 }
@@ -177,8 +176,7 @@ vector MarshallianDemand(real inc, vector price, vector MUzero, vector gamma, ve
 				M += 1; // adds one to M
 		}
 	}
-	// This code puts the choices back in their original
-	// order and exports demands
+	// This code puts the choices back in their original order and exports demands
 	mdemand = X[order_x];
 return(mdemand);
 }
