@@ -37,9 +37,9 @@ PrepareSimulationData <- function(stan_est, policies, nsims = 30, price_change_o
 
 		est_sim_lc <- suppressWarnings(est_sim %>% # suppress warnings about scale not having a class parameter
 									   	filter(!str_detect(.data$parms, "beta")) %>%
-									   	separate_(.data$parms, into = c("parms", "class", "good")) %>%
+									   	separate(.data$parms, into = c("parms", "class", "good")) %>%
 									   	mutate(good = ifelse(is.na(as.numeric(.data$good)), "0", .data$good )) %>%
-									   	unite_(parms, parms, good))
+									   	unite(parms, parms, good))
 
 		est_sim_lc <- split( est_sim_lc , f = est_sim_lc$class )
 		names(est_sim_lc) <- rep("est_sim", stan_est$n_classes)
@@ -56,12 +56,13 @@ PrepareSimulationData <- function(stan_est, policies, nsims = 30, price_change_o
 
 
 	}
-	df_common$n_classes = stan_est$n_classes
-	df_common$model_num = model_num
-	df_common$price_change_only = price_change_only
+	sim_options <- list(n_classes = stan_est$n_classes,
+					model_num = model_num,
+					price_change_only = price_change_only)
 
 	df_wtp <- list(df_indiv = df_indiv,
-			   df_common = df_common)
+			   df_common = df_common,
+			   sim_options = sim_options)
 
 return(df_wtp)
 }

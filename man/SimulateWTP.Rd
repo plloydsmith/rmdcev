@@ -4,8 +4,8 @@
 \alias{SimulateWTP}
 \title{SimulateWTP}
 \usage{
-SimulateWTP(df_indiv, df_common, nerrs = 30, cond_error = 1,
-  algo_gen = NULL)
+SimulateWTP(df_indiv, df_common, sim_options, nerrs = 30,
+  cond_error = 1, algo_gen = NULL, tol = 1e-20, max_loop = 999)
 }
 \arguments{
 \item{df_indiv}{Prepared individual level data from PrepareSimulationData}
@@ -19,6 +19,10 @@ Conditional error draws (=1) or unconditional error draws.}
 
 \item{algo_gen}{Type of algorhitm for simulation. algo_gen = 0 for Hybrid Approach (i.e. constant alphas,
 only model 3/4) alog_gen = 1 for General approach (i.e. heterogeneous alpha's, all models)}
+
+\item{tol}{Tolerance level for simulations if using general approach}
+
+\item{max_loop}{maximum number of loops for simulations if using general approach}
 }
 \value{
 wtp a list for each individual holding a nsims x npols matrix of wtp

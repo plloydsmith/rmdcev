@@ -1,5 +1,6 @@
 #' @title SimulateWTP
 #' @description Simulate WTP for MDCEV model
+#' @inheritParams SimulateMdcevData
 #' @param df_indiv Prepared individual level data from PrepareSimulationData
 #' @param df_common Prepared common data from PrepareSimulationData
 #' @param nerrs Number of error draws for welfare analysis
@@ -10,15 +11,17 @@
 #' @return wtp a list for each individual holding a nsims x npols matrix of wtp
 #' @importFrom stats quantile sd
 #' @export
-SimulateWTP <- function(df_indiv, df_common,
+SimulateWTP <- function(df_indiv, df_common, sim_options,
 						nerrs = 30,
 						cond_error = 1,
-						algo_gen = NULL){
+						algo_gen = NULL,
+						tol = 1e-20,
+						max_loop = 999){
 
 	start.time <- proc.time()
 
 	# Checks on simulation options
-	model_num <- df_common$model_num
+	model_num <- sim_options$model_num
 
 	if (!is.null(algo_gen)){
 		if (model_num < 3 && algo_gen == 0){
@@ -38,17 +41,18 @@ SimulateWTP <- function(df_indiv, df_common,
 		message("Using hybrid approach to simulation")
 	}
 	# Organize options in list
-	sim_options <- list(nerrs = nerrs,
-						cond_error = cond_error,
-						algo_gen = algo_gen,
-						model_num = model_num)
+	sim_options[["nerrs"]] <- nerrs
+	sim_options[["cond_error"]] <- cond_error
+	sim_options[["algo_gen"]] <- algo_gen
+	sim_options[["tol"]] <- tol
+	sim_options[["max_loop"]] <- max_loop
 
-	if(df_common$n_classes == 1){
+	if(sim_options$n_classes == 1){
 		wtp <- StanWTP(df_indiv, df_common, sim_options)
 
-	} else if(df_common$n_classes > 1){
+	} else if(sim_options$n_classes > 1){
 		wtp <- map2(df_indiv, df_common, StanWTP, sim_options)
-		names(wtp) <- paste0("class", c(1:df_common$n_classes))
+		names(wtp) <- paste0("class", c(1:sim_options$n_classes))
 	}
 
 	time <- proc.time() - start.time
@@ -92,16 +96,16 @@ SummaryWelfare <- function(wtp, ci = 0.95){
 #' @export
 StanWTP <- function(df_indiv, df_common, sim_options){
 
-#	df_indiv <- df_indiv$df_indiv
-#	df_common <- df_common$df_common
+#	df_indiv <- df_wtp$df_indiv
+#	df_common <- df_wtp$df_common
 
 	message("Compiling simulation code")
-#	expose_stan_functions(stanmodels$SimulationFunctions)
+	expose_stan_functions(stanmodels$SimulationFunctions)
 
 	message("Simulating...")
 
-	if (df_common$price_change_only == FALSE){
-	wtp <- pmap(df_indiv, CalcWTP_rng,
+	if (sim_options$price_change_only == FALSE){
+		wtp <- pmap(df_indiv, CalcWTP_rng,
 				price_p=df_common$price_p_list,
 				gamma_sim=df_common$gamma_sim_list,
 				alpha_sim=df_common$alpha_sim_list,
@@ -109,8 +113,10 @@ StanWTP <- function(df_indiv, df_common, sim_options){
 				nerrs=sim_options$nerrs,
 				cond_error=sim_options$cond_error,
 				algo_gen=sim_options$algo_gen,
-				model_num=sim_options$model_num)
-	} else if (df_common$price_change_only == TRUE){
+				model_num=sim_options$model_num,
+				tol = sim_options$tol,
+				max_loop = sim_options$max_loop)
+	} else if (sim_options$price_change_only == TRUE){
 		wtp <- pmap(df_indiv, CalcWTPPriceOnly_rng,
 					price_p=df_common$price_p_list,
 					gamma_sim=df_common$gamma_sim_list,
@@ -119,7 +125,9 @@ StanWTP <- function(df_indiv, df_common, sim_options){
 					nerrs=sim_options$nerrs,
 					cond_error=sim_options$cond_error,
 					algo_gen=sim_options$algo_gen,
-					model_num=sim_options$model_num)
+					model_num=sim_options$model_num,
+					tol = sim_options$tol,
+					max_loop = sim_options$max_loop)
 	}
 	return(wtp)
 }

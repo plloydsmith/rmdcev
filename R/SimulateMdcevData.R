@@ -13,6 +13,8 @@
 #' @param psi_i_parms Parameter value for psi terms that vary by individual
 #' @param psi_j_parms Parameter value for psi terms that vary by good
 #' @param nerrs Number of error draws for demand simulation
+#' @param tol Tolerance level for simulations if using general approach
+#' @param max_loop maximum number of loops for simulations if using general approach
 #' @importFrom stats runif
 #' @return list with data for stan model and parms_true with parameter values
 #' @export
@@ -24,7 +26,9 @@ SimulateMdcevData <- function(model, nobs = 1000, ngoods = 10,
 							  gamma_parms = runif(ngoods, 1, 2),
 							  psi_i_parms = c(-1.5, 3, -2, 1, 2),
 							  psi_j_parms = c(-5, 0.5, 2),
-					 		  nerrs = 1){
+							  nerrs = 1,
+							  tol = 1e-20,
+							  max_loop = 999){
 
 	inc <-  runif(nobs, inc_lo, inc_hi)
 	price <- matrix(runif(nobs*ngoods, price_lo, price_hi), nobs, ngoods)
@@ -109,7 +113,8 @@ SimulateMdcevData <- function(model, nobs = 1000, ngoods = 10,
 				  gamma_sim=gamma_parms,
 				  alpha_sim=alpha_parms,
 				  scale_sim=scale_parms,
-				  nerrs=nerrs, algo_gen = algo_gen)
+				  nerrs=nerrs, algo_gen = algo_gen,
+				  tol = tol, max_loop = max_loop)
 
 	# Convert simulated data into estimation data
 	quant <- matrix(unlist(quant), nrow = nobs, byrow = TRUE)
@@ -125,5 +130,5 @@ SimulateMdcevData <- function(model, nobs = 1000, ngoods = 10,
 
 	out <- list(data = data,
 				parms_true = parms_true)
-return(out)
+	return(out)
 }

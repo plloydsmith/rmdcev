@@ -60,19 +60,3 @@ test_that("MLE les specification", {
 	expect_true(abs(result[["stan_fit"]][["par"]][["alpha"]] - 0.5654564) < tol)
 	expect_true(abs(result[["stan_fit"]][["par"]][["gamma"]][[2]] - 25.28034) < tol)
 })
-
-test_that("LC 2-classes", {
-	result <- FitMDCEV(psi_formula = ~ factor(activity) -1,
-					   lc_formula = ~ university,
-					   data = data,
-					   model = "gamma0",
-					   algorithm = "MLE",
-						n_classes = 2)
-
-	expect_true(abs(result$log.likelihood - (-23054.814483864)) < tol)
-	expect_true(abs(result$bic - 46606.771023165) < tol)
-	expect_true(abs(result[["stan_fit"]][["par"]][["scale"]][[1]] - 0.7110303) < tol)
-	expect_true(abs(result[["stan_fit"]][["par"]][["psi"]][2,2] - -8.014577) < tol)
-	expect_true(abs(result[["stan_fit"]][["par"]][["gamma"]][[1,10]] - 3.238039) < tol)
-	expect_true(abs(result[["stan_fit"]][["par"]][["beta_m"]][[1,2]] - 0.04420978) < tol)
-})

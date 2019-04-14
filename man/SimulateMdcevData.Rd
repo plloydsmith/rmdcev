@@ -8,7 +8,7 @@ SimulateMdcevData(model, nobs = 1000, ngoods = 10, inc_lo = 1e+05,
   inc_hi = 150000, price_lo = 100, price_hi = 500,
   alpha_parms = 0.5, scale_parms = 1, gamma_parms = runif(ngoods, 1,
   2), psi_i_parms = c(-1.5, 3, -2, 1, 2), psi_j_parms = c(-5, 0.5, 2),
-  nerrs = 1)
+  nerrs = 1, tol = 1e-20, max_loop = 999)
 }
 \arguments{
 \item{model}{A string indicating which model specification is estimated.
@@ -37,6 +37,10 @@ The options are "alpha","les", "gamma", and "gamma0".}
 \item{psi_j_parms}{Parameter value for psi terms that vary by good}
 
 \item{nerrs}{Number of error draws for demand simulation}
+
+\item{tol}{Tolerance level for simulations if using general approach}
+
+\item{max_loop}{maximum number of loops for simulations if using general approach}
 }
 \value{
 list with data for stan model and parms_true with parameter values
