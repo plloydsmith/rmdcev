@@ -42,7 +42,7 @@ max_loop = 999
 
 error <- DrawError_rng(quant_num, quant_j, price[-1],
 				  psi_j, gamma_j, alpha, scale,
-				  ngoods = ngoods, nerrs = 10, cond_error = 1)
+				  ngoods = ngoods, nerrs = 100, cond_error = 1, draw_mlhs = 1)
 
 	psi_b_err <- exp(c(0, psi_j) + error[[1]])
 	MUzero_b <- psi_b_err / price

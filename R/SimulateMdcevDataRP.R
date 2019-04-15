@@ -40,6 +40,7 @@ SimulateMdcevDataRP <- function(model,
 		RP <- RP - 1 # subtract one for fixed alpha
 		model_num <- 4
 		algo_gen <- 0
+		alpha_parms <- NULL
 	} else
 		stop("No model specificied. Choose a model")
 
@@ -50,7 +51,7 @@ SimulateMdcevDataRP <- function(model,
 	Sigma <- diag(tau) %*% cor(matrix(rnorm(RP*(RP+1)), RP+1, RP)) %*% diag(tau)
 
 	a <- c(rep(-Inf, num_psi), rep(0.01, RP-num_psi))
-	b <- c(rep(Inf, num_psi), rep(Inf, RP-num_psi-1), .98)
+	b <- c(rep(Inf, num_psi), rep(Inf, RP-num_psi))
 
 	beta_individual <- rtmvnorm(n=nobs, mean=beta, sigma=Sigma, lower=a, upper=b)
 

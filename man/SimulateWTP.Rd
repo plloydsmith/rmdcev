@@ -5,7 +5,8 @@
 \title{SimulateWTP}
 \usage{
 SimulateWTP(df_indiv, df_common, sim_options, nerrs = 30,
-  cond_error = 1, algo_gen = NULL, tol = 1e-20, max_loop = 999)
+  cond_error = 1, draw_mlhs = 1, algo_gen = NULL, tol = 1e-20,
+  max_loop = 999)
 }
 \arguments{
 \item{df_indiv}{Prepared individual level data from PrepareSimulationData}
@@ -16,6 +17,9 @@ SimulateWTP(df_indiv, df_common, sim_options, nerrs = 30,
 
 \item{cond_error}{Choose whether to draw errors conditional on actual demand or not.
 Conditional error draws (=1) or unconditional error draws.}
+
+\item{draw_mlhs}{Generate draws using Modified Latin Hypercube Sampling algorithm (=1)
+or uniform (=0)}
 
 \item{algo_gen}{Type of algorhitm for simulation. algo_gen = 0 for Hybrid Approach (i.e. constant alphas,
 only model 3/4) alog_gen = 1 for General approach (i.e. heterogeneous alpha's, all models)}

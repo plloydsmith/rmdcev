@@ -6,6 +6,8 @@
 #' @param nerrs Number of error draws for welfare analysis
 #' @param cond_error Choose whether to draw errors conditional on actual demand or not.
 #' Conditional error draws (=1) or unconditional error draws.
+#' @param draw_mlhs Generate draws using Modified Latin Hypercube Sampling algorithm (=1)
+#' or uniform (=0)
 #' @param algo_gen Type of algorhitm for simulation. algo_gen = 0 for Hybrid Approach (i.e. constant alphas,
 #' only model 3/4) alog_gen = 1 for General approach (i.e. heterogeneous alpha's, all models)
 #' @return wtp a list for each individual holding a nsims x npols matrix of wtp
@@ -14,6 +16,7 @@
 SimulateWTP <- function(df_indiv, df_common, sim_options,
 						nerrs = 30,
 						cond_error = 1,
+						draw_mlhs = 1,
 						algo_gen = NULL,
 						tol = 1e-20,
 						max_loop = 999){
@@ -43,6 +46,7 @@ SimulateWTP <- function(df_indiv, df_common, sim_options,
 	# Organize options in list
 	sim_options[["nerrs"]] <- nerrs
 	sim_options[["cond_error"]] <- cond_error
+	sim_options[["draw_mlhs"]] <- draw_mlhs
 	sim_options[["algo_gen"]] <- algo_gen
 	sim_options[["tol"]] <- tol
 	sim_options[["max_loop"]] <- max_loop
@@ -112,6 +116,7 @@ StanWTP <- function(df_indiv, df_common, sim_options){
 				scale_sim=df_common$scale_sim,
 				nerrs=sim_options$nerrs,
 				cond_error=sim_options$cond_error,
+				draw_mlhs=sim_options$draw_mlhs,
 				algo_gen=sim_options$algo_gen,
 				model_num=sim_options$model_num,
 				tol = sim_options$tol,
@@ -124,6 +129,7 @@ StanWTP <- function(df_indiv, df_common, sim_options){
 					scale_sim=df_common$scale_sim,
 					nerrs=sim_options$nerrs,
 					cond_error=sim_options$cond_error,
+					draw_mlhs=sim_options$draw_mlhs,
 					algo_gen=sim_options$algo_gen,
 					model_num=sim_options$model_num,
 					tol = sim_options$tol,

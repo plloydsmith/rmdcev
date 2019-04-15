@@ -1,6 +1,6 @@
 //Code for MDCEV Simulation Functions <- "
 functions {
-vector[] DrawError_rng(real quant_num, vector quant_j, vector price_j,
+vector[] DrawError2_rng(real quant_num, vector quant_j, vector price_j,
 					vector psi_j, vector gamma_j, vector alpha, real scale,
 					int ngoods, int nerrs, int cond_error){
 
@@ -29,6 +29,75 @@ vector[] DrawError_rng(real quant_num, vector quant_j, vector price_j,
 							-log(-log(uniform_rng(0, 1) * exp(-exp(-ek[j])))) * scale;
 		}
 return(error);
+}
+
+row_vector Shuffle_rng(row_vector inv, int nerrs){
+
+	row_vector[nerrs] out;
+	row_vector[nerrs] temp1 = rep_row_vector(0, nerrs) ;
+	row_vector[nerrs] temp2 = to_row_vector(uniform_rng(temp1, 1));
+	out = inv[sort_indices_asc(temp2)];
+
+return(out);
+}
+
+/**Generate random draws using Modified Latin Hypercube Sampling algorithm or uniform
+#' Algorithm described in
+#' Hess, S., Train, K., and Polak, J. (2006) Transportation Research 40B, 147 - 163.
+**/
+row_vector DrawMlhs_rng(int nerrs, int draw_mlhs){
+
+	row_vector[nerrs] error;
+	row_vector[nerrs] temp0 = rep_row_vector(0, nerrs);
+
+	if(draw_mlhs == 0){
+		error = to_row_vector(uniform_rng(temp0, 1));
+	} else if(draw_mlhs == 1){
+		int temp1[nerrs];
+		row_vector[nerrs] temp;
+
+		for (err in 1:nerrs)
+			temp1[err] = err - 1;
+
+		temp = to_row_vector(temp1) / nerrs;
+		error = Shuffle_rng(temp + to_row_vector(uniform_rng(temp0, 1))/ nerrs, nerrs);
+	}
+return(error);
+}
+
+vector[] DrawError_rng(real quant_num, vector quant_j, vector price_j,
+					vector psi_j, vector gamma_j, vector alpha, real scale,
+					int ngoods, int nerrs, int cond_error, int draw_mlhs){
+
+	vector[ngoods+1] out[nerrs];
+	matrix[ngoods+1, nerrs] error;
+	matrix[nerrs, ngoods+1] error_t;
+	vector[nerrs] temp0 = rep_vector(0, nerrs);
+
+	if (cond_error == 0){	// Unconditional
+		error[1] = rep_row_vector(0, nerrs);
+		for(j in 2:ngoods+1)
+			error[j] = -log(-log(DrawMlhs_rng(nerrs, draw_mlhs))) * scale;
+
+	} else if (cond_error == 1){	// Conditional
+		// Cacluate the demand function, g
+		vector[ngoods + 1] cond_demand = append_row(quant_num, quant_j);
+		// compute vk and v1
+		real v1 = (alpha[1] - 1) * log(quant_num);
+		vector[ngoods] vk = psi_j + (alpha[2:ngoods+1] - 1) .* log(quant_j ./ gamma_j + 1) - log(price_j);
+		// ek = v1 - vk and assume error term is zero for outside good
+		vector[ngoods + 1] ek = append_row(0, (v1 - vk) / scale);
+
+		// Calculate errors
+		// For unvisited alternatives, draw from truncated multivariate logistic distribution
+		for(j in 1:ngoods+1)
+			error[j] = cond_demand[j] > 0 ? rep_row_vector(ek[j] * scale, nerrs) :
+					-log(-log(DrawMlhs_rng(nerrs, draw_mlhs) * exp(-exp(-ek[j])))) * scale;
+		}
+	error_t = error';
+	for(err in 1:nerrs)
+		out[err] = error_t[err]';
+return(out);
 }
 
 /**
@@ -337,7 +406,8 @@ return(hdemand);
 // Overall code
 matrix CalcmdemandOneTest_rng(real inc, vector quant, vector price,
 						vector psi_sims, vector gamma_sims, vector alpha_sims, real scale_sims,
-						int nerrs, int cond_error, int algo_gen, real tol, int max_loop){
+						int nerrs, int cond_error, int draw_mlhs,
+						int algo_gen, real tol, int max_loop){
 
 	int ngoods = num_elements(gamma_sims);
 	int nsims = 1;
@@ -356,7 +426,7 @@ matrix CalcmdemandOneTest_rng(real inc, vector quant, vector price,
 
 		error = DrawError_rng(quant_num, quant[2:ngoods+1], price[2:ngoods+1],
 							psi_j, gamma[2:ngoods+1], alpha, scale,
-							ngoods, nerrs, cond_error);
+							ngoods, nerrs, cond_error, draw_mlhs);
 
 		// Compute Marshallian demands and baseline utility
 		for (err in 1:nerrs){
@@ -442,7 +512,8 @@ return(mdemand_out);
 matrix CalcWTP_rng(real inc, vector quant_j, vector price,
 						vector[] price_p_policy, matrix[] psi_p_sims,
 						matrix psi_sims, vector[] gamma_sims, vector[] alpha_sims, vector scale_sims,
-						int nerrs, int cond_error, int algo_gen, int model_num, real tol, int max_loop){
+						int nerrs, int cond_error, int draw_mlhs,
+						int algo_gen, int model_num, real tol, int max_loop){
 
 	int ngoods = num_elements(quant_j);
 	int nsims = num_elements(scale_sims);
@@ -463,7 +534,7 @@ matrix CalcWTP_rng(real inc, vector quant_j, vector price,
 
 		error = DrawError_rng(quant_num, quant_j, price[2:ngoods+1],
 							psi_j, gamma[2:ngoods+1], alpha, scale,
-							ngoods, nerrs, cond_error);
+							ngoods, nerrs, cond_error, draw_mlhs);
 
 		// Compute Marshallian demands and baseline utility
 		for (err in 1:nerrs){
@@ -524,7 +595,7 @@ return(wtp);
 matrix CalcWTPPriceOnly_rng(real inc, vector quant_j, vector price,
 						vector[] price_p_policy,
 						matrix psi_sims, vector[] gamma_sims, vector[] alpha_sims, vector scale_sims,
-						int nerrs, int cond_error, int algo_gen, int model_num, real tol, int max_loop){
+						int nerrs, int cond_error, int draw_mlhs, int algo_gen, int model_num, real tol, int max_loop){
 
 	int ngoods = num_elements(quant_j);
 	int nsims = num_elements(scale_sims);
@@ -544,7 +615,7 @@ matrix CalcWTPPriceOnly_rng(real inc, vector quant_j, vector price,
 
 		error = DrawError_rng(quant_num, quant_j, price[2:ngoods+1],
 							psi_j, gamma[2:ngoods+1], alpha, scale,
-							ngoods, nerrs, cond_error);
+							ngoods, nerrs, cond_error, draw_mlhs);
 
 		// Compute Marshallian demands and baseline utility
 		for (err in 1:nerrs){
