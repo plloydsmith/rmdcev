@@ -30,10 +30,10 @@ test_that("LC 2-classes", {
 test_that("Test LC simulations", {
 	npols <- 2
 	policies <-	CreateBlankPolicies(npols, result$stan_data[["J"]], result$stan_data[["dat_psi"]])
-	df_wtp <- PrepareSimulationData(result, policies, nsims = 3)
+	df_sim <- PrepareSimulationData(result, policies, nsims = 3)
 
 	# Test welfare
-	wtp <- SimulateWTP(df_wtp$df_indiv, df_common = df_wtp$df_common, sim_options = df_wtp$sim_options, cond_err = 1, nerrs = 3)
+	wtp <- SimulateMDCEV(df_sim$df_indiv, df_common = df_sim$df_common, sim_options = df_sim$sim_options, cond_err = 1, nerrs = 3)
 	sum_wtp <- map(wtp, SummaryWelfare)
 	expect_true(sum(abs(sum_wtp[["class1"]][["mean"]]), abs(sum_wtp[["class2"]][["mean"]])) < 1e-3)
 

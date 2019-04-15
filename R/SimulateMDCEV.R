@@ -1,6 +1,6 @@
-#' @title SimulateWTP
-#' @description Simulate WTP for MDCEV model
-#' @inheritParams SimulateMdcevData
+#' @title SimulateMDCEV
+#' @description Simulate welfare or demand for MDCEV model
+#' @inheritParams GenerateMdcevData
 #' @param df_indiv Prepared individual level data from PrepareSimulationData
 #' @param df_common Prepared common data from PrepareSimulationData
 #' @param nerrs Number of error draws for welfare analysis
@@ -13,7 +13,8 @@
 #' @return wtp a list for each individual holding a nsims x npols matrix of wtp
 #' @importFrom stats quantile sd
 #' @export
-SimulateWTP <- function(df_indiv, df_common, sim_options,
+SimulateMDCEV <- function(df_indiv, df_common, sim_options,
+						sim_type = c("welfare", "demand"),
 						nerrs = 30,
 						cond_error = 1,
 						draw_mlhs = 1,
@@ -52,19 +53,27 @@ SimulateWTP <- function(df_indiv, df_common, sim_options,
 	sim_options[["max_loop"]] <- max_loop
 
 	if(sim_options$n_classes == 1){
-		wtp <- StanWTP(df_indiv, df_common, sim_options)
+		if(sim_type == "welfare"){
+			out <- StanWelfare(df_indiv, df_common, sim_options)
+		} else if(sim_type == "demand"){
+			out <- StanDemand(df_indiv, df_common, sim_options)
+		}
 
 	} else if(sim_options$n_classes > 1){
-		wtp <- map2(df_indiv, df_common, StanWTP, sim_options)
-		names(wtp) <- paste0("class", c(1:sim_options$n_classes))
+		if(sim_type == "welfare"){
+			out <- map2(df_indiv, df_common, StanWelfare, sim_options)
+		} else if(sim_type == "demand"){
+			out <- map2(df_indiv, df_common, StanDemand, sim_options)
+		}
+		names(out) <- paste0("class", c(1:sim_options$n_classes))
 	}
 
 	time <- proc.time() - start.time
-	n_simulations <- length(unlist(wtp)) * nerrs
+	n_simulations <- length(unlist(out)) * nerrs
 	cat("\n", formatC(n_simulations, format = "e", digits = 2), "simulations finished in", round(time[3]/60, 2), "minutes.",
 		"(",round(n_simulations/time[3], 0),"per second)")
 
-return(wtp)
+return(out)
 }
 
 #' @title SummaryWelfare
@@ -91,14 +100,14 @@ SummaryWelfare <- function(wtp, ci = 0.95){
 	return(wtp_sum)
 }
 
-#' @title StanWTP
-#' @description Use Stan functions to simulate WTP
+#' @title StanWelfare
+#' @description Use Stan functions to simulate Welfare
 #' @param df_indiv list of inc, quant_j, price_j, psi, and psi_p that vary by individual
 #' @param df_common list of parameters that are constant for all individuals
 #' @param sim_options list of simualtion options
 #' @return wtp list
 #' @export
-StanWTP <- function(df_indiv, df_common, sim_options){
+StanWelfare <- function(df_indiv, df_common, sim_options){
 
 #	df_indiv <- df_wtp$df_indiv
 #	df_common <- df_wtp$df_common
@@ -106,7 +115,7 @@ StanWTP <- function(df_indiv, df_common, sim_options){
 	message("Compiling simulation code")
 	expose_stan_functions(stanmodels$SimulationFunctions)
 
-	message("Simulating...")
+	message("Simulating welfare...")
 
 	if (sim_options$price_change_only == FALSE){
 		wtp <- pmap(df_indiv, CalcWTP_rng,
@@ -136,4 +145,36 @@ StanWTP <- function(df_indiv, df_common, sim_options){
 					max_loop = sim_options$max_loop)
 	}
 	return(wtp)
+}
+
+
+#' @title StanDemand
+#' @description Use Stan functions to simulate Marshallian demand
+#' @param df_indiv list of inc, quant_j, price_j, psi, and psi_p that vary by individual
+#' @param df_common list of parameters that are constant for all individuals
+#' @param sim_options list of simualtion options
+#' @return demand with nsim lists of npolsXngoods+1 matrices
+#' @export
+StanDemand <- function(df_indiv, df_common, sim_options){
+
+	#	df_indiv <- df_wtp$df_indiv
+	#	df_common <- df_wtp$df_common
+
+	message("Compiling simulation code")
+	expose_stan_functions(stanmodels$SimulationFunctions)
+
+	message("Simulating demand...")
+	demand <- pmap(df_indiv, CalcMarshallianDemand_rng,
+			price_p=df_common$price_p_list,
+			gamma_sim=df_common$gamma_sim_list,
+			alpha_sim=df_common$alpha_sim_list,
+			scale_sim=df_common$scale_sim,
+			nerrs=sim_options$nerrs,
+			cond_error=sim_options$cond_error,
+			draw_mlhs=sim_options$draw_mlhs,
+			algo_gen=sim_options$algo_gen,
+			model_num=sim_options$model_num,
+			tol = sim_options$tol,
+			max_loop = sim_options$max_loop)
+	return(demand)
 }

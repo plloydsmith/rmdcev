@@ -1,11 +1,11 @@
-#' @title SimulateMdcevDataRP
+#' @title GenerateMDCEVDataRP
 #' @description Simulate random parameter data for MDCEV model
 #' @inheritParams FitMDCEV
-#' @inheritParams SimulateMdcevData
+#' @inheritParams GenerateMDCEVData
 #' @importFrom stats runif
 #' @return list with data for stan model and parms_true with parameter values
 #' @export
-SimulateMdcevDataRP <- function(model,
+GenerateMDCEVDataRP <- function(model,
 								nobs = 1000,
 								ngoods = 10,
 								inc_lo = 100000,

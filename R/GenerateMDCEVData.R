@@ -1,4 +1,4 @@
-#' @title SimulateMdcevData
+#' @title GenerateMdcevData
 #' @description Simulate data for MDCEV model
 #' @inheritParams FitMDCEV
 #' @param nobs Number of individuals
@@ -18,7 +18,7 @@
 #' @importFrom stats runif
 #' @return list with data for stan model and parms_true with parameter values
 #' @export
-SimulateMdcevData <- function(model, nobs = 1000, ngoods = 10,
+GenerateMDCEVData <- function(model, nobs = 1000, ngoods = 10,
 							  inc_lo = 100000, inc_hi = 150000,
 							  price_lo = 100, price_hi = 500,
 							  alpha_parms = 0.5,

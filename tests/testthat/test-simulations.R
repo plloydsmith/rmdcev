@@ -14,12 +14,12 @@ result <- FitMDCEV(psi_formula = ~ factor(activity) -1,
 npols <- 2 #stan_est$stan_data[["J"]]
 policies<-	CreateBlankPolicies(npols, result$stan_data[["J"]], result$stan_data[["dat_psi"]])
 
-df_wtp <- PrepareSimulationData(result, policies, nsims = 3)
-inc <- df_wtp[["df_indiv"]][["inc"]][[1]]
-quant_j <- df_wtp[["df_indiv"]][["quant_j"]][[1]]
-price <- df_wtp[["df_indiv"]][["price"]][[1]]
+df_sim <- PrepareSimulationData(result, policies, nsims = 3)
+inc <- df_sim[["df_indiv"]][["inc"]][[1]]
+quant_j <- df_sim[["df_indiv"]][["quant_j"]][[1]]
+price <- df_sim[["df_indiv"]][["price"]][[1]]
 
-#sim.data <- SimulateMdcevData(model = "gamma0",  nobs = 5)
+#sim.data <- GenerateMDCEVData(model = "gamma0",  nobs = 5)
 expose_stan_functions(stanmodels$SimulationFunctions)
 
 price_j <- price[-1]
@@ -86,12 +86,12 @@ mdemand <- MarshallianDemand(inc, price, MUzero_b, gamma, alpha,
 test_that("Test full simulation function", {
 
 	# Test conditional errors
-	wtp <- SimulateWTP(df_wtp$df_indiv, df_common = df_wtp$df_common, sim_options = df_wtp$sim_options, cond_err = 1, nerrs = 3)
+	wtp <- SimulateMDCEV(df_sim$df_indiv, df_common = df_sim$df_common, sim_options = df_sim$sim_options, cond_err = 1, nerrs = 3)
 	sum_wtp <- SummaryWelfare(wtp)
 	expect_true(sum(abs(sum_wtp$mean)) < tol)
 
 	# Test unconditional errors
-	wtp <- SimulateWTP(df_wtp$df_indiv, df_common = df_wtp$df_common, sim_options = df_wtp$sim_options, cond_err = 0, nerrs = 3)
+	wtp <- SimulateMDCEV(df_sim$df_indiv, df_common = df_sim$df_common, sim_options = df_sim$sim_options, cond_err = 0, nerrs = 3)
 	sum_wtp <- SummaryWelfare(wtp)
 	expect_true(sum(abs(sum_wtp$mean)) < tol)
 
