@@ -1,60 +1,73 @@
 context("Test MLE")
-
-library(pacman)
-
-p_load(tidyverse, rmdcev, rstan)
-
+library(rmdcev)
+library(rstan)
 tol <- 0.00001
 data(data_rec, package = "rmdcev")
 data_rec
-test_that("MLE gamma0 specification", {
-	result <- FitMDCEV(psi_formula = ~ factor(activity) -1,
-								data = data_rec,
-								model = "gamma0",
-								algorithm = "MLE")
+test_that("Data ok", {
+	expect_equal(data_rec$id[18], 2)
+})
 
-	expect_true(abs(result$log.likelihood - (-23307.7292015328)) < tol)
-	expect_true(abs(result$bic - 46857.124680015) < tol)
-	expect_true(abs(result[["stan_fit"]][["par"]][["scale"]] - 0.7765478) < tol)
-	expect_true(abs(result[["stan_fit"]][["par"]][["psi"]][[1]] - -7.258057) < tol)
-	expect_true(abs(result[["stan_fit"]][["par"]][["gamma"]][[2]] - 19.78209) < tol)
+# sprintf("%.10f",result$log.likelihood)
+# sprintf("%.10f",result$bic)
+# sprintf("%.10f",result[["stan_fit"]][["par"]][["scale"]] )
+# sprintf("%.10f",result[["stan_fit"]][["par"]][["psi"]] )
+# sprintf("%.10f",result[["stan_fit"]][["par"]][["alpha"]] )
+# sprintf("%.10f",wtp_err )
+
+
+test_that("MLE gamma0 specification", {
+	result <- FitMDCEV(psi_formula = ~ factor(good_name) -1,
+								data = subset(data_rec, id < 1000),
+								model = "gamma0",
+								algorithm = "MLE",
+					   print_iterations = FALSE)
+	SummaryMDCEV(result)
+	expect_equal(result$model, "gamma0")
+	expect_true(abs(result$log.likelihood - (-23483.6419731299)) < tol)
+	expect_true(abs(result$bic - 47209.0203635126) < tol)
+	expect_true(abs(result[["stan_fit"]][["par"]][["scale"]] - 0.7602637661) < tol)
+	expect_true(abs(result[["stan_fit"]][["par"]][["psi"]][[2]] - -8.3287213324) < tol)
+	expect_equal(length(result[["stan_fit"]][["par"]][["alpha"]]), 0)
 })
 
 test_that("MLE gamma specification", {
-	result <- FitMDCEV(psi_formula = ~ factor(activity) -1,
-					   data = data_rec,
+	result <- FitMDCEV(psi_formula = ~ factor(good_name) -1,
+					   data = subset(data_rec, id < 1000),
 					   model = "gamma",
-					   algorithm = "MLE")
+					   algorithm = "MLE",
+					   print_iterations = FALSE)
 
-	expect_true(abs(result$log.likelihood - (-23299.218163508)) < tol)
-	expect_true(abs(result$bic - 46847.007354736) < tol)
-	expect_true(abs(result[["stan_fit"]][["par"]][["alpha"]] - 0.1615235) < tol)
-	expect_true(abs(result[["stan_fit"]][["par"]][["psi"]][[1]] - -5.497487) < tol)
-	expect_true(abs(result[["stan_fit"]][["par"]][["gamma"]][[2]] - 17.72717) < tol)
+	expect_true(abs(result$log.likelihood - (-23468.7243361251)) < tol)
+	expect_true(abs(result$bic - 47186.0918442815) < tol)
+	expect_true(abs(result[["stan_fit"]][["par"]][["alpha"]] - 0.1811457085) < tol)
+	expect_true(abs(result[["stan_fit"]][["par"]][["psi"]][[1]] - -5.3074547474) < tol)
+	expect_true(abs(result[["stan_fit"]][["par"]][["gamma"]][[2]] - 19.4329273237) < tol)
 })
 
 test_that("MLE alpha specification", {
-	result <- FitMDCEV(psi_formula = ~ factor(activity) -1,
-					   data = data_rec,
+	result <- FitMDCEV(psi_formula = ~ factor(good_name) -1,
+					   data = subset(data_rec, id < 100),
 					   model = "alpha",
-					   algorithm = "MLE")
+					   algorithm = "MLE",
+					   print_iterations = FALSE)
 
-	expect_true(abs(result$log.likelihood - (-24221.066687246)) < tol)
-	expect_true(abs(result$bic - 48690.70440221) < tol)
-	expect_true(abs(result[["stan_fit"]][["par"]][["scale"]] - 0.6882879) < tol)
-	expect_true(abs(result[["stan_fit"]][["par"]][["psi"]][[1]] - -2.091086) < tol)
-	expect_true(abs(result[["stan_fit"]][["par"]][["alpha"]][[2]] - 0.5536171) < tol)
+	expect_true(abs(result$log.likelihood - (-2706.8916415926)) < tol)
+	expect_true(abs(result$bic - 5579.2075977901) < tol)
+	expect_true(abs(result[["stan_fit"]][["par"]][["scale"]] - 0.6872371856) < tol)
+	expect_true(abs(result[["stan_fit"]][["par"]][["psi"]][[1]] - -0.9909718259) < tol)
+	expect_true(abs(result[["stan_fit"]][["par"]][["alpha"]][[2]] - 0.5348307899) < tol)
+	expect_equal(length(result[["stan_fit"]][["par"]][["gamma"]]), 0)
 })
 
 test_that("MLE les specification", {
-	result <- FitMDCEV(psi_formula = ~ factor(activity) -1,
-					   data = data_rec,
+	result <- FitMDCEV(psi_formula = ~ factor(good_name) -1,
+					   data = subset(data_rec, id < 100),
 					   model = "les",
-					   algorithm = "MLE")
+					   algorithm = "MLE",
+					   print_iterations = FALSE)
 
-	expect_true(abs(result$log.likelihood - (-23168.772852057)) < tol)
-	expect_true(abs(result$bic - 46586.116731833) < tol)
-	expect_true(abs(result[["stan_fit"]][["par"]][["scale"]] - 0.6528661) < tol)
-	expect_true(abs(result[["stan_fit"]][["par"]][["alpha"]] - 0.5654564) < tol)
-	expect_true(abs(result[["stan_fit"]][["par"]][["gamma"]][[2]] - 25.28034) < tol)
+	expect_true(abs(result$log.likelihood - (-2571.1107609921)) < tol)
+	expect_true(abs(result[["stan_fit"]][["par"]][["scale"]] - 0.6104077925) < tol)
+	expect_true(abs(result[["stan_fit"]][["par"]][["alpha"]] - 0.6611009275) < tol)
 })
