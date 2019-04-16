@@ -26,4 +26,4 @@ if(getRversion() >= "2.15.1")
 	utils::globalVariables(c(".", "quant", "lp__", "good", "data",
 							"task", "individual", "CalcWTP_rng",
 							"CalcMarshallianDemand_rng", "CalcWTPPriceOnly_rng",
-							"CalcmdemandOne_rng", "parms", "sim_id", "value", "policy"))
+							"CalcmdemandOne_rng", "parms", "sim_id", "value", "policy", "std_dev"))

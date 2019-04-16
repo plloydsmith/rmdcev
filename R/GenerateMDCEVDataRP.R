@@ -1,7 +1,6 @@
 #' @title GenerateMDCEVDataRP
 #' @description Simulate random parameter data for MDCEV model
 #' @inheritParams GenerateMDCEVData
-#' @importFrom purrr pmap
 #' @return list with data for stan model and parms_true with parameter values
 #' @export
 GenerateMDCEVDataRP <- function(model,
@@ -13,7 +12,7 @@ GenerateMDCEVDataRP <- function(model,
 								price_hi = 500,
 								alpha_parms = 0.5,
 								scale_parms = 1,
-								gamma_parms = runif(ngoods, 1, 10),
+								gamma_parms = stats::runif(ngoods, 1, 10),
 								psi_j_parms = c(-5, 0.5, 2),
 								nerrs = 1,
 								tol = 1e-20,
@@ -30,7 +29,7 @@ GenerateMDCEVDataRP <- function(model,
 		algo_gen <- 1
 	} else if (model == "alpha"){
 		model_num <- 2
-		alpha_parms <- 0 + runif(ngoods+1, 0.01, .98)
+		alpha_parms <- 0 + stats::runif(ngoods+1, 0.01, .98)
 		algo_gen <- 1
 	} else if (model == "gamma"){
 		model_num <- 3
@@ -117,7 +116,7 @@ GenerateMDCEVDataRP <- function(model,
 	#	model_src <- stanc_builder("src/stan_files/SimulationFunctions.stan")
 	#	expose_stan_functions(model_src)
 
-	quant <- purrr:pmap(df_indiv, CalcmdemandOne_rng,
+	quant <- purrr::pmap(df_indiv, CalcmdemandOne_rng,
 				  scale_sim=scale_parms,
 				  nerrs=nerrs, algo_gen = algo_gen,
 				  tol = tol, max_loop = max_loop)

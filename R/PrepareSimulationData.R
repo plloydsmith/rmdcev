@@ -51,7 +51,7 @@ PrepareSimulationData <- function(stan_est, policies, nsims = 30, price_change_o
 		df_common <- purrr::map(sim_welfare, `[`, c("price_p_list", "gamma_sim_list", "alpha_sim_list", "scale_sim"))
 		names(df_common) <- rep("df_common", stan_est$n_classes)
 
-		df_indiv <- purrr::flatten(map(sim_welfare, `[`, c("df_indiv")))
+		df_indiv <- purrr::flatten(purrr::map(sim_welfare, `[`, c("df_indiv")))
 	}
 	sim_options <- list(n_classes = stan_est$n_classes,
 					model_num = model_num,
@@ -118,7 +118,7 @@ ProcessSimulationData <- function(est_sim, stan_est, policies, nsims, price_chan
 
 	if (price_change_only == FALSE) {
 	# psi_p
-	psi_p_sim <- purrr::map(psi_temp, function(psi){ map(policies[["dat_psi_p"]], MultiplyMatrix, x = psi, n_rows = I)})
+	psi_p_sim <- purrr::map(psi_temp, function(psi){ purrr::map(policies[["dat_psi_p"]], MultiplyMatrix, x = psi, n_rows = I)})
 	psi_p_sim <- purrr::map(psi_p_sim, DoCbind)
 	psi_p_sim <- DoCbind(psi_p_sim)
 	psi_p_sim <- CreateListsRow(psi_p_sim)
