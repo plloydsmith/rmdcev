@@ -45,7 +45,7 @@ As an example, we can simulate some data using the Gamma specification.
 library(pacman)
 p_load(tidyverse, rmdcev)
 model <- "gamma"
-sim.data <- SimulateMdcevData(model = model, nobs = 1000, ngoods = 10)
+sim.data <- GenerateMDCEVData(model = model, nobs = 1000, ngoods = 10)
 ```
 
 Estimate model using MLE
@@ -94,16 +94,17 @@ Create policy simulations (these are blank policies with no effects)
 npols <- 2 # Choose number of policies
 policies<-	CreateBlankPolicies(npols, stan_est$stan_data[["J"]], stan_est$stan_data[["dat_psi"]])
 
-# This modifiesthe policies to lose each alternative at once
+# This modifies the policies to lose each alternative at once
 # price_p <- cbind(0,diag(stan_est$stan_data[["J"]]))
 # policies$price_p <- CreateListsRow(price_p)
 ```
 
 Simulate welfare changes
 ```{r}
-df_wtp <- PrepareSimulationData(stan_est, policies)
+df_sim <- PrepareSimulationData(stan_est, policies)
 
-wtp <- SimulateWTP(df_wtp$df_indiv, df_wtp$df_common)
+wtp <- SimulateMDCEV(df_sim$df_indiv, df_sim$df_common, df_sim$sim_options,
+		sim_type = "welfare")
 
 SummaryWelfare(wtp)
 ```
