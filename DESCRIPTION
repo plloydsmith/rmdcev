@@ -14,7 +14,7 @@ Description: The rmdcev R package estimates different multiple discrete-continuo
 	maximum likelihood or Bayesian estimation techniques and are implemented in Stan, which is a 
 	C++ package for performing full Bayesian inference (see http://mc-stan.org/). The package also 
 	supports Phaneuf and von Haefen's Kuhn-Tucker model specification.
-License: GPL (>=3)
+License: MIT + file LICENSE
 Depends: 
     R (>= 3.4.0),
     Rcpp (>= 0.12.0),

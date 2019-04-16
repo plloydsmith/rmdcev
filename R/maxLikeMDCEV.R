@@ -9,14 +9,17 @@ maxlikeMDCEV <- function(stan_data, initial.parameters,
 {
 	stan.model <- stanmodels$mdcev
 
+
+
 	message("Using MLE to estimate model")
 
 	if (is.null(initial.parameters)){
 		stan_fit <- rstan::optimizing(stan.model, data = stan_data, as_vector = FALSE, seed = mle_options$seed,
+									  verbose = mle_options$print_iterations,
 							   draws = mle_options$n_draws, hessian = mle_options$hessian)
 	} else {
 		stan_fit <- rstan::optimizing(stan.model, data = stan_data, as_vector = FALSE, seed = mle_options$seed,
-							   init = initial.parameters,
+									  verbose = mle_options$print_iterations, init = initial.parameters,
 						   draws = mle_options$n_draws, hessian = mle_options$hessian)
 	}
 	result <- list()
@@ -28,7 +31,7 @@ maxlikeMDCEV <- function(stan_data, initial.parameters,
 	n_parameters <- stan_data$n_parameters
 	result$log.likelihood <- stan_fit[["par"]][["sum_log_lik"]]
 	result$effective.sample.size <- ess <- sum(stan_data$weights)
-#	n_parameters <- n_classes * n_parameters + n_classes - 1
+	result$aic <- -2 * result$log.likelihood + 2 * n_parameters
 	result$bic <- -2 * result$log.likelihood + log(ess) * n_parameters
 	stan_fit <- result$stan_fit
 
@@ -71,6 +74,7 @@ maxlikeMDCEV <- function(stan_data, initial.parameters,
 
 		stan_fit <- rstan::optimizing(stan.model, data = stan_data, as_vector = FALSE,
 							   seed = mle_options$seed, init = init,
+							   verbose = mle_options$print_iterations,
 							   draws = mle_options$n_draws, hessian = mle_options$hessian)
 
 		if (mle_options$keep_loglik == 0)
@@ -80,12 +84,12 @@ maxlikeMDCEV <- function(stan_data, initial.parameters,
 		n_parameters <- ncol(stan_fit[["hessian"]])
 		result$log.likelihood <- stan_fit[["par"]][["sum_log_lik"]]
 		result$effective.sample.size <- ess <- sum(stan_data$weights)
+		result$aic <- -2 * result$log.likelihood + 2 * n_parameters
 		result$bic <- -2 * result$log.likelihood + log(ess) * n_parameters
 		class_probabilities <- exp(t(stan_fit[["par"]][["theta"]]))
 		colnames(class_probabilities) <- paste0("class", c(1:mle_options$n_classes))
 		result$class_probabilities <- class_probabilities
 	}
-
 #	result$class.parameters <- pars$class.parameters
 #	result$coef <- createCoefOutput(pars, stan_data$par.names, stan_data$all.names)
 #	result$lca.data <- lca.data

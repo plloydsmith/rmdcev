@@ -61,6 +61,7 @@ processMDCEVdata <- function(data, psi_formula, lc_formula,
 			 num_price = as.vector(num_price),
 			 income = as.vector(inc),
 			 M_factorial = M_factorial,
+			 no_priors = model_options$no_priors,
 			 prior_psi = model_options$prior_psi,
 			 prior_gamma = model_options$prior_gamma,
 			 prior_alpha = model_options$prior_alpha,
@@ -77,6 +78,7 @@ processMDCEVdata <- function(data, psi_formula, lc_formula,
 			distinct(id, .keep_all = T) %>%
 			stats::model.matrix(lc_formula, .)
 		stan_data$data_class <- as.matrix(data_class)
+		stan_data$n_parameters <- n_parameters * model_options$n_classes + ncol(data_class) * (model_options$n_classes - 1)
 		stan_data$L <- ncol(data_class) # number of membership variables
 		stan_data$K <- model_options$n_classes
 	}

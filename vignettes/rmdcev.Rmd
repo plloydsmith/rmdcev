@@ -201,7 +201,7 @@ We can summarize the average consumption and price levels for each good as:
 
 ```{r, summary}
 data_rec %>%
-	group_by(good, activity) %>%
+	group_by(good, good_name) %>%
 	summarise(mean_quant = mean(quant),
 			  mean_price = mean(price))
 ```
@@ -224,12 +224,21 @@ We estimate a MDCEV model using the **Recreation** data where we include acticit
 
 The basic syntax is the following:
 
+```{r, create_dummies}
+data_rec <- data_rec %>% 
+  mutate(v = 1, yr = good_name) %>% 
+  spread(yr, v, fill = 0) %>%
+	arrange(id, good)
+```
+
 ```{r, estimation_mdcev}
-library(rmdcev)
-mdcev.fit <- FitMDCEV(psi_formula = ~ factor(activity) -1,
+mdcev.fit <- FitMDCEV(psi_formula = ~ beach + birding + camping + cycling + fish + garden + golf +
+					 hiking + hunt_birds + hunt_large + hunt_trap + hunt_waterfowl + motor_land + 
+					 	motor_water + photo + ski_cross + ski_down -1,
 							data = data_rec,
 							model = "gamma0",
-							algorithm = "MLE")
+							algorithm = "MLE",
+					  		print_iterations = FALSE)
 ```
 
 There are four possible model options
@@ -238,6 +247,11 @@ There are four possible model options
 - "alpha": $\alpha$-profile with all $\gamma_k$ equal to 1.
 - "gamma": $\gamma$-profile with a single estimated $\alpha$ (i.e. $\alpha_1 = \alpha_k = \alpha$.
 - "gamma0": $\gamma$-profile with all  $\alpha$ equal to 1e-6.
+
+```{r, summary_mdcev}
+	SummaryMDCEV(mdcev.fit)
+```
+
 
 ### Estimating MDCEV with HB
 
@@ -248,15 +262,21 @@ One benefit of using the Heirarchal Bayes routine is that we can take advantage 
 In this example, we estimate a LC model with two classes. To include variables in the membership equation we specify them in the **lc_formula** interface. The LC model is estimated as long as **n_classes** is set greater than 2.
 
 ```{r, estimation_mdcev_lc}
-library(rmdcev)
-mdcev.fit <- FitMDCEV(psi_formula = ~ factor(activity) -1,
-            				  lc_formula = ~ university,
+mdcev.lc <- FitMDCEV(psi_formula = ~ beach + birding + camping + cycling + fish + garden + golf +
+					 hiking + hunt_birds + hunt_large + hunt_trap + hunt_waterfowl + motor_land + 
+					 	motor_water + photo + ski_cross + ski_down -1,
+            				  lc_formula = ~ university + ageindex + urban,
             					data = data_rec,
             				  n_classes = 2,
             					model = "gamma0",
-            					algorithm = "MLE")
+            					algorithm = "MLE",
+					  			print_iterations = FALSE)
 ```
 We can interpret the beta_m parameters as...
+
+```{r, summary_mdcev_lc}
+	SummaryMDCEV(mdcev.lc)
+```
 
 ### Estimating Random Parameters MDCEV
 

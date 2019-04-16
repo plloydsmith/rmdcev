@@ -1,5 +1,5 @@
 #' @title FitMDCEV
-#' @description Fit a MDCEV model using MLE or HB
+#' @description Fit a MDCEV model using MLE or Bayes
 #' @param psi_formula Formula for psi
 #' @param lc_formula Formula for latent class
 #' @param data The (IxJ) data to be passed to Stan including 1) id, 2) good, 3) quant,
@@ -13,8 +13,10 @@
 #' @param fixed_scale Whether to fix scale at 1.
 #' @param trunc_data Whether the estimation should be adjusted for truncation
 #' @param seed Random seed.
-#' @param algorithm Either "HB" for Hierarchical Bayes or "MLE"
+#' @param algorithm Either "Bayes" for Hierarchical Bayes or "MLE"
 #'     for maximum liklihood estimation.
+#' @param no_priors indicator if completely uninformative priors should be specified. If using MLE, the
+#' optimizing function will then be equal to log-likelihood. Defaults to 1 if MLE used and 0 if Bayes used.
 #' @param print_ll Whether to print logliklihood at each iteration
 #' @param n_draws The number of MVN draws for standard error calculations
 #' @param keep_loglik Whether to keep the log_lik calculations
@@ -28,25 +30,13 @@
 #' @param prior_beta_m_sd standard deviation for normal prior with mean 0.
 #' @param n_iterations The number of iterations in Hierarchical Bayes.
 #' @param n_chains The number of chains in Hierarchical Bayes.
-#' @param hb_random_parameters The form of the covariance matrix for
-# #'     Hierarchical Bayes. Can be 'fixed', 'uncorr, 'corr'.
-# #' @param hb.max.tree.depth
-# #'     http://mc-stan.org/misc/warnings.html#maximum-treedepth-exceeded
-# #' @param hb.adapt.delta
-# #'     http://mc-stan.org/misc/warnings.html#divergent-transitions-after-warmup
-# #' @param hb.keep.samples Whether to keep the samples of all the
-# #'     parameters in the output.
-# #' @param hb.stanfit Whether to include the stanfit property.
-# #' @param hb.lkj.prior.shape Real number greater than one; the shape
-# #'     hyperparameter for the LKJ prior used for the correlation matrix
-# #'     of the respondent coefficients distribution. A value of one gives
-# #' equal probability weight to all possible correlation matrices. Larger values
-# #' favour less correlation (draws closer to the identity matrix).
-# #' @param hb.warnings Whether to show warnings from Stan.
-# #' @param hb.beta.draws.to.keep Maximum number of beta draws per
-# #'     respondent to return in beta.draws.
-# #' @param include.choice.parameters Whether to include
-# #'     alternative-specific parameters.
+#' @param random_parameters The form of the covariance matrix for
+#'     Bayes. Can be 'fixed', 'uncorr, 'corr'.
+#' @param max_tree_depth
+#'     http://mc-stan.org/misc/warnings.html#maximum-treedepth-exceeded
+#' @param adapt_delta
+#'    http://mc-stan.org/misc/warnings.html#divergent-transitions-after-warmup
+#' @param show_stan_warnings Whether to show warnings from Stan.
 #' @param ... Additional parameters to pass on to \code{rstan::stan}
 #'     and \code{rstan::sampling}.
 #' @return A stanfit object
@@ -63,9 +53,11 @@ FitMDCEV <- function(data,
 					 trunc_data = 0,
 					 seed = "123",
 					 initial.parameters = NULL,
-					 algorithm = c("MLE", "HB"),
+					 algorithm = c("MLE", "Bayes"),
 					 #	std_errors = "draws", # still need to implement
 					 print_ll = 0,
+					 no_priors = NULL,
+					 print_iterations = TRUE,
 					 #mle_tol = 0.0001,
 					 hessian = TRUE,
 					 prior_psi_sd = 10,
@@ -75,69 +67,53 @@ FitMDCEV <- function(data,
 					 prior_beta_m_sd = 10,
 					 n_draws = 30,
 					 keep_loglik = 0,
-					 #subset = NULL,
-					 hb_random_parameters = "fixed",
-					 n_iterations = 200, n_chains = 4)#,
-#					 hb.max.tree.depth = 10, hb.adapt.delta = 0.8,
-#					 hb.keep.samples = FALSE, hb.stanfit = TRUE,
-					 #					 hb.prior.mean = 0, hb.prior.sd = 5,
-					 #					 hb.sigma.prior.shape = 1.39435729464721,
-					 #					 hb.sigma.prior.scale = 0.39435729464721,
-#					 hb.lkj.prior.shape = 4,
-#					 hb.warnings = TRUE, hb.beta.draws.to.keep = 0)
-#simulated.priors = NULL,
-#simulated.priors.from.design = FALSE,
-#simulated.sample.size = 300,
-#synthetic.priors = NULL,
-#synthetic.priors.from.design = NULL,
-#synthetic.sample.size = NULL,
-#tasks.left.out = 0,
-#lc.tolerance = 0.0001,
-#include.choice.parameters = TRUE,
-#respondent.ids = NULL, ...
-
+					 random_parameters = "fixed",
+					 show_stan_warnings = TRUE,
+					 n_iterations = 200,
+					 n_chains = 4,
+					 max_tree_depth = 10,
+					 adapt_delta = 0.8)
 {
-#	if (algorithm == "HB")
-#		stop("Not set up for HB yet.")
 	CheckMdcevData(data)
 
-	if (algorithm == "HB" && !is.null(weights))
+	if (algorithm == "Bayes" && !is.null(weights))
 		stop("Weights are not able to be applied for Hierarchical Bayes.")
 
-	if (algorithm == "HB" && n_classes > 1)
+	if (algorithm == "Bayes" && n_classes > 1)
 		stop("Hierarchical Bayes can only be used with one class. Switch algorithm to MLE")
 
+	if (algorithm == "MLE" && is.null(no_priors)){
+		no_priors = 1
+	} else if (algorithm == "Bayes" && is.null(no_priors))
+		no_priors = 0
+
 	mle_options <- list(fixed_scale = fixed_scale,
-						  model = model,
-						  n_classes = n_classes,
-						  trunc_data = trunc_data,
+						model = model,
+						n_classes = n_classes,
+						trunc_data = trunc_data,
 						seed = seed,
-						  print_ll = print_ll,
-						  hessian = hessian,
-						  n_draws = n_draws,
-						  keep_loglik = keep_loglik,
+						print_ll = print_ll,
+						print_iterations = print_iterations,
+						hessian = hessian,
+						n_draws = n_draws,
+						keep_loglik = keep_loglik,
+						no_priors = no_priors,
 						prior_psi_sd = prior_psi_sd,
 						prior_gamma_sd = prior_gamma_sd,
 						prior_alpha_sd = prior_alpha_sd,
 						prior_scale_sd = prior_scale_sd,
 						prior_beta_m_sd = prior_beta_m_sd)
 
-	hb_options <- list(n_iterations = n_iterations,
-					   n_chains = n_chains,
-					   keep_loglik = keep_loglik,
-					   hb_random_parameters = hb_random_parameters,
-					   seed = seed,
-						  hb.max.tree.depth = 10, hb.adapt.delta = 0.8,
-						  hb.keep.samples = FALSE, hb.stanfit = TRUE,
-						  hb.prior.mean = 0, hb.prior.sd = 5,
-						  hb.sigma.prior.shape = 1.39435729464721,
-						  hb.sigma.prior.scale = 0.39435729464721,
-						  hb.lkj.prior.shape = 4,
-						  hb.warnings = TRUE, hb.beta.draws.to.keep = 0)
+	bayes_options <- list(n_iterations = n_iterations,
+						n_chains = n_chains,
+						keep_loglik = keep_loglik,
+						random_parameters = random_parameters,
+						seed = seed,
+						max_tree_depth = max_tree_depth,
+						adapt_delta = adapt_delta,
+						show_stan_warnings = show_stan_warnings)
 
 	start.time <- proc.time()
-
-#	data <- stan.dat
 
 	stan_data <- processMDCEVdata(data, psi_formula, lc_formula, num_price, mle_options)
 
@@ -148,12 +124,11 @@ FitMDCEV <- function(data,
 	stan_data$weights <- as.vector(weights)
 	stan_data$print_ll <- print_ll
 
-	if (algorithm == "HB") {
-		result <- HierarchicalBayesMDCEV(stan_data, hb_options,
+	if (algorithm == "Bayes") {
+		result <- BayesMDCEV(stan_data, bayes_options,
 										initial.parameters,
 										keep.samples = FALSE,
-										include.stanfit = TRUE,
-									  show.stan.warnings = TRUE)
+										include.stanfit = TRUE)
 
 		# Get parameter estimates in matrix form
 		result$est_pars <- extract(result$stan_fit, permuted = TRUE, inc_warmup = FALSE) %>%
@@ -187,16 +162,21 @@ FitMDCEV <- function(data,
 	result$est_pars <- result$est_pars %>%
 		tibble::rowid_to_column("sim_id") %>%
 		tidyr::gather(parms, value, -sim_id)
-#		gather_(key_col = 'parms',
-#				value_col = 'value', -sim_id, factor_key=TRUE)
+
+	stan_data$M_factorial <- NULL
 
 	result$stan_data <- stan_data
 	result$algorithm <- algorithm
+	result$psi_formula <- psi_formula
+	result$lc_formula <- lc_formula
 	result$n_classes <- n_classes
+	result$model <- model
+	result$algorithm <- algorithm
 	result$n_draws <- n_draws
-	#	result$weights.description <- if (is.null(weights)) NULL else Labels(weights)
 	result$n_respondents <- stan_data$I
+	result$start.time <- start.time
 	result$time.taken <- (end.time - start.time)[3]
 	class(result) <- "mdcev"
-	result
+
+result
 }

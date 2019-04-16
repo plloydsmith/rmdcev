@@ -1,6 +1,6 @@
-#' @title HierarchicalBayesMDCEV
-#' @description Fit a MDCEV model HB
-#' @param hb_options list of HB options
+#' @title BayesMDCEV
+#' @description Fit a MDCEV model using Bayesian estimation and Stan
+#' @param bayes_options list of Bayes options
 #' @param stan_data data for model
 #' @inheritParams FitMDCEV
 #' @param keep.samples default is FALSE,
@@ -9,13 +9,12 @@
 #' @import dplyr
 #' @import rstan
 #' @export
-HierarchicalBayesMDCEV <- function(stan_data, hb_options,
+BayesMDCEV <- function(stan_data, bayes_options,
 								 initial.parameters,
 								 keep.samples = FALSE,
-								 include.stanfit = TRUE,
-								 show.stan.warnings = TRUE)
+								 include.stanfit = TRUE)
 {
-	if (hb_options$n_iterations <= 0)
+	if (bayes_options$n_iterations <= 0)
 		stop("The specified number of iterations must be greater than 0.")
 
 	# allows Stan chains to run in parallel on multiprocessor machines
@@ -35,66 +34,48 @@ HierarchicalBayesMDCEV <- function(stan_data, hb_options,
 	stan_data$task_individual = indexes$task_individual
 	stan_data$task = indexes$task
 	stan_data$IJ = stan_data$I * stan_data$J
-	stan_data$lkj_shape = hb_options$hb.lkj.prior.shape
+#	stan_data$lkj_shape = bayes_options$hb.lkj.prior.shape
 
 #	initial.parameters2 <- list(initial.parameters)#, initial.parameters,initial.parameters,initial.parameters)
 #	initial.parameters2 <- list(list(scale = as.array(1, dim = 1)))#, initial.parameters,initial.parameters,initial.parameters)
 
 #	has.covariates <- !is.null(stan_data$covariates)
-	stan.model <- stanModel(hb_options$hb_random_parameters)
+	stan.model <- stanModel(bayes_options$random_parameters)
 
-#	on.warnings <- GetStanWarningHandler(show.stan.warnings)
-#	on.error <- GetStanErrorHandler()
+	message("Using Bayes to estimate model")
 
-	message("Using HB to estimate model")
-
-#	InterceptExceptions(
-#		{
-	stan_fit <- RunStanSampling(stan_data, stan.model, hb_options)
-#		}, warning.handler = on.warnings, error.handler = on.error)
-
-#		result <- c(result, LogLikelihoodAndBIC(stan.fit, #n.hb.parameters,
-#												stan.dat$R,
-#												dat$n.questions.left.out,
-#												dat$subset))
-#		result
+	if (bayes_options$show_stan_warnings == FALSE){
+		suppressWarnings(stan_fit <- RunStanSampling(stan_data, stan.model, bayes_options))
+	} else if(bayes_options$show_stan_warnings == TRUE){
+		stan_fit <- RunStanSampling(stan_data, stan.model, bayes_options)
+	}
 
 	result <- list()
 	result$stan_fit <- stan_fit
-#	n_parameters <- stan_fit[["par_dims"]][["mu"]] + stan_fit[["par_dims"]][["tau"]]
-#	result$log.likelihood <- stan_fit[["par"]][["sum_log_lik"]]
-#	result$effective.sample.size <- ess <- sum(weights)
-#	n_parameters <- n_classes * n_parameters + n_classes - 1
-#	result$bic <- -2 * result$log.likelihood + log(ess) * n_parameters
-#	result$log.likelihood
 	result
 }
 
 #' @title RunStanSampling
 #' @description Wrapper function for \code{rstan:stan} and
-#' \code{rstan:sampling} to run Stan HB analysis.
-#' @inheritParams HierarchicalBayesMDCEV
+#' \code{rstan:sampling} to run Stan Bayes analysis.
+#' @inheritParams BayesMDCEV
 #' @param stan.model Complied Stan model
 #' @param ... Additional parameters to pass on to \code{rstan::stan} and
 #' \code{rstan::sampling}.
 #' @return A stanfit object.
 #' @export
-RunStanSampling <- function(stan_data, stan.model, hb_options)
+RunStanSampling <- function(stan_data, stan.model, bayes_options)
 {
 #	if (is.null(pars))
 #		pars <- stanParameters(stan.dat, keep.beta, stan.model)
 #	init <- initialParameterValues(stan.dat)
-	rstan::sampling(stan.model, data = stan_data, chains = hb_options$n_chains,
+	rstan::sampling(stan.model, data = stan_data, chains = bayes_options$n_chains,
 #			 pars = pars,
-			 iter = hb_options$n_iterations, seed = hb_options$seed,
-			 control = list(max_treedepth = hb_options$hb.max.tree.depth,
-			 			   adapt_delta = hb_options$hb.adapt.delta))
+			 iter = bayes_options$n_iterations, seed = bayes_options$seed,
+			 control = list(max_treedepth = bayes_options$max_tree_depth,
+			 			   adapt_delta = bayes_options$adapt_delta))
 #			 init = init,
 }
-#stan.model <- stanc("C:/Dropbox/Research/code/rmdcev/src/stan_files/mdcev.stan")
-
-#stan("C:/Dropbox/Research/code/rmdcev/src/stan_files/mdcev.stan",
-#	 data = stan_data, chains = n_chains, iter = n_iterations)
 
 #stanParameters <- function(stan.dat, keep.beta, stan.model)
 #{
@@ -120,17 +101,17 @@ RunStanSampling <- function(stan_data, stan.model, hb_options)
 #}
 
 
-stanModel <- function(hb_random_parameters)
+stanModel <- function(random_parameters)
 {
 	covariates.error.msg <- paste0("Covariates are not currently implemented ",
 								   "for the specified settings.")
 #	if (n_classes == 1)
 #	{
-		if (hb_random_parameters == "fixed")
+		if (random_parameters == "fixed")
 			stanmodels$mdcev
-		else if (hb_random_parameters == "uncorr")
-			stanmodels$mdcev_hb_uncorr
-		else if (hb_random_parameters == "corr")
-			stanmodels$mdcev_hb_corr
+		else if (random_parameters == "uncorr")
+			stanmodels$mdcev_uncorr
+		else if (random_parameters == "corr")
+			stanmodels$mdcev_corr
 #	}
 }

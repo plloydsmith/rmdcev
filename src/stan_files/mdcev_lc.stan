@@ -20,6 +20,7 @@ data {
 	int<lower = 1, upper = 4> model_num; // 1 is les, 2 is alpha, 3 gamma (one alpha for all), 4 alpha's set to 1e-6
 	int<lower=0, upper=1> fixed_scale; // indicator to fix scale
 	int<lower=0, upper=1> trunc_data; //indicator to correct estimation for truncated data
+    int<lower=0, upper=1> no_priors; //indicator to include priors or not
 	int<lower=0, upper=1> print_ll; //indicator to print log_lik at each iteration.
 	vector[I] weights; // user supplied weights
 }
@@ -144,13 +145,15 @@ transformed parameters {
 }
 
 model {
-	scale ~ normal(1, prior_scale_sd);
-//	theta ~ dirichlet(rep_vector(2.0, K)); // no predictors
-	to_vector(beta_m) ~ normal(0, prior_beta_m_sd);
-	for (k in 1:K){
-		to_vector(gamma[k]) ~ normal(0, prior_gamma_sd);
-		to_vector(psi[k]) ~ normal(0, prior_psi_sd);
-		to_vector(alpha[k]) ~ normal(.5, prior_alpha_sd);
+	if(no_priors == 0){
+		scale ~ normal(1, prior_scale_sd);
+	//	theta ~ dirichlet(rep_vector(2.0, K)); // no predictors
+		to_vector(beta_m) ~ normal(0, prior_beta_m_sd);
+		for (k in 1:K){
+			to_vector(gamma[k]) ~ normal(0, prior_gamma_sd);
+			to_vector(psi[k]) ~ normal(0, prior_psi_sd);
+			to_vector(alpha[k]) ~ normal(.5, prior_alpha_sd);
+		}
 	}
   target += sum(log_like_all);
 
