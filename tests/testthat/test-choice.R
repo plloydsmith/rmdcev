@@ -22,7 +22,7 @@ test_that("MLE gamma0 specification", {
 								model = "gamma0",
 								algorithm = "MLE",
 					   print_iterations = FALSE)
-	SummaryMDCEV(result)
+#	SummaryMDCEV(result)
 	expect_equal(result$model, "gamma0")
 	expect_true(abs(result$log.likelihood - (-23483.6419731299)) < tol)
 	expect_true(abs(result$bic - 47209.0203635126) < tol)

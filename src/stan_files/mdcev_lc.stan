@@ -21,7 +21,6 @@ data {
 	int<lower=0, upper=1> fixed_scale; // indicator to fix scale
 	int<lower=0, upper=1> trunc_data; //indicator to correct estimation for truncated data
     int<lower=0, upper=1> no_priors; //indicator to include priors or not
-	int<lower=0, upper=1> print_ll; //indicator to print log_lik at each iteration.
 	vector[I] weights; // user supplied weights
 }
 
@@ -167,8 +166,5 @@ generated quantities{
 		sum_log_lik = sum_log_lik + log_like_all[i];
 		for(k in 1:K)
   			theta[k,i] =theta1[k];
-	}
-	if(print_ll==1){
-		print("sum_log_lik =", sum_log_lik);
 	}
 }

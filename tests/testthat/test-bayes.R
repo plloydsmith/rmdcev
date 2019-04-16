@@ -21,6 +21,7 @@ test_that("Bayes gamma0 specification", {
 					   n_chains = 1,
 					   n_iterations = 10,
 					   show_stan_warnings = FALSE)
+#	SummaryMDCEV(result)
 
 	expect_equal(dim(result$est_pars), c(175, 3))
 })

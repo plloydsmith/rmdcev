@@ -8,10 +8,10 @@ FitMDCEV(data, psi_formula = NULL, lc_formula = NULL, weights = NULL,
   num_price = NULL, model = c("alpha", "les", "gamma", "gamma0"),
   n_classes = 1, fixed_scale = 0, trunc_data = 0, seed = "123",
   initial.parameters = NULL, algorithm = c("MLE", "Bayes"),
-  print_ll = 0, no_priors = NULL, print_iterations = TRUE,
-  hessian = TRUE, prior_psi_sd = 10, prior_gamma_sd = 10,
-  prior_alpha_sd = 0.5, prior_scale_sd = 1, prior_beta_m_sd = 10,
-  n_draws = 30, keep_loglik = 0, random_parameters = "fixed",
+  no_priors = NULL, print_iterations = TRUE, hessian = TRUE,
+  prior_psi_sd = 10, prior_gamma_sd = 10, prior_alpha_sd = 0.5,
+  prior_scale_sd = 1, prior_beta_m_sd = 10, n_draws = 30,
+  keep_loglik = 0, random_parameters = "fixed",
   show_stan_warnings = TRUE, n_iterations = 200, n_chains = 4,
   max_tree_depth = 10, adapt_delta = 0.8)
 }
@@ -45,10 +45,10 @@ starting at random.}
 \item{algorithm}{Either "Bayes" for Hierarchical Bayes or "MLE"
 for maximum liklihood estimation.}
 
-\item{print_ll}{Whether to print logliklihood at each iteration}
-
 \item{no_priors}{indicator if completely uninformative priors should be specified. If using MLE, the
 optimizing function will then be equal to log-likelihood. Defaults to 1 if MLE used and 0 if Bayes used.}
+
+\item{print_iterations}{Whether to print iteration information}
 
 \item{hessian}{Wheter to keep the Hessian matrix}
 

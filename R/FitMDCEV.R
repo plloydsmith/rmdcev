@@ -17,7 +17,7 @@
 #'     for maximum liklihood estimation.
 #' @param no_priors indicator if completely uninformative priors should be specified. If using MLE, the
 #' optimizing function will then be equal to log-likelihood. Defaults to 1 if MLE used and 0 if Bayes used.
-#' @param print_ll Whether to print logliklihood at each iteration
+#' @param print_iterations Whether to print iteration information
 #' @param n_draws The number of MVN draws for standard error calculations
 #' @param keep_loglik Whether to keep the log_lik calculations
 #' @param hessian Wheter to keep the Hessian matrix
@@ -55,7 +55,6 @@ FitMDCEV <- function(data,
 					 initial.parameters = NULL,
 					 algorithm = c("MLE", "Bayes"),
 					 #	std_errors = "draws", # still need to implement
-					 print_ll = 0,
 					 no_priors = NULL,
 					 print_iterations = TRUE,
 					 #mle_tol = 0.0001,
@@ -80,7 +79,7 @@ FitMDCEV <- function(data,
 		stop("Weights are not able to be applied for Hierarchical Bayes.")
 
 	if (algorithm == "Bayes" && n_classes > 1)
-		stop("Hierarchical Bayes can only be used with one class. Switch algorithm to MLE")
+		stop("Hierarchical Bayes can only be used with one class. Switch algorithm to MLE or choose n_classes = 1", "\n")
 
 	if (algorithm == "MLE" && is.null(no_priors)){
 		no_priors = 1
@@ -92,7 +91,6 @@ FitMDCEV <- function(data,
 						n_classes = n_classes,
 						trunc_data = trunc_data,
 						seed = seed,
-						print_ll = print_ll,
 						print_iterations = print_iterations,
 						hessian = hessian,
 						n_draws = n_draws,
@@ -122,7 +120,6 @@ FitMDCEV <- function(data,
 		weights <-  rep(1, stan_data$I)
 
 	stan_data$weights <- as.vector(weights)
-	stan_data$print_ll <- print_ll
 
 	if (algorithm == "Bayes") {
 		result <- BayesMDCEV(stan_data, bayes_options,
@@ -176,6 +173,9 @@ FitMDCEV <- function(data,
 	result$n_respondents <- stan_data$I
 	result$start.time <- start.time
 	result$time.taken <- (end.time - start.time)[3]
+
+	if(algorithm == "Bayes")
+		result$n_draws <- NULL
 	class(result) <- "mdcev"
 
 result

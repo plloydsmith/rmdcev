@@ -22,16 +22,21 @@ SummaryMDCEV <- function(model, printCI = FALSE){
 	cat("LL                               : ",round(model$log.likelihood,2),"\n")
 	cat("AIC                              : ",round(model$aic,2),"\n")
 	cat("BIC                              : ",round(model$bic,2),"\n")
-	cat("Number of MVN simulation draws   : ",model$n_draws,"\n")
 	if(model$algorithm == "MLE"){
+
+	cat("Number of MVN simulation draws   : ",model$n_draws,"\n")
+
 		if(model$stan_fit$return_code==0){
 			converge <- "successful convergence"
 		} else if(model$stan_fit$return_code==0){
 			converge <- "unsuccessful convergence"
 		}
-		cat("Exist of MLE                     : ",converge,"\n")
+	cat("Exist of MLE                     : ",converge,"\n")
+	} else if(model$algorithm == "Bayes"){
+	cat("Number of chains                 : ",result[["stan_fit"]]@sim[["chains"]],"\n")
+	cat("Number of warmup draws per chain : ",result[["stan_fit"]]@sim[["warmup"]],"\n")
+	cat("Total post-warmup sample         : ",result[["stan_fit"]]@sim[["chains"]]*(result[["stan_fit"]]@sim[["iter"]]-result[["stan_fit"]]@sim[["warmup"]]),"\n")
 	}
-
 tmpH <- floor(model$time.taken/60^2)
 tmpM <- floor((model$time.taken-tmpH*60^2)/60)
 tmpS <- round(model$time.taken-tmpH*60^2-tmpM*60,2)
@@ -56,19 +61,19 @@ timeTaken <- paste(formatC(tmpH,width=2,format='d',flag=0),
 				  cl95_hi = round(stats::quantile(value, 0.975),3))
 
 	if(model$n_classes > 1){
-	psi.names <- cbind("psi",1:ncol(model$stan_data[["dat_psi"]]),
-					   paste0(".",colnames(model$stan_data[["dat_psi"]])))
-	colnames(psi.names) <- c("parms", "parm_num", "names")
-	psi.names <- tbl_df(psi.names)
+		psi.names <- cbind("psi",1:ncol(model$stan_data[["dat_psi"]]),
+						   paste0(".",colnames(model$stan_data[["dat_psi"]])))
+		colnames(psi.names) <- c("parms", "parm_num", "names")
+		psi.names <- tbl_df(psi.names)
 
-	beta_m.names <- cbind("beta_m",1:ncol(model$stan_data[["data_class"]]),
-					   paste0(".",colnames(model$stan_data[["data_class"]])))
-	colnames(beta_m.names) <- c("parms", "parm_num", "names_b")
-	beta_m.names <- tbl_df(beta_m.names)
+		beta_m.names <- cbind("beta_m",1:ncol(model$stan_data[["data_class"]]),
+						   paste0(".",colnames(model$stan_data[["data_class"]])))
+		colnames(beta_m.names) <- c("parms", "parm_num", "names_b")
+		beta_m.names <- tbl_df(beta_m.names)
 
 		output <- suppressWarnings(output %>%
-		separate(parms, into = c("parms", "parm_num"), sep = ",") %>%
-		separate(parms, into = c("parms", "class"), sep = -1) %>%
+		tidyr::separate(parms, into = c("parms", "parm_num"), sep = ",") %>%
+		tidyr::separate(parms, into = c("parms", "class"), sep = -1) %>%
 			mutate(parm_num = ifelse(is.na(parm_num), "", parm_num),
 				class = ifelse(parms == "beta_m", as.numeric(class)+1, as.numeric(class))) %>%
 			arrange(class) %>%
@@ -78,6 +83,16 @@ timeTaken <- paste(formatC(tmpH,width=2,format='d',flag=0),
 				   parm_num = ifelse(parms == "beta_m", names_b, parm_num),
 			parms = paste0("class", class, ".", parms, parm_num)) %>%
 			select(-class, -parm_num, -names, -names_b))
+	}
+
+	if(model$algorithm == "Bayes"){
+		bayes_extra <- tbl_df(summary(model$stan_fit)$summary) %>%
+			mutate(parms = row.names(summary(model$stan_fit)$summary)) %>%
+			filter(!grepl(c("log_lik"), parms)) %>%
+			filter(!grepl(c("lp_"), parms)) %>%
+			select(n_eff, Rhat) %>%
+			round(., 2)
+		output <- cbind(output, bayes_extra)
 	}
 
 	output <- as.data.frame(output)
@@ -124,6 +139,9 @@ timeTaken <- paste(formatC(tmpH,width=2,format='d',flag=0),
 	if(model$stan_data$trunc_data == 1)
 		cat("Note: Estimation accounts for truncated form of data.",'\n')
 
+	if(model$algorithm == "Bayes"){
+		cat("Note: For each parameter, n_eff is a crude measure of effective sample size, and Rhat is the potential scale reduction factor on split chains (at convergence, Rhat=1)", '\n')
+	}
 	if(model$n_classes > 1)
 		cat("Note: The membership equation parameters for class 1 are normalized to 0.",'\n')
 

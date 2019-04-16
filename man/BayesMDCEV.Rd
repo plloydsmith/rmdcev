@@ -18,8 +18,6 @@ starting at random.}
 \item{keep.samples}{default is FALSE,}
 
 \item{include.stanfit}{default isTRUE,}
-
-\item{show.stan.warnings}{= TRUE}
 }
 \description{
 Fit a MDCEV model using Bayesian estimation and Stan

@@ -5,7 +5,6 @@
 #' @inheritParams FitMDCEV
 #' @param keep.samples default is FALSE,
 #' @param include.stanfit default isTRUE,
-#' @param show.stan.warnings = TRUE
 #' @import dplyr
 #' @import rstan
 #' @export
@@ -50,8 +49,19 @@ BayesMDCEV <- function(stan_data, bayes_options,
 		stan_fit <- RunStanSampling(stan_data, stan.model, bayes_options)
 	}
 
+	if(bayes_options$n_chains == 1){
+		chain_index <- 1
+	}else if(bayes_options$n_chains > 1){
+		chain_index <- bayes_options$n_chains+1
+	}
+
 	result <- list()
 	result$stan_fit <- stan_fit
+	n_parameters <- stan_data$n_parameters
+	result$log.likelihood <- rstan::get_posterior_mean(result$stan_fit, pars = "sum_log_lik")[,chain_index]
+	result$effective.sample.size <- ess <- sum(stan_data$weights)
+	result$aic <- -2 * result$log.likelihood + 2 * n_parameters
+	result$bic <- -2 * result$log.likelihood + log(ess) * n_parameters
 	result
 }
 
