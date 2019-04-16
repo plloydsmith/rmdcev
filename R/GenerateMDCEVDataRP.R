@@ -1,8 +1,7 @@
 #' @title GenerateMDCEVDataRP
 #' @description Simulate random parameter data for MDCEV model
-#' @inheritParams FitMDCEV
 #' @inheritParams GenerateMDCEVData
-#' @importFrom stats runif
+#' @importFrom purrr pmap
 #' @return list with data for stan model and parms_true with parameter values
 #' @export
 GenerateMDCEVDataRP <- function(model,
@@ -20,8 +19,8 @@ GenerateMDCEVDataRP <- function(model,
 								tol = 1e-20,
 								max_loop = 999){
 
-	inc <-  runif(nobs, inc_lo, inc_hi)
-	price <- matrix(runif(nobs*ngoods, price_lo, price_hi), nobs, ngoods)
+	inc <-  stats::runif(nobs, inc_lo, inc_hi)
+	price <- matrix(stats::runif(nobs*ngoods, price_lo, price_hi), nobs, ngoods)
 
 	num_psi <- length(psi_j_parms)
 	RP <- num_psi + ngoods + 1
@@ -47,13 +46,13 @@ GenerateMDCEVDataRP <- function(model,
 	beta <- c(psi_j_parms, gamma_parms, alpha_parms)
 
 	# Random correlation matrix to construct a covariance matrix of the individual betas
-	tau <- rgamma(RP, 4, 2)
-	Sigma <- diag(tau) %*% cor(matrix(rnorm(RP*(RP+1)), RP+1, RP)) %*% diag(tau)
+	tau <- stats::rgamma(RP, 4, 2)
+	Sigma <- diag(tau) %*% stats::cor(matrix(stats::rnorm(RP*(RP+1)), RP+1, RP)) %*% diag(tau)
 
 	a <- c(rep(-Inf, num_psi), rep(0.01, RP-num_psi))
 	b <- c(rep(Inf, num_psi), rep(Inf, RP-num_psi))
 
-	beta_individual <- rtmvnorm(n=nobs, mean=beta, sigma=Sigma, lower=a, upper=b)
+	beta_individual <- tmvtnorm::rtmvnorm(n=nobs, mean=beta, sigma=Sigma, lower=a, upper=b)
 
 	#	beta_individual <- MASS::mvrnorm(nobs, beta, Sigma)
 
@@ -67,7 +66,7 @@ GenerateMDCEVDataRP <- function(model,
 
 	# Create psi variables that vary over alternatives
 	psi_j <- cbind(rep(1,ngoods), # add constant term
-				   matrix(runif(ngoods*(num_psi-1), 0 , 1), nrow = ngoods))
+				   matrix(stats::runif(ngoods*(num_psi-1), 0 , 1), nrow = ngoods))
 	psi_j <-  rep(1, nobs) %x% psi_j
 
 	psi_beta <- beta_individual[,1:num_psi] %x% rep(1, ngoods)
@@ -114,11 +113,11 @@ GenerateMDCEVDataRP <- function(model,
 
 	df_indiv <- c(inc_list, price_list, psi_sims, gamma_sims, alpha_sims)
 
-	expose_stan_functions(stanmodels$SimulationFunctions)
+	rstan::expose_stan_functions(stanmodels$SimulationFunctions)
 	#	model_src <- stanc_builder("src/stan_files/SimulationFunctions.stan")
 	#	expose_stan_functions(model_src)
 
-	quant <- pmap(df_indiv, CalcmdemandOne_rng,
+	quant <- purrr:pmap(df_indiv, CalcmdemandOne_rng,
 				  scale_sim=scale_parms,
 				  nerrs=nerrs, algo_gen = algo_gen,
 				  tol = tol, max_loop = max_loop)

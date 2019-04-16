@@ -2,14 +2,12 @@
 #' @description Process MDCEV data
 #' @inheritParams FitMDCEV
 #' @param model_options list of model options
-#' @importFrom stats model.matrix
-
 #' @export
 processMDCEVdata <- function(data, psi_formula, lc_formula,
 							 num_price,
 							 model_options){
 
-	dat_psi <- model.matrix(psi_formula, data)
+	dat_psi <- stats::model.matrix(psi_formula, data)
 
 	NPsi <- ncol(dat_psi)
 
@@ -77,7 +75,7 @@ processMDCEVdata <- function(data, psi_formula, lc_formula,
 
 		data_class <- tbl_df(data) %>%
 			distinct(id, .keep_all = T) %>%
-			model.matrix(lc_formula, .)
+			stats::model.matrix(lc_formula, .)
 		stan_data$data_class <- as.matrix(data_class)
 		stan_data$L <- ncol(data_class) # number of membership variables
 		stan_data$K <- model_options$n_classes

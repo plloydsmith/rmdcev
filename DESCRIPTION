@@ -26,6 +26,8 @@ Imports:
     stringr,
     furrr (>= 0.1.0),
     purrr,
+    tibble,
+    tidyr,
     testthat,
     rlang,
     utils,

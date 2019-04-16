@@ -6,11 +6,9 @@
 #' @param keep.samples default is FALSE,
 #' @param include.stanfit default isTRUE,
 #' @param show.stan.warnings = TRUE
-#' @import rstan
 #' @import dplyr
+#' @import rstan
 #' @export
-#'
-
 HierarchicalBayesMDCEV <- function(stan_data, hb_options,
 								 initial.parameters,
 								 keep.samples = FALSE,
@@ -80,15 +78,13 @@ HierarchicalBayesMDCEV <- function(stan_data, hb_options,
 #' @param ... Additional parameters to pass on to \code{rstan::stan} and
 #' \code{rstan::sampling}.
 #' @return A stanfit object.
-#' @importFrom rstan stan sampling
-#' @import Rcpp
 #' @export
 RunStanSampling <- function(stan_data, stan.model, hb_options)
 {
 #	if (is.null(pars))
 #		pars <- stanParameters(stan.dat, keep.beta, stan.model)
 #	init <- initialParameterValues(stan.dat)
-	sampling(stan.model, data = stan_data, chains = hb_options$n_chains,
+	rstan::sampling(stan.model, data = stan_data, chains = hb_options$n_chains,
 #			 pars = pars,
 			 iter = hb_options$n_iterations, seed = hb_options$seed,
 			 control = list(max_treedepth = hb_options$hb.max.tree.depth,

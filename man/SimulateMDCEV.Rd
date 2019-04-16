@@ -13,6 +13,10 @@ SimulateMDCEV(df_indiv, df_common, sim_options, sim_type = c("welfare",
 
 \item{df_common}{Prepared common data from PrepareSimulationData}
 
+\item{sim_options}{Prepared simulation options from PrepareSimulationData}
+
+\item{sim_type}{Either "welfare" or "demand"}
+
 \item{nerrs}{Number of error draws for welfare analysis}
 
 \item{cond_error}{Choose whether to draw errors conditional on actual demand or not.
@@ -23,6 +27,10 @@ or uniform (=0)}
 
 \item{algo_gen}{Type of algorhitm for simulation. algo_gen = 0 for Hybrid Approach (i.e. constant alphas,
 only model 3/4) alog_gen = 1 for General approach (i.e. heterogeneous alpha's, all models)}
+
+\item{tol}{Tolerance level for simulations if using general approach}
+
+\item{max_loop}{maximum number of loops for simulations if using general approach}
 }
 \value{
 wtp a list for each individual holding a nsims x npols matrix of wtp

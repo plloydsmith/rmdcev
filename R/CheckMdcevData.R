@@ -22,10 +22,10 @@ CheckMdcevData <- function(data){
 		stop("Data must have inc column for individual's income")
 
 	check <- tbl_df(data) %>%
-		mutate(expend = price * quant) %>%
-		group_by(id) %>%
-		summarise(numeraire = mean(inc) - sum(expend)) %>%
-		select(numeraire)
+		mutate(expend = .data$price * .data$quant) %>%
+		group_by(.data$id) %>%
+		summarise(numeraire = mean(.data$inc) - sum(.data$expend)) %>%
+		select(.data$numeraire)
 
 	if (sum(check$numeraire < 0) > 0){
 		print(paste0("Numeraire is less than 0 for individuals in rows: ",

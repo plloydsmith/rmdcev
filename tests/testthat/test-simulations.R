@@ -1,17 +1,17 @@
 context("Test Simulations")
-#Sys.setenv("R_TESTS" = "")
 
 library(pacman)
-p_load(tidyverse, rstan, rmdcev)
+
+p_load(tidyverse, rmdcev, rstan)
 
 tol <- 0.00001
-data(recreation, package = "rmdcev")
-
+data(data_rec, package = "rmdcev")
+data_rec
 result <- FitMDCEV(psi_formula = ~ factor(activity) -1,
-				   data = data,
+				   data = data_rec,
 				   model = "gamma0",
 				   algorithm = "MLE")
-npols <- 2 #stan_est$stan_data[["J"]]
+npols <- 2
 policies<-	CreateBlankPolicies(npols, result$stan_data[["J"]], result$stan_data[["dat_psi"]])
 
 df_sim <- PrepareSimulationData(result, policies, nsims = 3)
@@ -86,12 +86,14 @@ mdemand <- MarshallianDemand(inc, price, MUzero_b, gamma, alpha,
 test_that("Test full simulation function", {
 
 	# Test conditional errors
-	wtp <- SimulateMDCEV(df_sim$df_indiv, df_common = df_sim$df_common, sim_options = df_sim$sim_options, cond_err = 1, nerrs = 3)
+	wtp <- SimulateMDCEV(df_sim$df_indiv, df_common = df_sim$df_common, sim_options = df_sim$sim_options,
+						 cond_err = 1, nerrs = 3, sim_type = "welfare")
 	sum_wtp <- SummaryWelfare(wtp)
 	expect_true(sum(abs(sum_wtp$mean)) < tol)
 
 	# Test unconditional errors
-	wtp <- SimulateMDCEV(df_sim$df_indiv, df_common = df_sim$df_common, sim_options = df_sim$sim_options, cond_err = 0, nerrs = 3)
+	wtp <- SimulateMDCEV(df_sim$df_indiv, df_common = df_sim$df_common, sim_options = df_sim$sim_options,
+						 cond_err = 0, nerrs = 3, sim_type = "welfare")
 	sum_wtp <- SummaryWelfare(wtp)
 	expect_true(sum(abs(sum_wtp$mean)) < tol)
 

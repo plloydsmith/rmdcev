@@ -12,19 +12,13 @@ maxlikeMDCEV <- function(stan_data, initial.parameters,
 	message("Using MLE to estimate model")
 
 	if (is.null(initial.parameters)){
-		stan_fit <- optimizing(stan.model, data = stan_data, as_vector = FALSE, seed = mle_options$seed,
+		stan_fit <- rstan::optimizing(stan.model, data = stan_data, as_vector = FALSE, seed = mle_options$seed,
 							   draws = mle_options$n_draws, hessian = mle_options$hessian)
 	} else {
-		stan_fit <- optimizing(stan.model, data = stan_data, as_vector = FALSE, seed = mle_options$seed,
+		stan_fit <- rstan::optimizing(stan.model, data = stan_data, as_vector = FALSE, seed = mle_options$seed,
 							   init = initial.parameters,
 						   draws = mle_options$n_draws, hessian = mle_options$hessian)
 	}
-#	compiled_mle <- stan(file = "C:/Dropbox/Research/code/rmdcev/src/stan_files/mdcev.stan",
-#						 data=stan_data,
-#						 chains = 0, iter = 0)
-#	stan_fit <- optimizing(object=get_stanmodel(compiled_mle),
-#						   data = stan_data, as_vector = FALSE,
-#						   draws = mle_options$n_draws, hessian = mle_options$hessian)
 	result <- list()
 
 	if (mle_options$keep_loglik == 0)
@@ -51,9 +45,8 @@ maxlikeMDCEV <- function(stan_data, initial.parameters,
 
 		# add shift to psi values values
 		init.shift <- seq(-0.02, 0.02, length.out = stan_data$NPsi)
-		for (i in 1:stan_data$NPsi) {
+		for (i in 1:stan_data$NPsi)
 			init.psi[i] <- init.psi[i] + init.shift[i]
-		}
 
 		init.psi <- matrix(init.psi, nrow=stan_data$K,  ncol=length(init.psi), byrow=TRUE)
 
@@ -76,7 +69,7 @@ maxlikeMDCEV <- function(stan_data, initial.parameters,
 
 		message("Using MLE to estimate LC model")
 
-		stan_fit <- optimizing(stan.model, data = stan_data, as_vector = FALSE,
+		stan_fit <- rstan::optimizing(stan.model, data = stan_data, as_vector = FALSE,
 							   seed = mle_options$seed, init = init,
 							   draws = mle_options$n_draws, hessian = mle_options$hessian)
 
@@ -99,7 +92,6 @@ maxlikeMDCEV <- function(stan_data, initial.parameters,
 	result
 }
 
-
 #' @title ReduceStanFitSize
 #' @description This function reduces the size of the stan.fit object to reduce the time
 #' it takes to return it from the R server.
@@ -115,4 +107,3 @@ ReduceStanFitSize <- function(stan_fit)
 	stan_fit[["theta_tilde"]] <- stan_fit[["theta_tilde"]][,1:ncol(stan_fit[["hessian"]])]
 	stan_fit
 }
-

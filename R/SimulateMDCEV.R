@@ -1,8 +1,9 @@
 #' @title SimulateMDCEV
 #' @description Simulate welfare or demand for MDCEV model
-#' @inheritParams GenerateMdcevData
+#' @inheritParams GenerateMDCEVData
 #' @param df_indiv Prepared individual level data from PrepareSimulationData
 #' @param df_common Prepared common data from PrepareSimulationData
+#' @param sim_options Prepared simulation options from PrepareSimulationData
 #' @param nerrs Number of error draws for welfare analysis
 #' @param cond_error Choose whether to draw errors conditional on actual demand or not.
 #' Conditional error draws (=1) or unconditional error draws.
@@ -10,8 +11,8 @@
 #' or uniform (=0)
 #' @param algo_gen Type of algorhitm for simulation. algo_gen = 0 for Hybrid Approach (i.e. constant alphas,
 #' only model 3/4) alog_gen = 1 for General approach (i.e. heterogeneous alpha's, all models)
+#' @param sim_type Either "welfare" or "demand"
 #' @return wtp a list for each individual holding a nsims x npols matrix of wtp
-#' @importFrom stats quantile sd
 #' @export
 SimulateMDCEV <- function(df_indiv, df_common, sim_options,
 						sim_type = c("welfare", "demand"),
@@ -61,9 +62,9 @@ SimulateMDCEV <- function(df_indiv, df_common, sim_options,
 
 	} else if(sim_options$n_classes > 1){
 		if(sim_type == "welfare"){
-			out <- map2(df_indiv, df_common, StanWelfare, sim_options)
+			out <- purrr::map2(df_indiv, df_common, StanWelfare, sim_options)
 		} else if(sim_type == "demand"){
-			out <- map2(df_indiv, df_common, StanDemand, sim_options)
+			out <- purrr::map2(df_indiv, df_common, StanDemand, sim_options)
 		}
 		names(out) <- paste0("class", c(1:sim_options$n_classes))
 	}
@@ -88,15 +89,13 @@ SummaryWelfare <- function(wtp, ci = 0.95){
 	colnames(wtp_sum)<- paste0(rep("policy",ncol(wtp_sum)), 1:ncol(wtp_sum))
 
 	wtp_sum <- tbl_df(wtp_sum) %>%
-		gather(policy, wtp) %>%
-#		gather_(., "policy","wtp") %>%
-#		gather_(key_col = "policy", value_col = "wtp") %>%
-		group_by(policy) %>%
+		tidyr::gather(policy, wtp) %>%
+		group_by(.data$policy) %>%
 		summarise(mean = mean(wtp),
-				  sd = sd(wtp),
-				  cl_lo = quantile(wtp, (1-ci)/2),
-				  cl_hi = quantile(wtp, ci+(1-ci)/2),
-				  zstat = mean / sd)
+				  std_dev = stats::sd(wtp),
+				  zstat = mean / std_dev,
+				  cl_lo = stats::quantile(wtp, (1-ci)/2),
+				  cl_hi = stats::quantile(wtp, ci+(1-ci)/2))
 	return(wtp_sum)
 }
 
@@ -118,7 +117,7 @@ StanWelfare <- function(df_indiv, df_common, sim_options){
 	message("Simulating welfare...")
 
 	if (sim_options$price_change_only == FALSE){
-		wtp <- pmap(df_indiv, CalcWTP_rng,
+		wtp <- purrr::pmap(df_indiv, CalcWTP_rng,
 				price_p=df_common$price_p_list,
 				gamma_sim=df_common$gamma_sim_list,
 				alpha_sim=df_common$alpha_sim_list,
@@ -131,7 +130,7 @@ StanWelfare <- function(df_indiv, df_common, sim_options){
 				tol = sim_options$tol,
 				max_loop = sim_options$max_loop)
 	} else if (sim_options$price_change_only == TRUE){
-		wtp <- pmap(df_indiv, CalcWTPPriceOnly_rng,
+		wtp <- purrr::pmap(df_indiv, CalcWTPPriceOnly_rng,
 					price_p=df_common$price_p_list,
 					gamma_sim=df_common$gamma_sim_list,
 					alpha_sim=df_common$alpha_sim_list,
@@ -164,7 +163,7 @@ StanDemand <- function(df_indiv, df_common, sim_options){
 	expose_stan_functions(stanmodels$SimulationFunctions)
 
 	message("Simulating demand...")
-	demand <- pmap(df_indiv, CalcMarshallianDemand_rng,
+	demand <- purrr::pmap(df_indiv, CalcMarshallianDemand_rng,
 			price_p=df_common$price_p_list,
 			gamma_sim=df_common$gamma_sim_list,
 			alpha_sim=df_common$alpha_sim_list,

@@ -2550,7 +2550,7 @@ CalcMarshallianDemand_rng(const T0__& inc,
                 }
                 current_statement_begin__ = 676;
                 stan::model::assign(mdemand_pols, 
-                            stan::model::cons_list(stan::model::index_uni(npols), stan::model::nil_index_list()), 
+                            stan::model::cons_list(stan::model::index_uni(policy), stan::model::nil_index_list()), 
                             mdemand_g, 
                             "assigning variable mdemand_pols");
                 }

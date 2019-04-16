@@ -673,7 +673,7 @@ matrix[] CalcMarshallianDemand_rng(real inc, vector quant_j, vector price,
 		for(g in 1:ngoods+1)
   			mdemand_g[g] = mean(mdemand_trans[g]);
 
-		mdemand_pols[npols] = mdemand_g;
+		mdemand_pols[policy] = mdemand_g;
 		}
 	mdemand_out[sim] = mdemand_pols;
 	}

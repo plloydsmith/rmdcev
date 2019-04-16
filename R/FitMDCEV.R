@@ -185,8 +185,8 @@ FitMDCEV <- function(data,
 #	parms <- c(paste(rep('betam', length(class.names)), 1:length(class.names), sep=""))
 #	names <- cbind(parms, paste(rep(class, class.names)
 	result$est_pars <- result$est_pars %>%
-		rowid_to_column("sim_id") %>%
-		gather(parms, value, -sim_id)
+		tibble::rowid_to_column("sim_id") %>%
+		tidyr::gather(parms, value, -sim_id)
 #		gather_(key_col = 'parms',
 #				value_col = 'value', -sim_id, factor_key=TRUE)
 

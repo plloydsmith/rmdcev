@@ -19,10 +19,9 @@ PrepareSimulationData <- function(stan_est, policies, nsims = 30, price_change_o
 		nsims <- stan_est$n_draws
 		warning("Number of simulations > Number of Draws from stan_est. nsims has been set to: ", nsims)
 	}
-
 	# Sample from parameter estimate draws
 	est_sim <- stan_est$est_pars %>%
-		distinct(.data$sim_id) %>%
+		distinct(sim_id) %>%
 		sample_n(., nsims ) %>%
 		left_join(stan_est$est_pars, by = "sim_id")
 
@@ -36,25 +35,23 @@ PrepareSimulationData <- function(stan_est, policies, nsims = 30, price_change_o
 	} else if(stan_est$n_classes > 1){
 
 		est_sim_lc <- suppressWarnings(est_sim %>% # suppress warnings about scale not having a class parameter
-									   	filter(!str_detect(.data$parms, "beta")) %>%
-									   	separate(.data$parms, into = c("parms", "class", "good")) %>%
+									   	filter(!stringr::str_detect(.data$parms, "beta")) %>%
+									   	tidyr::separate(.data$parms, into = c("parms", "class", "good")) %>%
 									   	mutate(good = ifelse(is.na(as.numeric(.data$good)), "0", .data$good )) %>%
-									   	unite(parms, parms, good))
+									   	tidyr::unite(parms, parms, good))
 
 		est_sim_lc <- split( est_sim_lc , f = est_sim_lc$class )
 		names(est_sim_lc) <- rep("est_sim", stan_est$n_classes)
 
-		est_sim_lc <- map(est_sim_lc, function(x){ x %>%
+		est_sim_lc <- purrr::map(est_sim_lc, function(x){ x %>%
 				select(-class)})
 
-		sim_welfare <- map(est_sim_lc, ProcessSimulationData, stan_est, policies, nsims, price_change_only)
+		sim_welfare <- purrr::map(est_sim_lc, ProcessSimulationData, stan_est, policies, nsims, price_change_only)
 
-		df_common <- map(sim_welfare, `[`, c("price_p_list", "gamma_sim_list", "alpha_sim_list", "scale_sim"))
+		df_common <- purrr::map(sim_welfare, `[`, c("price_p_list", "gamma_sim_list", "alpha_sim_list", "scale_sim"))
 		names(df_common) <- rep("df_common", stan_est$n_classes)
 
-		df_indiv <- flatten(map(sim_welfare, `[`, c("df_indiv")))
-
-
+		df_indiv <- purrr::flatten(map(sim_welfare, `[`, c("df_indiv")))
 	}
 	sim_options <- list(n_classes = stan_est$n_classes,
 					model_num = model_num,
@@ -66,8 +63,6 @@ PrepareSimulationData <- function(stan_est, policies, nsims = 30, price_change_o
 
 return(df_wtp)
 }
-
-
 
 #'@importFrom rlang .data
 #'
@@ -112,25 +107,25 @@ ProcessSimulationData <- function(est_sim, stan_est, policies, nsims, price_chan
 	npols <- length(policies$price_p)
 
 	psi_temp <- CreateListsCol(psi_temp)
-	psi_sim <- map(psi_temp, MultiplyMatrix, mat_temp = stan_est$stan_data$dat_psi, n_rows = I)
+	psi_sim <- purrr::map(psi_temp, MultiplyMatrix, mat_temp = stan_est$stan_data$dat_psi, n_rows = I)
 
 	psi_sim <- DoCbind(psi_sim)
 	psi_sim <- CreateListsRow(psi_sim)
-	psi_sim <- map(psi_sim, function(x){matrix(x , nrow = nsims, byrow = TRUE)})
+	psi_sim <- purrr::map(psi_sim, function(x){matrix(x , nrow = nsims, byrow = TRUE)})
 
 	psi_sim <- list(psi_sim)
 	names(psi_sim) <- "psi_sim"
 
 	if (price_change_only == FALSE) {
 	# psi_p
-	psi_p_sim <- map(psi_temp, function(psi){ map(policies[["dat_psi_p"]], MultiplyMatrix, x = psi, n_rows = I)})
-	psi_p_sim <- map(psi_p_sim, DoCbind)
+	psi_p_sim <- purrr::map(psi_temp, function(psi){ map(policies[["dat_psi_p"]], MultiplyMatrix, x = psi, n_rows = I)})
+	psi_p_sim <- purrr::map(psi_p_sim, DoCbind)
 	psi_p_sim <- DoCbind(psi_p_sim)
 	psi_p_sim <- CreateListsRow(psi_p_sim)
-	psi_p_sim <- map(psi_p_sim, function(x){aperm(array(x, dim = c(J, npols, nsims)), perm=c(2,1,3))})
+	psi_p_sim <- purrr::map(psi_p_sim, function(x){aperm(array(x, dim = c(J, npols, nsims)), perm=c(2,1,3))})
 
 	# Ensure psi_p_sim is a list of J lists each with nsims lists of npol X ngood matrices
-	psi_p_sim <- map(psi_p_sim, function(x){lapply(seq_len(nsims), function(i) x[,,i])})
+	psi_p_sim <- purrr::map(psi_p_sim, function(x){lapply(seq_len(nsims), function(i) x[,,i])})
 
 	psi_p_sim <- list(psi_p_sim)
 	names(psi_p_sim) <- "psi_p_sim"

@@ -3,7 +3,6 @@
 #' @param x matrix to be converted to list
 #' @return A list
 #' @export
-#'
 CreateListsRow <- function(x){
 	out <- lapply(seq_len(nrow(x)), function(i) x[i,])
 	return(out)
@@ -58,9 +57,9 @@ CreateBlankPolicies <- function(npols, ngoods, dat_psi){
 #' @export
 CreatePsiMatrix <- function(psi_j = NULL, psi_i = NULL){
 	if(!is.na(psi_i))
-		psi_i <- map(psi_i, function(x) {rep(x, each= nrow(psi_j))})
+		psi_i <- purrr::map(psi_i, function(x) {rep(x, each= nrow(psi_j))})
 	if(!is.na(psi_j))
-		psi_j <- map(psi_j, function(x) {rep(x, times=nrow(psi_i))})
+		psi_j <- purrr::map(psi_j, function(x) {rep(x, times=nrow(psi_i))})
 
 	dat_psi <- c(psi_j, psi_i)
 return(dat_psi)
@@ -73,12 +72,10 @@ return(dat_psi)
 #' @export
 GrabParms <- function(data, parm_name){
 	out <- data %>%
-		filter(str_detect(.data$parms, parm_name)) %>%
-		spread_(key_col = 'sim_id',
+		filter(stringr::str_detect(.data$parms, parm_name)) %>%
+		tidyr::spread_(key_col = 'sim_id',
 				value_col = 'value') %>%
-		select_(.dots = c('-parms')) %>%
+		dplyr::select(-parms) %>%
 		as.matrix(.)
 	return(out)
 }
-
-

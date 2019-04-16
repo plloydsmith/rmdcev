@@ -1,17 +1,15 @@
 context("Test MLE")
-#Sys.setenv("R_TESTS" = "")
-#data(eggs, package = "rmdcev")
+
 library(pacman)
 
-p_load(tidyverse, rstan, rmdcev)
+p_load(tidyverse, rmdcev, rstan)
 
 tol <- 0.00001
-
-data(recreation, package = "rmdcev")
-
+data(data_rec, package = "rmdcev")
+data_rec
 test_that("MLE gamma0 specification", {
 	result <- FitMDCEV(psi_formula = ~ factor(activity) -1,
-								data = data,
+								data = data_rec,
 								model = "gamma0",
 								algorithm = "MLE")
 
@@ -24,7 +22,7 @@ test_that("MLE gamma0 specification", {
 
 test_that("MLE gamma specification", {
 	result <- FitMDCEV(psi_formula = ~ factor(activity) -1,
-					   data = data,
+					   data = data_rec,
 					   model = "gamma",
 					   algorithm = "MLE")
 
@@ -37,7 +35,7 @@ test_that("MLE gamma specification", {
 
 test_that("MLE alpha specification", {
 	result <- FitMDCEV(psi_formula = ~ factor(activity) -1,
-					   data = data,
+					   data = data_rec,
 					   model = "alpha",
 					   algorithm = "MLE")
 
@@ -50,7 +48,7 @@ test_that("MLE alpha specification", {
 
 test_that("MLE les specification", {
 	result <- FitMDCEV(psi_formula = ~ factor(activity) -1,
-					   data = data,
+					   data = data_rec,
 					   model = "les",
 					   algorithm = "MLE")
 

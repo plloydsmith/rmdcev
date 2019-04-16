@@ -1,4 +1,4 @@
-#' @title GenerateMdcevData
+#' @title GenerateMDCEVData
 #' @description Simulate data for MDCEV model
 #' @inheritParams FitMDCEV
 #' @param nobs Number of individuals
@@ -15,7 +15,6 @@
 #' @param nerrs Number of error draws for demand simulation
 #' @param tol Tolerance level for simulations if using general approach
 #' @param max_loop maximum number of loops for simulations if using general approach
-#' @importFrom stats runif
 #' @return list with data for stan model and parms_true with parameter values
 #' @export
 GenerateMDCEVData <- function(model, nobs = 1000, ngoods = 10,
@@ -23,15 +22,15 @@ GenerateMDCEVData <- function(model, nobs = 1000, ngoods = 10,
 							  price_lo = 100, price_hi = 500,
 							  alpha_parms = 0.5,
 							  scale_parms = 1,
-							  gamma_parms = runif(ngoods, 1, 2),
+							  gamma_parms = stats::runif(ngoods, 1, 2),
 							  psi_i_parms = c(-1.5, 3, -2, 1, 2),
 							  psi_j_parms = c(-5, 0.5, 2),
 							  nerrs = 1,
 							  tol = 1e-20,
 							  max_loop = 999){
 
-	inc <-  runif(nobs, inc_lo, inc_hi)
-	price <- matrix(runif(nobs*ngoods, price_lo, price_hi), nobs, ngoods)
+	inc <-  stats::runif(nobs, inc_lo, inc_hi)
+	price <- matrix(stats::runif(nobs*ngoods, price_lo, price_hi), nobs, ngoods)
 
 	true <- gamma_parms
 	parms <- c(paste(rep('gamma', ngoods), 1:ngoods, sep=""))
@@ -43,10 +42,10 @@ GenerateMDCEVData <- function(model, nobs = 1000, ngoods = 10,
 
 	# Create psi variables that vary over alternatives
 	psi_j <- cbind(rep(1,ngoods), # add constant term
-				   matrix(runif(ngoods*(length(psi_j_parms)-1), 0 , 1), nrow = ngoods))
+				   matrix(stats::runif(ngoods*(length(psi_j_parms)-1), 0 , 1), nrow = ngoods))
 	psi_j <-  rep(1, nobs) %x% psi_j
 
-	psi_i <- matrix(2 * runif(nobs * length(psi_i_parms)), nobs,length(psi_i_parms))
+	psi_i <- matrix(2 * stats::runif(nobs * length(psi_i_parms)), nobs,length(psi_i_parms))
 	psi_i <- psi_i %x% rep(1, ngoods)
 
 	dat_psi <- cbind(psi_j, psi_i)
@@ -68,7 +67,7 @@ GenerateMDCEVData <- function(model, nobs = 1000, ngoods = 10,
 		algo_gen <- 1
 	} else if (model == "alpha"){
 		model_num <- 2
-		alpha_parms <- 0 + runif(ngoods+1, 0.01, .98)
+		alpha_parms <- 0 + stats::runif(ngoods+1, 0.01, .98)
 		gamma_parms <- rep(1, ngoods)
 		true <- alpha_parms
 		parms  <- c(paste(rep('alpha',ngoods),1:(ngoods+1),sep=""))
@@ -107,9 +106,9 @@ GenerateMDCEVData <- function(model, nobs = 1000, ngoods = 10,
 
 	df_indiv <- c(inc_list, price_list, psi_sims)
 
-	expose_stan_functions(stanmodels$SimulationFunctions)
+	rstan::expose_stan_functions(stanmodels$SimulationFunctions)
 
-	quant <- pmap(df_indiv, CalcmdemandOne_rng,
+	quant <- purrr::pmap(df_indiv, CalcmdemandOne_rng,
 				  gamma_sim=gamma_parms,
 				  alpha_sim=alpha_parms,
 				  scale_sim=scale_parms,

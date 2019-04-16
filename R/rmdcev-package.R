@@ -22,5 +22,8 @@
 NULL
 
 ## quiets concerns of R CMD check re: the .'s that appear in pipelines
-if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "quant", "lp__", "good", "data",
-														"task", "individual", "CalcWTP_rng"))
+if(getRversion() >= "2.15.1")
+	utils::globalVariables(c(".", "quant", "lp__", "good", "data",
+							"task", "individual", "CalcWTP_rng",
+							"CalcMarshallianDemand_rng", "CalcWTPPriceOnly_rng",
+							"CalcmdemandOne_rng", "parms", "sim_id", "value", "policy"))
