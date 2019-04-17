@@ -18,33 +18,26 @@ transformed data {
 	int RP;
 	int RP_g;
 	int RP_a;
-	int N_Omega;
 #include /common/mdcev_tdata.stan
  	RP = NPsi + Gamma + A; // number of random parameters
 	RP_g = NPsi + 1; // location of first gamma
 	RP_a = NPsi + Gamma + 1; // location of alpha
-
-	if (corr == 1){
-	  	N_Omega = RP;
-	} else if (corr == 0){
-	  	N_Omega = 0;
-	}
 }
 
 parameters {
 	vector[RP] mu;                                // means for beta
   	matrix[I, RP] z;                             // std normal draws
-	cholesky_factor_corr[N_Omega] L_Omega;                // cholesky factors
+	cholesky_factor_corr[corr == 1 ? RP : 0] L_Omega;                // cholesky factors
   	vector<lower=0,upper=pi()/2>[RP] tau_unif;
 	vector<lower=0>[fixed_scale == 0 ? 1 : 0] scale;
 }
 
 transformed parameters {
 	vector[I] log_like;
-	cholesky_factor_cov[RP] L;                       // cholesky factors
+//	cholesky_factor_cov[RP] L;                       // cholesky factors
   	vector<lower=0>[RP] tau;   	// diagonal of the part-worth covariance matrix
-	matrix[I, RP] beta;             // utility parameters (individual level)
   	{
+	matrix[I, RP] beta;             // utility parameters (individual level)
 	matrix[I, J] lpsi;
   	matrix[I, NPsi] psi_individual;
   	matrix[I, G] alpha_individual;
@@ -55,11 +48,10 @@ transformed parameters {
 
 	// individual level parameters
 	if (corr == 1){
-	  	L = diag_pre_multiply(tau, L_Omega);
+		beta = rep_matrix(mu', I) + (z * diag_pre_multiply(tau, L_Omega));
 	} else if (corr == 0){
-	 	L = diag_matrix(tau);
+		beta = rep_matrix(mu', I) + (z * diag_matrix(tau));
 	}
-	beta = rep_matrix(mu', I) + (z * L);
 
 	if (model_num == 1)
 	  	alpha_individual = append_col(1 - exp(col(beta, RP_a)), rep_matrix(0, I, J));
@@ -104,9 +96,9 @@ model {
 }
 
 generated quantities{
-  cov_matrix[RP] Sigma;                            // cov matrix
+//  cov_matrix[RP] Sigma;                            // cov matrix
   real<upper=0> sum_log_lik = 0;                          // log_lik for each sample
-  Sigma = tcrossprod(L);
+//  Sigma = tcrossprod(L);
 
 	for(i in 1:I){
 		sum_log_lik = sum_log_lik + log_like[i];

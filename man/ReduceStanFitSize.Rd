@@ -13,6 +13,5 @@ ReduceStanFitSize(stan_fit)
 A stanfit object with a reduced size.
 }
 \description{
-This function reduces the size of the stan.fit object to reduce the time
-it takes to return it from the R server.
+This function reduces the size of the stan.fit object
 }

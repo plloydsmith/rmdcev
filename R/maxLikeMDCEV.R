@@ -9,8 +9,6 @@ maxlikeMDCEV <- function(stan_data, initial.parameters,
 {
 	stan.model <- stanmodels$mdcev
 
-
-
 	message("Using MLE to estimate model")
 
 	# ensure single class used for base model
@@ -41,6 +39,7 @@ maxlikeMDCEV <- function(stan_data, initial.parameters,
 	result$effective.sample.size <- ess <- sum(stan_data$weights)
 	result$aic <- -2 * result$log.likelihood + 2 * n_parameters
 	result$bic <- -2 * result$log.likelihood + log(ess) * n_parameters
+
 	if (mle_options$n_classes > 1){
 		result$mdcev_fit <- result$stan_fit
 		result$mdcev_log.likelihood <- result$log.likelihood
@@ -49,9 +48,9 @@ maxlikeMDCEV <- function(stan_data, initial.parameters,
 		# Extract the parameters to use as initial values for LC model
 		# Need to ensure to replicate intial values for each class
 		init.par <- stan_fit$par
-		init.psi <- init.par$psi
 
 		# add shift to psi values values
+		init.psi <- init.par$psi
 		init.shift <- seq(-0.02, 0.02, length.out = stan_data$NPsi)
 		for (i in 1:stan_data$NPsi)
 			init.psi[i] <- init.psi[i] + init.shift[i]
@@ -69,11 +68,8 @@ maxlikeMDCEV <- function(stan_data, initial.parameters,
 		} else if (stan_data$model_num == 2){
 			init$alpha <- matrix(rep(init.par$alpha, stan_data$K), nrow=stan_data$K, ncol=stan_data$J)
 		} else if (stan_data$model_num == 4){
-#			init$alpha <- matrix(rep(0, stan_data$K), nrow=stan_data$K, ncol=0)
 			init$gamma <- matrix(rep(init.par$gamma, stan_data$K), nrow=stan_data$K, ncol=stan_data$J)
 		}
-
-#		stan.model <- stanmodels$mdcev_lc
 
 		message("Using MLE to estimate LC model")
 
@@ -91,26 +87,19 @@ maxlikeMDCEV <- function(stan_data, initial.parameters,
 		result$effective.sample.size <- ess <- sum(stan_data$weights)
 		result$aic <- -2 * result$log.likelihood + 2 * n_parameters
 		result$bic <- -2 * result$log.likelihood + log(ess) * n_parameters
-#		class_probabilities <- exp(t(stan_fit[["par"]][["theta"]]))
-#		colnames(class_probabilities) <- paste0("class", c(1:mle_options$n_classes))
-#		result$class_probabilities <- class_probabilities
+		class_probabilities <- exp(t(stan_fit[["par"]][["theta"]]))
+		colnames(class_probabilities) <- paste0("class", c(1:mle_options$n_classes))
+		result$class_probabilities <- class_probabilities
 	}
-#	result$class.parameters <- pars$class.parameters
-#	result$coef <- createCoefOutput(pars, stan_data$par.names, stan_data$all.names)
-#	result$lca.data <- lca.data
 	result
 }
 
 #' @title ReduceStanFitSize
-#' @description This function reduces the size of the stan.fit object to reduce the time
-#' it takes to return it from the R server.
+#' @description This function reduces the size of the stan.fit object
 #' @param stan_fit A stanfit object.
 #' @return A stanfit object with a reduced size.
 #' @export
-ReduceStanFitSize <- function(stan_fit)
-{
-	# Replace stanmodel with a dummy as stanmodel makes the output many times larger,
-	# and is not required for diagnostic plots.
+ReduceStanFitSize <- function(stan_fit) {
 	stan_fit[["par"]][["log_like"]] <- NULL
 	stan_fit[["theta_tilde"]] <- stan_fit[["theta_tilde"]][,1:ncol(stan_fit[["hessian"]])]
 	stan_fit

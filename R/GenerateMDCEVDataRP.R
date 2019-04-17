@@ -16,7 +16,8 @@ GenerateMDCEVDataRP <- function(model,
 								psi_j_parms = c(-5, 0.5, 2),
 								nerrs = 1,
 								tol = 1e-20,
-								max_loop = 999){
+								max_loop = 999,
+								corr = 0){
 
 	inc <-  stats::runif(nobs, inc_lo, inc_hi)
 	price <- matrix(stats::runif(nobs*ngoods, price_lo, price_hi), nobs, ngoods)
@@ -27,18 +28,26 @@ GenerateMDCEVDataRP <- function(model,
 	if (model == "les"){
 		model_num <- 1
 		algo_gen <- 1
+		a <- c(rep(-Inf, num_psi), rep(0.01, RP-num_psi))
+		b <- c(rep(Inf, num_psi), rep(Inf, RP-num_psi-1), .99)
 	} else if (model == "alpha"){
 		model_num <- 2
 		alpha_parms <- 0 + stats::runif(ngoods+1, 0.01, .98)
 		algo_gen <- 1
+		a <- c(rep(-Inf, num_psi), rep(0.01, RP-num_psi))
+		b <- c(rep(Inf, num_psi), rep(.99, RP-num_psi))
 	} else if (model == "gamma"){
 		model_num <- 3
 		algo_gen <- 0
+		a <- c(rep(-Inf, num_psi), rep(0.01, RP-num_psi))
+		b <- c(rep(Inf, num_psi), rep(Inf, RP-num_psi-1), .99)
 	} else if (model == "gamma0"){
 		RP <- RP - 1 # subtract one for fixed alpha
 		model_num <- 4
 		algo_gen <- 0
 		alpha_parms <- NULL
+		a <- c(rep(-Inf, num_psi), rep(0.01, RP-num_psi))
+		b <- c(rep(Inf, num_psi), rep(Inf, RP-num_psi))
 	} else
 		stop("No model specificied. Choose a model")
 
@@ -46,14 +55,14 @@ GenerateMDCEVDataRP <- function(model,
 
 	# Random correlation matrix to construct a covariance matrix of the individual betas
 	tau <- stats::rgamma(RP, 4, 2)
-	Sigma <- diag(tau) %*% stats::cor(matrix(stats::rnorm(RP*(RP+1)), RP+1, RP)) %*% diag(tau)
+	if (corr == 0){
+		Sigma <- diag(tau)
+	} else if (corr == 1){
+		Sigma <- diag(tau) %*% stats::cor(matrix(stats::rnorm(RP*(RP+1)), RP+1, RP)) %*% diag(tau)
+	}
 
-	a <- c(rep(-Inf, num_psi), rep(0.01, RP-num_psi))
-	b <- c(rep(Inf, num_psi), rep(Inf, RP-num_psi))
 
 	beta_individual <- tmvtnorm::rtmvnorm(n=nobs, mean=beta, sigma=Sigma, lower=a, upper=b)
-
-	#	beta_individual <- MASS::mvrnorm(nobs, beta, Sigma)
 
 	indexes <- tibble(individual = rep(1:nobs, each = ngoods),
 					  task = rep(1:nobs, each = ngoods),

@@ -28,6 +28,7 @@ knitr::opts_chunk$set(
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, cache = TRUE, dpi=300)
 library(rmdcev)
+library(tidyverse)
 ```
 
 ## Abstract
@@ -222,7 +223,7 @@ We estimate a MDCEV model using the **Recreation** data where we include activit
 ```{r, create_dummies}
 data_rec <- data_rec %>% 
   mutate(v = 1, yr = good_name) %>% 
-  spread(yr, v, fill = 0) %>%
+  tidyr::spread(yr, v, fill = 0) %>%
 	arrange(id, good)
 ```
 
@@ -234,7 +235,7 @@ The syntax for the model is the following:
 mdcev.fit <- FitMDCEV(psi_formula = ~ beach + birding + camping + cycling + fish + garden + golf +
 					 hiking + hunt_birds + hunt_large + hunt_trap + hunt_waterfowl + motor_land + 
 					 	motor_water + photo + ski_cross + ski_down -1,
-							data = data_rec,
+							data = subset(data_rec, id < 500),
 							model = "gamma0",
 							algorithm = "MLE",
 					  		print_iterations = FALSE)
@@ -266,10 +267,10 @@ The exact same model can be fit using Bayesian estimation by changing the model 
 mdcev_bayes <- FitMDCEV(psi_formula = ~ beach + birding + camping + cycling + fish + garden + golf +
 					 hiking + hunt_birds + hunt_large + hunt_trap + hunt_waterfowl + motor_land + 
 					 	motor_water + photo + ski_cross + ski_down -1,
-							data = data_rec,
+							data = subset(data_rec, id < 500),
 							model = "gamma0",
 							algorithm = "Bayes",
-						n_iterations = 10,
+						n_iterations = 100,
 						n_chains = 1,
 					  		print_iterations = FALSE)
 ```
@@ -293,7 +294,7 @@ mdcev.lc <- FitMDCEV(psi_formula = ~ beach + birding + camping + cycling + fish 
 								 	hiking + hunt_birds + hunt_large + hunt_trap + hunt_waterfowl + 
 								 	motor_land + motor_water + photo + ski_cross + ski_down - 1,
 					lc_formula = ~ university + ageindex + urban,
-					data = data_rec,
+						data = subset(data_rec, id < 500),
 					n_classes = 2,
 					model = "gamma0",
 					algorithm = "MLE",

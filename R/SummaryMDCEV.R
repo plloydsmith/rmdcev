@@ -5,10 +5,15 @@
 #' @return A matrix of coefficients, s.d. and z-tests (invisible)
 #' @export
 SummaryMDCEV <- function(model, printCI = FALSE){
-#model <- result
+
+	if (!is.null(model$stan_data$corr)){
+		stop("SummaryMDCEV not set up for random parameter models. Use print/traceplot on model.fit$stan_fit to examine output", "\n")
+	}
+
 	rmdcevVersion <- tryCatch(utils::packageDescription("rmdcev", fields = "Version"),
 							  warning=function(w) return("rmdcev"),
 							  error=function(e) return("rmdcev"))
+
 	cat("Model run using rmdcev for R, version", rmdcevVersion,"\n")
 #	cat("Model run at                     : ", paste(model$start.time[3] ),"\n", sep="")
 	cat("Estimation method                : ", model$algorithm, "\n", sep="")

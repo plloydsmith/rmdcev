@@ -11,8 +11,8 @@
 BayesMDCEV <- function(stan_data, bayes_options,
 								 initial.parameters,
 								 keep.samples = FALSE,
-								 include.stanfit = TRUE)
-{
+								 include.stanfit = TRUE) {
+
 	if (bayes_options$n_iterations <= 0)
 		stop("The specified number of iterations must be greater than 0.")
 
@@ -39,14 +39,6 @@ BayesMDCEV <- function(stan_data, bayes_options,
 	stan_data$L <- 0
 	stan_data$data_class <- matrix(0, stan_data$I, 0)
 
-#	stan_data$lkj_shape = bayes_options$hb.lkj.prior.shape
-
-#	initial.parameters2 <- list(initial.parameters)#, initial.parameters,initial.parameters,initial.parameters)
-#	initial.parameters2 <- list(list(scale = as.array(1, dim = 1)))#, initial.parameters,initial.parameters,initial.parameters)
-
-#	has.covariates <- !is.null(stan_data$covariates)
-#	stan.model <- stanModel(bayes_options$random_parameters)
-
 	if (bayes_options$random_parameters == "fixed"){
 		stan.model <- stanmodels$mdcev
 	}else if (bayes_options$random_parameters == "uncorr"){
@@ -59,17 +51,15 @@ BayesMDCEV <- function(stan_data, bayes_options,
 
 	message("Using Bayes to estimate model")
 
-	if (bayes_options$show_stan_warnings == FALSE){
+	if (bayes_options$show_stan_warnings == FALSE)
 		suppressWarnings(stan_fit <- RunStanSampling(stan_data, stan.model, bayes_options))
-	} else if(bayes_options$show_stan_warnings == TRUE){
+	else if(bayes_options$show_stan_warnings == TRUE)
 		stan_fit <- RunStanSampling(stan_data, stan.model, bayes_options)
-	}
 
-	if(bayes_options$n_chains == 1){
+	if(bayes_options$n_chains == 1)
 		chain_index <- 1
-	}else if(bayes_options$n_chains > 1){
+	else if(bayes_options$n_chains > 1)
 		chain_index <- bayes_options$n_chains+1
-	}
 
 	result <- list()
 	result$stan_fit <- stan_fit

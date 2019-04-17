@@ -15,7 +15,7 @@ data_rec
 test_that("Bayes gamma0 specification", {
 
 	result <- FitMDCEV(psi_formula = ~ factor(good_name) -1,
-								data = subset(data_rec, id < 1000),
+								data = subset(data_rec, id < 500),
 						#	data = data_rec,
 								model = "gamma0",
 								algorithm = "Bayes",
@@ -32,10 +32,26 @@ test_that("Bayes gamma0 specification", {
 	expect_equal(output$z.stat[1], Inf)
 })
 
+test_that("Bayes gamma0 specification with uncorrelated RP", {
+
+	result <- FitMDCEV(psi_formula = ~ factor(good_name) -1,
+					   data = subset(data_rec, id < 50),
+					   #	data = data_rec,
+					   model = "gamma0",
+					   algorithm = "Bayes",
+					   random_parameters = "uncorr",
+					   print_iterations = FALSE,
+					   n_chains = 1,
+					   n_iterations = 10,
+					   show_stan_warnings = FALSE)
+
+	expect_equal(dim(result$est_pars), c(8845, 3))
+})
+
 test_that("Bayes gamma0 specification with correlated RP", {
 
 	result <- FitMDCEV(psi_formula = ~ factor(good_name) -1,
-					   data = subset(data_rec, id < 1000),
+					   data = subset(data_rec, id < 50),
 					   #	data = data_rec,
 					   model = "gamma0",
 					   algorithm = "Bayes",
@@ -46,22 +62,6 @@ test_that("Bayes gamma0 specification with correlated RP", {
 					   show_stan_warnings = FALSE)
 
 
-	expect_equal(dim(result$est_pars), c(175, 3))
+	expect_equal(dim(result$est_pars), c(14625, 3))
 })
 
-test_that("Bayes gamma0 specification with uncorrelated RP", {
-
-	result <- FitMDCEV(psi_formula = ~ factor(good_name) -1,
-					   data = subset(data_rec, id < 1000),
-					   #	data = data_rec,
-					   model = "gamma0",
-					   algorithm = "Bayes",
-					   random_parameters = "uncorr",
-					   print_iterations = FALSE,
-					   n_chains = 1,
-					   n_iterations = 10,
-					   show_stan_warnings = FALSE)
-
-
-	expect_equal(dim(result$est_pars), c(175, 3))
-})
