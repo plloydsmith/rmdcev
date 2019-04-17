@@ -1,4 +1,5 @@
 context("Test LC")
+library(rmdcev)
 
 tol <- 0.00001
 data(data_rec, package = "rmdcev")
@@ -30,10 +31,10 @@ test_that("Test LC simulations", {
 	wtp <- SimulateMDCEV(df_sim$df_indiv, df_common = df_sim$df_common, sim_options = df_sim$sim_options,
 						 cond_err = 1, nerrs = 3, sim_type = "welfare")
 	sum_wtp <- purrr:::map(wtp, SummaryWelfare)
-	expect_true(sum(abs(sum_wtp[["class1"]][["mean"]]), abs(sum_wtp[["class2"]][["mean"]])) < 1e-3)
+	expect_true(sum(abs(sum_wtp[["class1"]][["Mean"]]), abs(sum_wtp[["class2"]][["Mean"]])) < 1e-3)
 
 	demand <- SimulateMDCEV(df_sim$df_indiv, df_common = df_sim$df_common, sim_options = df_sim$sim_options,
 						 cond_err = 1, nerrs = 3, sim_type = "demand")
-	expect_equal(sum(demand[["class2"]][[1]][[2]][1,-1]), sum(result$stan_data$j_quant[1,]))
+	expect_equal(sum(demand[["class2"]][[5]][[2]][1,-1]), sum(result$stan_data$j_quant[5,]))
 })
 

@@ -11,14 +11,19 @@
 #' @export
 
 PrepareSimulationData <- function(stan_est, policies, nsims = 30, price_change_only = FALSE){
-
 	# Checks on simulation options
 	model_num <- stan_est$stan_data$model_num
 
-	if (nsims > stan_est$n_draws) {
+
+
+	if (stan_est$algorithm == "MLE" && nsims > stan_est$n_draws){
 		nsims <- stan_est$n_draws
-		warning("Number of simulations > Number of Draws from stan_est. nsims has been set to: ", nsims)
+		warning("Number of simulations > Number of mvn draws from stan_est. nsims has been set to: ", nsims)
+	} else if (stan_est$algorithm == "Bayes" && nsims > max(stan_est$est_pars$sim_id)) {
+		nsims <- max(stan_est$est_pars$sim_id)
+		warning("Number of simulations > Number of posterior draws from stan_est. nsims has been set to: ", nsims)
 	}
+
 	# Sample from parameter estimate draws
 	est_sim <- stan_est$est_pars %>%
 		distinct(sim_id) %>%
@@ -53,6 +58,7 @@ PrepareSimulationData <- function(stan_est, policies, nsims = 30, price_change_o
 
 		df_indiv <- purrr::flatten(purrr::map(sim_welfare, `[`, c("df_indiv")))
 	}
+
 	sim_options <- list(n_classes = stan_est$n_classes,
 					model_num = model_num,
 					price_change_only = price_change_only)

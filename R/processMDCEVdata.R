@@ -55,6 +55,7 @@ processMDCEVdata <- function(data, psi_formula, lc_formula,
 	# Put data into one list for rstan
 	stan_data =
 		list(I = I, J = J, NPsi = NPsi,
+			 K = model_options$n_classes,
 			 dat_psi = as.matrix(dat_psi),
 			 j_price = price,
 			 j_quant = quant,
@@ -66,21 +67,19 @@ processMDCEVdata <- function(data, psi_formula, lc_formula,
 			 prior_gamma = model_options$prior_gamma,
 			 prior_alpha = model_options$prior_alpha,
 			 prior_scale = model_options$prior_scale,
+			 prior_beta_m <- model_options$prior_beta_m,
 			 model_num = model_num,
 			 fixed_scale = model_options$fixed_scale,
 			 n_parameters = n_parameters,
 			 trunc_data = model_options$trunc_data)
 
 	if (model_options$n_classes > 1){
-		stan_data$prior_beta_m <- model_options$prior_beta_m
-
 		data_class <- tbl_df(data) %>%
 			distinct(id, .keep_all = T) %>%
 			stats::model.matrix(lc_formula, .)
 		stan_data$data_class <- as.matrix(data_class)
 		stan_data$n_parameters <- n_parameters * model_options$n_classes + ncol(data_class) * (model_options$n_classes - 1)
 		stan_data$L <- ncol(data_class) # number of membership variables
-		stan_data$K <- model_options$n_classes
 	}
 return(stan_data)
 }

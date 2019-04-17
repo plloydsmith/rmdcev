@@ -12,7 +12,6 @@ SummaryMDCEV <- function(model, printCI = FALSE){
 	cat("Model run using rmdcev for R, version", rmdcevVersion,"\n")
 #	cat("Model run at                     : ", paste(model$start.time[3] ),"\n", sep="")
 	cat("Estimation method                : ", model$algorithm, "\n", sep="")
-#	if(!apollo_control$HB) cat("Model diagnosis                  : ",model$message,"\n", sep="")
 	cat("Model type                       : ", model$model," specification", "\n", sep="")
 	cat("Number of classes                : ", model$n_classes, "\n", sep="")
 	cat("Number of individuals            : ", model$n_respondents,"\n", sep="")
@@ -44,10 +43,6 @@ timeTaken <- paste(formatC(tmpH,width=2,format='d',flag=0),
 				   formatC(tmpM,width=2,format='d',flag=0),
 				   tmpS,sep=':')
 	cat("Time taken (hh:mm:ss)            : ",timeTaken,"\n")
-#cat("Iterations                       : ",model$nIter,"\n")
-#cat("Number of cores used             : ",model$apollo_control$nCores,"\n")
-
-
 
 	output <- model$est_pars %>%
 		mutate(parms = gsub("\\[|\\]|\\.", "", parms)) %>%
@@ -57,8 +52,8 @@ timeTaken <- paste(formatC(tmpH,width=2,format='d',flag=0),
 		summarise(Estimate = round(mean(value),3),
 				  Std.err = round(stats::sd(value),3),
 				  z.stat = round(mean(value) / stats::sd(value),2),
-				  cl95_lo = round(stats::quantile(value, 0.025),3),
-				  cl95_hi = round(stats::quantile(value, 0.975),3))
+				  ci_lo95 = round(stats::quantile(value, 0.025),3),
+				  ci_hi95 = round(stats::quantile(value, 0.975),3))
 
 	if(model$n_classes > 1){
 		psi.names <- cbind("psi",1:ncol(model$stan_data[["dat_psi"]]),

@@ -33,6 +33,11 @@ BayesMDCEV <- function(stan_data, bayes_options,
 	stan_data$task_individual = indexes$task_individual
 	stan_data$task = indexes$task
 	stan_data$IJ = stan_data$I * stan_data$J
+
+	stan_data$K <- 1
+	stan_data$L <- 0
+	stan_data$data_class <- matrix(0, stan_data$I, 0)
+
 #	stan_data$lkj_shape = bayes_options$hb.lkj.prior.shape
 
 #	initial.parameters2 <- list(initial.parameters)#, initial.parameters,initial.parameters,initial.parameters)
@@ -62,6 +67,8 @@ BayesMDCEV <- function(stan_data, bayes_options,
 	result$effective.sample.size <- ess <- sum(stan_data$weights)
 	result$aic <- -2 * result$log.likelihood + 2 * n_parameters
 	result$bic <- -2 * result$log.likelihood + log(ess) * n_parameters
+#	result$stan_fit$par[["theta"]] <- NULL
+#	result$stan_fit$par[["beta_m"]] <- NULL
 	result
 }
 

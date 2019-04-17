@@ -13,12 +13,18 @@ maxlikeMDCEV <- function(stan_data, initial.parameters,
 
 	message("Using MLE to estimate model")
 
+	# ensure single class used for base model
+	stan_data_temp <- stan_data
+	stan_data_temp$K <- 1
+	stan_data_temp$L <- 0
+	stan_data_temp$data_class <- matrix(0, stan_data$I, 0)
+
 	if (is.null(initial.parameters)){
-		stan_fit <- rstan::optimizing(stan.model, data = stan_data, as_vector = FALSE, seed = mle_options$seed,
+		stan_fit <- rstan::optimizing(stan.model, data = stan_data_temp, as_vector = FALSE, seed = mle_options$seed,
 									  verbose = mle_options$print_iterations,
 							   draws = mle_options$n_draws, hessian = mle_options$hessian)
 	} else {
-		stan_fit <- rstan::optimizing(stan.model, data = stan_data, as_vector = FALSE, seed = mle_options$seed,
+		stan_fit <- rstan::optimizing(stan.model, data = stan_data_temp, as_vector = FALSE, seed = mle_options$seed,
 									  verbose = mle_options$print_iterations, init = initial.parameters,
 						   draws = mle_options$n_draws, hessian = mle_options$hessian)
 	}
@@ -29,21 +35,20 @@ maxlikeMDCEV <- function(stan_data, initial.parameters,
 
 	result$stan_fit <- stan_fit
 	n_parameters <- stan_data$n_parameters
+	result$stan_fit$par[["theta"]] <- NULL
+	result$stan_fit$par[["beta_m"]] <- NULL
 	result$log.likelihood <- stan_fit[["par"]][["sum_log_lik"]]
 	result$effective.sample.size <- ess <- sum(stan_data$weights)
 	result$aic <- -2 * result$log.likelihood + 2 * n_parameters
 	result$bic <- -2 * result$log.likelihood + log(ess) * n_parameters
-	stan_fit <- result$stan_fit
-
 	if (mle_options$n_classes > 1){
-		result$mdcev_fit <- stan_fit
+		result$mdcev_fit <- result$stan_fit
 		result$mdcev_log.likelihood <- result$log.likelihood
 		result$mdcev_bic <- result$bic
 
-		init.par <- stan_fit$par
-
 		# Extract the parameters to use as initial values for LC model
 		# Need to ensure to replicate intial values for each class
+		init.par <- stan_fit$par
 		init.psi <- init.par$psi
 
 		# add shift to psi values values
@@ -68,7 +73,7 @@ maxlikeMDCEV <- function(stan_data, initial.parameters,
 			init$gamma <- matrix(rep(init.par$gamma, stan_data$K), nrow=stan_data$K, ncol=stan_data$J)
 		}
 
-		stan.model <- stanmodels$mdcev_lc
+#		stan.model <- stanmodels$mdcev_lc
 
 		message("Using MLE to estimate LC model")
 
@@ -86,9 +91,9 @@ maxlikeMDCEV <- function(stan_data, initial.parameters,
 		result$effective.sample.size <- ess <- sum(stan_data$weights)
 		result$aic <- -2 * result$log.likelihood + 2 * n_parameters
 		result$bic <- -2 * result$log.likelihood + log(ess) * n_parameters
-		class_probabilities <- exp(t(stan_fit[["par"]][["theta"]]))
-		colnames(class_probabilities) <- paste0("class", c(1:mle_options$n_classes))
-		result$class_probabilities <- class_probabilities
+#		class_probabilities <- exp(t(stan_fit[["par"]][["theta"]]))
+#		colnames(class_probabilities) <- paste0("class", c(1:mle_options$n_classes))
+#		result$class_probabilities <- class_probabilities
 	}
 #	result$class.parameters <- pars$class.parameters
 #	result$coef <- createCoefOutput(pars, stan_data$par.names, stan_data$all.names)
@@ -107,7 +112,6 @@ ReduceStanFitSize <- function(stan_fit)
 	# Replace stanmodel with a dummy as stanmodel makes the output many times larger,
 	# and is not required for diagnostic plots.
 	stan_fit[["par"]][["log_like"]] <- NULL
-	stan_fit[["par"]][["log_like_all"]] <- NULL
 	stan_fit[["theta_tilde"]] <- stan_fit[["theta_tilde"]][,1:ncol(stan_fit[["hessian"]])]
 	stan_fit
 }

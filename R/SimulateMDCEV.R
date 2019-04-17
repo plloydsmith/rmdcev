@@ -91,11 +91,13 @@ SummaryWelfare <- function(wtp, ci = 0.95){
 	wtp_sum <- tbl_df(wtp_sum) %>%
 		tidyr::gather(policy, wtp) %>%
 		group_by(.data$policy) %>%
-		summarise(mean = mean(wtp),
-				  std_dev = stats::sd(wtp),
-				  zstat = mean / std_dev,
-				  cl_lo = stats::quantile(wtp, (1-ci)/2),
-				  cl_hi = stats::quantile(wtp, ci+(1-ci)/2))
+		summarise(mean = round(mean(wtp),2),
+				  std_dev = round(stats::sd(wtp),2),
+				  ci_lo = round(stats::quantile(wtp, (1-ci)/2),2),
+				  ci_hi = round(stats::quantile(wtp, ci+(1-ci)/2),2))
+
+	colnames(wtp_sum) <- c("policy", "Mean", "Std.Dev", paste0("ci_lo",(1-ci)/2*100, "%"), paste0("ci_hi",(ci+(1-ci)/2)*100, "%"))
+
 	return(wtp_sum)
 }
 

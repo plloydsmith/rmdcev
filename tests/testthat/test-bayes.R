@@ -14,14 +14,17 @@ data_rec
 
 test_that("Bayes gamma0 specification", {
 	result <- FitMDCEV(psi_formula = ~ factor(good_name) -1,
-								data = subset(data_rec, id < 1000),
+							#	data = subset(data_rec, id < 1000),
+							data = data_rec,
 								model = "gamma0",
 								algorithm = "Bayes",
 					   print_iterations = FALSE,
 					   n_chains = 1,
 					   n_iterations = 10,
 					   show_stan_warnings = FALSE)
-#	SummaryMDCEV(result)
 
 	expect_equal(dim(result$est_pars), c(175, 3))
+
+	output <- SummaryMDCEV(result)
+	expect_equal(output$z.stat[1], Inf)
 })

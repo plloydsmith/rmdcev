@@ -196,6 +196,7 @@ data_rec
 We can summarize the average consumption and price levels for each good as:
 
 ```{r, summary}
+library(dplyr)
 data_rec %>%
 	group_by(good, good_name) %>%
 	summarise(mean_quant = mean(quant),
@@ -361,8 +362,6 @@ Pinjari and Bhat (2011)
 ```
 
 #### Welfare Analysis
-
-
 
 ```{r, sim_mdcev_welfare_setup}
 	npols <- 2

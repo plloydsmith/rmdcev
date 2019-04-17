@@ -25,7 +25,7 @@ model_num <- 4
 
 quant_num <- inc - quant_j  %*% price[-1]
 quant <- c(quant_num, quant_j)
-psi_j <- result[["stan_data"]][["dat_psi"]][1:ngoods,] %*% result[["stan_fit"]][["par"]][["psi"]]
+psi_j <- result[["stan_data"]][["dat_psi"]][1:ngoods,] %*% t(result[["stan_fit"]][["par"]][["psi"]])
 gamma_j <- result[["stan_fit"]][["par"]][["gamma"]]
 gamma <- c(1, gamma_j)
 alpha <- rep(1e-06, ngoods+1)# result[["stan_fit"]][["par"]][["alpha"]]
@@ -87,13 +87,13 @@ test_that("Test full simulation function", {
 	wtp <- SimulateMDCEV(df_sim$df_indiv, df_common = df_sim$df_common, sim_options = df_sim$sim_options,
 						 cond_err = 1, nerrs = 3, sim_type = "welfare")
 	sum_wtp <- SummaryWelfare(wtp)
-	expect_true(sum(abs(sum_wtp$mean)) < .01)
+	expect_true(sum(abs(sum_wtp$Mean)) < .01)
 
 	# Test unconditional errors
 	wtp <- SimulateMDCEV(df_sim$df_indiv, df_common = df_sim$df_common, sim_options = df_sim$sim_options,
 						 cond_err = 0, nerrs = 3, sim_type = "welfare")
 	sum_wtp <- SummaryWelfare(wtp)
-	expect_true(sum(abs(sum_wtp$mean)) < .01)
+	expect_true(sum(abs(sum_wtp$Mean)) < .01)
 
 })
 
