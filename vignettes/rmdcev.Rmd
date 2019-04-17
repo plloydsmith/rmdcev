@@ -30,15 +30,9 @@ knitr::opts_chunk$set(echo = TRUE, cache = TRUE, dpi=300)
 library(rmdcev)
 ```
 
-This document introduces the package **rmdcev** in R for estimation and simulation of multiple-discrete choice extreme value models with individual heterogeneity. as well as subsequent demand and welfare simulation.
+## Abstract
 
-The models supported by rmdcev are multiple-discrete choice extreme value, the latent class, the mixed- multiple-discrete choice extreme value
-The models are estimated using either penalized maximum likelihood estimator or hierarchal Bayes.
-Demand and welfare simulations can
-This article describes and demonstrates with real and simulated datasets all the functionalities of rmdcev.
-
- for cross-sectional and panel (longitudinal). The package also simulates demand and welfare implications.
-The purpose of this paper is to describe the model
+This paper introduces the package **rmdcev** in R for estimation and simulation of multiple-discrete choice extreme value models with individual heterogeneity. The models supported by **rmdcev** are the multiple-discrete choice extreme value (MDCEV) model, the latent class MDCEV model, and the random parameters MDCEV model. The models are fit using maximum likelihood estimation or Bayesian estimation. The **rmdcev** package also implements demand forecasting and welfare calculation for policy simulation. The purpose of this paper is to describe the MDCEV estimation and simulation framework and demonstrates all the functionalities of **rmdcev**. 
 
 Keywords: multiple-discrete choice extreme value, Kuhn-Tucker, latent class, random parameters, demand, welfare, preference heterogeneity, R.
 
@@ -182,7 +176,7 @@ where $\sigma$ is a scale parameter and $c_m = \frac{1-\alpha}{x_m+ \gamma_m}$. 
 
 ### Data format
 
-The **rmdcev** pacakage accepts data in ``long" format (one row per available non-numeraire alternative). There is no row for the numeraire good. The following named columns are requires:
+The **rmdcev** package accepts data in ``long" format (one row per available non-numeraire alternative). There is no row for the numeraire good. The following named columns are required in the data:
 
 - **id**: The id variable for each individual
 - **good**: The variable containing the good number
@@ -191,6 +185,8 @@ The **rmdcev** pacakage accepts data in ``long" format (one row per available no
 - **inc**: Income level for each individual
 
 Data must be arranged by id and then good.
+
+As an example, we can load the recreation data incorporated with the package. This data is from the Value of Nature to Canadians Survey and includes 17 different recreation activities for 2,000 people.
 
 ```{r, data}
 data(data_rec, package = "rmdcev")
@@ -220,9 +216,7 @@ Note that the formula will automatically include a constant but a constant can b
 
 ### Estimating MDCEV
 
-We estimate a MDCEV model using the **Recreation** data where we include acticity-specific constants in the $\psi$ parameter. We start with the maximum likelihood estimation by setting algorithm = "MLE" and using the gamma model specification where alpha is set to 0 by using model = "gamma0".
-
-The basic syntax is the following:
+We estimate a MDCEV model using the **Recreation** data where we include activity-specific constants (ASCs) in the $\psi$ parameter. To create the ASC data, we can use the following code to create indicator variables. Note that we can also use the factor(good_name) command directly in the formula but the names are quite long.
 
 ```{r, create_dummies}
 data_rec <- data_rec %>% 
@@ -230,6 +224,10 @@ data_rec <- data_rec %>%
   spread(yr, v, fill = 0) %>%
 	arrange(id, good)
 ```
+
+We specify the gamma model specification where alpha is fixed to 0 by setting model = "gamma0". We use maximum likelihood estimation by setting algorithm = "MLE".
+
+The syntax for the model is the following:
 
 ```{r, estimation_mdcev}
 mdcev.fit <- FitMDCEV(psi_formula = ~ beach + birding + camping + cycling + fish + garden + golf +
@@ -241,6 +239,16 @@ mdcev.fit <- FitMDCEV(psi_formula = ~ beach + birding + camping + cycling + fish
 					  		print_iterations = FALSE)
 ```
 
+The function first checks the data is in the correct form and then estimates the model.
+
+The output of the function can be accessed by calling SummaryMDCEV. 
+
+```{r, summary_mdcev}
+	SummaryMDCEV(mdcev.fit)
+```
+
+The summary includes overal information on the model and the parameter estimates. 
+
 There are four possible model options
 
 - "les": Linear expenditure system with one estimated $\alpha_1$ and all non-numeraire $\alpha$ parameters equal to 1.
@@ -248,35 +256,54 @@ There are four possible model options
 - "gamma": $\gamma$-profile with a single estimated $\alpha$ (i.e. $\alpha_1 = \alpha_k = \alpha$.
 - "gamma0": $\gamma$-profile with all  $\alpha$ equal to 1e-6.
 
-```{r, summary_mdcev}
-	SummaryMDCEV(mdcev.fit)
-```
+### Estimating MDCEV with Bayesian Approaches
+
+The exact same model can be fit using Bayesian estimation by changing the model call to "Bayes".
 
 
-### Estimating MDCEV with HB
-
-One benefit of using the Heirarchal Bayes routine is that we can take advantage of the postestimation commands in **rstan** and **shinystan**.
-
-### Estimating Latent Class MDCEV
-
-In this example, we estimate a LC model with two classes. To include variables in the membership equation we specify them in the **lc_formula** interface. The LC model is estimated as long as **n_classes** is set greater than 2.
-
-```{r, estimation_mdcev_lc}
-mdcev.lc <- FitMDCEV(psi_formula = ~ beach + birding + camping + cycling + fish + garden + golf +
+```{r, estimation_mdcev_bayes}
+mdcev_bayes <- FitMDCEV(psi_formula = ~ beach + birding + camping + cycling + fish + garden + golf +
 					 hiking + hunt_birds + hunt_large + hunt_trap + hunt_waterfowl + motor_land + 
 					 	motor_water + photo + ski_cross + ski_down -1,
-            				  lc_formula = ~ university + ageindex + urban,
-            					data = data_rec,
-            				  n_classes = 2,
-            					model = "gamma0",
-            					algorithm = "MLE",
-					  			print_iterations = FALSE)
+							data = data_rec,
+							model = "gamma0",
+							algorithm = "Bayes",
+						n_iterations = 10,
+						n_chains = 1,
+					  		print_iterations = FALSE)
 ```
-We can interpret the beta_m parameters as...
+
+The function first checks the data is in the correct form and then estimates the model.
+
+The output of the function can be accessed by calling SummaryMDCEV. 
+
+```{r, summary_mdcev_bayes}
+	SummaryMDCEV(mdcev_bayes)
+```
+
+One benefit of using the Bayesian approach is that we can take advantage of the postestimation commands in **rstan**, **bayesplot**, and **shinystan**.
+
+### Estimating Latent Class MDCEV Models
+
+In this example, we estimate a LC model using the **Recreation** data. We set the number of classes equal to 2. We would like to include the *university*, *ageindex*, and *urban* in the membership equation and we include them in the **lc_formula** interface. Note that we need to include at least a constant in the formula. The LC model is estimated as long as the prespecified number of classes (**n_classes**) is set greater than 2.
+
+```{r, estimation_mdcev_lc}
+mdcev.lc <- FitMDCEV(psi_formula = ~ beach + birding + camping + cycling + fish + garden + golf + 
+								 	hiking + hunt_birds + hunt_large + hunt_trap + hunt_waterfowl + 
+								 	motor_land + motor_water + photo + ski_cross + ski_down - 1,
+					lc_formula = ~ university + ageindex + urban,
+					data = data_rec,
+					n_classes = 2,
+					model = "gamma0",
+					algorithm = "MLE",
+					print_iterations = FALSE)
+```
 
 ```{r, summary_mdcev_lc}
 	SummaryMDCEV(mdcev.lc)
 ```
+
+In this LC example, we assume that there are two types of people that have different preferences for recreation. The probability of class assignment depends on unobserved factors and the three sociodemographic factors included in the membership equation
 
 ### Estimating Random Parameters MDCEV
 
@@ -284,42 +311,73 @@ We can interpret the beta_m parameters as...
 
 ## Rmdcev Demand and Welfare Simulation
 
-The **rmdcev** package includes simulation functions for calculating forecasted demand and welfare measures. There are two steps to simulation. In the first step we draw simulated values for the unobserved heterogeneity term ($\varepsilon$) using Monte Carlo simulation techniques. The second step uses these draws, model parameters and the data to calculate Marhsallian or Hicksian demands. 
+The **rmdcev** package includes simulation functions for forecasting demand and calculating welfare measures. I first provide an overview of the approach used for simulation and then provide code examples.
+
+There are two steps to simulation approach. In the first step we draw simulated values for the unobserved heterogeneity term ($\varepsilon$) using Monte Carlo simulation techniques. The second step uses these draws, model parameters and the data to calculate Marhsallian or Hicksian demands. 
 
 ### Step 1: Simulating unobervered heterogeneity
 
-Unconditional vs Conditional Error Draws
+Monte Carlo simulation techniques can be employed to draw simulated values of the unobserved heterogeneity ($\varepsilon$) using either unconditional or conditional draws. 
 
-To address the first issue, Monte Carlo simulation techniques can be employed to draw simulated values of the unobserved heterogeneity ($\varepsilon$) and then a measure of the central tendency of $CS^H$ such as its expectation can be computed. The main implication of using these Monte Carlo techniques is that now $CS^H$ needs to be computed for each simulated value of $\varepsilon$ which can be burdensome if the approach used to calculate $CS^H$ is slow. This implication has partially motivated the use of conditional draws of $\varepsilon$ which avoids the need to calculate consumption patterns in the baseline state as well as simulate the entire distribution of unobserved heterogeneity. The conditional approach to welfare measurement draws $\varepsilon$ such that the model perfectly predicts the observed consumption patterns in the baseline state \citep{von_haefen_kuhn-tucker_2005}.
+1. Unconditional error draws: draw from the entire distribution of unobserved heterogeneity using the following formula
 
-For unconditional errors, 
+$\varepsilon_{k} = -log(-log(uniform(0,1)))) * \sigma$
 
-Truncated $\varepsilon_{k} = -log(-log(uniform(0,1)))) * \sigma$
+where $uniform(0,1)$ is a uniform random draw and $\sigma$ is the scale parameter.
 
-where uniform(0,1) is a uniform random draw
+2. Conditional error draws: draw errors dependent on whether alternative is consumed or not
 
-2. Conditional error draw
+- If $x_k>0$, set  $\varepsilon_k = (V_1 - V_k)/ \sigma$ where $V_1$ and $V_k$ depend on the model specification as detailed above.
+- If $x_k=0$, $\varepsilon_k < (V_1 - V_k)/ \sigma$ and we can simulate $\varepsilon_k$ from the truncated type I extreme value distribution such that 
 
-For conditional error draws, the simulation depends on whether an alternative is consumed or not. 
-If $x_k>0$, set  $\varepsilon_k = (V_1 - V_k)/ \sigma$ where $V_1$ and $V_k$ depend on the model specification.
-
-If $x_k=0$, $\varepsilon_k < (V_1 - V_k)/ \sigma$ and we can simulate $\varepsilon_k$ from the truncated type I extreme value distribution such that 
-
-$\varepsilon_k = -log(-log(uniform(0, 1) * exp(-exp(v1 - vk)))) * \sigma$
+$\varepsilon_k = -log(-log(uniform(0, 1) * exp(-exp(\frac{v1 - vk}{\sigma})))) * \sigma$
 
 In both cases, we normalize $\varepsilon_1=0$. 
 
+In the conditional approach, we draw errors such that the model perfectly predicts the observed consumption patterns in the baseline state \citep{von_haefen_kuhn-tucker_2005}. Thus the conditional approach uses observed behaviour by individuals to characterize unobserved heterogeneity.
+
+Another difference is more computational as the conditional error draws avoids the need to calculate consumption patterns in the baseline state as well as simulate the entire distribution of unobserved heterogeneity.
+
+**rmdcev** allows errors to be drawn using uniform draws or the Modified Latin Hypercube Sampling algorithm.
 
 ### Step 2: Calculating Demand and Welfare measures
 
-\cite{vonhaefen_empirical_2007} builds on \cite{von_haefen_estimation_2004} using a more efficient numerical approach by making use of the explicit definition of $CS^H$ shown in Equation (\ref{welfare}). The approach exploits the additively separable utility function structure and replaces the two level numerical bisection routines in \cite{von_haefen_estimation_2004} with a single numerical bisection routine. I fully describe the steps of the algorithm below because I use this approach as a benchmark to compare the computational performance of the new approach introduced in this paper. For the rest of the paper, I refer to this approach as the numerical bisection algorithm.
+With the error draws in hand, the second step is to simulate demand or welfare. **rmdcev** implements the Pinjari and Bhat (2011) demand forecasting routine for simulating demand and the approach described by Lloyd-Smith (2017) for welfare calculations. 
 
 #### Marshallian Demand
 
 Pinjari and Bhat (2011)
 
+```{r, sim_mdcev_demand}
+	npols <- 2
+	policies <-	CreateBlankPolicies(npols, mdcev.fit$stan_data[["J"]], mdcev.fit$stan_data[["dat_psi"]])
+	policies$price_p[[1]] <- c(0, rep(5,mdcev.fit$stan_data[["J"]]))
+	policies$price_p[[2]] <- c(0, rep(10,mdcev.fit$stan_data[["J"]]))
+	df_sim <- PrepareSimulationData(mdcev.fit, policies)
+
+#	demand <- SimulateMDCEV(df_sim$df_indiv, df_common = df_sim$df_common, sim_options = df_sim$sim_options,
+#						 cond_err = 1, nerrs = 20, sim_type = "demand")
+
+```
 
 #### Welfare Analysis
+
+
+
+```{r, sim_mdcev_welfare_setup}
+	npols <- 2
+	policies <-	CreateBlankPolicies(npols, mdcev.fit$stan_data[["J"]], mdcev.fit$stan_data[["dat_psi"]])
+	policies$price_p[[1]] <- c(0, rep(5,mdcev.fit$stan_data[["J"]]))
+	policies$price_p[[2]] <- c(0, rep(10,mdcev.fit$stan_data[["J"]]))
+	df_sim <- PrepareSimulationData(mdcev.fit, policies)
+```
+
+
+```{r, sim_mdcev_welfare}
+	wtp <- SimulateMDCEV(df_sim$df_indiv, df_common = df_sim$df_common, sim_options = df_sim$sim_options,
+						 cond_err = 1, nerrs = 15, sim_type = "welfare")
+	SummaryWelfare(wtp)
+```
 
 Lloyd-Smith (2017)
 
@@ -335,7 +393,7 @@ The **rmdcev** package implements the MDCEV . In this paper, we have demonstrate
 
 
 
-### Specific steps in algorithm for Hybrid-profile utility functions
+### Specific steps in algorithm for hybrid-profile utility functions
 
 **Step 0**: Assume that only the numeraire alternative is chosen and let the number of chosen alternatives equal one (M=1).
 

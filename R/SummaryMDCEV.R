@@ -33,9 +33,9 @@ SummaryMDCEV <- function(model, printCI = FALSE){
 		}
 	cat("Exist of MLE                     : ",converge,"\n")
 	} else if(model$algorithm == "Bayes"){
-	cat("Number of chains                 : ",result[["stan_fit"]]@sim[["chains"]],"\n")
-	cat("Number of warmup draws per chain : ",result[["stan_fit"]]@sim[["warmup"]],"\n")
-	cat("Total post-warmup sample         : ",result[["stan_fit"]]@sim[["chains"]]*(result[["stan_fit"]]@sim[["iter"]]-result[["stan_fit"]]@sim[["warmup"]]),"\n")
+	cat("Number of chains                 : ",model[["stan_fit"]]@sim[["chains"]],"\n")
+	cat("Number of warmup draws per chain : ",model[["stan_fit"]]@sim[["warmup"]],"\n")
+	cat("Total post-warmup sample         : ",model[["stan_fit"]]@sim[["chains"]]*(model[["stan_fit"]]@sim[["iter"]]-model[["stan_fit"]]@sim[["warmup"]]),"\n")
 	}
 tmpH <- floor(model$time.taken/60^2)
 tmpM <- floor((model$time.taken-tmpH*60^2)/60)
