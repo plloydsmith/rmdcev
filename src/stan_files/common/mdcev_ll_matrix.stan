@@ -5,44 +5,42 @@ https://books.google.com/books?id=3TVDAAAAQBAJ&lpg=PR3&dq=Pinheiro%20and%20Bates
   These functions may be numerically unstable
 */
 
-matrix gamma_ll(matrix gamma, int I, int J, int model_num) {
+matrix gamma_ll(vector gamma, int I, int J, int G, int model_num) {
+
 	matrix[I, G] gamma_full;
+
 	if (model_num == 2)
 	  gamma_full = append_col(rep_vector(0, I), rep_matrix(1, I, J));
 	else
-	  gamma_full = append_col(rep_vector(0, I), gamma);
+	  gamma_full = append_col(rep_vector(0, I), rep_matrix(gamma', I));
+
+return(gamma_full);
 }
 
-matrix alpha_ll(matrix alpha, int I, int J, int G, int model_num) {
+matrix alpha_ll(vector alpha, int I, int J, int G, int model_num) {
+
 	matrix[I, G] alpha_full;
 
 	if (model_num == 1)
-	  alpha_full = append_col(alpha, rep_matrix(0, I, J));
+	  alpha_full = append_col(rep_vector(alpha[1], I), rep_matrix(0, I, J));
 	else if (model_num == 2)
-	  alpha_full = alpha;
+	  alpha_full = rep_matrix(alpha', I);
 	else if (model_num == 3)
-	  alpha_full = rep_matrix(alpha[1], G);
+	  alpha_full = rep_matrix(alpha[1], I, G);
 	else
 	  alpha_full = rep_matrix(1e-06, I, G);
+
+return(alpha_full);
 }
 
-matrix psi_ll(matrix psi, matrix dat_psi,  int I, int J, int G, int model_num) {
-	matrix[I, J] lpsi;
-
-	for(t in 1:I){
-		row_vector[J] util;
-		util = psi_individual[task_individual[t]] * dat_psi[start[t]:end[t]]';
-		lpsi[t] = util;
-	}
-}
-
-vector mdcev_ll(matrix j_quant, matrix quant_full, matrix log_price, vector log_num, matrix price_full,
-				vector log_inc, matrix dat_psi, vector M, vector M_factorial, vector weights, // data
-				matrix psi, matrix gamma, matrix alpha, real scale, 						// parameters
-				int I, int J, int G, vector ones_g, matrix nonzero, int model_num, int fixed_scale, int trunc_data)  {//options
+vector mdcev_ll_matrix(matrix j_quant, matrix quant_full, matrix log_price,
+					vector log_num, matrix price_full, vector log_inc,
+					matrix dat_psi, vector M, vector M_factorial, vector weights, // data
+					matrix lpsi, matrix gamma_full, matrix alpha_full, real scale_full,// parameters
+					int I, int J, int G, vector ones_g, matrix nonzero,
+					int model_num, int fixed_scale, int trunc_data)  {//options
 
 	vector[I] log_like;
-	matrix[I, J] lpsi = to_matrix(dat_psi[] * psi, I, J, 0);
 	matrix[I, J] v_j;
 	matrix[I, G] f;
 	matrix[I, G] v;
@@ -50,15 +48,10 @@ vector mdcev_ll(matrix j_quant, matrix quant_full, matrix log_price, vector log_
 	vector[I] sumv;
 	vector[I] pf;
 	vector[I] prodvf;
-	vector[G] gamma_full;
-	vector[G] alpha_full;
-	real scale_full;
-	scale_full = fixed_scale == 0 ? scale : 1.0;
-
 
 	v_j = lpsi + (block(alpha_full, 1, 2, I, J) - 1) .* log(j_quant ./ block(gamma_full, 1, 2, I, J) + 1) - log_price;
 	f = (quant_full + gamma_full) ./ (1 - alpha_full);
-	v = append_col((col(alpha_full, 1) - 1) * log_num, v_j);
+	v = append_col((col(alpha_full, 1) - 1) .* log_num, v_j);
 	v = exp(v / scale_full);
 	sumv = v * ones_g;
 
@@ -76,7 +69,7 @@ vector mdcev_ll(matrix j_quant, matrix quant_full, matrix log_price, vector log_
 		vector[I] like_trunc;
 		like_cond = prodvf .* pf .* M_factorial ./ sumv;
 
-		v_1 = append_col((alpha_full[1] - 1) * log_inc, lpsi - log_price);
+		v_1 = append_col((col(alpha_full, 1) - 1) .* log_inc, lpsi - log_price);
 		v_1 = exp(v_1 / scale_full);
 		sumv = v_1 * ones_g;
 

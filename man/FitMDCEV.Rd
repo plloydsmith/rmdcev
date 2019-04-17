@@ -13,7 +13,7 @@ FitMDCEV(data, psi_formula = NULL, lc_formula = NULL, weights = NULL,
   prior_scale_sd = 1, prior_beta_m_sd = 10, n_draws = 30,
   keep_loglik = 0, random_parameters = "fixed",
   show_stan_warnings = TRUE, n_iterations = 200, n_chains = 4,
-  max_tree_depth = 10, adapt_delta = 0.8)
+  max_tree_depth = 10, adapt_delta = 0.8, lkj_shape_prior = 4)
 }
 \arguments{
 \item{data}{The (IxJ) data to be passed to Stan including 1) id, 2) good, 3) quant,

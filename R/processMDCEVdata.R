@@ -6,7 +6,6 @@
 processMDCEVdata <- function(data, psi_formula, lc_formula,
 							 num_price,
 							 model_options){
-
 	dat_psi <- stats::model.matrix(psi_formula, data)
 
 	NPsi <- ncol(dat_psi)
@@ -63,11 +62,11 @@ processMDCEVdata <- function(data, psi_formula, lc_formula,
 			 income = as.vector(inc),
 			 M_factorial = M_factorial,
 			 no_priors = model_options$no_priors,
-			 prior_psi = model_options$prior_psi,
-			 prior_gamma = model_options$prior_gamma,
-			 prior_alpha = model_options$prior_alpha,
-			 prior_scale = model_options$prior_scale,
-			 prior_beta_m <- model_options$prior_beta_m,
+			 prior_psi = model_options$prior_psi_sd,
+			 prior_gamma = model_options$prior_gamma_sd,
+			 prior_alpha = model_options$prior_alpha_sd,
+			 prior_scale = model_options$prior_scale_sd,
+			 prior_beta_m = model_options$prior_beta_m_sd,
 			 model_num = model_num,
 			 fixed_scale = model_options$fixed_scale,
 			 n_parameters = n_parameters,

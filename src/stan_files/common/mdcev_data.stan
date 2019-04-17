@@ -2,7 +2,6 @@
 int I; // number of Individuals
 int J; // number of non-numeraire alternatives
 int NPsi; // number of alt covariates
-int K; // number of mixtures
 matrix[I * J, NPsi] dat_psi; // alt characteristics
 matrix[I, J] j_price; // non-numeraire price
 matrix[I, J] j_quant; // non-numeraire consumption

@@ -2,6 +2,7 @@
 
 functions {
 #include /common/mdcev_ll.stan
+#include /common/mdcev_ll_matrix.stan
 }
 
 data {
@@ -9,12 +10,12 @@ data {
 // prior_psi_sd prior_gamma_sd prior_alpha_sd prior_scale_sd
 // model_num fixed_scale trunc_data no priors weights
 #include /common/mdcev_data.stan
+	int K; // number of mixtures
 
 // additional LC data that can be set to 0 if not used
 	int L; // number of predictors in membership equation
 	vector[L] data_class[I];   // predictors for component membership
 	real prior_beta_m_sd;
-
 }
 
 transformed data {
@@ -23,7 +24,7 @@ transformed data {
 
 parameters {
 	vector[NPsi] psi[K];
-	vector<lower=0 >[model_num == 2 ? 0 : J] gamma[K];
+	vector<lower=0 >[Gamma] gamma[K];
 	vector<lower=0, upper=1>[A] alpha[K];
 	vector<lower=0>[fixed_scale == 0 ? K : 0] scale;
   	matrix[K - 1, L] beta_m;  // mixture regression coeffs
@@ -38,56 +39,28 @@ transformed parameters {
 	vector[I] log_like;
 
   	if(K == 1){
-		vector[G] gamma_full;
-		vector[G] alpha_full;
-		real scale_full;
-		scale_full = fixed_scale == 0 ? scale[1] : 1.0;
+  		matrix[I, J] lpsi = to_matrix(dat_psi[] * psi[1], I, J, 0);
+		matrix[I, G] gamma_full = gamma_ll(gamma[1], I, J, G, model_num);
+		matrix[I, G] alpha_full = alpha_ll(alpha[1], I, J, G, model_num);
+		real scale_full = fixed_scale == 0 ? scale[1] : 1.0;
 
-		if (model_num == 1)
-		  alpha_full = append_row(alpha[1], rep_vector(0, J));
-		else if (model_num == 2)
-		  alpha_full = alpha[1];
-		else if (model_num == 3)
-		  alpha_full = rep_vector(alpha[1,1], G);
-		else
-		  alpha_full = rep_vector(1e-06, G);
-
-		if (model_num == 2)
-		  gamma_full = append_row(0, rep_vector(1, J));
-		else
-		  gamma_full = append_row(0, gamma[1]);
-
-		log_like = mdcev_ll(j_quant, quant_full, log_price, log_num, price_full,
+		log_like = mdcev_ll_matrix(j_quant, quant_full, log_price, log_num, price_full,
 				log_inc, dat_psi, M, M_factorial, weights, // data
-				psi[1], gamma_full, alpha_full, scale_full, 						// parameters
+				lpsi, gamma_full, alpha_full, scale_full, 						// parameters
 				I, J, G, ones_g, nonzero, model_num, fixed_scale, trunc_data);
 
 	} else if (K > 1){
 		vector[I] log_like_util[K];
 		for (k in 1:K){
-		vector[G] gamma_full;
-		vector[G] alpha_full;
-		real scale_full;
-			scale_full = fixed_scale == 0 ? scale[k] : 1.0;
+			matrix[I, J] lpsi = to_matrix(dat_psi[] * psi[k], I, J, 0);
+			matrix[I, G] gamma_full = gamma_ll(gamma[k], I, J, G, model_num);
+			matrix[I, G] alpha_full = alpha_ll(alpha[k], I, J, G, model_num);
+			real scale_full = fixed_scale == 0 ? scale[k] : 1.0;
 
-			if (model_num == 1)
-		  		alpha_full = append_row(alpha[k], rep_vector(0, J));
-			else if (model_num == 2)
-		  		alpha_full = alpha[k];
-			else if (model_num == 3)
-		  		alpha_full = rep_vector(alpha[k, 1], G);
-			else
-		  		alpha_full = rep_vector(1e-6, G);
-
-			if (model_num == 2)
-		  		gamma_full = append_row(0, rep_vector(1, J));
-			else
-		  		gamma_full = append_row(0, gamma[k]);
-
-			log_like_util[k] = mdcev_ll(j_quant, quant_full, log_price, log_num, price_full,
-				log_inc, dat_psi, M, M_factorial, weights, // data
-				psi[k], gamma_full, alpha_full, scale_full, 						// parameters
-				I, J, G, ones_g, nonzero, model_num, fixed_scale, trunc_data);
+			log_like_util[k] = mdcev_ll_matrix(j_quant, quant_full, log_price, log_num, price_full,
+					log_inc, dat_psi, M, M_factorial, weights, // data
+					lpsi, gamma_full, alpha_full, scale_full, 						// parameters
+					I, J, G, ones_g, nonzero, model_num, fixed_scale, trunc_data);
 		}
 		for(i in 1:I){
 			vector[K] ltheta = log_softmax(append_row(0, beta_m * data_class[i])); // class membership equation

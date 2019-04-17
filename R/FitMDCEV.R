@@ -71,7 +71,8 @@ FitMDCEV <- function(data,
 					 n_iterations = 200,
 					 n_chains = 4,
 					 max_tree_depth = 10,
-					 adapt_delta = 0.8)
+					 adapt_delta = 0.8,
+					 lkj_shape_prior = 4)
 {
 	CheckMdcevData(data)
 
@@ -109,7 +110,8 @@ FitMDCEV <- function(data,
 						seed = seed,
 						max_tree_depth = max_tree_depth,
 						adapt_delta = adapt_delta,
-						show_stan_warnings = show_stan_warnings)
+						show_stan_warnings = show_stan_warnings,
+						lkj_shape_prior = lkj_shape_prior)
 
 	start.time <- proc.time()
 

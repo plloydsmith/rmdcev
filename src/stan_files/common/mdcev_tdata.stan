@@ -1,6 +1,7 @@
 
 int G = J + 1;
 int A;
+int Gamma;
 vector[G] ones_g = rep_vector(1, G);
 matrix[I, G] price_full = append_col(num_price, j_price);
 matrix[I, G] quant_full;
@@ -22,9 +23,13 @@ for(i in 1:I){
 log_num = log(num_quant ./ num_price);
 quant_full = append_col(num_quant, j_quant);
 
-if (model_num == 1 || model_num == 3)
+if (model_num == 1 || model_num == 3){
  	A = 1;
-else if (model_num == 2)
+ 	Gamma = J;
+} else if (model_num == 2){
  	A = G;
-else if (model_num == 4)
+ 	Gamma = 0;
+} else if (model_num == 4){
 	A = 0;
+ 	Gamma = J;
+}

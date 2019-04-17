@@ -33,6 +33,7 @@ BayesMDCEV <- function(stan_data, bayes_options,
 	stan_data$task_individual = indexes$task_individual
 	stan_data$task = indexes$task
 	stan_data$IJ = stan_data$I * stan_data$J
+	stan_data$lkj_shape = bayes_options$lkj_shape_prior
 
 	stan_data$K <- 1
 	stan_data$L <- 0
@@ -44,7 +45,17 @@ BayesMDCEV <- function(stan_data, bayes_options,
 #	initial.parameters2 <- list(list(scale = as.array(1, dim = 1)))#, initial.parameters,initial.parameters,initial.parameters)
 
 #	has.covariates <- !is.null(stan_data$covariates)
-	stan.model <- stanModel(bayes_options$random_parameters)
+#	stan.model <- stanModel(bayes_options$random_parameters)
+
+	if (bayes_options$random_parameters == "fixed"){
+		stan.model <- stanmodels$mdcev
+	}else if (bayes_options$random_parameters == "uncorr"){
+		stan.model <- stanmodels$mdcev_lc
+		stan_data$corr <- 0
+	}else if (bayes_options$random_parameters == "corr"){
+		stan.model <- stanmodels$mdcev_lc
+		stan_data$corr <- 1
+	}
 
 	message("Using Bayes to estimate model")
 
@@ -117,18 +128,3 @@ RunStanSampling <- function(stan_data, stan.model, bayes_options)
 #	pars
 #}
 
-
-stanModel <- function(random_parameters)
-{
-	covariates.error.msg <- paste0("Covariates are not currently implemented ",
-								   "for the specified settings.")
-#	if (n_classes == 1)
-#	{
-		if (random_parameters == "fixed")
-			stanmodels$mdcev
-		else if (random_parameters == "uncorr")
-			stanmodels$mdcev_uncorr
-		else if (random_parameters == "corr")
-			stanmodels$mdcev_corr
-#	}
-}

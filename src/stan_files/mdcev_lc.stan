@@ -1,170 +1,114 @@
-// saved as mdcev.stan
+// saved as mdcev_hb_corr.stan
+functions {
+#include /common/mdcev_ll_matrix.stan
+}
+
+
 data {
-	int K; // number of mixtures
-	int I; // number of Individuals
-	int J; // number of non-numeraire alternatives
-	int NPsi; // number of psi covariates
-	int L; // number of predictors in membership equation
-	matrix[I * J, NPsi] dat_psi; // alt characteristics
-	matrix[I, J] j_price; // non-numeraire price
-	matrix[I, J] j_quant; // non-numeraire consumption
-	vector[L] data_class[I];   // predictors for component membership
-	vector[I] income;
-	vector[I] num_price; // numeraire price
-	vector[I] M_factorial;
-	real prior_psi_sd;
-	real prior_gamma_sd;
-	real prior_alpha_sd;
-	real prior_scale_sd;
-	real prior_beta_m_sd;
-	int<lower = 1, upper = 4> model_num; // 1 is les, 2 is alpha, 3 gamma (one alpha for all), 4 alpha's set to 1e-6
-	int<lower=0, upper=1> fixed_scale; // indicator to fix scale
-	int<lower=0, upper=1> trunc_data; //indicator to correct estimation for truncated data
-    int<lower=0, upper=1> no_priors; //indicator to include priors or not
-	vector[I] weights; // user supplied weights
+#include /common/mdcev_data.stan
+  int<lower=0, upper=1> corr;
+  int task[I]; // index for tasks
+  int task_individual[I]; // index for individual
+  int start[I]; // the starting observation for each task
+  int end[I]; // the ending observation for each task
+  real<lower=1> lkj_shape; // shape parameter for LKJ prior
 }
 
 transformed data {
-	int G = J + 1;
-	int A;
-	vector[G] ones_g = rep_vector(1, G);
-	matrix[I, G] price_full = append_col(num_price, j_price);
-	matrix[I, G] quant_full;
-	matrix[I, J] log_price = log(j_price);
-	vector[I] log_inc = log(income);
-  	vector[I] num_quant; // numeraire consumption
-	vector[I] log_num;
-	matrix[I, G] nonzero = rep_matrix(rep_vector(1, G)',I);
-	vector[I] M;	//  Number of consumed goods (including numeraire)
+	int RP;
+	int RP_g;
+	int RP_a;
+	int N_Omega;
+#include /common/mdcev_tdata.stan
+ 	RP = NPsi + Gamma + A; // number of random parameters
+	RP_g = NPsi + 1; // location of first gamma
+	RP_a = NPsi + Gamma + 1; // location of alpha
 
-	for(i in 1:I){
-		num_quant[i] = (income[i] - j_price[i] * j_quant[i]') / num_price[i];
-		for(g in 2:G){
-			nonzero[i,g] = j_quant[i,g - 1] > 0 ? 1 : 0;
-		}
-  		M[i] = sum(nonzero[i]);
+	if (corr == 1){
+	  	N_Omega = RP;
+	} else if (corr == 0){
+	  	N_Omega = 0;
 	}
-
-	log_num = log(num_quant ./ num_price);
-	quant_full = append_col(num_quant, j_quant);
-
- 	if (model_num == 1 || model_num == 3)
- 		A = 1;
-	else if (model_num == 2)
-	 	A = G;
-	else if (model_num == 4)
-		A = 0;
 }
 
 parameters {
-	vector[NPsi] psi[K];
-	vector<lower=0 >[model_num == 2 ? 0 : J] gamma[K];
-	vector<lower=0, upper=1>[A] alpha[K];
-	vector<lower=0>[fixed_scale == 0 ? K : 0] scale;
-//	vector<lower=0>[K] scale;
-  	matrix[K - 1, L] beta_m;  // mixture regression coeffs
+	vector[RP] mu;                                // means for beta
+  	matrix[I, RP] z;                             // std normal draws
+	cholesky_factor_corr[N_Omega] L_Omega;                // cholesky factors
+  	vector<lower=0,upper=pi()/2>[RP] tau_unif;
+	vector<lower=0>[fixed_scale == 0 ? 1 : 0] scale;
 }
 
 transformed parameters {
-	vector[I] log_like[K];
-	vector[I] log_like_all;
+	vector[I] log_like;
+	cholesky_factor_cov[RP] L;                       // cholesky factors
+  	vector<lower=0>[RP] tau;   	// diagonal of the part-worth covariance matrix
+	matrix[I, RP] beta;             // utility parameters (individual level)
+  	{
+	matrix[I, J] lpsi;
+  	matrix[I, NPsi] psi_individual;
+  	matrix[I, G] alpha_individual;
+  	matrix[I, G] gamma_individual;
+	real scale_full = fixed_scale == 0 ? scale[1] : 1.0;
 
-	for (k in 1:K){
-		matrix[I, J] lpsi = to_matrix(dat_psi * psi[k], I, J, 0);
-		matrix[I, G] f;
-		matrix[I, G] v;
-		matrix[I, J] v_j;
-		matrix[I, G] vf;
-		vector[I] sumv;
-		vector[I] pf;
-		vector[I] prodvf;
-		vector[G] gamma_full;
-		vector[G] alpha_full;
-		real scale_full;
-		scale_full = fixed_scale == 0 ? scale[k] : 1.0;
+	for (rp in 1:RP) tau[rp] = 2.5 * tan(tau_unif[rp]);
 
-		if (model_num == 1)
-	  		alpha_full = append_row(alpha[k], rep_vector(0, J));
-		else if (model_num == 2)
-	  		alpha_full = alpha[k];
-		else if (model_num == 3)
-	  		alpha_full = rep_vector(alpha[k, 1], G);
-		else
-	  		alpha_full = rep_vector(1e-6, G);
+	// individual level parameters
+	if (corr == 1){
+	  	L = diag_pre_multiply(tau, L_Omega);
+	} else if (corr == 0){
+	 	L = diag_matrix(tau);
+	}
+	beta = rep_matrix(mu', I) + (z * L);
 
-		if (model_num == 2)
-	  		gamma_full = append_row(0, rep_vector(1, J));
-		else
-	  		gamma_full = append_row(0, gamma[k]);
+	if (model_num == 1)
+	  	alpha_individual = append_col(1 - exp(col(beta, RP_a)), rep_matrix(0, I, J));
+	else if (model_num == 2)
+	  	alpha_individual = 1 - exp(block(beta, 1, RP_a, I, G));
+	else if (model_num == 3)
+		alpha_individual = rep_matrix(1 - exp(col(beta, RP_a)), G);
+	else
+		alpha_individual = rep_matrix(1e-06, I, G);
 
-		v_j = lpsi + rep_matrix(alpha_full[2:G]'- 1, I) .* log(j_quant ./ rep_matrix(gamma_full[2:G]', I) + 1) - log_price;
-		f = (quant_full + rep_matrix(gamma_full', I)) ./ rep_matrix((1 - alpha_full)', I);
-		v = append_col((alpha_full[1] - 1) * log_num, v_j);
-		v = exp(v / scale_full);
-		sumv = v * ones_g;
+	if (model_num == 2)
+	  gamma_individual = append_col(rep_vector(0, I), rep_matrix(1, I, J));
+	else
+	  gamma_individual = append_col(rep_vector(0, I), exp(block(beta, 1, RP_g, I, J)));
 
-		vf = nonzero .* v ./ f + (1 - nonzero);
-		pf = (nonzero .* price_full .* f) * ones_g;
+	psi_individual = block(beta, 1, 1, I, NPsi);
 
-		for(i in 1:I){
-			sumv[i] = pow(sumv[i], M[i]) * pow(scale_full, M[i] - 1);
-			prodvf[i] = prod(vf[i]);
-		}
-
-		if (trunc_data == 1){
-			matrix[I, G] v_1;
-			vector[I] like_cond;
-			vector[I] like_trunc;
-			like_cond = prodvf .* pf .* M_factorial ./ sumv;
-
-			v_1 = append_col((alpha_full[1] - 1) * log_inc, lpsi - log_price);
-			v_1 = exp(v_1 / scale_full);
-			sumv = v_1 * ones_g;
-
-			like_trunc = col(v_1, 1) ./ sumv;
-
-			for(i in 1:I)
-				like_trunc[i] = like_trunc[i] < 1 ? like_trunc[i] : 1;
-
-			log_like[k] = log(like_cond ./ (1 - like_trunc)) .* weights;
-
-		} else if (trunc_data == 0){
-			log_like[k] = log((prodvf .* pf .* M_factorial) ./ sumv) .* weights;
-		}
+	for(t in 1:I){
+		row_vector[J] util;
+		util = psi_individual[task_individual[t]] * dat_psi[start[t]:end[t]]';
+		lpsi[t] = util;
 	}
 
-	for(i in 1:I){
-		vector[K] ltheta = log_softmax(append_row(0, beta_m * data_class[i])); // class membership equation
-		vector[K] lps;
-		for (k in 1:K){
-			lps[k] = ltheta[k] + log_like[k,i];
-		}
-		log_like_all[i] = log_sum_exp(lps);
+//	gamma_full = gamma_ll(gamma[1], I, J, G, model_num);
+//	alpha_full = alpha_ll(alpha[1], I, J, G, model_num);
+
+	log_like = mdcev_ll_matrix(j_quant, quant_full, log_price, log_num, price_full,
+			log_inc, dat_psi, M, M_factorial, weights, // data
+			lpsi, gamma_individual, alpha_individual, scale_full, 						// parameters
+			I, J, G, ones_g, nonzero, model_num, fixed_scale, trunc_data);
 	}
 }
 
 model {
-	if(no_priors == 0){
-		scale ~ normal(1, prior_scale_sd);
-	//	theta ~ dirichlet(rep_vector(2.0, K)); // no predictors
-		to_vector(beta_m) ~ normal(0, prior_beta_m_sd);
-		for (k in 1:K){
-			to_vector(gamma[k]) ~ normal(0, prior_gamma_sd);
-			to_vector(psi[k]) ~ normal(0, prior_psi_sd);
-			to_vector(alpha[k]) ~ normal(.5, prior_alpha_sd);
-		}
-	}
-  target += sum(log_like_all);
-
+  // priors on the parameters
+	to_vector(z) ~ normal(0, 1);
+	to_vector(mu) ~ normal(0, 10);
+	L_Omega ~ lkj_corr_cholesky(lkj_shape);                 // lkj prior
+	scale ~ normal(1, 1);
+	// no priors for tau because already constrained to uniform
+  target += sum(log_like);//objective to target
 }
 
 generated quantities{
-	real sum_log_lik = 0;
-	vector[I] theta[K];
+  cov_matrix[RP] Sigma;                            // cov matrix
+  real<upper=0> sum_log_lik = 0;                          // log_lik for each sample
+  Sigma = tcrossprod(L);
+
 	for(i in 1:I){
-  		vector[K] theta1 = log_softmax(append_row(0, beta_m * data_class[i]));
-		sum_log_lik = sum_log_lik + log_like_all[i];
-		for(k in 1:K)
-  			theta[k,i] =theta1[k];
+		sum_log_lik = sum_log_lik + log_like[i];
 	}
 }
