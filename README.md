@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/plloydsmith/rmdcev.svg?branch=master)](https://travis-ci.org/plloydsmith/rmdcev)
 
 # R code for multiple discrete-continuous extreme value (MDCEV) model 
 
