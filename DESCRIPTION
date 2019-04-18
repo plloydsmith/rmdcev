@@ -24,7 +24,6 @@ Imports:
     rstantools (>= 1.5.1),
     dplyr (>= 0.7.8),
     stringr,
-    furrr (>= 0.1.0),
     purrr,
     tibble,
     tidyr,
