@@ -50,7 +50,6 @@ timeTaken <- paste(formatC(tmpH,width=2,format='d',flag=0),
 	cat("Time taken (hh:mm:ss)            : ",timeTaken,"\n")
 
 	output <- model$est_pars %>%
-		mutate(parms = gsub("\\[|\\]|\\.", "", parms)) %>%
 		mutate(parms = factor(parms,levels=unique(parms))) %>%
 		#	mutate(parms = gsub("\\.", "", parms)) %>%
 		group_by(parms) %>%
@@ -59,31 +58,6 @@ timeTaken <- paste(formatC(tmpH,width=2,format='d',flag=0),
 				  z.stat = round(mean(value) / stats::sd(value),2),
 				  ci_lo95 = round(stats::quantile(value, 0.025),3),
 				  ci_hi95 = round(stats::quantile(value, 0.975),3))
-
-	if(model$n_classes > 1){
-		psi.names <- cbind("psi",1:ncol(model$stan_data[["dat_psi"]]),
-						   paste0(".",colnames(model$stan_data[["dat_psi"]])))
-		colnames(psi.names) <- c("parms", "parm_num", "names")
-		psi.names <- tbl_df(psi.names)
-
-		beta_m.names <- cbind("beta_m",1:ncol(model$stan_data[["data_class"]]),
-						   paste0(".",colnames(model$stan_data[["data_class"]])))
-		colnames(beta_m.names) <- c("parms", "parm_num", "names_b")
-		beta_m.names <- tbl_df(beta_m.names)
-
-		output <- suppressWarnings(output %>%
-		tidyr::separate(parms, into = c("parms", "parm_num"), sep = ",") %>%
-		tidyr::separate(parms, into = c("parms", "class"), sep = -1) %>%
-			mutate(parm_num = ifelse(is.na(parm_num), "", parm_num),
-				class = ifelse(parms == "beta_m", as.numeric(class)+1, as.numeric(class))) %>%
-			arrange(class) %>%
-			left_join(psi.names, by = c("parms", "parm_num")) %>%
-			left_join(beta_m.names, by = c("parms", "parm_num")) %>%
-			mutate(parm_num = ifelse(parms == "psi", names, parm_num),
-				   parm_num = ifelse(parms == "beta_m", names_b, parm_num),
-			parms = paste0("class", class, ".", parms, parm_num)) %>%
-			select(-class, -parm_num, -names, -names_b))
-	}
 
 	if(model$algorithm == "Bayes"){
 		bayes_extra <- tbl_df(summary(model$stan_fit)$summary) %>%

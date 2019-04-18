@@ -119,6 +119,8 @@ FitMDCEV <- function(data,
 
 	stan_data <- processMDCEVdata(data, psi_formula, lc_formula, num_price, mle_options)
 
+	parms_info <- CreateParmInfo(stan_data, algorithm, random_parameters)
+
 	# If no user supplied weights, replace weights with vector of ones
 	if (is.null(weights))
 		weights <-  rep(1, stan_data$I)
@@ -137,7 +139,6 @@ FitMDCEV <- function(data,
 				select(-starts_with("log_like"), -starts_with("sum_log_lik"), -.data$lp__)
 
 	} else if (algorithm == "MLE") {
-
 		result <- maxlikeMDCEV(stan_data, initial.parameters, mle_options)
 
 		# Get parameter estimates in matrix form
@@ -148,36 +149,7 @@ FitMDCEV <- function(data,
 
 	}
 	end.time <- proc.time()
-	# Rename psi variables
-	if (n_classes == 1){
-		psi.names <- paste0(rep('psi', stan_data$NPsi), sep="_",
-							colnames(stan_data[["dat_psi"]]))
-
-		if(mle_options$fixed_scale == 1)
-			scale.names <- NULL
-		else if (mle_options$fixed_scale == 0)
-			scale.names <- "scale"
-
-		if (mle_options$model == "alpha")
-			gamma.names <- NULL
-		else
-			gamma.names <- paste0(rep('gamma', stan_data$NGamma), sep = "", c(1:stan_data$NGamma))
-
-		if (mle_options$model == "gamma0")
-			alpha.names <- NULL
-		else
-			alpha.names <- paste0(rep('alpha', stan_data$NAlpha), sep = "", c(1:stan_data$NAlpha))
-
-		orig.names <- colnames(result$est_pars[,1:stan_data$n_parameters])
-		new.names <- c(psi.names, gamma.names, alpha.names, scale.names)
-
-		result$est_pars <- result$est_pars %>%
-			dplyr::rename_at(vars(orig.names), ~ new.names)
-
-	}
-	result$est_pars <- result$est_pars %>%
-		tibble::rowid_to_column("sim_id") %>%
-		tidyr::gather(parms, value, -sim_id)
+	result$parms_info <- parms_info
 
 	stan_data$M_factorial <- NULL
 
@@ -196,9 +168,17 @@ FitMDCEV <- function(data,
 	result$start.time <- start.time
 	result$time.taken <- (end.time - start.time)[3]
 	result$effective.sample.size <- sum(stan_data$weights)
-	result$aic <- -2 * result$log.likelihood + 2 * result$n_parameters
-	result$bic <- -2 * result$log.likelihood + log(result$effective.sample.size) * result$n_parameters
 
+	# Rename variables
+	if (random_parameters == "fixed"){
+		names(result$est_pars)[1:parms_info$n_vars$n_parms_total] <- parms_info$parm_names$all_names
+	result$aic <- -2 * result$log.likelihood + 2 * parms_info$n_vars$n_parms_total
+	result$bic <- -2 * result$log.likelihood + log(result$effective.sample.size) * parms_info$n_vars$n_parms_total
+	}
+
+	result$est_pars <- result$est_pars %>%
+		tibble::rowid_to_column("sim_id") %>%
+		tidyr::gather(parms, value, -sim_id)
 
 	class(result) <- "mdcev"
 

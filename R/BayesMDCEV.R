@@ -61,20 +61,8 @@ BayesMDCEV <- function(stan_data, bayes_options,
 	else if(bayes_options$n_chains > 1)
 		chain_index <- bayes_options$n_chains+1
 
-	if (bayes_options$random_parameters == "fixed"){
-		n_parameters <- stan_fit@par_dims$psi[2] +
-			stan_fit@par_dims$gamma[2] + stan_fit@par_dims$alpha[2] +
-			stan_fit@par_dims$scale[1]
-	}else if (bayes_options$random_parameters == "uncorr"){
-		n_parameters <- stan_fit@par_dims$mu * 2 + stan_fit@par_dims$scale
-	}else if (bayes_options$random_parameters == "corr"){
-		n_parameters <- stan_fit@par_dims$mu + stan_fit@par_dims$scale +
-			stan_fit@par_dims$mu * (stan_fit@par_dims$mu - 1) / 2
-	}
-
 	result <- list()
 	result$stan_fit <- stan_fit
-	result$n_parameters <- n_parameters
 	result$log.likelihood <- rstan::get_posterior_mean(result$stan_fit, pars = "sum_log_lik")[,chain_index]
 
 #	result$stan_fit$par[["theta"]] <- NULL

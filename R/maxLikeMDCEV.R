@@ -32,18 +32,14 @@ maxlikeMDCEV <- function(stan_data, initial.parameters,
 		stan_fit <- ReduceStanFitSize(stan_fit)
 
 	result$stan_fit <- stan_fit
-	result$n_parameters <- stan_data$n_parameters
 	result$stan_fit$par[["theta"]] <- NULL
 	result$stan_fit$par[["beta_m"]] <- NULL
 	result$log.likelihood <- stan_fit[["par"]][["sum_log_lik"]]
 	result$effective.sample.size <- sum(stan_data$weights)
-	result$aic <- -2 * result$log.likelihood + 2 * result$n_parameters
-	result$bic <- -2 * result$log.likelihood + log(result$effective.sample.size) * result$n_parameters
 
 	if (mle_options$n_classes > 1){
 		result$mdcev_fit <- result$stan_fit
 		result$mdcev_log.likelihood <- result$log.likelihood
-		result$mdcev_bic <- result$bic
 
 		# Extract the parameters to use as initial values for LC model
 		# Need to ensure to replicate intial values for each class
@@ -83,7 +79,6 @@ maxlikeMDCEV <- function(stan_data, initial.parameters,
 
 		result$stan_fit <- stan_fit
 		result$log.likelihood <- stan_fit[["par"]][["sum_log_lik"]]
-		result$n_parameters <- ncol(result$stan_fit[["hessian"]])
 		class_probabilities <- exp(t(stan_fit[["par"]][["theta"]]))
 		colnames(class_probabilities) <- paste0("class", c(1:mle_options$n_classes))
 		result$class_probabilities <- class_probabilities
