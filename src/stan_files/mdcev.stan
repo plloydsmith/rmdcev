@@ -28,11 +28,6 @@ parameters {
 	vector<lower=0, upper=1>[A] alpha[K];
 	vector<lower=0>[fixed_scale == 0 ? K : 0] scale;
   	matrix[K - 1, L] beta_m;  // mixture regression coeffs
-
-//	vector[NPsi] psi;
-//	vector<lower=0>[model_num == 2 ? 0 : J] gamma;
-//	vector<lower=0, upper=1>[A] alpha;
-//	vector<lower=0>[fixed_scale == 0 ? 1 : 0] scale;
 }
 
 transformed parameters {

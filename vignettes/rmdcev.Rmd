@@ -42,12 +42,11 @@ Keywords: multiple-discrete choice extreme value, Kuhn-Tucker, latent class, ran
 Individual choice contexts are often characterized by both extensive (i.e. what alternative to choose) and intensive (i.e. how much of an alternative to consume) margins. These multiple discrete-continuous (MDC) choice situations are pervasive, arising in transportation, marketing, health, and decisions regarding environmental resources.
 Kuhn-Tucker (KT) consumer demand models are often employed to analyze these MDC situations and substantial progress has been made on improving the econometric modeling structures. There is currently no available software package that
 
-In addition to **rmdcev**, the **Apollo** package from the Leeds Choice Modeling Centre provides a flexible interface to estimating MDCEV models and simulating demand. The main differences is that **rmdcev** 1) provides welfare simulation, 2) also implements the Kuhn-Tucker Linear Expenditure System utility specification, and 3) uses Stan software and NUTs sampling.
-
+In addition to **rmdcev**, the [**apollo** package](http://www.apollochoicemodelling.com/) developed by Stephane Hess and David Palma at the Choice Modelling Centre in Leeds provides a flexible modelling platform for estimating MDCEV models and simulating demand behaviour. **apollo** estimates a full suite of discrete choice models and is thus more comprehensive then **rmdcev**. The main differences between the packages is that **rmdcev** 1) provides welfare simulation functions, 2) uses Stan program and NUTs sampling, 3) and implements the Kuhn-Tucker Linear Expenditure System utility specification \citep{von_haefen_kuhn-tucker_2005).
 
 One reason cited for the lack of widespread use of these KT models is that applying these models for welfare analysis is not straightforward \citep{von_haefen_kuhn-tucker_2005, bhat_multiple_2014}. This issue is especially relevant in applying these models to studying decisions regarding environmental resources where producing welfare estimates is often the main purpose of the research.
 
-I present a brief example below showing
+I present a brief example below using **rmdcev** to estimate the MDCEV model and simulate welfare changes. The rest of the paper provides additional details.
 
 ## Models
 
@@ -216,7 +215,7 @@ psi_formula = ~ z1 + z2 + z3
 
 Note that the formula will automatically include a constant but a constant can be omitted if -1 is used in the formula.
 
-### Estimating MDCEV
+### Estimating MDCEV using Maximum Likelihood Techniques
 
 We estimate a MDCEV model using the **Recreation** data where we include activity-specific constants (ASCs) in the $\psi$ parameter. To create the ASC data, we can use the following code to create indicator variables. Note that we can also use the factor(good_name) command directly in the formula but the names are quite long.
 
@@ -258,7 +257,7 @@ There are four possible model options
 - "gamma": $\gamma$-profile with a single estimated $\alpha$ (i.e. $\alpha_1 = \alpha_k = \alpha$.
 - "gamma0": $\gamma$-profile with all  $\alpha$ equal to 1e-6.
 
-### Estimating MDCEV with Bayesian Approaches
+### Estimating MDCEV using Bayesian Techniques
 
 The exact same model can be fit using Bayesian estimation by changing the model call to "Bayes".
 
