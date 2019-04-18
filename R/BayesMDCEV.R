@@ -17,7 +17,7 @@ BayesMDCEV <- function(stan_data, bayes_options,
 		stop("The specified number of iterations must be greater than 0.")
 
 	# allows Stan chains to run in parallel on multiprocessor machines
-	options(mc.cores = parallel::detectCores())
+#	options(mc.cores = parallel::detectCores())
 
 	# Create indices for individual level psi parameters
 	indexes <- tibble(individual = rep(1:stan_data$I, each = stan_data$J),
@@ -96,7 +96,9 @@ RunStanSampling <- function(stan_data, stan.model, bayes_options)
 #	if (is.null(pars))
 #		pars <- stanParameters(stan.dat, keep.beta, stan.model)
 #	init <- initialParameterValues(stan.dat)
-	rstan::sampling(stan.model, data = stan_data, chains = bayes_options$n_chains,
+	rstan::sampling(stan.model, data = stan_data,
+					chains = bayes_options$n_chains,
+					cores = bayes_options$n_cores,
 #			 pars = pars,
 			 iter = bayes_options$n_iterations, seed = bayes_options$seed,
 			 control = list(max_treedepth = bayes_options$max_tree_depth,

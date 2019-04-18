@@ -32,13 +32,13 @@ maxlikeMDCEV <- function(stan_data, initial.parameters,
 		stan_fit <- ReduceStanFitSize(stan_fit)
 
 	result$stan_fit <- stan_fit
-	n_parameters <- stan_data$n_parameters
+	result$n_parameters <- stan_data$n_parameters
 	result$stan_fit$par[["theta"]] <- NULL
 	result$stan_fit$par[["beta_m"]] <- NULL
 	result$log.likelihood <- stan_fit[["par"]][["sum_log_lik"]]
-	result$effective.sample.size <- ess <- sum(stan_data$weights)
-	result$aic <- -2 * result$log.likelihood + 2 * n_parameters
-	result$bic <- -2 * result$log.likelihood + log(ess) * n_parameters
+	result$effective.sample.size <- sum(stan_data$weights)
+	result$aic <- -2 * result$log.likelihood + 2 * result$n_parameters
+	result$bic <- -2 * result$log.likelihood + log(result$effective.sample.size) * result$n_parameters
 
 	if (mle_options$n_classes > 1){
 		result$mdcev_fit <- result$stan_fit

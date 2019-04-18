@@ -8,6 +8,7 @@ matrix[I, J] j_quant; // non-numeraire consumption
 vector[I] income;
 vector[I] num_price; // numeraire price
 vector[I] M_factorial; // (M-1)!
+int<lower=0, upper=1> flat_priors; //indicator to include flat priors for all parameters
 real prior_psi_sd;
 real prior_gamma_sd;
 real prior_alpha_sd;
@@ -15,5 +16,4 @@ real prior_scale_sd;
 int<lower = 1, upper = 4> model_num; // 1 is les, 2 is alpha, 3 gamma (one alpha for all), 4 alpha's set to 1e-06
 int<lower=0, upper=1> fixed_scale; // indicator to fix scale
 int<lower=0, upper=1> trunc_data; //indicator to correct estimation for truncated data
-int<lower=0, upper=1> no_priors; //indicator to include priors or not
 vector[I] weights; // user supplied weights

@@ -13,9 +13,9 @@
 #' @param fixed_scale Whether to fix scale at 1.
 #' @param trunc_data Whether the estimation should be adjusted for truncation
 #' @param seed Random seed.
-#' @param algorithm Either "Bayes" for Hierarchical Bayes or "MLE"
+#' @param algorithm Either "Bayes" for Bayes or "MLE"
 #'     for maximum liklihood estimation.
-#' @param no_priors indicator if completely uninformative priors should be specified. If using MLE, the
+#' @param flat_priors indicator if completely uninformative priors should be specified. If using MLE, the
 #' optimizing function will then be equal to log-likelihood. Defaults to 1 if MLE used and 0 if Bayes used.
 #' @param print_iterations Whether to print iteration information
 #' @param n_draws The number of MVN draws for standard error calculations
@@ -29,8 +29,10 @@
 #' @param prior_scale_sd standard deviation for normal prior with mean 1.
 #' @param prior_beta_m_sd standard deviation for normal prior with mean 0.
 #' @param lkj_shape_prior Prior for Cholesky matrix
-#' @param n_iterations The number of iterations in Hierarchical Bayes.
-#' @param n_chains The number of chains in Hierarchical Bayes.
+#' @param n_iterations The number of iterations in Bayesian estimation.
+#' @param n_chains The number of chains in Bayesian estimation.
+#' @param n_cores The number of cores to use in Bayesian estimation.
+#' Can set using options(mc.cores = parallel::detectCores()).
 #' @param random_parameters The form of the covariance matrix for
 #'     Bayes. Can be 'fixed', 'uncorr, 'corr'.
 #' @param max_tree_depth
@@ -56,7 +58,7 @@ FitMDCEV <- function(data,
 					 initial.parameters = NULL,
 					 algorithm = c("MLE", "Bayes"),
 					 #	std_errors = "draws", # still need to implement
-					 no_priors = NULL,
+					 flat_priors = NULL,
 					 print_iterations = TRUE,
 					 #mle_tol = 0.0001,
 					 hessian = TRUE,
@@ -71,6 +73,7 @@ FitMDCEV <- function(data,
 					 show_stan_warnings = TRUE,
 					 n_iterations = 200,
 					 n_chains = 4,
+					 n_cores = 1,
 					 max_tree_depth = 10,
 					 adapt_delta = 0.8,
 					 lkj_shape_prior = 4)
@@ -80,10 +83,10 @@ FitMDCEV <- function(data,
 	if (algorithm == "Bayes" && n_classes > 1)
 		stop("Hierarchical Bayes can only be used with one class. Switch algorithm to MLE or choose n_classes = 1", "\n")
 
-	if (algorithm == "MLE" && is.null(no_priors)){
-		no_priors = 1
-	} else if (algorithm == "Bayes" && is.null(no_priors))
-		no_priors = 0
+	if (algorithm == "MLE" && is.null(flat_priors)){
+		flat_priors = 1
+	} else if (algorithm == "Bayes" && is.null(flat_priors))
+		flat_priors = 0
 
 	mle_options <- list(fixed_scale = fixed_scale,
 						model = model,
@@ -94,7 +97,7 @@ FitMDCEV <- function(data,
 						hessian = hessian,
 						n_draws = n_draws,
 						keep_loglik = keep_loglik,
-						no_priors = no_priors,
+						flat_priors = flat_priors,
 						prior_psi_sd = prior_psi_sd,
 						prior_gamma_sd = prior_gamma_sd,
 						prior_alpha_sd = prior_alpha_sd,
@@ -103,6 +106,7 @@ FitMDCEV <- function(data,
 
 	bayes_options <- list(n_iterations = n_iterations,
 						n_chains = n_chains,
+						n_cores = 1,
 						keep_loglik = keep_loglik,
 						random_parameters = random_parameters,
 						seed = seed,

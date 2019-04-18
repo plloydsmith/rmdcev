@@ -633,6 +633,7 @@ private:
     vector_d income;
     vector_d num_price;
     vector_d M_factorial;
+    int flat_priors;
     double prior_psi_sd;
     double prior_gamma_sd;
     double prior_alpha_sd;
@@ -640,7 +641,6 @@ private:
     int model_num;
     int fixed_scale;
     int trunc_data;
-    int no_priors;
     vector_d weights;
     int K;
     int L;
@@ -794,53 +794,53 @@ public:
                 M_factorial[i_vec__] = vals_r__[pos__++];
             }
             current_statement_begin__ = 162;
+            context__.validate_dims("data initialization", "flat_priors", "int", context__.to_vec());
+            flat_priors = int(0);
+            vals_i__ = context__.vals_i("flat_priors");
+            pos__ = 0;
+            flat_priors = vals_i__[pos__++];
+            current_statement_begin__ = 163;
             context__.validate_dims("data initialization", "prior_psi_sd", "double", context__.to_vec());
             prior_psi_sd = double(0);
             vals_r__ = context__.vals_r("prior_psi_sd");
             pos__ = 0;
             prior_psi_sd = vals_r__[pos__++];
-            current_statement_begin__ = 163;
+            current_statement_begin__ = 164;
             context__.validate_dims("data initialization", "prior_gamma_sd", "double", context__.to_vec());
             prior_gamma_sd = double(0);
             vals_r__ = context__.vals_r("prior_gamma_sd");
             pos__ = 0;
             prior_gamma_sd = vals_r__[pos__++];
-            current_statement_begin__ = 164;
+            current_statement_begin__ = 165;
             context__.validate_dims("data initialization", "prior_alpha_sd", "double", context__.to_vec());
             prior_alpha_sd = double(0);
             vals_r__ = context__.vals_r("prior_alpha_sd");
             pos__ = 0;
             prior_alpha_sd = vals_r__[pos__++];
-            current_statement_begin__ = 165;
+            current_statement_begin__ = 166;
             context__.validate_dims("data initialization", "prior_scale_sd", "double", context__.to_vec());
             prior_scale_sd = double(0);
             vals_r__ = context__.vals_r("prior_scale_sd");
             pos__ = 0;
             prior_scale_sd = vals_r__[pos__++];
-            current_statement_begin__ = 166;
+            current_statement_begin__ = 167;
             context__.validate_dims("data initialization", "model_num", "int", context__.to_vec());
             model_num = int(0);
             vals_i__ = context__.vals_i("model_num");
             pos__ = 0;
             model_num = vals_i__[pos__++];
-            current_statement_begin__ = 167;
+            current_statement_begin__ = 168;
             context__.validate_dims("data initialization", "fixed_scale", "int", context__.to_vec());
             fixed_scale = int(0);
             vals_i__ = context__.vals_i("fixed_scale");
             pos__ = 0;
             fixed_scale = vals_i__[pos__++];
-            current_statement_begin__ = 168;
+            current_statement_begin__ = 169;
             context__.validate_dims("data initialization", "trunc_data", "int", context__.to_vec());
             trunc_data = int(0);
             vals_i__ = context__.vals_i("trunc_data");
             pos__ = 0;
             trunc_data = vals_i__[pos__++];
-            current_statement_begin__ = 169;
-            context__.validate_dims("data initialization", "no_priors", "int", context__.to_vec());
-            no_priors = int(0);
-            vals_i__ = context__.vals_i("no_priors");
-            pos__ = 0;
-            no_priors = vals_i__[pos__++];
             current_statement_begin__ = 170;
             validate_non_negative_index("weights", "I", I);
             context__.validate_dims("data initialization", "weights", "vector_d", context__.to_vec(I));
@@ -898,21 +898,21 @@ public:
             current_statement_begin__ = 160;
             current_statement_begin__ = 161;
             current_statement_begin__ = 162;
+            check_greater_or_equal(function__,"flat_priors",flat_priors,0);
+            check_less_or_equal(function__,"flat_priors",flat_priors,1);
             current_statement_begin__ = 163;
             current_statement_begin__ = 164;
             current_statement_begin__ = 165;
             current_statement_begin__ = 166;
+            current_statement_begin__ = 167;
             check_greater_or_equal(function__,"model_num",model_num,1);
             check_less_or_equal(function__,"model_num",model_num,4);
-            current_statement_begin__ = 167;
+            current_statement_begin__ = 168;
             check_greater_or_equal(function__,"fixed_scale",fixed_scale,0);
             check_less_or_equal(function__,"fixed_scale",fixed_scale,1);
-            current_statement_begin__ = 168;
+            current_statement_begin__ = 169;
             check_greater_or_equal(function__,"trunc_data",trunc_data,0);
             check_less_or_equal(function__,"trunc_data",trunc_data,1);
-            current_statement_begin__ = 169;
-            check_greater_or_equal(function__,"no_priors",no_priors,0);
-            check_less_or_equal(function__,"no_priors",no_priors,1);
             current_statement_begin__ = 170;
             current_statement_begin__ = 171;
             current_statement_begin__ = 174;
@@ -1406,7 +1406,7 @@ public:
             // model body
 
             current_statement_begin__ = 270;
-            if (as_bool(logical_eq(no_priors,0))) {
+            if (as_bool(logical_eq(flat_priors,0))) {
 
                 current_statement_begin__ = 271;
                 lp_accum__.add(normal_log<propto__>(scale, 1, prior_scale_sd));

@@ -8,7 +8,7 @@ functions {
 data {
 // declares I J NPsi K dat_psi j_price j_quant income num_price M_factorial
 // prior_psi_sd prior_gamma_sd prior_alpha_sd prior_scale_sd
-// model_num fixed_scale trunc_data no_priors weights
+// model_num fixed_scale trunc_data flat_priors weights
 #include /common/mdcev_data.stan
 	int K; // number of mixtures
 
@@ -75,7 +75,7 @@ transformed parameters {
 
 model {
   // priors on the parameters
-  if(no_priors == 0){ // no priors ensure optimizing returns MLE
+  if(flat_priors == 0){ // no priors ensure optimizing returns MLE
 		scale ~ normal(1, prior_scale_sd);
 
   	if(K == 1){
