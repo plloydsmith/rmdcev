@@ -82,11 +82,8 @@ maxlikeMDCEV <- function(stan_data, initial.parameters,
 			stan_fit <- ReduceStanFitSize(stan_fit)
 
 		result$stan_fit <- stan_fit
-		n_parameters <- ncol(stan_fit[["hessian"]])
 		result$log.likelihood <- stan_fit[["par"]][["sum_log_lik"]]
-		result$effective.sample.size <- ess <- sum(stan_data$weights)
-		result$aic <- -2 * result$log.likelihood + 2 * n_parameters
-		result$bic <- -2 * result$log.likelihood + log(ess) * n_parameters
+		result$n_parameters <- ncol(result$stan_fit[["hessian"]])
 		class_probabilities <- exp(t(stan_fit[["par"]][["theta"]]))
 		colnames(class_probabilities) <- paste0("class", c(1:mle_options$n_classes))
 		result$class_probabilities <- class_probabilities

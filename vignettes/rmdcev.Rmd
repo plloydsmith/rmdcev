@@ -28,7 +28,7 @@ knitr::opts_chunk$set(
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, cache = TRUE, dpi=300)
 library(rmdcev)
-library(tidyverse)
+library(dplyr)
 ```
 
 ## Abstract
@@ -311,6 +311,21 @@ In this LC example, we assume that there are two types of people that have diffe
 
 *too come*
 
+
+```{r, estimation_mdcev_rp}
+mdcev.rp <- FitMDCEV(psi_formula = ~ beach + birding + camping + cycling + fish + garden + golf + 
+								 	hiking + hunt_birds + hunt_large + hunt_trap + hunt_waterfowl + 
+								 	motor_land + motor_water + photo + ski_cross + ski_down - 1,
+						data = subset(data_rec, id < 500),
+					model = "gamma0",
+					algorithm = "Bayes",
+					n_chains = 1,
+					n_iterations = 10,
+					random_parameters = "uncorr",
+					print_iterations = FALSE)
+```
+
+
 ## Rmdcev Demand and Welfare Simulation
 
 The **rmdcev** package includes simulation functions for forecasting demand and calculating welfare measures. I first provide an overview of the approach used for simulation and then provide code examples.
@@ -367,8 +382,8 @@ Pinjari and Bhat (2011)
 ```{r, sim_mdcev_welfare_setup}
 	npols <- 2
 	policies <-	CreateBlankPolicies(npols, mdcev.fit$stan_data[["J"]], mdcev.fit$stan_data[["dat_psi"]])
-	policies$price_p[[1]] <- c(0, rep(5,mdcev.fit$stan_data[["J"]]))
-	policies$price_p[[2]] <- c(0, rep(10,mdcev.fit$stan_data[["J"]]))
+	policies$price_p[[1]] <- c(0, rep(1,mdcev.fit$stan_data[["J"]]))
+	policies$price_p[[2]] <- c(0, rep(5,mdcev.fit$stan_data[["J"]]))
 	df_sim <- PrepareSimulationData(mdcev.fit, policies)
 ```
 

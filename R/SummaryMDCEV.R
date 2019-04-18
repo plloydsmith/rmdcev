@@ -5,7 +5,7 @@
 #' @return A matrix of coefficients, s.d. and z-tests (invisible)
 #' @export
 SummaryMDCEV <- function(model, printCI = FALSE){
-
+#model <- result
 	if (!is.null(model$stan_data$corr)){
 		stop("SummaryMDCEV not set up for random parameter models. Use print/traceplot on model.fit$stan_fit to examine output", "\n")
 	}
@@ -22,7 +22,7 @@ SummaryMDCEV <- function(model, printCI = FALSE){
 	cat("Number of individuals            : ", model$n_respondents,"\n", sep="")
 	cat("Number of non-numeraire alts     : ", model$stan_data$J,"\n", sep="")
 	#	cat("Number of observations           : ", model$n_respondents,"\n", sep="")
-	cat("Estimated parameters             : ", model$stan_data$n_parameters,"\n", sep="")
+	cat("Estimated parameters             : ", model$n_parameters,"\n", sep="")
 	cat("LL                               : ",round(model$log.likelihood,2),"\n")
 	cat("AIC                              : ",round(model$aic,2),"\n")
 	cat("BIC                              : ",round(model$bic,2),"\n")
@@ -91,7 +91,8 @@ timeTaken <- paste(formatC(tmpH,width=2,format='d',flag=0),
 			filter(!grepl(c("log_lik"), parms)) %>%
 			filter(!grepl(c("lp_"), parms)) %>%
 			select(n_eff, Rhat) %>%
-			round(., 2)
+			mutate(n_eff = round(n_eff, 0),
+				   Rhat = round(Rhat, 2))
 		output <- cbind(output, bayes_extra)
 	}
 

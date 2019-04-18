@@ -39,6 +39,8 @@ The options are "alpha","les", "gamma", and "gamma0".}
 \item{tol}{Tolerance level for simulations if using general approach}
 
 \item{max_loop}{maximum number of loops for simulations if using general approach}
+
+\item{corr}{Whether to draw correlated random parameters (=1) or uncorrelated (=0)}
 }
 \value{
 list with data for stan model and parms_true with parameter values

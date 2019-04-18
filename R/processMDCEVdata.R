@@ -53,7 +53,7 @@ processMDCEVdata <- function(data, psi_formula, lc_formula,
 
 	# Put data into one list for rstan
 	stan_data =
-		list(I = I, J = J, NPsi = NPsi,
+		list(I = I, J = J, NPsi = NPsi, NAlpha = NAlpha, NGamma = NGamma, NScale = NScale,
 			 K = model_options$n_classes,
 			 dat_psi = as.matrix(dat_psi),
 			 j_price = price,

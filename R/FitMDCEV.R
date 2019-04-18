@@ -28,6 +28,7 @@
 #' @param prior_alpha_sd standard deviation for normal prior with mean 0.5.
 #' @param prior_scale_sd standard deviation for normal prior with mean 1.
 #' @param prior_beta_m_sd standard deviation for normal prior with mean 0.
+#' @param lkj_shape_prior Prior for Cholesky matrix
 #' @param n_iterations The number of iterations in Hierarchical Bayes.
 #' @param n_chains The number of chains in Hierarchical Bayes.
 #' @param random_parameters The form of the covariance matrix for
@@ -75,9 +76,6 @@ FitMDCEV <- function(data,
 					 lkj_shape_prior = 4)
 {
 	CheckMdcevData(data)
-
-	if (algorithm == "Bayes" && !is.null(weights))
-		stop("Weights are not able to be applied for Hierarchical Bayes.")
 
 	if (algorithm == "Bayes" && n_classes > 1)
 		stop("Hierarchical Bayes can only be used with one class. Switch algorithm to MLE or choose n_classes = 1", "\n")
@@ -148,21 +146,39 @@ FitMDCEV <- function(data,
 	end.time <- proc.time()
 	# Rename psi variables
 	if (n_classes == 1){
-		psi.names <- paste0(rep('psi', ncol(stan_data[["dat_psi"]])), sep="_",
+		psi.names <- paste0(rep('psi', stan_data$NPsi), sep="_",
 							colnames(stan_data[["dat_psi"]]))
-		original.names <- colnames(result$est_pars)
-		new.names <- c(psi.names, original.names[-c(1:length(psi.names))])
-		colnames(result$est_pars) <- new.names
+
+		if(mle_options$fixed_scale == 1)
+			scale.names <- NULL
+		else if (mle_options$fixed_scale == 0)
+			scale.names <- "scale"
+
+		if (mle_options$model == "alpha")
+			gamma.names <- NULL
+		else
+			gamma.names <- paste0(rep('gamma', stan_data$NGamma), sep = "", c(1:stan_data$NGamma))
+
+		if (mle_options$model == "gamma0")
+			alpha.names <- NULL
+		else
+			alpha.names <- paste0(rep('alpha', stan_data$NAlpha), sep = "", c(1:stan_data$NAlpha))
+
+		orig.names <- colnames(result$est_pars[,1:stan_data$n_parameters])
+		new.names <- c(psi.names, gamma.names, alpha.names, scale.names)
+
+		result$est_pars <- result$est_pars %>%
+			dplyr::rename_at(vars(orig.names), ~ new.names)
+
 	}
-	# LC names still to do
-#	class.names <- colnames(stan_est[["stan_data"]][["data_class"]])
-#	parms <- c(paste(rep('betam', length(class.names)), 1:length(class.names), sep=""))
-#	names <- cbind(parms, paste(rep(class, class.names)
 	result$est_pars <- result$est_pars %>%
 		tibble::rowid_to_column("sim_id") %>%
 		tidyr::gather(parms, value, -sim_id)
 
 	stan_data$M_factorial <- NULL
+
+	if(algorithm == "Bayes")
+		result$n_draws <- NULL
 
 	result$stan_data <- stan_data
 	result$algorithm <- algorithm
@@ -175,9 +191,11 @@ FitMDCEV <- function(data,
 	result$n_respondents <- stan_data$I
 	result$start.time <- start.time
 	result$time.taken <- (end.time - start.time)[3]
+	result$effective.sample.size <- sum(stan_data$weights)
+	result$aic <- -2 * result$log.likelihood + 2 * result$n_parameters
+	result$bic <- -2 * result$log.likelihood + log(result$effective.sample.size) * result$n_parameters
 
-	if(algorithm == "Bayes")
-		result$n_draws <- NULL
+
 	class(result) <- "mdcev"
 
 result

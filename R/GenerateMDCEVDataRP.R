@@ -1,6 +1,7 @@
 #' @title GenerateMDCEVDataRP
 #' @description Simulate random parameter data for MDCEV model
 #' @inheritParams GenerateMDCEVData
+#' @param corr Whether to draw correlated random parameters (=1) or uncorrelated (=0)
 #' @return list with data for stan model and parms_true with parameter values
 #' @export
 GenerateMDCEVDataRP <- function(model,

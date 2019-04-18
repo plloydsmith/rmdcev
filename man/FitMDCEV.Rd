@@ -79,6 +79,8 @@ Bayes. Can be 'fixed', 'uncorr, 'corr'.}
 
 \item{adapt_delta}{http://mc-stan.org/misc/warnings.html#divergent-transitions-after-warmup}
 
+\item{lkj_shape_prior}{Prior for Cholesky matrix}
+
 \item{...}{Additional parameters to pass on to \code{rstan::stan}
 and \code{rstan::sampling}.}
 }
