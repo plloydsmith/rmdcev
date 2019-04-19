@@ -24,19 +24,19 @@ test_that("LC 2-classes", {
 })
 
 
-# test_that("Test LC simulations", {
+ #test_that("Test LC simulations", {
 #	npols <- 2
 #	policies <-	CreateBlankPolicies(npols, result$stan_data[["J"]], result$stan_data[["dat_psi"]])
 #	df_sim <- PrepareSimulationData(result, policies, nsims = 3)
-#
-#	# Test welfare
+
+	# Test welfare
 #	wtp <- SimulateMDCEV(df_sim$df_indiv, df_common = df_sim$df_common, sim_options = df_sim$sim_options,
 #						 cond_err = 1, nerrs = 3, sim_type = "welfare")
 #	sum_wtp <- purrr:::map(wtp, SummaryWelfare)
 #	print(sum_wtp[["class1"]][["Mean"]], digits =10)
-#
+
 #	expect_true(sum(abs(sum_wtp[["class1"]][["Mean"]]), abs(sum_wtp[["class2"]][["Mean"]])) < tol)
-#
+
 #	demand <- SimulateMDCEV(df_sim$df_indiv, df_common = df_sim$df_common, sim_options = df_sim$sim_options,
 #						 cond_err = 1, nerrs = 3, sim_type = "demand")
 #	print(demand[["class2"]][[5]][[2]][1,-1], digits =10)
