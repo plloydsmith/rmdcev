@@ -3,4 +3,4 @@
   for (m in modules) loadModule(m, what = TRUE)
 }
 
-.onUnload <- function (libpath) { library.dynam.unload("rmdcev", libpath)}
+#.onUnload <- function (libpath) { library.dynam.unload("rmdcev", libpath)}

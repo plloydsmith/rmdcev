@@ -60,7 +60,7 @@ context("MLE gamma specification")
 test_that("MLE alpha", {
 	output <- FitMDCEV(psi_formula = ~ factor(good_name) -1,
 					   data = subset(data_rec, id < 100),
-					   model = "alpha",
+					   model = "gamma0",
 					   algorithm = "MLE",
 					   print_iterations = FALSE)
 	print(output$log.likelihood, digits =10)
@@ -72,7 +72,7 @@ test_that("MLE alpha", {
 test_that("MLE les", {
 	output <- FitMDCEV(psi_formula = ~ factor(good_name) -1,
 					   data = subset(data_rec, id < 100),
-					   model = "les",
+					   model = "gamma0",
 					   algorithm = "MLE",
 					   print_iterations = FALSE)
 	print(output$log.likelihood, digits =10)
@@ -85,7 +85,7 @@ test_that("MLE les", {
 test_that("MLE gamma", {
 	output <- FitMDCEV(psi_formula = ~ factor(good_name) -1,
 					   data = subset(data_rec, id < 100),
-					   model = "gamma",
+					   model = "gamma0",
 					   algorithm = "MLE",
 					   print_iterations = FALSE)
 	print(output$log.likelihood, digits =10)

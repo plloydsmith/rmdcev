@@ -180,7 +180,7 @@ FitMDCEV <- function(data,
 		tibble::rowid_to_column("sim_id") %>%
 		tidyr::gather(parms, value, -sim_id)
 
-	class(result) <- "mdcev"
+#	class(result) <- "mdcev"
 
 return(result)
 }

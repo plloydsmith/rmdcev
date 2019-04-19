@@ -77,6 +77,8 @@ BayesMDCEV <- function(stan_data, bayes_options,
 #' @param stan.model Complied Stan model
 #' @param ... Additional parameters to pass on to \code{rstan::stan} and
 #' \code{rstan::sampling}.
+#' @importFrom rstan stan sampling
+#' @import Rcpp
 #' @return A stanfit object.
 #' @export
 RunStanSampling <- function(stan_data, stan.model, bayes_options)
@@ -84,7 +86,7 @@ RunStanSampling <- function(stan_data, stan.model, bayes_options)
 #	if (is.null(pars))
 #		pars <- stanParameters(stan.dat, keep.beta, stan.model)
 #	init <- initialParameterValues(stan.dat)
-	rstan::sampling(stan.model, data = stan_data,
+	sampling(stan.model, data = stan_data,
 					chains = bayes_options$n_chains,
 					cores = bayes_options$n_cores,
 #			 pars = pars,
