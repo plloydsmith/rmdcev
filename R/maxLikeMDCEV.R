@@ -83,7 +83,7 @@ maxlikeMDCEV <- function(stan_data, initial.parameters,
 		colnames(class_probabilities) <- paste0("class", c(1:mle_options$n_classes))
 		result$class_probabilities <- class_probabilities
 	}
-	result
+return(result)
 }
 
 #' @title ReduceStanFitSize

@@ -13,7 +13,7 @@ test_that("Data ok", {
 	expect_equal(data_rec$id[18], 2)
 })
 
- sprintf("%.10f",output$log.likelihood)
+# sprintf("%.10f",output$log.likelihood)
 # sprintf("%.10f",output$bic)
 # sprintf("%.10f",output[["stan_fit"]][["par"]][["scale"]] )
 # sprintf("%.10f",output[["stan_fit"]][["par"]][["psi"]] )
@@ -88,8 +88,9 @@ test_that("MLE gamma", {
 					   model = "gamma",
 					   algorithm = "MLE",
 					   print_iterations = FALSE)
+	print(output$log.likelihood, digits =10)
 
-	expect_true(abs(output$log.likelihood - (-2596.837)) < tol)
+	expect_true(abs(output$log.likelihood - (-2595.670871)) < tol)
 	#	expect_true(abs(output[["stan_fit"]][["par"]][["alpha"]] - 0.15) < tol)
 })
 

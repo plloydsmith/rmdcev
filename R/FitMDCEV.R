@@ -182,5 +182,5 @@ FitMDCEV <- function(data,
 
 	class(result) <- "mdcev"
 
-result
+return(result)
 }
