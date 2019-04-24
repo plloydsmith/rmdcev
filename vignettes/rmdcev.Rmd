@@ -254,7 +254,7 @@ The output of the function can be accessed by calling SummaryMDCEV.
 	SummaryMDCEV(mdcev.fit)
 ```
 
-The summary includes overal information on the model and the parameter estimates.
+The summary includes overall information on the model and the parameter estimates.
 
 There are four possible model options
 

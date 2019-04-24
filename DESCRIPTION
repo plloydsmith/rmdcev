@@ -12,8 +12,7 @@ Description: The rmdcev R package estimates different multiple discrete-continuo
 	(MDCEV) demand model specifications with observed and unobserved individual heterogneity. Fixed parameter,
 	latent class, and random parameter models can be estimated. These models are estimated using
 	maximum likelihood or Bayesian estimation techniques and are implemented in Stan, which is a
-	C++ package for performing full Bayesian inference (see http://mc-stan.org/). The package also
-	supports Phaneuf and von Haefen's Kuhn-Tucker model specification.
+	C++ package for performing full Bayesian inference (see http://mc-stan.org/).
 License: MIT + file LICENSE
 Depends:
     R (>= 3.4.0),
