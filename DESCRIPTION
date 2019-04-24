@@ -1,25 +1,25 @@
 Package: rmdcev
 Type: Package
-Title: An implementation of the Multiple-Discrete Continuous Extreme Value Model
+Title: An implementation of the Multiple Discrete-Continuous Extreme Value (MDCEV) Model
 Version: 0.6.0
-Authors@R: 
+Authors@R:
     person(given = "Patrick",
            family = "Lloyd-Smith",
            role = c("aut", "cre"),
            email = "plloydsmith@gmail.com")
 Maintainer: Patrick Lloyd-Smith <plloydsmith@gmail.com>
-Description: The rmdcev R package estimates different multiple discrete-continuous extreme value 
-	(MDCEV) demand model specifications with observed and unobserved individual heterogneity. Fixed parameter, 
-	latent class, and random parameter models can be estimated. These models are estimated using 
-	maximum likelihood or Bayesian estimation techniques and are implemented in Stan, which is a 
-	C++ package for performing full Bayesian inference (see http://mc-stan.org/). The package also 
+Description: The rmdcev R package estimates different multiple discrete-continuous extreme value
+	(MDCEV) demand model specifications with observed and unobserved individual heterogneity. Fixed parameter,
+	latent class, and random parameter models can be estimated. These models are estimated using
+	maximum likelihood or Bayesian estimation techniques and are implemented in Stan, which is a
+	C++ package for performing full Bayesian inference (see http://mc-stan.org/). The package also
 	supports Phaneuf and von Haefen's Kuhn-Tucker model specification.
 License: MIT + file LICENSE
-Depends: 
+Depends:
     R (>= 3.4.0),
     Rcpp (>= 0.12.0),
     methods
-Imports: 
+Imports:
     rstan (>= 2.18.2),
     rstantools (>= 1.5.1),
     dplyr (>= 0.7.8),
@@ -32,7 +32,7 @@ Imports:
     utils,
     stats,
     tmvtnorm
-LinkingTo: 
+LinkingTo:
     BH (>= 1.66.0),
     Rcpp (>= 0.12.0),
     RcppEigen (>= 0.3.3.4.0),
@@ -43,7 +43,7 @@ LazyData: true
 NeedsCompilation: yes
 SystemRequirements: GNU make
 RoxygenNote: 6.1.1
-Suggests: 
+Suggests:
     knitr,
     rmarkdown
 VignetteBuilder: knitr
