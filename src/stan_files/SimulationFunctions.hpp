@@ -687,7 +687,7 @@ struct ComputeE_functor__ {
 
 template <typename T0__, typename T1__, typename T2__, typename T3__, typename T4__, typename T7__>
 Eigen::Matrix<typename boost::math::tools::promote_args<T0__, T1__, T2__, T3__, typename boost::math::tools::promote_args<T4__, T7__>::type>::type, Eigen::Dynamic,1>
-MarshallianDemand(const T0__& inc,
+MarshallianDemand(const T0__& income,
                       const Eigen::Matrix<T1__, Eigen::Dynamic,1>& price,
                       const Eigen::Matrix<T2__, Eigen::Dynamic,1>& MUzero,
                       const Eigen::Matrix<T3__, Eigen::Dynamic,1>& gamma,
@@ -845,7 +845,7 @@ MarshallianDemand(const T0__& inc,
             while (as_bool(logical_eq(exit,0))) {
 
                 current_statement_begin__ = 180;
-                stan::math::assign(lambda_num, ((inc + sum(stan::model::rvalue(g_price, stan::model::cons_list(stan::model::index_min_max(1, M), stan::model::nil_index_list()), "g_price"))) - 1));
+                stan::math::assign(lambda_num, ((income + sum(stan::model::rvalue(g_price, stan::model::cons_list(stan::model::index_min_max(1, M), stan::model::nil_index_list()), "g_price"))) - 1));
                 current_statement_begin__ = 181;
                 stan::math::assign(lambda_den, sum(stan::model::rvalue(c, stan::model::cons_list(stan::model::index_min_max(1, M), stan::model::nil_index_list()), "c")));
                 current_statement_begin__ = 182;
@@ -924,15 +924,15 @@ MarshallianDemand(const T0__& inc,
                 current_statement_begin__ = 211;
                 stan::math::assign(E, ComputeE(M,lambda,g_price,b,c,d, pstream__));
                 current_statement_begin__ = 213;
-                if (as_bool((primitive_value(logical_gte(E,inc)) || primitive_value(logical_eq((M + 1),(ngoods + 1)))))) {
+                if (as_bool((primitive_value(logical_gte(E,income)) || primitive_value(logical_eq((M + 1),(ngoods + 1)))))) {
 
                     current_statement_begin__ = 214;
-                    if (as_bool(logical_lt(E,inc))) {
+                    if (as_bool(logical_lt(E,income))) {
                         current_statement_begin__ = 215;
                         stan::math::assign(M, (M + 1));
                     }
                     current_statement_begin__ = 217;
-                    stan::math::assign(lambda_l, (logical_lt(E,inc) ? stan::math::promote_scalar<local_scalar_t__>(0) : stan::math::promote_scalar<local_scalar_t__>(lambda) ));
+                    stan::math::assign(lambda_l, (logical_lt(E,income) ? stan::math::promote_scalar<local_scalar_t__>(0) : stan::math::promote_scalar<local_scalar_t__>(lambda) ));
                     current_statement_begin__ = 218;
                     stan::math::assign(lambda_u, get_base1(mu,M,"mu",1));
                     current_statement_begin__ = 219;
@@ -952,17 +952,17 @@ MarshallianDemand(const T0__& inc,
                         current_statement_begin__ = 224;
                         stan::math::assign(E, ComputeE(M,lambda,g_price,b,c,d, pstream__));
                         current_statement_begin__ = 227;
-                        if (as_bool(logical_lt(E,inc))) {
+                        if (as_bool(logical_lt(E,income))) {
                             current_statement_begin__ = 228;
                             stan::math::assign(lambda_u, lambda_mid);
-                        } else if (as_bool(logical_gt(E,inc))) {
+                        } else if (as_bool(logical_gt(E,income))) {
                             current_statement_begin__ = 230;
                             stan::math::assign(lambda_l, lambda_mid);
                         }
                         current_statement_begin__ = 233;
                         stan::math::assign(lambda, ((lambda_l + lambda_u) / 2));
                         current_statement_begin__ = 235;
-                        if (as_bool(logical_lt(stan::math::fabs((((E - inc) / (E + inc)) * 0.5)),tol_e))) {
+                        if (as_bool(logical_lt(stan::math::fabs((((E - income) / (E + income)) * 0.5)),tol_e))) {
                             current_statement_begin__ = 235;
                             break;
                         }
@@ -978,7 +978,7 @@ MarshallianDemand(const T0__& inc,
                     }
                     current_statement_begin__ = 240;
                     stan::math::assign(exit, 1);
-                } else if (as_bool((primitive_value(logical_lt(E,inc)) && primitive_value(logical_lt((M + 1),(ngoods + 1)))))) {
+                } else if (as_bool((primitive_value(logical_lt(E,income)) && primitive_value(logical_lt((M + 1),(ngoods + 1)))))) {
                     current_statement_begin__ = 243;
                     stan::math::assign(M, (M + 1));
                 }
@@ -1001,7 +1001,7 @@ MarshallianDemand(const T0__& inc,
 struct MarshallianDemand_functor__ {
     template <typename T0__, typename T1__, typename T2__, typename T3__, typename T4__, typename T7__>
         Eigen::Matrix<typename boost::math::tools::promote_args<T0__, T1__, T2__, T3__, typename boost::math::tools::promote_args<T4__, T7__>::type>::type, Eigen::Dynamic,1>
-    operator()(const T0__& inc,
+    operator()(const T0__& income,
                       const Eigen::Matrix<T1__, Eigen::Dynamic,1>& price,
                       const Eigen::Matrix<T2__, Eigen::Dynamic,1>& MUzero,
                       const Eigen::Matrix<T3__, Eigen::Dynamic,1>& gamma,
@@ -1010,13 +1010,13 @@ struct MarshallianDemand_functor__ {
                       const int& algo_gen,
                       const T7__& tol_e,
                       const int& max_loop, std::ostream* pstream__) const {
-        return MarshallianDemand(inc, price, MUzero, gamma, alpha, ngoods, algo_gen, tol_e, max_loop, pstream__);
+        return MarshallianDemand(income, price, MUzero, gamma, alpha, ngoods, algo_gen, tol_e, max_loop, pstream__);
     }
 };
 
 template <typename T0__, typename T1__, typename T2__, typename T3__, typename T4__, typename T5__>
 typename boost::math::tools::promote_args<T0__, T1__, T2__, T3__, typename boost::math::tools::promote_args<T4__, T5__>::type>::type
-ComputeUtilJ(const T0__& inc,
+ComputeUtilJ(const T0__& income,
                  const Eigen::Matrix<T1__, Eigen::Dynamic,1>& quant_j,
                  const Eigen::Matrix<T2__, Eigen::Dynamic,1>& price_j,
                  const Eigen::Matrix<T3__, Eigen::Dynamic,1>& psi_j,
@@ -1056,7 +1056,7 @@ ComputeUtilJ(const T0__& inc,
 
 
         current_statement_begin__ = 262;
-        stan::math::assign(util_num, ((1 / get_base1(alpha,1,"alpha",1)) * pow((inc - multiply(transpose(price_j),quant_j)),get_base1(alpha,1,"alpha",1))));
+        stan::math::assign(util_num, ((1 / get_base1(alpha,1,"alpha",1)) * pow((income - multiply(transpose(price_j),quant_j)),get_base1(alpha,1,"alpha",1))));
         current_statement_begin__ = 264;
         if (as_bool(logical_eq(model_num,1))) {
 
@@ -1089,7 +1089,7 @@ ComputeUtilJ(const T0__& inc,
 struct ComputeUtilJ_functor__ {
     template <typename T0__, typename T1__, typename T2__, typename T3__, typename T4__, typename T5__>
         typename boost::math::tools::promote_args<T0__, T1__, T2__, T3__, typename boost::math::tools::promote_args<T4__, T5__>::type>::type
-    operator()(const T0__& inc,
+    operator()(const T0__& income,
                  const Eigen::Matrix<T1__, Eigen::Dynamic,1>& quant_j,
                  const Eigen::Matrix<T2__, Eigen::Dynamic,1>& price_j,
                  const Eigen::Matrix<T3__, Eigen::Dynamic,1>& psi_j,
@@ -1097,7 +1097,7 @@ struct ComputeUtilJ_functor__ {
                  const Eigen::Matrix<T5__, Eigen::Dynamic,1>& alpha,
                  const int& ngoods,
                  const int& model_num, std::ostream* pstream__) const {
-        return ComputeUtilJ(inc, quant_j, price_j, psi_j, gamma_j, alpha, ngoods, model_num, pstream__);
+        return ComputeUtilJ(income, quant_j, price_j, psi_j, gamma_j, alpha, ngoods, model_num, pstream__);
     }
 };
 
@@ -1560,7 +1560,7 @@ struct HicksianDemand_functor__ {
 
 template <typename T0__, typename T1__, typename T2__, typename T3__, typename T4__, typename T5__, typename T8__, class RNG>
 Eigen::Matrix<typename boost::math::tools::promote_args<T0__, T1__, T2__, T3__, typename boost::math::tools::promote_args<T4__, T5__, T8__>::type>::type, Eigen::Dynamic,Eigen::Dynamic>
-CalcmdemandOne_rng(const T0__& inc,
+CalcmdemandOne_rng(const T0__& income,
                        const Eigen::Matrix<T1__, Eigen::Dynamic,1>& price,
                        const Eigen::Matrix<T2__, Eigen::Dynamic,1>& psi_sims,
                        const Eigen::Matrix<T3__, Eigen::Dynamic,1>& gamma_sims,
@@ -1704,7 +1704,7 @@ CalcmdemandOne_rng(const T0__& inc,
                 current_statement_begin__ = 436;
                 stan::model::assign(mdemand, 
                             stan::model::cons_list(stan::model::index_uni(err), stan::model::nil_index_list()), 
-                            transpose(MarshallianDemand(inc,price,MUzero_b,gamma,alpha,ngoods,algo_gen,tol,max_loop, pstream__)), 
+                            transpose(MarshallianDemand(income,price,MUzero_b,gamma,alpha,ngoods,algo_gen,tol,max_loop, pstream__)), 
                             "assigning variable mdemand");
                 }
             }
@@ -1739,7 +1739,7 @@ CalcmdemandOne_rng(const T0__& inc,
 struct CalcmdemandOne_rng_functor__ {
     template <typename T0__, typename T1__, typename T2__, typename T3__, typename T4__, typename T5__, typename T8__, class RNG>
         Eigen::Matrix<typename boost::math::tools::promote_args<T0__, T1__, T2__, T3__, typename boost::math::tools::promote_args<T4__, T5__, T8__>::type>::type, Eigen::Dynamic,Eigen::Dynamic>
-    operator()(const T0__& inc,
+    operator()(const T0__& income,
                        const Eigen::Matrix<T1__, Eigen::Dynamic,1>& price,
                        const Eigen::Matrix<T2__, Eigen::Dynamic,1>& psi_sims,
                        const Eigen::Matrix<T3__, Eigen::Dynamic,1>& gamma_sims,
@@ -1749,13 +1749,13 @@ struct CalcmdemandOne_rng_functor__ {
                        const int& algo_gen,
                        const T8__& tol,
                        const int& max_loop, RNG& base_rng__, std::ostream* pstream__) const {
-        return CalcmdemandOne_rng(inc, price, psi_sims, gamma_sims, alpha_sims, scale_sims, nerrs, algo_gen, tol, max_loop, base_rng__, pstream__);
+        return CalcmdemandOne_rng(income, price, psi_sims, gamma_sims, alpha_sims, scale_sims, nerrs, algo_gen, tol, max_loop, base_rng__, pstream__);
     }
 };
 
 template <typename T0__, typename T1__, typename T2__, typename T3__, typename T4__, typename T5__, typename T6__, typename T7__, typename T8__, typename T14__, class RNG>
 Eigen::Matrix<typename boost::math::tools::promote_args<T0__, T1__, T2__, T3__, typename boost::math::tools::promote_args<T4__, T5__, T6__, T7__, typename boost::math::tools::promote_args<T8__, T14__>::type>::type>::type, Eigen::Dynamic,Eigen::Dynamic>
-CalcWTP_rng(const T0__& inc,
+CalcWTP_rng(const T0__& income,
                 const Eigen::Matrix<T1__, Eigen::Dynamic,1>& quant_j,
                 const Eigen::Matrix<T2__, Eigen::Dynamic,1>& price,
                 const std::vector<Eigen::Matrix<T3__, Eigen::Dynamic,1> >& price_p_policy,
@@ -1813,7 +1813,7 @@ CalcWTP_rng(const T0__& inc,
 
         stan::math::initialize(quant_num, DUMMY_VAR__);
         stan::math::fill(quant_num,DUMMY_VAR__);
-        stan::math::assign(quant_num,(inc - multiply(transpose(quant_j),stan::model::rvalue(price, stan::model::cons_list(stan::model::index_min_max(2, (ngoods + 1)), stan::model::nil_index_list()), "price"))));
+        stan::math::assign(quant_num,(income - multiply(transpose(quant_j),stan::model::rvalue(price, stan::model::cons_list(stan::model::index_min_max(2, (ngoods + 1)), stan::model::nil_index_list()), "price"))));
 
 
         current_statement_begin__ = 476;
@@ -1920,12 +1920,12 @@ CalcWTP_rng(const T0__& inc,
                     stan::math::assign(mdemand, append_row(quant_num,quant_j));
                 } else if (as_bool(logical_eq(cond_error,0))) {
                     current_statement_begin__ = 504;
-                    stan::math::assign(mdemand, MarshallianDemand(inc,price,MUzero_b,gamma,alpha,ngoods,algo_gen,tol,max_loop, pstream__));
+                    stan::math::assign(mdemand, MarshallianDemand(income,price,MUzero_b,gamma,alpha,ngoods,algo_gen,tol,max_loop, pstream__));
                 }
                 current_statement_begin__ = 507;
                 stan::model::assign(util, 
                             stan::model::cons_list(stan::model::index_uni(err), stan::model::nil_index_list()), 
-                            ComputeUtilJ(inc,stan::model::rvalue(mdemand, stan::model::cons_list(stan::model::index_min_max(2, (ngoods + 1)), stan::model::nil_index_list()), "mdemand"),stan::model::rvalue(price, stan::model::cons_list(stan::model::index_min_max(2, (ngoods + 1)), stan::model::nil_index_list()), "price"),stan::model::rvalue(psi_b_err, stan::model::cons_list(stan::model::index_min_max(2, (ngoods + 1)), stan::model::nil_index_list()), "psi_b_err"),stan::model::rvalue(gamma, stan::model::cons_list(stan::model::index_min_max(2, (ngoods + 1)), stan::model::nil_index_list()), "gamma"),alpha,ngoods,model_num, pstream__), 
+                            ComputeUtilJ(income,stan::model::rvalue(mdemand, stan::model::cons_list(stan::model::index_min_max(2, (ngoods + 1)), stan::model::nil_index_list()), "mdemand"),stan::model::rvalue(price, stan::model::cons_list(stan::model::index_min_max(2, (ngoods + 1)), stan::model::nil_index_list()), "price"),stan::model::rvalue(psi_b_err, stan::model::cons_list(stan::model::index_min_max(2, (ngoods + 1)), stan::model::nil_index_list()), "psi_b_err"),stan::model::rvalue(gamma, stan::model::cons_list(stan::model::index_min_max(2, (ngoods + 1)), stan::model::nil_index_list()), "gamma"),alpha,ngoods,model_num, pstream__), 
                             "assigning variable util");
                 }
             }
@@ -1982,7 +1982,7 @@ CalcWTP_rng(const T0__& inc,
                     current_statement_begin__ = 525;
                     stan::model::assign(wtp_err, 
                                 stan::model::cons_list(stan::model::index_uni(err), stan::model::nil_index_list()), 
-                                (inc - multiply(transpose(price_p),hdemand)), 
+                                (income - multiply(transpose(price_p),hdemand)), 
                                 "assigning variable wtp_err");
                     }
                 }
@@ -2014,7 +2014,7 @@ CalcWTP_rng(const T0__& inc,
 struct CalcWTP_rng_functor__ {
     template <typename T0__, typename T1__, typename T2__, typename T3__, typename T4__, typename T5__, typename T6__, typename T7__, typename T8__, typename T14__, class RNG>
         Eigen::Matrix<typename boost::math::tools::promote_args<T0__, T1__, T2__, T3__, typename boost::math::tools::promote_args<T4__, T5__, T6__, T7__, typename boost::math::tools::promote_args<T8__, T14__>::type>::type>::type, Eigen::Dynamic,Eigen::Dynamic>
-    operator()(const T0__& inc,
+    operator()(const T0__& income,
                 const Eigen::Matrix<T1__, Eigen::Dynamic,1>& quant_j,
                 const Eigen::Matrix<T2__, Eigen::Dynamic,1>& price,
                 const std::vector<Eigen::Matrix<T3__, Eigen::Dynamic,1> >& price_p_policy,
@@ -2030,13 +2030,13 @@ struct CalcWTP_rng_functor__ {
                 const int& model_num,
                 const T14__& tol,
                 const int& max_loop, RNG& base_rng__, std::ostream* pstream__) const {
-        return CalcWTP_rng(inc, quant_j, price, price_p_policy, psi_p_sims, psi_sims, gamma_sims, alpha_sims, scale_sims, nerrs, cond_error, draw_mlhs, algo_gen, model_num, tol, max_loop, base_rng__, pstream__);
+        return CalcWTP_rng(income, quant_j, price, price_p_policy, psi_p_sims, psi_sims, gamma_sims, alpha_sims, scale_sims, nerrs, cond_error, draw_mlhs, algo_gen, model_num, tol, max_loop, base_rng__, pstream__);
     }
 };
 
 template <typename T0__, typename T1__, typename T2__, typename T3__, typename T4__, typename T5__, typename T6__, typename T7__, typename T13__, class RNG>
 Eigen::Matrix<typename boost::math::tools::promote_args<T0__, T1__, T2__, T3__, typename boost::math::tools::promote_args<T4__, T5__, T6__, T7__, typename boost::math::tools::promote_args<T13__>::type>::type>::type, Eigen::Dynamic,Eigen::Dynamic>
-CalcWTPPriceOnly_rng(const T0__& inc,
+CalcWTPPriceOnly_rng(const T0__& income,
                          const Eigen::Matrix<T1__, Eigen::Dynamic,1>& quant_j,
                          const Eigen::Matrix<T2__, Eigen::Dynamic,1>& price,
                          const std::vector<Eigen::Matrix<T3__, Eigen::Dynamic,1> >& price_p_policy,
@@ -2093,7 +2093,7 @@ CalcWTPPriceOnly_rng(const T0__& inc,
 
         stan::math::initialize(quant_num, DUMMY_VAR__);
         stan::math::fill(quant_num,DUMMY_VAR__);
-        stan::math::assign(quant_num,(inc - multiply(transpose(quant_j),stan::model::rvalue(price, stan::model::cons_list(stan::model::index_min_max(2, (ngoods + 1)), stan::model::nil_index_list()), "price"))));
+        stan::math::assign(quant_num,(income - multiply(transpose(quant_j),stan::model::rvalue(price, stan::model::cons_list(stan::model::index_min_max(2, (ngoods + 1)), stan::model::nil_index_list()), "price"))));
 
 
         current_statement_begin__ = 558;
@@ -2193,12 +2193,12 @@ CalcWTPPriceOnly_rng(const T0__& inc,
                     stan::math::assign(mdemand, append_row(quant_num,quant_j));
                 } else if (as_bool(logical_eq(cond_error,0))) {
                     current_statement_begin__ = 582;
-                    stan::math::assign(mdemand, MarshallianDemand(inc,price,MUzero_b,gamma,alpha,ngoods,algo_gen,tol,max_loop, pstream__));
+                    stan::math::assign(mdemand, MarshallianDemand(income,price,MUzero_b,gamma,alpha,ngoods,algo_gen,tol,max_loop, pstream__));
                 }
                 current_statement_begin__ = 585;
                 stan::model::assign(util, 
                             stan::model::cons_list(stan::model::index_uni(err), stan::model::nil_index_list()), 
-                            ComputeUtilJ(inc,stan::model::rvalue(mdemand, stan::model::cons_list(stan::model::index_min_max(2, (ngoods + 1)), stan::model::nil_index_list()), "mdemand"),stan::model::rvalue(price, stan::model::cons_list(stan::model::index_min_max(2, (ngoods + 1)), stan::model::nil_index_list()), "price"),stan::model::rvalue(psi_b_err, stan::model::cons_list(stan::model::index_uni(err), stan::model::cons_list(stan::model::index_min_max(2, (ngoods + 1)), stan::model::nil_index_list())), "psi_b_err"),stan::model::rvalue(gamma, stan::model::cons_list(stan::model::index_min_max(2, (ngoods + 1)), stan::model::nil_index_list()), "gamma"),alpha,ngoods,model_num, pstream__), 
+                            ComputeUtilJ(income,stan::model::rvalue(mdemand, stan::model::cons_list(stan::model::index_min_max(2, (ngoods + 1)), stan::model::nil_index_list()), "mdemand"),stan::model::rvalue(price, stan::model::cons_list(stan::model::index_min_max(2, (ngoods + 1)), stan::model::nil_index_list()), "price"),stan::model::rvalue(psi_b_err, stan::model::cons_list(stan::model::index_uni(err), stan::model::cons_list(stan::model::index_min_max(2, (ngoods + 1)), stan::model::nil_index_list())), "psi_b_err"),stan::model::rvalue(gamma, stan::model::cons_list(stan::model::index_min_max(2, (ngoods + 1)), stan::model::nil_index_list()), "gamma"),alpha,ngoods,model_num, pstream__), 
                             "assigning variable util");
                 }
             }
@@ -2247,7 +2247,7 @@ CalcWTPPriceOnly_rng(const T0__& inc,
                     current_statement_begin__ = 601;
                     stan::model::assign(wtp_err, 
                                 stan::model::cons_list(stan::model::index_uni(err), stan::model::nil_index_list()), 
-                                (inc - multiply(transpose(price_p),hdemand)), 
+                                (income - multiply(transpose(price_p),hdemand)), 
                                 "assigning variable wtp_err");
                     }
                 }
@@ -2279,7 +2279,7 @@ CalcWTPPriceOnly_rng(const T0__& inc,
 struct CalcWTPPriceOnly_rng_functor__ {
     template <typename T0__, typename T1__, typename T2__, typename T3__, typename T4__, typename T5__, typename T6__, typename T7__, typename T13__, class RNG>
         Eigen::Matrix<typename boost::math::tools::promote_args<T0__, T1__, T2__, T3__, typename boost::math::tools::promote_args<T4__, T5__, T6__, T7__, typename boost::math::tools::promote_args<T13__>::type>::type>::type, Eigen::Dynamic,Eigen::Dynamic>
-    operator()(const T0__& inc,
+    operator()(const T0__& income,
                          const Eigen::Matrix<T1__, Eigen::Dynamic,1>& quant_j,
                          const Eigen::Matrix<T2__, Eigen::Dynamic,1>& price,
                          const std::vector<Eigen::Matrix<T3__, Eigen::Dynamic,1> >& price_p_policy,
@@ -2294,13 +2294,13 @@ struct CalcWTPPriceOnly_rng_functor__ {
                          const int& model_num,
                          const T13__& tol,
                          const int& max_loop, RNG& base_rng__, std::ostream* pstream__) const {
-        return CalcWTPPriceOnly_rng(inc, quant_j, price, price_p_policy, psi_sims, gamma_sims, alpha_sims, scale_sims, nerrs, cond_error, draw_mlhs, algo_gen, model_num, tol, max_loop, base_rng__, pstream__);
+        return CalcWTPPriceOnly_rng(income, quant_j, price, price_p_policy, psi_sims, gamma_sims, alpha_sims, scale_sims, nerrs, cond_error, draw_mlhs, algo_gen, model_num, tol, max_loop, base_rng__, pstream__);
     }
 };
 
 template <typename T0__, typename T1__, typename T2__, typename T3__, typename T4__, typename T5__, typename T6__, typename T7__, typename T8__, typename T14__, class RNG>
 std::vector<Eigen::Matrix<typename boost::math::tools::promote_args<T0__, T1__, T2__, T3__, typename boost::math::tools::promote_args<T4__, T5__, T6__, T7__, typename boost::math::tools::promote_args<T8__, T14__>::type>::type>::type, Eigen::Dynamic,Eigen::Dynamic> >
-CalcMarshallianDemand_rng(const T0__& inc,
+CalcMarshallianDemand_rng(const T0__& income,
                               const Eigen::Matrix<T1__, Eigen::Dynamic,1>& quant_j,
                               const Eigen::Matrix<T2__, Eigen::Dynamic,1>& price,
                               const std::vector<Eigen::Matrix<T3__, Eigen::Dynamic,1> >& price_p_policy,
@@ -2357,7 +2357,7 @@ CalcMarshallianDemand_rng(const T0__& inc,
 
         stan::math::initialize(quant_num, DUMMY_VAR__);
         stan::math::fill(quant_num,DUMMY_VAR__);
-        stan::math::assign(quant_num,(inc - multiply(transpose(quant_j),stan::model::rvalue(price, stan::model::cons_list(stan::model::index_min_max(2, (ngoods + 1)), stan::model::nil_index_list()), "price"))));
+        stan::math::assign(quant_num,(income - multiply(transpose(quant_j),stan::model::rvalue(price, stan::model::cons_list(stan::model::index_min_max(2, (ngoods + 1)), stan::model::nil_index_list()), "price"))));
 
 
         current_statement_begin__ = 622;
@@ -2465,12 +2465,12 @@ CalcMarshallianDemand_rng(const T0__& inc,
                     stan::math::assign(mdemand_util, append_row(quant_num,quant_j));
                 } else if (as_bool(logical_eq(cond_error,0))) {
                     current_statement_begin__ = 650;
-                    stan::math::assign(mdemand_util, MarshallianDemand(inc,price,MUzero_b,gamma,alpha,ngoods,algo_gen,tol,max_loop, pstream__));
+                    stan::math::assign(mdemand_util, MarshallianDemand(income,price,MUzero_b,gamma,alpha,ngoods,algo_gen,tol,max_loop, pstream__));
                 }
                 current_statement_begin__ = 653;
                 stan::model::assign(util, 
                             stan::model::cons_list(stan::model::index_uni(err), stan::model::nil_index_list()), 
-                            ComputeUtilJ(inc,stan::model::rvalue(mdemand_util, stan::model::cons_list(stan::model::index_min_max(2, (ngoods + 1)), stan::model::nil_index_list()), "mdemand_util"),stan::model::rvalue(price, stan::model::cons_list(stan::model::index_min_max(2, (ngoods + 1)), stan::model::nil_index_list()), "price"),stan::model::rvalue(psi_b_err, stan::model::cons_list(stan::model::index_min_max(2, (ngoods + 1)), stan::model::nil_index_list()), "psi_b_err"),stan::model::rvalue(gamma, stan::model::cons_list(stan::model::index_min_max(2, (ngoods + 1)), stan::model::nil_index_list()), "gamma"),alpha,ngoods,model_num, pstream__), 
+                            ComputeUtilJ(income,stan::model::rvalue(mdemand_util, stan::model::cons_list(stan::model::index_min_max(2, (ngoods + 1)), stan::model::nil_index_list()), "mdemand_util"),stan::model::rvalue(price, stan::model::cons_list(stan::model::index_min_max(2, (ngoods + 1)), stan::model::nil_index_list()), "price"),stan::model::rvalue(psi_b_err, stan::model::cons_list(stan::model::index_min_max(2, (ngoods + 1)), stan::model::nil_index_list()), "psi_b_err"),stan::model::rvalue(gamma, stan::model::cons_list(stan::model::index_min_max(2, (ngoods + 1)), stan::model::nil_index_list()), "gamma"),alpha,ngoods,model_num, pstream__), 
                             "assigning variable util");
                 }
             }
@@ -2534,7 +2534,7 @@ CalcMarshallianDemand_rng(const T0__& inc,
                     current_statement_begin__ = 668;
                     stan::model::assign(mdemand_p, 
                                 stan::model::cons_list(stan::model::index_uni(err), stan::model::nil_index_list()), 
-                                transpose(MarshallianDemand(inc,price,MUzero_p,gamma,alpha,ngoods,algo_gen,tol,max_loop, pstream__)), 
+                                transpose(MarshallianDemand(income,price,MUzero_p,gamma,alpha,ngoods,algo_gen,tol,max_loop, pstream__)), 
                                 "assigning variable mdemand_p");
                     }
                 }
@@ -2576,7 +2576,7 @@ CalcMarshallianDemand_rng(const T0__& inc,
 struct CalcMarshallianDemand_rng_functor__ {
     template <typename T0__, typename T1__, typename T2__, typename T3__, typename T4__, typename T5__, typename T6__, typename T7__, typename T8__, typename T14__, class RNG>
         std::vector<Eigen::Matrix<typename boost::math::tools::promote_args<T0__, T1__, T2__, T3__, typename boost::math::tools::promote_args<T4__, T5__, T6__, T7__, typename boost::math::tools::promote_args<T8__, T14__>::type>::type>::type, Eigen::Dynamic,Eigen::Dynamic> >
-    operator()(const T0__& inc,
+    operator()(const T0__& income,
                               const Eigen::Matrix<T1__, Eigen::Dynamic,1>& quant_j,
                               const Eigen::Matrix<T2__, Eigen::Dynamic,1>& price,
                               const std::vector<Eigen::Matrix<T3__, Eigen::Dynamic,1> >& price_p_policy,
@@ -2592,7 +2592,7 @@ struct CalcMarshallianDemand_rng_functor__ {
                               const int& model_num,
                               const T14__& tol,
                               const int& max_loop, RNG& base_rng__, std::ostream* pstream__) const {
-        return CalcMarshallianDemand_rng(inc, quant_j, price, price_p_policy, psi_p_sims, psi_sims, gamma_sims, alpha_sims, scale_sims, nerrs, cond_error, draw_mlhs, algo_gen, model_num, tol, max_loop, base_rng__, pstream__);
+        return CalcMarshallianDemand_rng(income, quant_j, price, price_p_policy, psi_p_sims, psi_sims, gamma_sims, alpha_sims, scale_sims, nerrs, cond_error, draw_mlhs, algo_gen, model_num, tol, max_loop, base_rng__, pstream__);
     }
 };
 
