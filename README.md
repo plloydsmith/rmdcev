@@ -100,17 +100,14 @@ coefs %>%
 
 Create policy simulations (these are blank policies with no effects)
 ```{r}
-###########################################################################
-# Create policy scenarios (can affect price only at this point)
-###########################################################################
 npols <- 2 # Choose number of policies
-policies<-	CreateBlankPolicies(npols, mdcev_est$stan_data[["J"]], mdcev_est$stan_data[["dat_psi"]])
+policies <- CreateBlankPolicies(npols, mdcev_est$stan_data[["J"]], mdcev_est$stan_data[["dat_psi"]])
+
+df_sim <- PrepareSimulationData(mdcev_est, policies)
 ```
 
 Simulate welfare changes
 ```{r}
-df_sim <- PrepareSimulationData(mdcev.fit, policies)
-
 wtp <- SimulateMDCEV(df_sim$df_indiv, df_common = df_sim$df_common, sim_options = df_sim$sim_options,
 					 cond_err = 1, nerrs = 15, sim_type = "welfare")
 SummaryWelfare(wtp)
