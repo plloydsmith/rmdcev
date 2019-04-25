@@ -42,7 +42,7 @@ Keywords: multiple discrete-continuous extreme value, Kuhn-Tucker, latent class,
 Individual choice contexts are often characterized by both extensive (i.e. what alternative to choose) and intensive (i.e. how much of an alternative to consume) margins. These multiple discrete-continuous (MDC) choice situations are pervasive, arising in transportation, marketing, health, and decisions regarding environmental resources.
 Kuhn-Tucker (KT) consumer demand models are often employed to analyze these MDC situations and substantial progress has been made on improving the econometric modeling structures. There is currently no available software package that
 
-In addition to **rmdcev**, the [**apollo** package](http://www.apollochoicemodelling.com/) developed by Stephane Hess and David Palma at the Choice Modelling Centre in Leeds provides a flexible modelling platform for estimating MDCEV models and simulating demand behaviour. **apollo** estimates a full suite of discrete choice models and is thus more comprehensive then **rmdcev**. The main differences between the packages is that **rmdcev** 1) provides welfare simulation functions, 2) uses Stan program and NUTs sampling, 3) and implements the Kuhn-Tucker Linear Expenditure System utility specification \citep{von_haefen_kuhn-tucker_2005).
+In addition to **rmdcev**, the [**apollo**](http://www.apollochoicemodelling.com/) package developed by Stephane Hess and David Palma at the Choice Modelling Centre in Leeds provides a flexible modelling platform for estimating MDCEV models and simulating demand behaviour. **apollo** estimates a full suite of discrete choice models and is thus more comprehensive then **rmdcev**. The main differences between the packages is that **rmdcev** 1) provides welfare simulation functions, 2) uses Stan program and NUTs sampling, 3) and implements the Kuhn-Tucker Linear Expenditure System utility specification \citep{von_haefen_kuhn-tucker_2005).
 
 One reason cited for the lack of widespread use of these KT models is that applying these models for welfare analysis is not straightforward \citep{von_haefen_kuhn-tucker_2005, bhat_multiple_2014}. This issue is especially relevant in applying these models to studying decisions regarding environmental resources where producing welfare estimates is often the main purpose of the research.
 
@@ -110,9 +110,9 @@ where $\z_k$ is a set of variables that can include alternative-specific attribu
 
 To ensure the estimated utility function corresponds to economic theory we specify the following parameterization:
 
-- $\psi_k=exp(\beta_q Q_k + \beta_s S_i + \varepsilon_k)$,
+- $\psi_k=exp(\beta'z_k+\varepsilon_k)$,
 - $\gamma_k = exp(\gamma_k)$, and
-- $\alpha = 1 - exp(\alpha)$.
+- $\alpha_k = 1 - exp(\alpha_k)$.
 
 
 Weak complementarity,  which is required for deriving unique welfare measures, is imposed in this specification by adding and subtracting one in the non-numeraire part of the utility function.
@@ -120,21 +120,21 @@ Weak complementarity,  which is required for deriving unique welfare measures, i
 While the most general form of the MDCEV model includes 3 parameters for each alternative,
 Bhat (2008) discusses the identification concerns regarding estimating separate $\gamma_k$ and $\alpha_k$ parameters for each non-numeraire alternative. Typically only a subset of these parameters can be identified and there are three common utility function specifications
 
-1. $\alpha$-profile: set all $gamma_k$ parameters to 1.
+1. $\alpha$-profile: set all $\gamma_k$ parameters to 1.
 
 \begin{equation}
 \label{utilkt_alpha}
 U(x_k, x_1) = \sum_{k=2}^{K} \frac{1}{\alpha_k}exp(\beta'z_k+\varepsilon_k) \left[ \left( x_k + 1 \right)^{\alpha_k} - 1 \right] + \frac{exp(\varepsilon_1)}{\alpha_1}x_1^{\alpha_1}
 \end{equation}
 
-2. $\gamma$-profile: set all non-numeraire $alpha_k$ parameters to 0.
+2. $\gamma$-profile: set all non-numeraire $\alpha_k$ parameters to 0.
 
 \begin{equation}
 \label{utilkt_gamma}
 U(x_k, x_1) = \sum_{k=2}^{K} \gamma_k exp(\beta'z_k+\varepsilon_k) \ln\left( \frac{x_k}{\gamma_k} + 1 \right) + \frac{exp(\varepsilon_1)}{\alpha_1}x_1^{\alpha_1}
 \end{equation}
 
-3. Hybrid-profile: set all $alpha_k=alpha_1=alpha$.
+3. Hybrid-profile: set all $\alpha_k=\alpha_1=\alpha$.
 
 \begin{equation}
 \label{utilkt_hybrid}
@@ -145,6 +145,7 @@ The likelihood function representing the model probability of the consumption pa
 
 \begin{equation}
 P(x^{*}_1,x^{*}_2...x^{*}_M,0,...,0) = \frac{1}{\sigma^{M-1}} \left(\prod_{m=1}^M c_m \right)\left(\sum_{m=1}^M \frac{p_m}{c_m} \right) \left( \ \frac{\prod_{m=1}^M e^{V_m/\sigma}}{ \left( \sum_{k=1}^J e^{V_k/\sigma} \right)^M }\right)(M-1)!
+\label{ll_base}
 \end{equation}
 
 \noindent
@@ -158,21 +159,21 @@ where $\sigma$ is the scale parameter and $c_m = \frac{1-\alpha_m}{x_m+ \gamma_m
 
 ## Latent Class MDCEV
 
-The latent class version of the MDCEV assumes that an individual belongs to a finite mixture of $S$ segments each indexed by $s$ ($s=1,2,...S). We do not observe which segment an individual belongs to but we can attribute a probability $\pi_{is}$ that individual $i$ is a member of segment $s$. We impose that $0 \leq \pi_{is} \leq 1$ and $\sum^S_{s=1} \pi_{is} = 1$ through the use of the logit link function as
+The latent class version of the MDCEV assumes that an individual belongs to a finite mixture of $S$ segments each indexed by $s$ ($s=1,2,...S$). We do not observe which segment an individual belongs to but we can attribute a probability $\pi_{is}$ that individual $i$ is a member of segment $s$. We impose that $0 \leq \pi_{is} \leq 1$ and $\sum^S_{s=1} \pi_{is} = 1$ through the use of the logit link function as
 
 \begin{equation}
 \pi_{is} = \frac{exp(\delta_s'w_i)}{\sum^S_{s=1}exp(\delta_s'w_i)}
 \end{equation}
 
 \noindent
-where $w_i$ is a vector of individual characteristics and $\deta_s$ is a vector of coefficients to be estimated that determine how these individual characteristics affect the membership of individual $i$ in segment $s$. For identification, $\delta_1$ coefficients are set to zero.
+where $w_i$ is a vector of individual characteristics and $\delta_s$ is a vector of coefficients to be estimated that determine how these individual characteristics affect the membership of individual $i$ in segment $s$. For identification, the $\delta_1$ coefficients for the first segment are set to zero.
 
 The likelihood function can be
 
 \begin{equation}
 P = \prod_{i} \pi_{is}P_{is}
 \end{equation}
-where P_{is} is from above
+where $P_{is}$ is now class specific and has the same form as Eq \ref{ll_base}.
 
 ## Random parameters
 
@@ -180,7 +181,7 @@ where P_{is} is from above
 
 ### Data format
 
-The **rmdcev** package accepts data in ``long" format (one row per available non-numeraire alternative). There is no row for the numeraire good. The following named columns are required in the data:
+The **rmdcev** package accepts data in "long" format (one row per available non-numeraire alternative). There is no row for the numeraire good. The following named columns are required in the data:
 
 - **id**: The unique id variable for each individual
 - **good**: The variable containing the good number

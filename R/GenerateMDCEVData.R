@@ -29,7 +29,7 @@ GenerateMDCEVData <- function(model, nobs = 1000, ngoods = 10,
 							  tol = 1e-20,
 							  max_loop = 999){
 
-	inc <-  stats::runif(nobs, inc_lo, inc_hi)
+	income <-  stats::runif(nobs, inc_lo, inc_hi)
 	price <- matrix(stats::runif(nobs*ngoods, price_lo, price_hi), nobs, ngoods)
 
 	true <- gamma_parms
@@ -97,14 +97,14 @@ GenerateMDCEVData <- function(model, nobs = 1000, ngoods = 10,
 	psi_sims <- list(psi_sims )
 	names(psi_sims) <- "psi_sims"
 
-	inc_list <- list(as.list(inc))
-	names(inc_list) <- "inc" # price normalized MU at zero
+	income_list <- list(as.list(income))
+	names(income_list) <- "income" # price normalized MU at zero
 
 	price_list <- cbind(1, price) #add numeraire price to price matrix (<-1)
 	price_list <- list(CreateListsRow(price_list))
 	names(price_list) <- "price" # price normalized MU at zero
 
-	df_indiv <- c(inc_list, price_list, psi_sims)
+	df_indiv <- c(income_list, price_list, psi_sims)
 
 	rstan::expose_stan_functions(stanmodels$SimulationFunctions)
 
@@ -123,9 +123,9 @@ GenerateMDCEVData <- function(model, nobs = 1000, ngoods = 10,
 
 	id <- rep(1:nobs, each = ngoods)
 	good <- rep(1:ngoods, times = nobs)
-	inc <- rep(inc, each = ngoods)
+	income <- rep(income, each = ngoods)
 
-	data <- as.data.frame(cbind(id, good, quant, price, dat_psi, inc))
+	data <- as.data.frame(cbind(id, good, quant, price, dat_psi, income))
 
 	out <- list(data = data,
 				parms_true = parms_true)

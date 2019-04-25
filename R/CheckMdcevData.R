@@ -18,13 +18,13 @@ CheckMdcevData <- function(data){
 	if(!"price" %in% colnames(data))
 		stop("Data must have price column for non-numeraire alternatives")
 
-	if(!"inc" %in% colnames(data))
-		stop("Data must have inc column for individual's income")
+	if(!"income" %in% colnames(data))
+		stop("Data must have income column for individual's income")
 
 	check <- tbl_df(data) %>%
 		mutate(expend = .data$price * .data$quant) %>%
 		group_by(.data$id) %>%
-		summarise(numeraire = mean(.data$inc) - sum(.data$expend)) %>%
+		summarise(numeraire = mean(.data$income) - sum(.data$expend)) %>%
 		select(.data$numeraire)
 
 	if (sum(check$numeraire < 0) > 0){

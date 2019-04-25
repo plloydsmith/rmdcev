@@ -30,7 +30,7 @@ processMDCEVdata <- function(data, psi_formula, lc_formula,
 	# convert quant/price to matrices
 	price <- matrix(data$price, ncol = J, byrow = TRUE)
 	quant <- matrix(data$quant, ncol = J, byrow = TRUE)
-	inc <- matrix(data$inc, ncol = J, byrow = TRUE)[,1]
+	income <- matrix(data$income, ncol = J, byrow = TRUE)[,1]
 
 	nonzero <- cbind(1, quant != 0)
 	M <- rowSums(nonzero != 0)
@@ -44,7 +44,7 @@ processMDCEVdata <- function(data, psi_formula, lc_formula,
 			 j_price = price,
 			 j_quant = quant,
 			 num_price = as.vector(num_price),
-			 income = as.vector(inc),
+			 income = as.vector(income),
 			 M_factorial = M_factorial,
 			 flat_priors = model_options$flat_priors,
 			 prior_psi = model_options$prior_psi_sd,

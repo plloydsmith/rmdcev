@@ -147,7 +147,7 @@ return(output);
  * Calculate MarshDemands using general or hybrid approach
  * @return vector of ngood demands
  */
-vector MarshallianDemand(real inc, vector price, vector MUzero, vector gamma, vector alpha,
+vector MarshallianDemand(real income, vector price, vector MUzero, vector gamma, vector alpha,
 							int ngoods, int algo_gen, real tol_e, int max_loop) {
 
 	vector[ngoods+1] mdemand;
@@ -177,7 +177,7 @@ vector MarshallianDemand(real inc, vector price, vector MUzero, vector gamma, ve
 
 		while (exit == 0){
 			// Calculate lambda equal to MUzero(M+1)
-			lambda_num = inc + sum(g_price[1:M]) - 1; // minus one for numeraire
+			lambda_num = income + sum(g_price[1:M]) - 1; // minus one for numeraire
 			lambda_den = sum(c[1:M]);
 			lambda = pow(lambda_num / lambda_den, alpha_1 - 1);
 
@@ -210,11 +210,11 @@ vector MarshallianDemand(real inc, vector price, vector MUzero, vector gamma, ve
 
 			E = ComputeE(M, lambda, g_price, b, c, d);			// Calculate E
 
-			if (E >= inc || M+1 == ngoods+1){
-				if(E < inc)
+			if (E >= income || M+1 == ngoods+1){
+				if(E < income)
 					M += 1;
-//				M = E < inc ? M + 1 : M;
-				lambda_l = E < inc ? 0 : lambda;
+//				M = E < income ? M + 1 : M;
+				lambda_l = E < income ? 0 : lambda;
 				lambda_u = mu[M];
 				lambda = (lambda_l + lambda_u) / 2;
 
@@ -224,22 +224,22 @@ vector MarshallianDemand(real inc, vector price, vector MUzero, vector gamma, ve
 					E = ComputeE(M, lambda, g_price, b, c, d);
 
 					// Update lambdas's
-					if (E < inc)
+					if (E < income)
 						lambda_u = lambda_mid;
-					else if (E > inc)
+					else if (E > income)
 						lambda_l = lambda_mid;
-//					lambda_u = E > inc ? lambda_u : (lambda_l + lambda_u) / 2;
-//					lambda_l = E < inc ? lambda_l : (lambda_l + lambda_u) / 2;
+//					lambda_u = E > income ? lambda_u : (lambda_l + lambda_u) / 2;
+//					lambda_l = E < income ? lambda_l : (lambda_l + lambda_u) / 2;
 					lambda = (lambda_l + lambda_u) / 2;
 
-					if (fabs((E - inc) / (E + inc) * 0.5) < tol_e) break;
+					if (fabs((E - income) / (E + income) * 0.5) < tol_e) break;
 				}
 				// Compute demands (using eq. 12 in Pinjari and Bhat)
 				for (m in 1:M)
 					X[m] = ((lambda / mu[m]) ^ b[m] -d[m]) * g[m];
 				exit = 1;
 
-			} else if (E < inc && M + 1 < ngoods + 1)
+			} else if (E < income && M + 1 < ngoods + 1)
 				M += 1; // adds one to M
 		}
 	}
@@ -251,7 +251,7 @@ return(mdemand);
  * Calculate utility for all J goods
  * @return utility value
  */
-real ComputeUtilJ(real inc, vector quant_j, vector price_j,
+real ComputeUtilJ(real income, vector quant_j, vector price_j,
 					vector psi_j, vector gamma_j, vector alpha,
 					int ngoods, int model_num) {
 
@@ -259,7 +259,7 @@ real ComputeUtilJ(real inc, vector quant_j, vector price_j,
 	real util_num; // numeraire
 	vector[ngoods] util_j;
 
-	util_num = 1 / alpha[1] * pow(inc -  price_j' * quant_j, alpha[1]);
+	util_num = 1 / alpha[1] * pow(income -  price_j' * quant_j, alpha[1]);
 
 	if (model_num == 1){
 		util_j = psi_j .* gamma_j .* log(quant_j ./ gamma_j + 1);
@@ -404,7 +404,7 @@ return(hdemand);
 }
 
 // Overall code
-matrix CalcmdemandOne_rng(real inc, vector price,
+matrix CalcmdemandOne_rng(real income, vector price,
 						vector psi_sims, vector gamma_sims, vector alpha_sims, real scale_sims,
 						int nerrs, int algo_gen, real tol, int max_loop){
 
@@ -433,7 +433,7 @@ matrix CalcmdemandOne_rng(real inc, vector price,
 			psi_b_err = exp(append_row(0, psi_j) + error[err]);
 			MUzero_b = psi_b_err ./ price;
 
-			mdemand[err] = MarshallianDemand(inc, price, MUzero_b, gamma, alpha,
+			mdemand[err] = MarshallianDemand(income, price, MUzero_b, gamma, alpha,
 			ngoods, algo_gen, tol, max_loop)';
 		}
 		mdemand_trans = mdemand';
@@ -449,7 +449,7 @@ return(mdemand_out);
 
 /**
  * Calculate WTP for each individual, simulation, and policy
- * @param inc income
+ * @param income income
  * @param quant_j non-numeraire consumption amounts
  * @param price full price vector
  * @param price_p_policy list of length npols containing vectors of length ngood
@@ -461,7 +461,7 @@ return(mdemand_out);
  * @param rest of model parameter options
  * @return Matrix of nsims x npols wtp
  */
-matrix CalcWTP_rng(real inc, vector quant_j, vector price,
+matrix CalcWTP_rng(real income, vector quant_j, vector price,
 						vector[] price_p_policy, matrix[] psi_p_sims,
 						matrix psi_sims, vector[] gamma_sims, vector[] alpha_sims, vector scale_sims,
 						int nerrs, int cond_error, int draw_mlhs,
@@ -471,7 +471,7 @@ matrix CalcWTP_rng(real inc, vector quant_j, vector price,
 	int nsims = num_elements(scale_sims);
 	int npols = size(price_p_policy);
 	matrix[nsims, npols] wtp;
-	real quant_num = inc - quant_j' * price[2:ngoods+1];
+	real quant_num = income - quant_j' * price[2:ngoods+1];
 
 	for (sim in 1:nsims){
 		vector[ngoods] psi_j = psi_sims[sim]';
@@ -501,10 +501,10 @@ matrix CalcWTP_rng(real inc, vector quant_j, vector price,
 			if (cond_error == 1){
 				mdemand = append_row(quant_num, quant_j);
 			} else if(cond_error == 0)
-				mdemand = MarshallianDemand(inc, price, MUzero_b, gamma, alpha,
+				mdemand = MarshallianDemand(income, price, MUzero_b, gamma, alpha,
 				ngoods, algo_gen, tol, max_loop);
 
-			util[err] = ComputeUtilJ(inc, mdemand[2:ngoods+1], price[2:ngoods+1],
+			util[err] = ComputeUtilJ(income, mdemand[2:ngoods+1], price[2:ngoods+1],
 									psi_b_err[2:ngoods+1], gamma[2:ngoods+1], alpha,
 									ngoods, model_num); // add err to psi_b if no psi_p
 		}
@@ -522,7 +522,7 @@ matrix CalcWTP_rng(real inc, vector quant_j, vector price,
 				hdemand = HicksianDemand(util[err], price_p, MUzero_p, gamma, alpha,
 										ngoods, algo_gen, model_num, tol, max_loop);
 
-				wtp_err[err] = inc - price_p' * hdemand;
+				wtp_err[err] = income - price_p' * hdemand;
 			}
 			wtp_policy[policy] = mean(wtp_err);
 		}
@@ -533,7 +533,7 @@ return(wtp);
 
 /**
  * Calculate WTP for each individual, simulation, and policy using only price changes
- * @param inc income
+ * @param income income
  * @param quant_j non-numeraire consumption amounts
  * @param price full price vector
  * @param psi_p_sims list of length sims constaining npols X ngoods matrices of policy psi
@@ -544,7 +544,7 @@ return(wtp);
  * @param rest of model parameter options
  * @return Matrix of nsims x npols wtp
  */
-matrix CalcWTPPriceOnly_rng(real inc, vector quant_j, vector price,
+matrix CalcWTPPriceOnly_rng(real income, vector quant_j, vector price,
 						vector[] price_p_policy,
 						matrix psi_sims, vector[] gamma_sims, vector[] alpha_sims, vector scale_sims,
 						int nerrs, int cond_error, int draw_mlhs, int algo_gen, int model_num, real tol, int max_loop){
@@ -553,7 +553,7 @@ matrix CalcWTPPriceOnly_rng(real inc, vector quant_j, vector price,
 	int nsims = num_elements(scale_sims);
 	int npols = size(price_p_policy);
 	matrix[nsims, npols] wtp;
-	real quant_num = inc - quant_j' * price[2:ngoods+1];
+	real quant_num = income - quant_j' * price[2:ngoods+1];
 
 	for (sim in 1:nsims){
 		vector[ngoods] psi_j = psi_sims[sim]';
@@ -579,10 +579,10 @@ matrix CalcWTPPriceOnly_rng(real inc, vector quant_j, vector price,
 			if (cond_error == 1){
 				mdemand = append_row(quant_num, quant_j);
 			} else if(cond_error == 0)
-				mdemand = MarshallianDemand(inc, price, MUzero_b, gamma, alpha,
+				mdemand = MarshallianDemand(income, price, MUzero_b, gamma, alpha,
 				ngoods, algo_gen, tol, max_loop);
 
-			util[err] = ComputeUtilJ(inc, mdemand[2:ngoods+1], price[2:ngoods+1],
+			util[err] = ComputeUtilJ(income, mdemand[2:ngoods+1], price[2:ngoods+1],
 									psi_b_err[err, 2:ngoods+1], gamma[2:ngoods+1], alpha,
 									ngoods, model_num);
 		}
@@ -598,7 +598,7 @@ matrix CalcWTPPriceOnly_rng(real inc, vector quant_j, vector price,
 				hdemand = HicksianDemand(util[err], price_p, MUzero_p, gamma, alpha,
 										ngoods, algo_gen, model_num, tol, max_loop);
 
-				wtp_err[err] = inc - price_p' * hdemand;
+				wtp_err[err] = income - price_p' * hdemand;
 			}
 			wtp_policy[policy] = mean(wtp_err);
 		}
@@ -607,7 +607,7 @@ matrix CalcWTPPriceOnly_rng(real inc, vector quant_j, vector price,
 return(wtp);
 }
 
-matrix[] CalcMarshallianDemand_rng(real inc, vector quant_j, vector price,
+matrix[] CalcMarshallianDemand_rng(real income, vector quant_j, vector price,
 						vector[] price_p_policy, matrix[] psi_p_sims,
 						matrix psi_sims, vector[] gamma_sims, vector[] alpha_sims, vector scale_sims,
 						int nerrs, int cond_error, int draw_mlhs,
@@ -617,7 +617,7 @@ matrix[] CalcMarshallianDemand_rng(real inc, vector quant_j, vector price,
 	int nsims = num_elements(scale_sims);
 	int npols = size(price_p_policy);
 	matrix[npols, ngoods+1] mdemand_out[nsims];
-	real quant_num = inc - quant_j' * price[2:ngoods+1];
+	real quant_num = income - quant_j' * price[2:ngoods+1];
 
 	for (sim in 1:nsims){
 		vector[ngoods] psi_j = psi_sims[sim]';
@@ -647,10 +647,10 @@ matrix[] CalcMarshallianDemand_rng(real inc, vector quant_j, vector price,
 			if (cond_error == 1){
 				mdemand_util= append_row(quant_num, quant_j);
 			} else if(cond_error == 0)
-				mdemand_util = MarshallianDemand(inc, price, MUzero_b, gamma, alpha,
+				mdemand_util = MarshallianDemand(income, price, MUzero_b, gamma, alpha,
 				ngoods, algo_gen, tol, max_loop);
 
-			util[err] = ComputeUtilJ(inc, mdemand_util[2:ngoods+1], price[2:ngoods+1],
+			util[err] = ComputeUtilJ(income, mdemand_util[2:ngoods+1], price[2:ngoods+1],
 									psi_b_err[2:ngoods+1], gamma[2:ngoods+1], alpha,
 									ngoods, model_num); // add err to psi_b if no psi_p
 		}
@@ -665,7 +665,7 @@ matrix[] CalcMarshallianDemand_rng(real inc, vector quant_j, vector price,
 			for (err in 1:nerrs){
 				vector[ngoods + 1] MUzero_p = exp(append_row(0, psi_p) + error[err]) ./ price_p;
 
-				mdemand_p[err] = MarshallianDemand(inc, price, MUzero_p, gamma, alpha,
+				mdemand_p[err] = MarshallianDemand(income, price, MUzero_p, gamma, alpha,
 					ngoods, algo_gen, tol, max_loop)';
 			}
 		mdemand_trans = mdemand_p';

@@ -141,8 +141,8 @@ ProcessSimulationData <- function(est_sim, stan_est, policies, nsims, price_chan
 	}
 
 	# Set baseline individual data into lists
-	inc <- list(as.list(stan_est$stan_data$inc))
-	names(inc) <- "inc"
+	income <- list(as.list(stan_est$stan_data$income))
+	names(income) <- "income"
 
 	quant_j <- list(CreateListsRow(stan_est$stan_data$j_quant))
 	names(quant_j) <- "quant_j"
@@ -152,7 +152,7 @@ ProcessSimulationData <- function(est_sim, stan_est, policies, nsims, price_chan
 	names(price) <- "price"
 
 	# Pull individual level data into one list
-	df_indiv <- c(inc, quant_j, price, psi_sim, psi_p_sim)
+	df_indiv <- c(income, quant_j, price, psi_sim, psi_p_sim)
 
 	out <- list(df_indiv = df_indiv,
 				price_p_list = policies$price_p,

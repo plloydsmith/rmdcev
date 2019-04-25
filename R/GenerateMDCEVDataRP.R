@@ -20,7 +20,7 @@ GenerateMDCEVDataRP <- function(model,
 								max_loop = 999,
 								corr = 0){
 
-	inc <-  stats::runif(nobs, inc_lo, inc_hi)
+	income <-  stats::runif(nobs, inc_lo, inc_hi)
 	price <- matrix(stats::runif(nobs*ngoods, price_lo, price_hi), nobs, ngoods)
 
 	num_psi <- length(psi_j_parms)
@@ -113,14 +113,14 @@ GenerateMDCEVDataRP <- function(model,
 	alpha_sims <- list(alpha_sims )
 	names(alpha_sims) <- "alpha_sims"
 
-	inc_list <- list(as.list(inc))
-	names(inc_list) <- "inc" # price normalized MU at zero
+	income_list <- list(as.list(income))
+	names(income_list) <- "income" # price normalized MU at zero
 
 	price_list <- cbind(1, price) #add numeraire price to price matrix (<-1)
 	price_list <- list(CreateListsRow(price_list))
 	names(price_list) <- "price" # price normalized MU at zero
 
-	df_indiv <- c(inc_list, price_list, psi_sims, gamma_sims, alpha_sims)
+	df_indiv <- c(income_list, price_list, psi_sims, gamma_sims, alpha_sims)
 
 	rstan::expose_stan_functions(stanmodels$SimulationFunctions)
 	#	model_src <- stanc_builder("src/stan_files/SimulationFunctions.stan")
@@ -139,12 +139,12 @@ GenerateMDCEVDataRP <- function(model,
 
 	id <- rep(1:nobs, each = ngoods)
 	good <- rep(1:ngoods, times = nobs)
-	inc <- rep(inc, each = ngoods)
+	income <- rep(income, each = ngoods)
 
-	data <- as.data.frame(cbind(id, good, quant, price, psi_j, inc))
+	data <- as.data.frame(cbind(id, good, quant, price, psi_j, income))
 
 	parms_true <- df_indiv
-	parms_true$inc <- parms_true$price <-  NULL
+	parms_true$income <- parms_true$price <-  NULL
 
 	out <- list(data = data,
 				parms_true = beta_individual,

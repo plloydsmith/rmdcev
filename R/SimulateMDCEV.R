@@ -103,7 +103,7 @@ SummaryWelfare <- function(wtp, ci = 0.95){
 
 #' @title StanWelfare
 #' @description Use Stan functions to simulate Welfare
-#' @param df_indiv list of inc, quant_j, price_j, psi, and psi_p that vary by individual
+#' @param df_indiv list of income, quant_j, price_j, psi, and psi_p that vary by individual
 #' @param df_common list of parameters that are constant for all individuals
 #' @param sim_options list of simualtion options
 #' @return wtp list
@@ -151,7 +151,7 @@ StanWelfare <- function(df_indiv, df_common, sim_options){
 
 #' @title StanDemand
 #' @description Use Stan functions to simulate Marshallian demand
-#' @param df_indiv list of inc, quant_j, price_j, psi, and psi_p that vary by individual
+#' @param df_indiv list of income, quant_j, price_j, psi, and psi_p that vary by individual
 #' @param df_common list of parameters that are constant for all individuals
 #' @param sim_options list of simualtion options
 #' @return demand with nsim lists of npolsXngoods+1 matrices

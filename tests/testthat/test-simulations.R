@@ -12,7 +12,7 @@ npols <- 2
 policies<-	CreateBlankPolicies(npols, result$stan_data[["J"]], result$stan_data[["dat_psi"]])
 
 df_sim <- PrepareSimulationData(result, policies, nsims = 3)
-inc <- df_sim[["df_indiv"]][["inc"]][[1]]
+income <- df_sim[["df_indiv"]][["income"]][[1]]
 quant_j <- df_sim[["df_indiv"]][["quant_j"]][[1]]
 price <- df_sim[["df_indiv"]][["price"]][[1]]
 
@@ -23,7 +23,7 @@ price_j <- price[-1]
 ngoods <- length(price_j)
 model_num <- 4
 
-quant_num <- inc - quant_j  %*% price[-1]
+quant_num <- income - quant_j  %*% price[-1]
 quant <- c(quant_num, quant_j)
 psi_j <- result[["stan_data"]][["dat_psi"]][1:ngoods,] %*% t(result[["stan_fit"]][["par"]][["psi"]])
 gamma_j <- result[["stan_fit"]][["par"]][["gamma"]]
@@ -44,11 +44,11 @@ error <- DrawError_rng(quant_num, quant_j, price[-1],
 	psi_b_err <- exp(c(0, psi_j) + error[[1]])
 	MUzero_b <- psi_b_err / price
 #	 Test hybrid algo
-	mdemand <- MarshallianDemand(inc, price, MUzero_b, gamma, alpha,
+	mdemand <- MarshallianDemand(income, price, MUzero_b, gamma, alpha,
 								 ngoods, algo_gen = 0, tol_e = tol_e, max_loop = max_loop);
 	expect_true(sum(abs(mdemand - quant)) < tol)
 	# Test general algo
-	mdemand <- MarshallianDemand(inc, price, MUzero_b, gamma, alpha,
+	mdemand <- MarshallianDemand(income, price, MUzero_b, gamma, alpha,
 								 ngoods, algo_gen = 1, tol_e = tol_e, max_loop = max_loop);
 	expect_true(sum(abs(mdemand - quant)) < tol)
 
@@ -58,10 +58,10 @@ error <- c(0.0000000000, -0.77612399, -0.55169780, -0.02143232, -0.81241994, -0.
 
 psi_b_err <- exp(c(0, psi_j) + error)
 MUzero_b <- psi_b_err / price
-mdemand <- MarshallianDemand(inc, price, MUzero_b, gamma, alpha,
+mdemand <- MarshallianDemand(income, price, MUzero_b, gamma, alpha,
 							 ngoods, algo_gen = 0, tol_e = tol_e, max_loop = max_loop);
 
-	util <- ComputeUtilJ(inc, mdemand[-1], price[-1],
+	util <- ComputeUtilJ(income, mdemand[-1], price[-1],
 							 psi_b_err[-1], gamma[-1], alpha,
 							 ngoods, model_num)
 	expect_true(abs(util - 1000011.04297481) < tol)
@@ -71,12 +71,12 @@ mdemand <- MarshallianDemand(inc, price, MUzero_b, gamma, alpha,
 
 	hdemand <- HicksianDemand(util, price_p, MUzero_p, gamma, alpha,
 			ngoods, algo_gen = 0, model_num, tol_l = tol_l, max_loop = max_loop)
-	wtp_err <- inc - t(price_p) %*% hdemand
+	wtp_err <- income - t(price_p) %*% hdemand
 	expect_true(abs(wtp_err - (-62.4994989953)) < tol)
 
 	hdemand <- HicksianDemand(util, price_p, MUzero_p, gamma, alpha,
 							  ngoods, algo_gen = 1, model_num, tol_l = tol_l, max_loop = max_loop)
-	wtp_err <- inc - t(price_p) %*% hdemand
+	wtp_err <- income - t(price_p) %*% hdemand
 	expect_true(abs(wtp_err - (-62.4994989953)) < tol)
 
 })
