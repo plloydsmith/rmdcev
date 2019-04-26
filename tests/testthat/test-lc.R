@@ -20,7 +20,7 @@ test_that("LC 2-classes", {
 	expect_true(abs(result$bic - 24517.65) < tol)
 	expect_true(abs(result[["stan_fit"]][["par"]][["scale"]][[1]] - 0.81) < tol)
 	expect_true(abs(result[["stan_fit"]][["par"]][["psi"]][2,2] - -8.19) < tol)
-	expect_true(abs(result[["stan_fit"]][["par"]][["delta"]][[1,2]] - -1.38) < tol)
+	expect_true(abs(result[["stan_fit"]][["par"]][["delta"]][[1,2]] - -1.37) < tol)
 })
 
 
