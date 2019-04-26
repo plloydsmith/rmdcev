@@ -36,9 +36,9 @@ static int current_statement_begin__;
 stan::io::program_reader prog_reader__() {
     stan::io::program_reader reader;
     reader.add_event(0, 0, "start", "model_mdcev_lc");
-    reader.add_event(2, 2, "include", "/common/mdcev_ll_matrix.stan");
-    reader.add_event(2, 0, "start", "/common/mdcev_ll_matrix.stan");
-    reader.add_event(89, 87, "end", "/common/mdcev_ll_matrix.stan");
+    reader.add_event(2, 2, "include", "/common/mdcev_ll.stan");
+    reader.add_event(2, 0, "start", "/common/mdcev_ll.stan");
+    reader.add_event(89, 87, "end", "/common/mdcev_ll.stan");
     reader.add_event(89, 3, "restart", "model_mdcev_lc");
     reader.add_event(93, 7, "include", "/common/mdcev_data.stan");
     reader.add_event(93, 0, "start", "/common/mdcev_data.stan");
@@ -176,28 +176,28 @@ struct alpha_ll_functor__ {
 
 template <typename T0__, typename T1__, typename T2__, typename T3__, typename T4__, typename T5__, typename T6__, typename T7__, typename T8__, typename T9__, typename T10__, typename T11__, typename T12__, typename T13__, typename T17__, typename T18__>
 Eigen::Matrix<typename boost::math::tools::promote_args<T0__, T1__, T2__, T3__, typename boost::math::tools::promote_args<T4__, T5__, T6__, T7__, typename boost::math::tools::promote_args<T8__, T9__, T10__, T11__, typename boost::math::tools::promote_args<T12__, T13__, T17__, T18__>::type>::type>::type>::type, Eigen::Dynamic,1>
-mdcev_ll_matrix(const Eigen::Matrix<T0__, Eigen::Dynamic,Eigen::Dynamic>& j_quant,
-                    const Eigen::Matrix<T1__, Eigen::Dynamic,Eigen::Dynamic>& quant_full,
-                    const Eigen::Matrix<T2__, Eigen::Dynamic,Eigen::Dynamic>& log_price,
-                    const Eigen::Matrix<T3__, Eigen::Dynamic,1>& log_num,
-                    const Eigen::Matrix<T4__, Eigen::Dynamic,Eigen::Dynamic>& price_full,
-                    const Eigen::Matrix<T5__, Eigen::Dynamic,1>& log_inc,
-                    const Eigen::Matrix<T6__, Eigen::Dynamic,Eigen::Dynamic>& dat_psi,
-                    const Eigen::Matrix<T7__, Eigen::Dynamic,1>& M,
-                    const Eigen::Matrix<T8__, Eigen::Dynamic,1>& M_factorial,
-                    const Eigen::Matrix<T9__, Eigen::Dynamic,1>& weights,
-                    const Eigen::Matrix<T10__, Eigen::Dynamic,Eigen::Dynamic>& lpsi,
-                    const Eigen::Matrix<T11__, Eigen::Dynamic,Eigen::Dynamic>& gamma_full,
-                    const Eigen::Matrix<T12__, Eigen::Dynamic,Eigen::Dynamic>& alpha_full,
-                    const T13__& scale_full,
-                    const int& I,
-                    const int& J,
-                    const int& G,
-                    const Eigen::Matrix<T17__, Eigen::Dynamic,1>& ones_g,
-                    const Eigen::Matrix<T18__, Eigen::Dynamic,Eigen::Dynamic>& nonzero,
-                    const int& model_num,
-                    const int& fixed_scale,
-                    const int& trunc_data, std::ostream* pstream__) {
+mdcev_ll(const Eigen::Matrix<T0__, Eigen::Dynamic,Eigen::Dynamic>& j_quant,
+             const Eigen::Matrix<T1__, Eigen::Dynamic,Eigen::Dynamic>& quant_full,
+             const Eigen::Matrix<T2__, Eigen::Dynamic,Eigen::Dynamic>& log_price,
+             const Eigen::Matrix<T3__, Eigen::Dynamic,1>& log_num,
+             const Eigen::Matrix<T4__, Eigen::Dynamic,Eigen::Dynamic>& price_full,
+             const Eigen::Matrix<T5__, Eigen::Dynamic,1>& log_inc,
+             const Eigen::Matrix<T6__, Eigen::Dynamic,Eigen::Dynamic>& dat_psi,
+             const Eigen::Matrix<T7__, Eigen::Dynamic,1>& M,
+             const Eigen::Matrix<T8__, Eigen::Dynamic,1>& M_factorial,
+             const Eigen::Matrix<T9__, Eigen::Dynamic,1>& weights,
+             const Eigen::Matrix<T10__, Eigen::Dynamic,Eigen::Dynamic>& lpsi,
+             const Eigen::Matrix<T11__, Eigen::Dynamic,Eigen::Dynamic>& gamma_full,
+             const Eigen::Matrix<T12__, Eigen::Dynamic,Eigen::Dynamic>& alpha_full,
+             const T13__& scale_full,
+             const int& I,
+             const int& J,
+             const int& G,
+             const Eigen::Matrix<T17__, Eigen::Dynamic,1>& ones_g,
+             const Eigen::Matrix<T18__, Eigen::Dynamic,Eigen::Dynamic>& nonzero,
+             const int& model_num,
+             const int& fixed_scale,
+             const int& trunc_data, std::ostream* pstream__) {
     typedef typename boost::math::tools::promote_args<T0__, T1__, T2__, T3__, typename boost::math::tools::promote_args<T4__, T5__, T6__, T7__, typename boost::math::tools::promote_args<T8__, T9__, T10__, T11__, typename boost::math::tools::promote_args<T12__, T13__, T17__, T18__>::type>::type>::type>::type local_scalar_t__;
     typedef local_scalar_t__ fun_return_scalar_t__;
     const static bool propto__ = true;
@@ -362,32 +362,32 @@ mdcev_ll_matrix(const Eigen::Matrix<T0__, Eigen::Dynamic,Eigen::Dynamic>& j_quan
 }
 
 
-struct mdcev_ll_matrix_functor__ {
+struct mdcev_ll_functor__ {
     template <typename T0__, typename T1__, typename T2__, typename T3__, typename T4__, typename T5__, typename T6__, typename T7__, typename T8__, typename T9__, typename T10__, typename T11__, typename T12__, typename T13__, typename T17__, typename T18__>
         Eigen::Matrix<typename boost::math::tools::promote_args<T0__, T1__, T2__, T3__, typename boost::math::tools::promote_args<T4__, T5__, T6__, T7__, typename boost::math::tools::promote_args<T8__, T9__, T10__, T11__, typename boost::math::tools::promote_args<T12__, T13__, T17__, T18__>::type>::type>::type>::type, Eigen::Dynamic,1>
     operator()(const Eigen::Matrix<T0__, Eigen::Dynamic,Eigen::Dynamic>& j_quant,
-                    const Eigen::Matrix<T1__, Eigen::Dynamic,Eigen::Dynamic>& quant_full,
-                    const Eigen::Matrix<T2__, Eigen::Dynamic,Eigen::Dynamic>& log_price,
-                    const Eigen::Matrix<T3__, Eigen::Dynamic,1>& log_num,
-                    const Eigen::Matrix<T4__, Eigen::Dynamic,Eigen::Dynamic>& price_full,
-                    const Eigen::Matrix<T5__, Eigen::Dynamic,1>& log_inc,
-                    const Eigen::Matrix<T6__, Eigen::Dynamic,Eigen::Dynamic>& dat_psi,
-                    const Eigen::Matrix<T7__, Eigen::Dynamic,1>& M,
-                    const Eigen::Matrix<T8__, Eigen::Dynamic,1>& M_factorial,
-                    const Eigen::Matrix<T9__, Eigen::Dynamic,1>& weights,
-                    const Eigen::Matrix<T10__, Eigen::Dynamic,Eigen::Dynamic>& lpsi,
-                    const Eigen::Matrix<T11__, Eigen::Dynamic,Eigen::Dynamic>& gamma_full,
-                    const Eigen::Matrix<T12__, Eigen::Dynamic,Eigen::Dynamic>& alpha_full,
-                    const T13__& scale_full,
-                    const int& I,
-                    const int& J,
-                    const int& G,
-                    const Eigen::Matrix<T17__, Eigen::Dynamic,1>& ones_g,
-                    const Eigen::Matrix<T18__, Eigen::Dynamic,Eigen::Dynamic>& nonzero,
-                    const int& model_num,
-                    const int& fixed_scale,
-                    const int& trunc_data, std::ostream* pstream__) const {
-        return mdcev_ll_matrix(j_quant, quant_full, log_price, log_num, price_full, log_inc, dat_psi, M, M_factorial, weights, lpsi, gamma_full, alpha_full, scale_full, I, J, G, ones_g, nonzero, model_num, fixed_scale, trunc_data, pstream__);
+             const Eigen::Matrix<T1__, Eigen::Dynamic,Eigen::Dynamic>& quant_full,
+             const Eigen::Matrix<T2__, Eigen::Dynamic,Eigen::Dynamic>& log_price,
+             const Eigen::Matrix<T3__, Eigen::Dynamic,1>& log_num,
+             const Eigen::Matrix<T4__, Eigen::Dynamic,Eigen::Dynamic>& price_full,
+             const Eigen::Matrix<T5__, Eigen::Dynamic,1>& log_inc,
+             const Eigen::Matrix<T6__, Eigen::Dynamic,Eigen::Dynamic>& dat_psi,
+             const Eigen::Matrix<T7__, Eigen::Dynamic,1>& M,
+             const Eigen::Matrix<T8__, Eigen::Dynamic,1>& M_factorial,
+             const Eigen::Matrix<T9__, Eigen::Dynamic,1>& weights,
+             const Eigen::Matrix<T10__, Eigen::Dynamic,Eigen::Dynamic>& lpsi,
+             const Eigen::Matrix<T11__, Eigen::Dynamic,Eigen::Dynamic>& gamma_full,
+             const Eigen::Matrix<T12__, Eigen::Dynamic,Eigen::Dynamic>& alpha_full,
+             const T13__& scale_full,
+             const int& I,
+             const int& J,
+             const int& G,
+             const Eigen::Matrix<T17__, Eigen::Dynamic,1>& ones_g,
+             const Eigen::Matrix<T18__, Eigen::Dynamic,Eigen::Dynamic>& nonzero,
+             const int& model_num,
+             const int& fixed_scale,
+             const int& trunc_data, std::ostream* pstream__) const {
+        return mdcev_ll(j_quant, quant_full, log_price, log_num, price_full, log_inc, dat_psi, M, M_factorial, weights, lpsi, gamma_full, alpha_full, scale_full, I, J, G, ones_g, nonzero, model_num, fixed_scale, trunc_data, pstream__);
     }
 };
 
@@ -1175,7 +1175,7 @@ public:
                 }
             }
             current_statement_begin__ = 219;
-            stan::math::assign(log_like, mdcev_ll_matrix(j_quant,quant_full,log_price,log_num,price_full,log_inc,dat_psi,M,M_factorial,weights,lpsi,gamma_individual,alpha_individual,scale_full,I,J,G,ones_g,nonzero,model_num,fixed_scale,trunc_data, pstream__));
+            stan::math::assign(log_like, mdcev_ll(j_quant,quant_full,log_price,log_num,price_full,log_inc,dat_psi,M,M_factorial,weights,lpsi,gamma_individual,alpha_individual,scale_full,I,J,G,ones_g,nonzero,model_num,fixed_scale,trunc_data, pstream__));
             }
 
             // validate transformed parameters
@@ -1458,7 +1458,7 @@ public:
                 }
             }
             current_statement_begin__ = 219;
-            stan::math::assign(log_like, mdcev_ll_matrix(j_quant,quant_full,log_price,log_num,price_full,log_inc,dat_psi,M,M_factorial,weights,lpsi,gamma_individual,alpha_individual,scale_full,I,J,G,ones_g,nonzero,model_num,fixed_scale,trunc_data, pstream__));
+            stan::math::assign(log_like, mdcev_ll(j_quant,quant_full,log_price,log_num,price_full,log_inc,dat_psi,M,M_factorial,weights,lpsi,gamma_individual,alpha_individual,scale_full,I,J,G,ones_g,nonzero,model_num,fixed_scale,trunc_data, pstream__));
             }
 
             // validate transformed parameters

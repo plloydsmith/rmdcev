@@ -26,11 +26,11 @@ maxlikeMDCEV <- function(stan_data, initial.parameters,
 									  verbose = mle_options$print_iterations, init = initial.parameters,
 						   draws = mle_options$n_draws, hessian = mle_options$hessian)
 	}
-	result <- list()
 
 	if (mle_options$keep_loglik == 0)
 		stan_fit <- ReduceStanFitSize(stan_fit)
 
+	result <- list()
 	result$stan_fit <- stan_fit
 	result$stan_fit$par[["theta"]] <- NULL
 	result$stan_fit$par[["delta"]] <- NULL

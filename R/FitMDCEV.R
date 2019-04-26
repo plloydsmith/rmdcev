@@ -27,7 +27,7 @@
 #' @param prior_gamma_sd standard deviation for normal prior with mean 0.
 #' @param prior_alpha_sd standard deviation for normal prior with mean 0.5.
 #' @param prior_scale_sd standard deviation for normal prior with mean 1.
-#' @param prior_delta_m_sd standard deviation for normal prior with mean 0.
+#' @param prior_delta_sd standard deviation for normal prior with mean 0.
 #' @param lkj_shape_prior Prior for Cholesky matrix
 #' @param n_iterations The number of iterations in Bayesian estimation.
 #' @param n_chains The number of chains in Bayesian estimation.
@@ -66,7 +66,7 @@ FitMDCEV <- function(data,
 					 prior_gamma_sd = 10,
 					 prior_alpha_sd = 0.5,
 					 prior_scale_sd = 1,
-					 prior_delta_m_sd = 10,
+					 prior_delta_sd = 10,
 					 n_draws = 30,
 					 keep_loglik = 0,
 					 random_parameters = "fixed",
@@ -102,7 +102,7 @@ FitMDCEV <- function(data,
 						prior_gamma_sd = prior_gamma_sd,
 						prior_alpha_sd = prior_alpha_sd,
 						prior_scale_sd = prior_scale_sd,
-						prior_delta_m_sd = prior_delta_m_sd)
+						prior_delta_sd = prior_delta_sd)
 
 	bayes_options <- list(n_iterations = n_iterations,
 						n_chains = n_chains,
