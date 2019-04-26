@@ -1,14 +1,46 @@
 
-/* This computes the LL for the MDCEV model
+/* These functions (without the underscores) are all documented in R
+   See also Appendix C of Pinheiro and Bates
+https://books.google.com/books?id=3TVDAAAAQBAJ&lpg=PR3&dq=Pinheiro%20and%20Bates&pg=PA511#v=onepage&q&f=false
+  These functions may be numerically unstable
 */
 
-vector mdcev_ll(matrix j_quant, matrix quant_full, matrix log_price, vector log_num, matrix price_full,
-				vector log_inc, matrix dat_psi, vector M, vector M_factorial, vector weights, // data
-				vector psi, vector gamma_full, vector alpha_full, real scale_full, 						// parameters
-				int I, int J, int G, vector ones_g, matrix nonzero, int model_num, int fixed_scale, int trunc_data)  {//options
+matrix gamma_ll(vector gamma, int I, int J, int G, int model_num) {
+
+	matrix[I, G] gamma_full;
+
+	if (model_num == 2)
+	  gamma_full = append_col(rep_vector(0, I), rep_matrix(1, I, J));
+	else
+	  gamma_full = append_col(rep_vector(0, I), rep_matrix(gamma', I));
+
+return(gamma_full);
+}
+
+matrix alpha_ll(vector alpha, int I, int J, int G, int model_num) {
+
+	matrix[I, G] alpha_full;
+
+	if (model_num == 1)
+	  alpha_full = append_col(rep_vector(alpha[1], I), rep_matrix(0, I, J));
+	else if (model_num == 2)
+	  alpha_full = rep_matrix(alpha', I);
+	else if (model_num == 3)
+	  alpha_full = rep_matrix(alpha[1], I, G);
+	else
+	  alpha_full = rep_matrix(1e-06, I, G);
+
+return(alpha_full);
+}
+
+vector mdcev_ll(matrix j_quant, matrix quant_full, matrix log_price,
+				vector log_num, matrix price_full, vector log_inc,
+				matrix dat_psi, vector M, vector M_factorial, vector weights, // data
+				matrix lpsi, matrix gamma_full, matrix alpha_full, real scale_full,// parameters
+				int I, int J, int G, vector ones_g, matrix nonzero,
+				int model_num, int fixed_scale, int trunc_data)  {//options
 
 	vector[I] log_like;
-	matrix[I, J] lpsi = to_matrix(dat_psi[] * psi, I, J, 0);
 	matrix[I, J] v_j;
 	matrix[I, G] f;
 	matrix[I, G] v;
@@ -17,9 +49,9 @@ vector mdcev_ll(matrix j_quant, matrix quant_full, matrix log_price, vector log_
 	vector[I] pf;
 	vector[I] prodvf;
 
-	v_j = lpsi + rep_matrix(alpha_full[2:G]'- 1, I) .* log(j_quant ./ rep_matrix(gamma_full[2:G]', I) + 1) - log_price;
-	f = (quant_full + rep_matrix(gamma_full', I)) ./ rep_matrix((1 - alpha_full)', I);
-	v = append_col((alpha_full[1] - 1) * log_num, v_j);
+	v_j = lpsi + (block(alpha_full, 1, 2, I, J) - 1) .* log(j_quant ./ block(gamma_full, 1, 2, I, J) + 1) - log_price;
+	f = (quant_full + gamma_full) ./ (1 - alpha_full);
+	v = append_col((col(alpha_full, 1) - 1) .* log_num, v_j);
 	v = exp(v / scale_full);
 	sumv = v * ones_g;
 
@@ -37,7 +69,7 @@ vector mdcev_ll(matrix j_quant, matrix quant_full, matrix log_price, vector log_
 		vector[I] like_trunc;
 		like_cond = prodvf .* pf .* M_factorial ./ sumv;
 
-		v_1 = append_col((alpha_full[1] - 1) * log_inc, lpsi - log_price);
+		v_1 = append_col((col(alpha_full, 1) - 1) .* log_inc, lpsi - log_price);
 		v_1 = exp(v_1 / scale_full);
 		sumv = v_1 * ones_g;
 
