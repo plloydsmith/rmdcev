@@ -22,24 +22,24 @@ SummaryMDCEV <- function(model, printCI = FALSE){
 	cat("Number of individuals            : ", model$n_respondents,"\n", sep="")
 	cat("Number of non-numeraire alts     : ", model$stan_data$J,"\n", sep="")
 	#	cat("Number of observations           : ", model$n_respondents,"\n", sep="")
-	cat("Estimated parameters             : ", model$n_parameters,"\n", sep="")
-	cat("LL                               : ",round(model$log.likelihood,2),"\n")
-	cat("AIC                              : ",round(model$aic,2),"\n")
-	cat("BIC                              : ",round(model$bic,2),"\n")
+	cat("Estimated parameters             : ", model$parms_info$n_vars$n_parms_total,"\n", sep="")
+	cat("LL                               : ", round(model$log.likelihood,2),"\n")
+	cat("AIC                              : ", round(model$aic,2),"\n")
+	cat("BIC                              : ", round(model$bic,2),"\n")
 	if(model$algorithm == "MLE"){
-
-	cat("Number of MVN simulation draws   : ",model$n_draws,"\n")
+		cat("Number of MVN simulation draws   : ", model$n_draws,"\n")
 
 		if(model$stan_fit$return_code==0){
 			converge <- "successful convergence"
 		} else if(model$stan_fit$return_code==0){
 			converge <- "unsuccessful convergence"
 		}
-	cat("Exist of MLE                     : ",converge,"\n")
+		cat("Exit of MLE                     : ", converge,"\n")
+
 	} else if(model$algorithm == "Bayes"){
-	cat("Number of chains                 : ",model[["stan_fit"]]@sim[["chains"]],"\n")
-	cat("Number of warmup draws per chain : ",model[["stan_fit"]]@sim[["warmup"]],"\n")
-	cat("Total post-warmup sample         : ",model[["stan_fit"]]@sim[["chains"]]*(model[["stan_fit"]]@sim[["iter"]]-model[["stan_fit"]]@sim[["warmup"]]),"\n")
+		cat("Number of chains                 : ", model[["stan_fit"]]@sim[["chains"]],"\n")
+		cat("Number of warmup draws per chain : ", model[["stan_fit"]]@sim[["warmup"]],"\n")
+		cat("Total post-warmup sample         : ", model[["stan_fit"]]@sim[["chains"]]*(model[["stan_fit"]]@sim[["iter"]]-model[["stan_fit"]]@sim[["warmup"]]),"\n")
 	}
 tmpH <- floor(model$time.taken/60^2)
 tmpM <- floor((model$time.taken-tmpH*60^2)/60)

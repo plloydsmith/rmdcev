@@ -33,7 +33,7 @@ maxlikeMDCEV <- function(stan_data, initial.parameters,
 
 	result$stan_fit <- stan_fit
 	result$stan_fit$par[["theta"]] <- NULL
-	result$stan_fit$par[["beta_m"]] <- NULL
+	result$stan_fit$par[["delta"]] <- NULL
 	result$log.likelihood <- stan_fit[["par"]][["sum_log_lik"]]
 	result$effective.sample.size <- sum(stan_data$weights)
 

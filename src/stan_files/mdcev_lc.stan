@@ -1,6 +1,6 @@
 // saved as mdcev_hb_corr.stan
 functions {
-#include /common/mdcev_ll_matrix.stan
+#include /common/mdcev_ll.stan
 }
 
 
@@ -78,7 +78,7 @@ transformed parameters {
 //	gamma_full = gamma_ll(gamma[1], I, J, G, model_num);
 //	alpha_full = alpha_ll(alpha[1], I, J, G, model_num);
 
-	log_like = mdcev_ll_matrix(j_quant, quant_full, log_price, log_num, price_full,
+	log_like = mdcev_ll(j_quant, quant_full, log_price, log_num, price_full,
 			log_inc, dat_psi, M, M_factorial, weights, // data
 			lpsi, gamma_individual, alpha_individual, scale_full, 						// parameters
 			I, J, G, ones_g, nonzero, model_num, fixed_scale, trunc_data);

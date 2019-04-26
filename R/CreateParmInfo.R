@@ -68,10 +68,10 @@ if (stan_data$K > 1){
 
 all_names <- GenClassNames(parm_names$all_names, stan_data$K)
 
-beta_m.names <- GenClassNames(colnames(stan_data[["data_class"]]), stan_data$K)
-parm_names$beta_m.names <-	grep("class1", beta_m.names, invert=TRUE, value = TRUE)
+delta.names <- GenClassNames(colnames(stan_data[["data_class"]]), stan_data$K)
+parm_names$delta.names <-	grep("class1", delta.names, invert=TRUE, value = TRUE)
 
-parm_names$all_names <- c(all_names, parm_names$beta_m.names)
+parm_names$all_names <- c(all_names, parm_names$delta.names)
 
 }
 

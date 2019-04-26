@@ -51,7 +51,7 @@ processMDCEVdata <- function(data, psi_formula, lc_formula,
 			 prior_gamma = model_options$prior_gamma_sd,
 			 prior_alpha = model_options$prior_alpha_sd,
 			 prior_scale = model_options$prior_scale_sd,
-			 prior_beta_m = model_options$prior_beta_m_sd,
+			 prior_delta = model_options$prior_delta_sd,
 			 model_num = model_num,
 			 fixed_scale = model_options$fixed_scale,
 			 trunc_data = model_options$trunc_data)

@@ -40,7 +40,7 @@ PrepareSimulationData <- function(stan_est, policies, nsims = 30, price_change_o
 	} else if(stan_est$n_classes > 1){
 
 		est_sim_lc <- suppressWarnings(est_sim %>% # suppress warnings about scale not having a class parameter
-									   	filter(!stringr::str_detect(.data$parms, "beta")) %>%
+									   	filter(!stringr::str_detect(.data$parms, "delta")) %>%
 									   	tidyr::separate(.data$parms, into = c("parms", "class", "good")) %>%
 									   	mutate(good = ifelse(is.na(as.numeric(.data$good)), "0", .data$good )) %>%
 									   	tidyr::unite(parms, parms, good))

@@ -2,7 +2,6 @@
 
 functions {
 #include /common/mdcev_ll.stan
-#include /common/mdcev_ll_matrix.stan
 }
 
 data {
@@ -15,7 +14,7 @@ data {
 // additional LC data that can be set to 0 if not used
 	int L; // number of predictors in membership equation
 	vector[L] data_class[I];   // predictors for component membership
-	real prior_beta_m_sd;
+	real prior_delta_sd;
 }
 
 transformed data {
@@ -27,7 +26,7 @@ parameters {
 	vector<lower=0 >[Gamma] gamma[K];
 	vector<lower=0, upper=1>[A] alpha[K];
 	vector<lower=0>[fixed_scale == 0 ? K : 0] scale;
-  	matrix[K - 1, L] beta_m;  // mixture regression coeffs
+  	matrix[K - 1, L] delta;  // mixture regression coeffs
 }
 
 transformed parameters {
@@ -39,7 +38,7 @@ transformed parameters {
 		matrix[I, G] alpha_full = alpha_ll(alpha[1], I, J, G, model_num);
 		real scale_full = fixed_scale == 0 ? scale[1] : 1.0;
 
-		log_like = mdcev_ll_matrix(j_quant, quant_full, log_price, log_num, price_full,
+		log_like = mdcev_ll(j_quant, quant_full, log_price, log_num, price_full,
 				log_inc, dat_psi, M, M_factorial, weights, // data
 				lpsi, gamma_full, alpha_full, scale_full, 						// parameters
 				I, J, G, ones_g, nonzero, model_num, fixed_scale, trunc_data);
@@ -52,13 +51,13 @@ transformed parameters {
 			matrix[I, G] alpha_full = alpha_ll(alpha[k], I, J, G, model_num);
 			real scale_full = fixed_scale == 0 ? scale[k] : 1.0;
 
-			log_like_util[k] = mdcev_ll_matrix(j_quant, quant_full, log_price, log_num, price_full,
+			log_like_util[k] = mdcev_ll(j_quant, quant_full, log_price, log_num, price_full,
 					log_inc, dat_psi, M, M_factorial, weights, // data
 					lpsi, gamma_full, alpha_full, scale_full, 						// parameters
 					I, J, G, ones_g, nonzero, model_num, fixed_scale, trunc_data);
 		}
 		for(i in 1:I){
-			vector[K] ltheta = log_softmax(append_row(0, beta_m * data_class[i])); // class membership equation
+			vector[K] ltheta = log_softmax(append_row(0, delta * data_class[i])); // class membership equation
 			vector[K] lps;
 			for (k in 1:K){
 				lps[k] = ltheta[k] + log_like_util[k,i];
@@ -78,7 +77,7 @@ model {
 	  gamma[1] ~ normal(0, prior_gamma_sd);
 	  alpha[1] ~ normal(.5, prior_alpha_sd);
 	} else if (K > 1){
-		to_vector(beta_m) ~ normal(0, prior_beta_m_sd);
+		to_vector(delta) ~ normal(0, prior_delta_sd);
 		for (k in 1:K){
 			to_vector(psi[k]) ~ normal(0, prior_psi_sd);
 			to_vector(gamma[k]) ~ normal(0, prior_gamma_sd);
@@ -97,7 +96,7 @@ generated quantities{
 	for(i in 1:I){
 		sum_log_lik = sum_log_lik + log_like[i];
 		if (K > 1){
-  			vector[K] theta1 = log_softmax(append_row(0, beta_m * data_class[i]));
+  			vector[K] theta1 = log_softmax(append_row(0, delta * data_class[i]));
 			for(k in 1:K)
   				theta[k,i] = theta1[k];
 		}
