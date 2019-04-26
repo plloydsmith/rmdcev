@@ -7,7 +7,7 @@
 StanWelfare(df_indiv, df_common, sim_options)
 }
 \arguments{
-\item{df_indiv}{list of inc, quant_j, price_j, psi, and psi_p that vary by individual}
+\item{df_indiv}{list of income, quant_j, price_j, psi, and psi_p that vary by individual}
 
 \item{df_common}{list of parameters that are constant for all individuals}
 

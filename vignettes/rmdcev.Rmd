@@ -53,7 +53,7 @@ Section 2 introduces the conceptual framework underlying MDCEV models and their 
 
 ### Conceptual framework
 
-Each individual $i$ maximizes utility through the choice of the numeraire good ($\x_1$) and the non-numeraire alternatives ($x_k$) subject to a monetary budget constraint. We assume there is a numeraire good (i.e. essential Hicksian composite good) which is always consumed and has a price of one. The individual's maximization problem is
+Each individual $i$ maximizes utility through the choice of the numeraire good ($x_1$) and the non-numeraire alternatives ($x_k$) subject to a monetary budget constraint. We assume there is a numeraire good (i.e. essential Hicksian composite good) which is always consumed and has a price of one. The individual's maximization problem is
 
 \begin{equation}
 \max_{x_k, x_1} U(x_k, x_1) \; \;  \; \; s.t. \; \; y = \sum\limits^K_{k=2}p_k x_k + x_1,x_k \geq 0, k = 2,...,K  
@@ -164,9 +164,9 @@ The parameters ($\beta, \alpha_k , \gamma_k, \sigma$) are structural parameters 
 
 The latent class version of the MDCEV assumes that an individual belongs to a finite mixture of $S$ segments each indexed by $s$ ($s=1,2,...S$). We do not observe which segment an individual belongs to but we can attribute a probability $\pi_{is}$ that individual $i$ is a member of segment $s$. We impose that $0 \leq \pi_{is} \leq 1$ and $\sum^S_{s=1} \pi_{is} = 1$ through the use of the logit link function as
 
-\begin{equation}
+$$\begin{equation}
 \pi_{is} = \frac{exp(\delta_s'w_i)}{\sum^S_{s=1}exp(\delta_s'w_i)}
-\end{equation}
+\end{equation}$$
 
 \noindent
 where $w_i$ is a vector of individual characteristics and $\delta_s$ is a vector of coefficients to be estimated. The $\delta_s$ coefficients determine how the individual characteristics affect the membership of individual $i$ in segment $s$. For identification, the $\delta_1$ coefficients for the first segment are set to zero.
@@ -249,11 +249,11 @@ data_rec <- data_rec %>%
 	arrange(id, good)
 ```
 
-We specify the $\gamma$ model specification where $\alpha$ is fixed to 0 by setting model = "gamma0". We use maximum likelihood estimation by setting algorithm = "MLE".
+We specify the $\gamma$ model specification where a single $\alpha$ is estimated by setting model = "gamma". We use maximum likelihood estimation by setting algorithm = "MLE".
 
 The syntax for the model is the following:
 
-```{r, estimation_mdcev}
+```{r, estimation_mdcev_gamma}
 mdcev_mle <- FitMDCEV(psi_formula = ~ beach + birding + camping + cycling + fish + garden + golf +
                         hiking + hunt_birds + hunt_large + hunt_trap + hunt_waterfowl + motor_land +
                         motor_water + photo + ski_cross + ski_down -1,
@@ -267,8 +267,8 @@ The function first checks the data to ensure it has the neccesary variables, is 
 
 The output of the function can be accessed by calling SummaryMDCEV.
 
-```{r, summary_mdcev}
-	SummaryMDCEV(mdcev_mle)
+```{r, summary_mdcev_gamma}
+SummaryMDCEV(mdcev_mle)
 ```
 
 The summary includes overall information on the model and the parameter estimates.
@@ -279,6 +279,7 @@ There are four possible model options
 - "alpha": $\alpha$-profile with all $\gamma_k$ fixed equal to 1.
 - "gamma": $\gamma$-profile with a single estimated $\alpha$ (i.e. $\alpha_1 = \alpha_k = \alpha$).
 - "gamma0": $\gamma$-profile with all  $\alpha$ fixed equal to 1e-6.
+
 
 ### Estimating MDCEV using Bayesian Techniques
 
@@ -412,7 +413,7 @@ Pinjari and Bhat (2011)
 ```
 
 
-```{r, sim_mdcev_welfare}
+```{r eval=F, echo=T, sim_mdcev_welfare}
 	wtp <- SimulateMDCEV(df_sim$df_indiv, df_common = df_sim$df_common, sim_options = df_sim$sim_options,
 						 cond_err = 1, nerrs = 15, sim_type = "welfare")
 	SummaryWelfare(wtp)
