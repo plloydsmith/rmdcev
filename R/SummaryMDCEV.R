@@ -15,26 +15,30 @@ SummaryMDCEV <- function(model, printCI = FALSE){
 							  error=function(e) return("rmdcev"))
 
 	cat("Model run using rmdcev for R, version", rmdcevVersion,"\n")
-#	cat("Model run at                     : ", paste(model$start.time[3] ),"\n", sep="")
 	cat("Estimation method                : ", model$algorithm, "\n", sep="")
 	cat("Model type                       : ", model$model," specification", "\n", sep="")
 	cat("Number of classes                : ", model$n_classes, "\n", sep="")
 	cat("Number of individuals            : ", model$n_respondents,"\n", sep="")
 	cat("Number of non-numeraire alts     : ", model$stan_data$J,"\n", sep="")
-	#	cat("Number of observations           : ", model$n_respondents,"\n", sep="")
 	cat("Estimated parameters             : ", model$parms_info$n_vars$n_parms_total,"\n", sep="")
 	cat("LL                               : ", round(model$log.likelihood,2),"\n")
 	cat("AIC                              : ", round(model$aic,2),"\n")
 	cat("BIC                              : ", round(model$bic,2),"\n")
 	if(model$algorithm == "MLE"){
-		cat("Number of MVN simulation draws   : ", model$n_draws,"\n")
+
+		if(model$std_errors == "deltamethod"){
+    cat("Standard errors calculated using : ", "Delta method","\n")
+
+		} else if(model$std_errors == "mvn"){
+    cat("Standard errors calculated using : ", model$n_draws,"MVN draws", "\n")
+		}
 
 		if(model$stan_fit$return_code==0){
 			converge <- "successful convergence"
 		} else if(model$stan_fit$return_code==0){
 			converge <- "unsuccessful convergence"
 		}
-		cat("Exit of MLE                     : ", converge,"\n")
+	cat("Exit of MLE                      : ", converge,"\n")
 
 	} else if(model$algorithm == "Bayes"){
 		cat("Number of chains                 : ", model[["stan_fit"]]@sim[["chains"]],"\n")
@@ -49,15 +53,36 @@ timeTaken <- paste(formatC(tmpH,width=2,format='d',flag=0),
 				   tmpS,sep=':')
 	cat("Time taken (hh:mm:ss)            : ",timeTaken,"\n")
 
-	output <- model$est_pars %>%
-		mutate(parms = factor(parms,levels=unique(parms))) %>%
-		#	mutate(parms = gsub("\\.", "", parms)) %>%
-		group_by(parms) %>%
-		summarise(Estimate = round(mean(value),3),
-				  Std.err = round(stats::sd(value),3),
-				  z.stat = round(mean(value) / stats::sd(value),2),
-				  ci_lo95 = round(stats::quantile(value, 0.025),3),
-				  ci_hi95 = round(stats::quantile(value, 0.975),3))
+		if(model$std_errors == "deltamethod"){
+
+			coefs <- model$stan_fit$par
+			coefs$sum_log_lik <- coefs$theta <- NULL
+			coefs <- unlist(coefs)
+			cov_mat <- solve(-model$stan_fit$hessian)
+			std_err <- sqrt(diag(cov_mat))
+			parms <- model[["parms_info"]][["parm_names"]][["all_names"]]
+			output <- tbl_df(cbind(parms, coefs, std_err)) %>%
+				mutate(coefs = as.numeric(coefs),
+					   std_err = as.numeric(std_err),
+					   Estimate = round(coefs, 3),
+					   Std.err = round(ifelse(stringr::str_detect(parms, "alpha"), std_err*exp(-coefs)/((1+exp(-coefs)))^2,
+										 ifelse(stringr::str_detect(parms, "gamma|scale"), std_err*coefs, std_err)),3),
+					   z.stat = round(coefs / Std.err,2),
+					   ci_lo95 = round(coefs - 1.96 * Std.err,3),
+					   ci_hi95 = round(coefs + 1.96 * Std.err,3)) %>%
+				select(parms, Estimate, Std.err, z.stat, ci_lo95, ci_hi95)
+
+		} else if(model$std_errors == "mvn"){
+
+		output <- model$est_pars %>%
+			mutate(parms = factor(parms,levels=unique(parms))) %>%
+			group_by(parms) %>%
+			summarise(Estimate = round(mean(value),3),
+					  Std.err = round(stats::sd(value),3),
+					  z.stat = round(mean(value) / stats::sd(value),2),
+					  ci_lo95 = round(stats::quantile(value, 0.025),3),
+					  ci_hi95 = round(stats::quantile(value, 0.975),3))
+		}
 
 	if(model$algorithm == "Bayes"){
 		bayes_extra <- tbl_df(summary(model$stan_fit)$summary) %>%

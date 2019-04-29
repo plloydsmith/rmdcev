@@ -18,6 +18,9 @@
 #' @param flat_priors indicator if completely uninformative priors should be specified. If using MLE, the
 #' optimizing function will then be equal to log-likelihood. Defaults to 1 if MLE used and 0 if Bayes used.
 #' @param print_iterations Whether to print iteration information
+#' @param std_errors Compute standard errors using the delta method ("deltamethod")
+#' or multivariate normal draws ("mvn"). The default is "mvn" as only mvn parameter draws are required
+#' for demand and welfare simulation.
 #' @param n_draws The number of MVN draws for standard error calculations
 #' @param keep_loglik Whether to keep the log_lik calculations
 #' @param hessian Wheter to keep the Hessian matrix
@@ -67,7 +70,8 @@ FitMDCEV <- function(data,
 					 prior_alpha_sd = 0.5,
 					 prior_scale_sd = 1,
 					 prior_delta_sd = 10,
-					 n_draws = 30,
+					 std_errors = "mvn",
+					 n_draws = 50,
 					 keep_loglik = 0,
 					 random_parameters = "fixed",
 					 show_stan_warnings = TRUE,
@@ -153,7 +157,7 @@ FitMDCEV <- function(data,
 
 	stan_data$M_factorial <- NULL
 
-	if(algorithm == "Bayes")
+	if(algorithm == "Bayes" || std_errors == "deltamethod")
 		result$n_draws <- NULL
 
 	result$stan_data <- stan_data
@@ -163,6 +167,7 @@ FitMDCEV <- function(data,
 	result$n_classes <- n_classes
 	result$model <- model
 	result$algorithm <- algorithm
+	result$std_errors <- std_errors
 	result$n_draws <- n_draws
 	result$n_respondents <- stan_data$I
 	result$start.time <- start.time

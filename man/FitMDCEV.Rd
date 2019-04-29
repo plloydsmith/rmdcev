@@ -10,8 +10,8 @@ FitMDCEV(data, psi_formula = NULL, lc_formula = NULL, weights = NULL,
   initial.parameters = NULL, algorithm = c("MLE", "Bayes"),
   flat_priors = NULL, print_iterations = TRUE, hessian = TRUE,
   prior_psi_sd = 10, prior_gamma_sd = 10, prior_alpha_sd = 0.5,
-  prior_scale_sd = 1, prior_delta_sd = 10, n_draws = 30,
-  keep_loglik = 0, random_parameters = "fixed",
+  prior_scale_sd = 1, prior_delta_sd = 10, std_errors = "mvn",
+  n_draws = 50, keep_loglik = 0, random_parameters = "fixed",
   show_stan_warnings = TRUE, n_iterations = 200, n_chains = 4,
   n_cores = 1, max_tree_depth = 10, adapt_delta = 0.8,
   lkj_shape_prior = 4)
@@ -62,6 +62,10 @@ optimizing function will then be equal to log-likelihood. Defaults to 1 if MLE u
 \item{prior_scale_sd}{standard deviation for normal prior with mean 1.}
 
 \item{prior_delta_sd}{standard deviation for normal prior with mean 0.}
+
+\item{std_errors}{Compute standard errors using the delta method ("deltamethod")
+or multivariate normal draws ("mvn"). The default is "mvn" as only mvn parameter draws are required
+for demand and welfare simulation.}
 
 \item{n_draws}{The number of MVN draws for standard error calculations}
 
