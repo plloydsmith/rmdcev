@@ -54,11 +54,11 @@ transformed parameters {
 	}
 
 	if (model_num == 1)
-	  	alpha_individual = append_col(1 - exp(col(beta, RP_a)), rep_matrix(0, I, J));
+	  	alpha_individual = append_col(exp(col(beta, RP_a)) ./ (1 + exp(col(beta, RP_a))), rep_matrix(0, I, J));
 	else if (model_num == 2)
-	  	alpha_individual = 1 - exp(block(beta, 1, RP_a, I, G));
+	  	alpha_individual = exp(block(beta, 1, RP_a, I, G)) ./ (1 + exp(block(beta, 1, RP_a, I, G)));
 	else if (model_num == 3)
-		alpha_individual = rep_matrix(1 - exp(col(beta, RP_a)), G);
+		alpha_individual = rep_matrix(exp(col(beta, RP_a)) ./ (1 + exp(col(beta, RP_a))), G);
 	else
 		alpha_individual = rep_matrix(1e-06, I, G);
 

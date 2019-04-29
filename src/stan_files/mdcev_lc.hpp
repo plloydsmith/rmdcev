@@ -1132,13 +1132,13 @@ public:
             current_statement_begin__ = 194;
             if (as_bool(logical_eq(model_num,1))) {
                 current_statement_begin__ = 195;
-                stan::math::assign(alpha_individual, append_col(subtract(1,stan::math::exp(col(beta,RP_a))),rep_matrix(0,I,J)));
+                stan::math::assign(alpha_individual, append_col(elt_divide(stan::math::exp(col(beta,RP_a)),add(1,stan::math::exp(col(beta,RP_a)))),rep_matrix(0,I,J)));
             } else if (as_bool(logical_eq(model_num,2))) {
                 current_statement_begin__ = 197;
-                stan::math::assign(alpha_individual, subtract(1,stan::math::exp(block(beta,1,RP_a,I,G))));
+                stan::math::assign(alpha_individual, elt_divide(stan::math::exp(block(beta,1,RP_a,I,G)),add(1,stan::math::exp(block(beta,1,RP_a,I,G)))));
             } else if (as_bool(logical_eq(model_num,3))) {
                 current_statement_begin__ = 199;
-                stan::math::assign(alpha_individual, rep_matrix(subtract(1,stan::math::exp(col(beta,RP_a))),G));
+                stan::math::assign(alpha_individual, rep_matrix(elt_divide(stan::math::exp(col(beta,RP_a)),add(1,stan::math::exp(col(beta,RP_a)))),G));
             } else {
                 current_statement_begin__ = 201;
                 stan::math::assign(alpha_individual, rep_matrix(9.9999999999999995e-007,I,G));
@@ -1415,13 +1415,13 @@ public:
             current_statement_begin__ = 194;
             if (as_bool(logical_eq(model_num,1))) {
                 current_statement_begin__ = 195;
-                stan::math::assign(alpha_individual, append_col(subtract(1,stan::math::exp(col(beta,RP_a))),rep_matrix(0,I,J)));
+                stan::math::assign(alpha_individual, append_col(elt_divide(stan::math::exp(col(beta,RP_a)),add(1,stan::math::exp(col(beta,RP_a)))),rep_matrix(0,I,J)));
             } else if (as_bool(logical_eq(model_num,2))) {
                 current_statement_begin__ = 197;
-                stan::math::assign(alpha_individual, subtract(1,stan::math::exp(block(beta,1,RP_a,I,G))));
+                stan::math::assign(alpha_individual, elt_divide(stan::math::exp(block(beta,1,RP_a,I,G)),add(1,stan::math::exp(block(beta,1,RP_a,I,G)))));
             } else if (as_bool(logical_eq(model_num,3))) {
                 current_statement_begin__ = 199;
-                stan::math::assign(alpha_individual, rep_matrix(subtract(1,stan::math::exp(col(beta,RP_a))),G));
+                stan::math::assign(alpha_individual, rep_matrix(elt_divide(stan::math::exp(col(beta,RP_a)),add(1,stan::math::exp(col(beta,RP_a)))),G));
             } else {
                 current_statement_begin__ = 201;
                 stan::math::assign(alpha_individual, rep_matrix(9.9999999999999995e-007,I,G));
