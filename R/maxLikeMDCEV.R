@@ -9,7 +9,7 @@ maxlikeMDCEV <- function(stan_data, initial.parameters,
 {
 	stan.model <- stanmodels$mdcev
 
-	message("Using MLE to estimate model")
+	message("Using MLE to estimate MDCEV")
 
 	# ensure single class used for base model
 	stan_data_temp <- stan_data
@@ -67,7 +67,7 @@ maxlikeMDCEV <- function(stan_data, initial.parameters,
 			init$gamma <- matrix(rep(init.par$gamma, stan_data$K), nrow=stan_data$K, ncol=stan_data$J)
 		}
 
-		message("Using MLE to estimate LC model")
+		message("Using MLE to estimate LC-MDCEV")
 
 		stan_fit <- rstan::optimizing(stan.model, data = stan_data, as_vector = FALSE,
 							   seed = mle_options$seed, init = init,

@@ -17,7 +17,7 @@ BayesMDCEV <- function(stan_data, bayes_options,
 		stop("The specified number of iterations must be greater than 0.")
 
 	# allows Stan chains to run in parallel on multiprocessor machines
-#	options(mc.cores = parallel::detectCores())
+	options(mc.cores = parallel::detectCores())
 
 	# Create indices for individual level psi parameters
 	indexes <- tibble(individual = rep(1:stan_data$I, each = stan_data$J),
@@ -40,16 +40,18 @@ BayesMDCEV <- function(stan_data, bayes_options,
 	stan_data$data_class <- matrix(0, stan_data$I, 0)
 
 	if (bayes_options$random_parameters == "fixed"){
+		message("Using Bayes to estimate MDCEV")
 		stan.model <- stanmodels$mdcev
 	}else if (bayes_options$random_parameters == "uncorr"){
+		message("Using Bayes to estimate uncorrelated RP-MDCEV")
 		stan.model <- stanmodels$mdcev_lc
 		stan_data$corr <- 0
 	}else if (bayes_options$random_parameters == "corr"){
+		message("Using Bayes to estimate correlated RP-MDCEV")
 		stan.model <- stanmodels$mdcev_lc
 		stan_data$corr <- 1
 	}
 
-	message("Using Bayes to estimate model")
 
 	if (bayes_options$show_stan_warnings == FALSE)
 		suppressWarnings(stan_fit <- RunStanSampling(stan_data, stan.model, bayes_options))
