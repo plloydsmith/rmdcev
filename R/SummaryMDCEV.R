@@ -22,10 +22,10 @@ SummaryMDCEV <- function(model, printCI = FALSE){
 	cat("Number of non-numeraire alts     : ", model$stan_data$J,"\n", sep="")
 	cat("Estimated parameters             : ", model$parms_info$n_vars$n_parms_total,"\n", sep="")
 	cat("LL                               : ", round(model$log.likelihood,2),"\n")
+
+	if(model$algorithm == "MLE"){
 	cat("AIC                              : ", round(model$aic,2),"\n")
 	cat("BIC                              : ", round(model$bic,2),"\n")
-	if(model$algorithm == "MLE"){
-
 		if(model$std_errors == "deltamethod"){
     cat("Standard errors calculated using : ", "Delta method","\n")
 
@@ -52,6 +52,8 @@ timeTaken <- paste(formatC(tmpH,width=2,format='d',flag=0),
 				   formatC(tmpM,width=2,format='d',flag=0),
 				   tmpS,sep=':')
 	cat("Time taken (hh:mm:ss)            : ",timeTaken,"\n")
+
+	if(model$algorithm == "MLE"){
 
 		if(model$std_errors == "deltamethod"){
 
@@ -83,12 +85,29 @@ timeTaken <- paste(formatC(tmpH,width=2,format='d',flag=0),
 					  ci_lo95 = round(stats::quantile(value, 0.025),3),
 					  ci_hi95 = round(stats::quantile(value, 0.975),3))
 		}
+	} else if (model$algorithm == "Bayes"){
 
-	if(model$algorithm == "Bayes"){
+
+		output <- model$est_pars %>%
+			filter(stringr::str_detect(parms, "mu|tau|scale")) %>%
+			arrange(sim_id)
+
+		output$parms <- rep(c(model[["parms_info"]][["parm_names"]][["all_names"]],
+						 model[["parms_info"]][["parm_names"]][["sd_names"]]), max(output$sim_id))
+
+		output <- output %>%
+			mutate(parms = factor(parms,levels=unique(parms))) %>%
+			group_by(parms) %>%
+			summarise(Estimate = round(mean(value),3),
+					  Std.err = round(stats::sd(value),3),
+					  z.stat = round(mean(value) / stats::sd(value),2),
+					  ci_lo95 = round(stats::quantile(value, 0.025),3),
+					  ci_hi95 = round(stats::quantile(value, 0.975),3))
+
 		bayes_extra <- tbl_df(summary(model$stan_fit)$summary) %>%
 			mutate(parms = row.names(summary(model$stan_fit)$summary)) %>%
-			filter(!grepl(c("log_lik"), parms)) %>%
-			filter(!grepl(c("lp_"), parms)) %>%
+			filter(grepl(c("mu|scale|tau"), parms)) %>%
+			filter(!grepl(c("tau_unif"), parms)) %>%
 			select(n_eff, Rhat) %>%
 			mutate(n_eff = round(n_eff, 0),
 				   Rhat = round(Rhat, 2))

@@ -78,11 +78,11 @@ parm_names$all_names <- c(all_names, parm_names$delta.names)
 if (algorithm == "Bayes"){
 	if (random_parameters == "uncorr"){
 		n_vars$n_std_dev <- Reduce("+",n_vars) - n_scale # scale is constant
-		parm_names$sd_names <- paste0("sd.", parm_names$all_names)
+		parm_names$sd_names <- paste0("sd.", c(psi_names, gamma_names, alpha_names))
 	} else if (random_parameters == "corr"){
 		n_vars$n_std_dev <- Reduce("+",n_vars)
 		n_vars$n_std_corr <- n_vars$n_std_dev * (n_vars$n_std_dev-1) / 2
-		parm_names$sd_names <- paste0("sd.", c(psi_names, gamma_names, alpha_names, scale_names))
+		parm_names$sd_names <- paste0("sd.", c(psi_names, gamma_names, alpha_names))
 	}
 }
 

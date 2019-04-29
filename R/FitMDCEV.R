@@ -77,7 +77,7 @@ FitMDCEV <- function(data,
 					 show_stan_warnings = TRUE,
 					 n_iterations = 200,
 					 n_chains = 4,
-					 n_cores = 1,
+					 n_cores = 4,
 					 max_tree_depth = 10,
 					 adapt_delta = 0.8,
 					 lkj_shape_prior = 4)
@@ -110,7 +110,7 @@ FitMDCEV <- function(data,
 
 	bayes_options <- list(n_iterations = n_iterations,
 						n_chains = n_chains,
-						n_cores = 1,
+						n_cores = n_cores,
 						keep_loglik = keep_loglik,
 						random_parameters = random_parameters,
 						seed = seed,
@@ -140,7 +140,8 @@ FitMDCEV <- function(data,
 		# Get parameter estimates in matrix form
 		result$est_pars <- extract(result$stan_fit, permuted = TRUE, inc_warmup = FALSE) %>%
 				as.data.frame() %>%
-				select(-starts_with("log_like"), -starts_with("sum_log_lik"), -.data$lp__)
+				select(-starts_with("log_like"), -starts_with("sum_log_lik"),
+					   -starts_with("tau_unif"), -.data$lp__)
 
 	} else if (algorithm == "MLE") {
 		result <- maxlikeMDCEV(stan_data, initial.parameters, mle_options)
