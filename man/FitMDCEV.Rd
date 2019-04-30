@@ -13,7 +13,7 @@ FitMDCEV(data, psi_formula = NULL, lc_formula = NULL, weights = NULL,
   prior_scale_sd = 1, prior_delta_sd = 10, std_errors = "mvn",
   n_draws = 50, keep_loglik = 0, random_parameters = "fixed",
   show_stan_warnings = TRUE, n_iterations = 200, n_chains = 4,
-  n_cores = 1, max_tree_depth = 10, adapt_delta = 0.8,
+  n_cores = 4, max_tree_depth = 10, adapt_delta = 0.8,
   lkj_shape_prior = 4)
 }
 \arguments{

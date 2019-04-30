@@ -143,6 +143,8 @@ FitMDCEV <- function(data,
 				select(-starts_with("log_like"), -starts_with("sum_log_lik"),
 					   -starts_with("tau_unif"), -.data$lp__)
 
+		result$random_parameters <- random_parameters
+
 	} else if (algorithm == "MLE") {
 		result <- maxlikeMDCEV(stan_data, initial.parameters, mle_options)
 

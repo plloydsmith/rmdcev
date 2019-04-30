@@ -6,8 +6,8 @@
 #' @export
 SummaryMDCEV <- function(model, printCI = FALSE){
 #model <- result
-	if (!is.null(model$stan_data$corr)){
-		stop("SummaryMDCEV not set up for random parameter models. Use print/traceplot on model.fit$stan_fit to examine output", "\n")
+	if (model$random_parameters == "corr"){
+		stop("SummaryMDCEV not set up for correlated random parameter models. Use print/traceplot on model.fit$stan_fit to examine output", "\n")
 	}
 
 	rmdcevVersion <- tryCatch(utils::packageDescription("rmdcev", fields = "Version"),
@@ -21,16 +21,16 @@ SummaryMDCEV <- function(model, printCI = FALSE){
 	cat("Number of individuals            : ", model$n_respondents,"\n", sep="")
 	cat("Number of non-numeraire alts     : ", model$stan_data$J,"\n", sep="")
 	cat("Estimated parameters             : ", model$parms_info$n_vars$n_parms_total,"\n", sep="")
-	cat("LL                               : ", round(model$log.likelihood,2),"\n")
+	cat("LL                               : ", round(model$log.likelihood,2),"\n", sep="")
 
 	if(model$algorithm == "MLE"){
-	cat("AIC                              : ", round(model$aic,2),"\n")
-	cat("BIC                              : ", round(model$bic,2),"\n")
+	cat("AIC                              : ", round(model$aic,2),"\n", sep="")
+	cat("BIC                              : ", round(model$bic,2),"\n", sep="")
 		if(model$std_errors == "deltamethod"){
-    cat("Standard errors calculated using : ", "Delta method","\n")
+    cat("Standard errors calculated using : ", "Delta method","\n", sep="")
 
 		} else if(model$std_errors == "mvn"){
-    cat("Standard errors calculated using : ", model$n_draws,"MVN draws", "\n")
+    cat("Standard errors calculated using : ", model$n_draws,"MVN draws", "\n", sep="")
 		}
 
 		if(model$stan_fit$return_code==0){
@@ -38,12 +38,12 @@ SummaryMDCEV <- function(model, printCI = FALSE){
 		} else if(model$stan_fit$return_code==0){
 			converge <- "unsuccessful convergence"
 		}
-	cat("Exit of MLE                      : ", converge,"\n")
+	cat("Exit of MLE                      : ", converge,"\n", sep="")
 
 	} else if(model$algorithm == "Bayes"){
-		cat("Number of chains                 : ", model[["stan_fit"]]@sim[["chains"]],"\n")
-		cat("Number of warmup draws per chain : ", model[["stan_fit"]]@sim[["warmup"]],"\n")
-		cat("Total post-warmup sample         : ", model[["stan_fit"]]@sim[["chains"]]*(model[["stan_fit"]]@sim[["iter"]]-model[["stan_fit"]]@sim[["warmup"]]),"\n")
+		cat("Number of chains                 : ", model[["stan_fit"]]@sim[["chains"]],"\n", sep="")
+		cat("Number of warmup draws per chain : ", model[["stan_fit"]]@sim[["warmup"]],"\n", sep="")
+		cat("Total post-warmup sample         : ", model[["stan_fit"]]@sim[["chains"]]*(model[["stan_fit"]]@sim[["iter"]]-model[["stan_fit"]]@sim[["warmup"]]),"\n", sep="")
 	}
 tmpH <- floor(model$time.taken/60^2)
 tmpM <- floor((model$time.taken-tmpH*60^2)/60)
@@ -51,7 +51,7 @@ tmpS <- round(model$time.taken-tmpH*60^2-tmpM*60,2)
 timeTaken <- paste(formatC(tmpH,width=2,format='d',flag=0),
 				   formatC(tmpM,width=2,format='d',flag=0),
 				   tmpS,sep=':')
-	cat("Time taken (hh:mm:ss)            : ",timeTaken,"\n")
+	cat("Time taken (hh:mm:ss)            : ",timeTaken,"\n", sep="")
 
 	if(model$algorithm == "MLE"){
 
@@ -86,14 +86,34 @@ timeTaken <- paste(formatC(tmpH,width=2,format='d',flag=0),
 					  ci_hi95 = round(stats::quantile(value, 0.975),3))
 		}
 	} else if (model$algorithm == "Bayes"){
+		output <- model$est_pars
+		bayes_extra <- tbl_df(summary(model$stan_fit)$summary) %>%
+			mutate(parms = row.names(summary(model$stan_fit)$summary))
 
+		if (model$random_parameters == "fixed"){
 
-		output <- model$est_pars %>%
-			filter(stringr::str_detect(parms, "mu|tau|scale")) %>%
-			arrange(sim_id)
+			bayes_extra <- bayes_extra %>%
+				filter(!grepl(c("log_lik"), parms)) %>%
+				filter(!grepl(c("lp_"), parms)) %>%
+				select(n_eff, Rhat) %>%
+				mutate(n_eff = round(n_eff, 0),
+					   Rhat = round(Rhat, 2))
 
-		output$parms <- rep(c(model[["parms_info"]][["parm_names"]][["all_names"]],
+		} else if (model$random_parameters == "uncorr"){
+
+			output <- output %>%
+				filter(stringr::str_detect(parms, "mu|tau|scale")) %>%
+				arrange(sim_id)
+
+			output$parms <- rep(c(model[["parms_info"]][["parm_names"]][["all_names"]],
 						 model[["parms_info"]][["parm_names"]][["sd_names"]]), max(output$sim_id))
+			bayes_extra <- bayes_extra %>%
+					filter(grepl(c("mu|scale|tau"), parms)) %>%
+					filter(!grepl(c("tau_unif"), parms)) %>%
+					select(n_eff, Rhat) %>%
+					mutate(n_eff = round(n_eff, 0),
+						   Rhat = round(Rhat, 2))
+			}
 
 		output <- output %>%
 			mutate(parms = factor(parms,levels=unique(parms))) %>%
@@ -104,13 +124,6 @@ timeTaken <- paste(formatC(tmpH,width=2,format='d',flag=0),
 					  ci_lo95 = round(stats::quantile(value, 0.025),3),
 					  ci_hi95 = round(stats::quantile(value, 0.975),3))
 
-		bayes_extra <- tbl_df(summary(model$stan_fit)$summary) %>%
-			mutate(parms = row.names(summary(model$stan_fit)$summary)) %>%
-			filter(grepl(c("mu|scale|tau"), parms)) %>%
-			filter(!grepl(c("tau_unif"), parms)) %>%
-			select(n_eff, Rhat) %>%
-			mutate(n_eff = round(n_eff, 0),
-				   Rhat = round(Rhat, 2))
 		output <- cbind(output, bayes_extra)
 	}
 
