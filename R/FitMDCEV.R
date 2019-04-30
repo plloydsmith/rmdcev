@@ -85,7 +85,10 @@ FitMDCEV <- function(data,
 	CheckMdcevData(data)
 
 	if (algorithm == "Bayes" && n_classes > 1)
-		stop("Hierarchical Bayes can only be used with one class. Switch algorithm to MLE or choose n_classes = 1", "\n")
+		stop("Bayesian estimation can only be used with one class. Switch algorithm to MLE or choose n_classes = 1", "\n")
+
+	if (algorithm == "MLE" && random_parameters != "fixed")
+		stop("MLE can only be used with fixed parameters. Switch random_parameters to 'fixed' or change algorithm to Bayes", "\n")
 
 	if (algorithm == "MLE" && is.null(flat_priors)){
 		flat_priors = 1
@@ -143,7 +146,6 @@ FitMDCEV <- function(data,
 				select(-starts_with("log_like"), -starts_with("sum_log_lik"),
 					   -starts_with("tau_unif"), -.data$lp__)
 
-		result$random_parameters <- random_parameters
 
 	} else if (algorithm == "MLE") {
 		result <- maxlikeMDCEV(stan_data, initial.parameters, mle_options)
@@ -165,6 +167,7 @@ FitMDCEV <- function(data,
 
 	result$stan_data <- stan_data
 	result$algorithm <- algorithm
+	result$random_parameters <- random_parameters
 	result$psi_formula <- psi_formula
 	result$lc_formula <- lc_formula
 	result$n_classes <- n_classes
