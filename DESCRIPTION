@@ -1,7 +1,7 @@
 Package: rmdcev
 Type: Package
 Title: An implementation of the Multiple Discrete-Continuous Extreme Value (MDCEV) Model
-Version: 0.6.0
+Version: 0.7.0
 Authors@R:
     person(given = "Patrick",
            family = "Lloyd-Smith",
