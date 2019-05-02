@@ -18,7 +18,7 @@ SummaryMDCEV <- function(model, printCI = FALSE){
 	cat("Estimation method                : ", model$algorithm, "\n", sep="")
 	cat("Model type                       : ", model$model," specification", "\n", sep="")
 	cat("Number of classes                : ", model$n_classes, "\n", sep="")
-	cat("Number of individuals            : ", model$n_respondents,"\n", sep="")
+	cat("Number of individuals            : ", model$n_individuals,"\n", sep="")
 	cat("Number of non-numeraire alts     : ", model$stan_data$J,"\n", sep="")
 	cat("Estimated parameters             : ", model$parms_info$n_vars$n_parms_total,"\n", sep="")
 	cat("LL                               : ", round(model$log.likelihood,2),"\n", sep="")
@@ -107,6 +107,12 @@ timeTaken <- paste(formatC(tmpH,width=2,format='d',flag=0),
 
 			output$parms <- rep(c(model[["parms_info"]][["parm_names"]][["all_names"]],
 						 model[["parms_info"]][["parm_names"]][["sd_names"]]), max(output$sim_id))
+
+			# Transform estimates
+			output <- output %>%
+				mutate(value = ifelse(grepl(c("gamma"), parms), exp(value),
+							   ifelse(grepl(c("alpha"), parms), exp(value)/ (1 + exp(value)), value)))
+
 			bayes_extra <- bayes_extra %>%
 					filter(grepl(c("mu|scale|tau"), parms)) %>%
 					filter(!grepl(c("tau_unif"), parms)) %>%

@@ -175,7 +175,7 @@ FitMDCEV <- function(data,
 	result$algorithm <- algorithm
 	result$std_errors <- std_errors
 	result$n_draws <- n_draws
-	result$n_respondents <- stan_data$I
+	result$n_individuals <- stan_data$I
 	result$start.time <- start.time
 	result$time.taken <- (end.time - start.time)[3]
 	result$effective.sample.size <- sum(stan_data$weights)
