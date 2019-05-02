@@ -26,7 +26,6 @@ Imports:
     purrr,
     tibble,
     tidyr,
-    testthat (>= 2.1.1),
     rlang,
     utils,
     stats,
