@@ -1,7 +1,14 @@
+citHeader("To cite the 'rmdcev' package in publications use:")
 
-bibentry(bibtype = “Manual”,
-title = “{rmdcev}: Multiple Discrete-Continuous Extreme Value (MDCEV) Model Estimation and Simulation in R”,
-author = person(“Patrick”, “Lloyd-Smith”),
-year = 2019,
-note = "R package version 0.7.0,
-url = “https://github.com/plloydsmith/rmdcev”)
+year = 2019
+vers = paste('R package version', meta$Version)
+
+citEntry(
+  entry = 'manual',
+  title = paste('rmdcev:', meta$Title),
+  author = Filter(function(p) 'aut' %in% p$role, as.person(meta$Author)),
+  year = year,
+  note = vers,
+  url = meta$URL,
+  textVersion = paste('Patrick Lloyd-Smith (', year, '). rmdcev: ', meta$Title, '. ', vers, '.', sep = '')
+)
