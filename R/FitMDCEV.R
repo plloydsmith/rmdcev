@@ -6,7 +6,6 @@
 #' 4) price, 5) income, and columns for psi variables. Arrange data by id then good.
 #' Notes I is number of individuals and J is number of non-numeraire goods.
 #' @param weights An optional vector of sampling or frequency weights.
-#' @param num_price An optional vector containing price of numeraire or outside good (default is 1).
 #' @param model A string indicating which model specification is estimated.
 #' The options are "alpha","les", "gamma", and "gamma0".
 #' @param n_classes The number of latent classes.
@@ -24,6 +23,7 @@
 #' @param n_draws The number of MVN draws for standard error calculations
 #' @param keep_loglik Whether to keep the log_lik calculations
 #' @param hessian Wheter to keep the Hessian matrix
+#' @param old test for speed
 #' @param initial.parameters Specify initial parameters intead of
 #'     starting at random.
 #' @param prior_psi_sd standard deviation for normal prior with mean 0.
@@ -51,6 +51,7 @@
 FitMDCEV <- function(data,
 					 psi_formula = NULL,
 					 lc_formula = NULL,
+					 old = 0,
 					 weights = NULL,
 					 num_price = NULL,
 					 model = c("alpha", "les", "gamma", "gamma0"),
@@ -97,6 +98,7 @@ FitMDCEV <- function(data,
 
 	mle_options <- list(fixed_scale = fixed_scale,
 						model = model,
+						old = old,
 						n_classes = n_classes,
 						trunc_data = trunc_data,
 						seed = seed,
@@ -124,7 +126,7 @@ FitMDCEV <- function(data,
 
 	start.time <- proc.time()
 
-	stan_data <- processMDCEVdata(data, psi_formula, lc_formula, num_price, mle_options)
+	stan_data <- processMDCEVdata(data, psi_formula, lc_formula, mle_options)
 
 	parms_info <- CreateParmInfo(stan_data, algorithm, random_parameters)
 
@@ -159,8 +161,6 @@ FitMDCEV <- function(data,
 	}
 	end.time <- proc.time()
 	result$parms_info <- parms_info
-
-	stan_data$M_factorial <- NULL
 
 	if(algorithm == "Bayes" || std_errors == "deltamethod")
 		result$n_draws <- NULL

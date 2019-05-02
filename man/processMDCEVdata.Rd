@@ -4,7 +4,7 @@
 \alias{processMDCEVdata}
 \title{processMDCEVdata}
 \usage{
-processMDCEVdata(data, psi_formula, lc_formula, num_price, model_options)
+processMDCEVdata(data, psi_formula, lc_formula, model_options)
 }
 \arguments{
 \item{data}{The (IxJ) data to be passed to Stan including 1) id, 2) good, 3) quant,
@@ -14,8 +14,6 @@ Notes I is number of individuals and J is number of non-numeraire goods.}
 \item{psi_formula}{Formula for psi}
 
 \item{lc_formula}{Formula for latent class}
-
-\item{num_price}{An optional vector containing price of numeraire or outside good (default is 1).}
 
 \item{model_options}{list of model options}
 }

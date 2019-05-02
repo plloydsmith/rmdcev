@@ -30,7 +30,7 @@ SummaryMDCEV <- function(model, printCI = FALSE){
     cat("Standard errors calculated using : ", "Delta method","\n", sep="")
 
 		} else if(model$std_errors == "mvn"){
-    cat("Standard errors calculated using : ", model$n_draws,"MVN draws", "\n", sep="")
+    cat("Standard errors calculated using : ", model$n_draws," MVN draws", "\n", sep="")
 		}
 
 		if(model$stan_fit$return_code==0){
