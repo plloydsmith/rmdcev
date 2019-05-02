@@ -43,5 +43,6 @@ SystemRequirements: GNU make
 RoxygenNote: 6.1.1
 Suggests:
     knitr,
-    rmarkdown
+    rmarkdown,
+	testthat
 VignetteBuilder: knitr
