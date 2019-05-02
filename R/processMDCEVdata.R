@@ -33,7 +33,6 @@ processMDCEVdata <- function(data, psi_formula, lc_formula, model_options){
 		list(I = I, J = J, NPsi = NPsi,
 			 K = model_options$n_classes,
 			 dat_psi = as.matrix(dat_psi),
-			 old = model_options$old,
 			 j_price = price,
 			 j_quant = quant,
 			 income = as.vector(income),

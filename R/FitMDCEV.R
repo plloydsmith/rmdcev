@@ -23,7 +23,6 @@
 #' @param n_draws The number of MVN draws for standard error calculations
 #' @param keep_loglik Whether to keep the log_lik calculations
 #' @param hessian Wheter to keep the Hessian matrix
-#' @param old test for speed
 #' @param initial.parameters Specify initial parameters intead of
 #'     starting at random.
 #' @param prior_psi_sd standard deviation for normal prior with mean 0.
@@ -51,7 +50,6 @@
 FitMDCEV <- function(data,
 					 psi_formula = NULL,
 					 lc_formula = NULL,
-					 old = 0,
 					 weights = NULL,
 					 num_price = NULL,
 					 model = c("alpha", "les", "gamma", "gamma0"),
@@ -98,7 +96,6 @@ FitMDCEV <- function(data,
 
 	mle_options <- list(fixed_scale = fixed_scale,
 						model = model,
-						old = old,
 						n_classes = n_classes,
 						trunc_data = trunc_data,
 						seed = seed,

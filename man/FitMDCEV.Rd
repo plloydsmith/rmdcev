@@ -4,17 +4,17 @@
 \alias{FitMDCEV}
 \title{FitMDCEV}
 \usage{
-FitMDCEV(data, psi_formula = NULL, lc_formula = NULL, old = 0,
-  weights = NULL, num_price = NULL, model = c("alpha", "les",
-  "gamma", "gamma0"), n_classes = 1, fixed_scale = 0, trunc_data = 0,
-  seed = "123", initial.parameters = NULL, algorithm = c("MLE",
-  "Bayes"), flat_priors = NULL, print_iterations = TRUE,
-  hessian = TRUE, prior_psi_sd = 10, prior_gamma_sd = 10,
-  prior_alpha_sd = 0.5, prior_scale_sd = 1, prior_delta_sd = 10,
-  std_errors = "mvn", n_draws = 50, keep_loglik = 0,
-  random_parameters = "fixed", show_stan_warnings = TRUE,
-  n_iterations = 200, n_chains = 4, n_cores = 4,
-  max_tree_depth = 10, adapt_delta = 0.8, lkj_shape_prior = 4)
+FitMDCEV(data, psi_formula = NULL, lc_formula = NULL, weights = NULL,
+  num_price = NULL, model = c("alpha", "les", "gamma", "gamma0"),
+  n_classes = 1, fixed_scale = 0, trunc_data = 0, seed = "123",
+  initial.parameters = NULL, algorithm = c("MLE", "Bayes"),
+  flat_priors = NULL, print_iterations = TRUE, hessian = TRUE,
+  prior_psi_sd = 10, prior_gamma_sd = 10, prior_alpha_sd = 0.5,
+  prior_scale_sd = 1, prior_delta_sd = 10, std_errors = "mvn",
+  n_draws = 50, keep_loglik = 0, random_parameters = "fixed",
+  show_stan_warnings = TRUE, n_iterations = 200, n_chains = 4,
+  n_cores = 4, max_tree_depth = 10, adapt_delta = 0.8,
+  lkj_shape_prior = 4)
 }
 \arguments{
 \item{data}{The (IxJ) data to be passed to Stan including 1) id, 2) good, 3) quant,
@@ -24,8 +24,6 @@ Notes I is number of individuals and J is number of non-numeraire goods.}
 \item{psi_formula}{Formula for psi}
 
 \item{lc_formula}{Formula for latent class}
-
-\item{old}{test for speed}
 
 \item{weights}{An optional vector of sampling or frequency weights.}
 

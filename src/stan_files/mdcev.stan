@@ -36,20 +36,12 @@ transformed parameters {
   		matrix[I, J] lpsi = to_matrix(dat_psi[] * psi[1], I, J, 0);
 		matrix[I, J] gamma_j = gamma_ll(gamma[1], I, J, model_num);
 		matrix[I, J+1] alpha_full = alpha_ll(alpha[1], I, J, model_num);
-//		matrix[I, J] alpha_j = alpha_ll_j(alpha_temp[2:(J+1)], I, J, model_num);
-//		vector[I] alpha_1 = alpha_ll_1(alpha_temp[1], I, model_num);
 		real scale_full = fixed_scale == 0 ? scale[1] : 1.0;
 
-
-	if(old == 1){
-		log_like = mdcev_ll_old(j_quant, j_price, log_num, log_inc, M, log_M_fact, // data
-				lpsi, gamma_j, col(alpha_full, 1), block(alpha_full, 1, 2, I, J), scale_full, // parameters
-				I, J, nonzero, trunc_data);
-	}else if (old == 0){
 		log_like = mdcev_ll(j_quant, j_price, log_num, log_inc, M, log_M_fact, // data
 				lpsi, gamma_j, col(alpha_full, 1), block(alpha_full, 1, 2, I, J), scale_full, // parameters
 				I, J, nonzero, trunc_data);
-	}
+
 	} else if (K > 1){
 		vector[I] log_like_util[K];
 		for (k in 1:K){
