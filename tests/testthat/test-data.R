@@ -95,7 +95,7 @@ bayes_options <- list(n_iterations = n_iterations,
 					  show_stan_warnings = show_stan_warnings,
 					  lkj_shape_prior = lkj_shape_prior)
 
-stan_data <- processMDCEVdata(data_rec, psi_formula, lc_formula, num_price, mle_options)
+stan_data <- processMDCEVdata(data_rec, psi_formula, lc_formula, mle_options)
 parms_info <- CreateParmInfo(stan_data, algorithm, random_parameters)
 
 test_that("Gamma0 parm names", {
@@ -105,13 +105,13 @@ test_that("Gamma0 parm names", {
 test_that("Gamma0 LC 2 parm names", {
 	mle_options$n_classes = 2
 	lc_formula = ~ university + ageindex
-	stan_data <- processMDCEVdata(data_rec, psi_formula, lc_formula, num_price, mle_options)
+	stan_data <- processMDCEVdata(data_rec, psi_formula, lc_formula,  mle_options)
 	parms_info <- CreateParmInfo(stan_data, algorithm, random_parameters)
 	expect_equal(parms_info$n_vars$n_parms_total, length(parms_info$parm_names$all_names))
 })
 test_that("Gamma parm names", {
 	mle_options$model = "gamma"
-	stan_data <- processMDCEVdata(data_rec, psi_formula, lc_formula, num_price, mle_options)
+	stan_data <- processMDCEVdata(data_rec, psi_formula, lc_formula, mle_options)
 	parms_info <- CreateParmInfo(stan_data, algorithm, random_parameters)
 	expect_equal(parms_info$n_vars$n_parms_total, length(parms_info$parm_names$all_names))
 })
@@ -119,14 +119,14 @@ test_that("Gamma parm names", {
 
 test_that("alpha parm names", {
 	mle_options$model = "alpha"
-	stan_data <- processMDCEVdata(data_rec, psi_formula, lc_formula, num_price, mle_options)
+	stan_data <- processMDCEVdata(data_rec, psi_formula, lc_formula, mle_options)
 	parms_info <- CreateParmInfo(stan_data, algorithm, random_parameters)
 	expect_equal(parms_info$n_vars$n_parms_total, length(parms_info$parm_names$all_names))
 })
 
 test_that("les parm names", {
 	mle_options$model = "les"
-	stan_data <- processMDCEVdata(data_rec, psi_formula, lc_formula, num_price, mle_options)
+	stan_data <- processMDCEVdata(data_rec, psi_formula, lc_formula, mle_options)
 	parms_info <- CreateParmInfo(stan_data, algorithm, random_parameters)
 	expect_equal(parms_info$n_vars$n_parms_total, length(parms_info$parm_names$all_names))
 })
