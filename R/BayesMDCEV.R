@@ -85,6 +85,11 @@ BayesMDCEV <- function(stan_data, bayes_options,
 #' @export
 RunStanSampling <- function(stan_data, stan.model, bayes_options)
 {
+
+#	if (bayes_options$random_parameters == "fixed"){
+#		pars = c("psi", "gamma", "alpha", "scale", "log_like", "sum_log_lik", "lp__")
+#	}else
+#		pars = c("mu", "tau", "L_Omega", "scale", "log_like", "sum_log_lik" )
 #	if (is.null(pars))
 #		pars <- stanParameters(stan.dat, keep.beta, stan.model)
 #	init <- initialParameterValues(stan.dat)

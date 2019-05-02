@@ -12,9 +12,9 @@ data {
   int start[I]; // the starting observation for each task
   int end[I]; // the ending observation for each task
   real<lower=1> lkj_shape; // shape parameter for LKJ prior
-  vector[NPsi] psi_ndx;
-  int<lower=0, upper=1>  gamma_ndx;
-  int<lower=0, upper=1>  alpha_ndx;
+//  vector[NPsi] psi_ndx;
+//  int<lower=0, upper=1>  gamma_ndx;
+//  int<lower=0, upper=1>  alpha_ndx;
 }
 
 transformed data {
@@ -66,10 +66,11 @@ transformed parameters {
 	vector[I] log_like;
 //	cholesky_factor_cov[RP] L;                       // cholesky factors
   	vector<lower=0>[RP] tau;   	// diagonal of the part-worth covariance matrix
+
   	{
 	matrix[I, RP] beta;             // utility parameters (individual level)
 	matrix[I, J] lpsi;
-  	matrix[I, NPsi] psi_individual;
+   	matrix[I, NPsi] psi_individual;
   	vector[I] alpha_individual_1;
   	matrix[I, J] alpha_individual_j;
   	matrix[I, J] gamma_individual;
@@ -127,11 +128,46 @@ model {
 }
 
 generated quantities{
-//  cov_matrix[RP] Sigma;                            // cov matrix
-  real<upper=0> sum_log_lik = 0;                          // log_lik for each sample
-//  Sigma = tcrossprod(L);
+//  matrix[I, NPsi] psi_individual;
+//  matrix[I, J] gamma_individual;
+//  matrix[I, J+1] alpha_individual;
+  real<upper=0> sum_log_lik = 0;            							// log_lik for each sample
+//  cov_matrix[RP] Sigma = tcrossprod(L_Omega);                           // cov matrix
 
 	for(i in 1:I){
 		sum_log_lik = sum_log_lik + log_like[i];
 	}
+//	{
+//	matrix[I, RP] beta;             // utility parameters (individual level)
+//  	vector[I] alpha_individual_1;
+//  	matrix[I, J] alpha_individual_j;
+	// individual level parameters
+//	if (corr == 1){
+//		beta = rep_matrix(mu', I) + (z * diag_pre_multiply(tau, L_Omega));
+//	} else if (corr == 0){
+//		beta = rep_matrix(mu', I) + diag_post_multiply(z, tau);
+//	}
+
+//	if (model_num < 4){
+//		alpha_individual_1 = exp(col(beta, RP_a)) ./ (1 + exp(col(beta, RP_a)));
+//		if (model_num == 1)
+//		  	alpha_individual_j = rep_matrix(0, I, J);
+//		else if (model_num == 2)
+//		  	alpha_individual_j = exp(block(beta, 1, RP_a + 1, I, J)) ./ (1 + exp(block(beta, 1, RP_a + 1, I, J)));
+//		else
+//			alpha_individual_j = rep_matrix(alpha_individual_1, J);
+//	} else {
+//		alpha_individual_1 = rep_vector(1e-06, I);
+//		alpha_individual_j = rep_matrix(1e-06, I, J);
+//	}
+//
+//	alpha_individual = append_col(alpha_individual_1, alpha_individual_j);
+//
+//	if (model_num == 2)
+//	  gamma_individual = rep_matrix(1, I, J);
+//	else
+//	  gamma_individual = exp(block(beta, 1, RP_g, I, J));
+//
+//	psi_individual = block(beta, 1, 1, I, NPsi);
+//	}
 }

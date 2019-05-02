@@ -78,25 +78,25 @@ ProcessSimulationData <- function(est_sim, stan_est, policies, nsims, price_chan
 
 	J <- stan_est$stan_data$J
 	I <- stan_est$stan_data$I
-
+	model_num <- stan_est$stan_data$model_num
 	# gammas
-	if (stan_est$stan_data$model_num == 2)
+	if (model_num == 2)
 		gamma_sim <- matrix(1, nsims, J)
-	else if (stan_est$stan_data$model_num != 2)
+	else if (model_num != 2)
 		gamma_sim <- t(GrabParms(est_sim, "gamma"))
 
 	gamma_sim_list <- CreateListsRow(gamma_sim)	# Put in a list for each simulation
 
 	# alphas
-	if (stan_est$stan_data$model_num != 4){
+	if (model_num != 4){
 		alpha_sim <- t(GrabParms(est_sim, "alpha"))
 
-		if (stan_est$stan_data$model_num == 1)
+		if (model_num == 1)
 			alpha_sim <- cbind(alpha_sim, matrix(0, nsims, J) )
-		else if (stan_est$stan_data$model_num == 3)
+		else if (model_num == 3)
 			alpha_sim <- matrix(rep(alpha_sim,each=J+1), ncol=J+1, byrow=TRUE)
 
-	} else if (stan_est$stan_data$model_num ==4)
+	} else if (model_num ==4)
 		alpha_sim <- matrix(1e-6, nsims, J+1)
 
 	alpha_sim_list <- CreateListsRow(alpha_sim)
