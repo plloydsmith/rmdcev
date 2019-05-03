@@ -163,16 +163,16 @@ timeTaken <- paste(formatC(tmpH,width=2,format='d',flag=0),
 	if(nrow(output)>options("max.print")) options(max.print=nrow(output)+100)
 	print(output)
 	if(model$stan_data$fixed_scale == 1)
-		cat("Note: Scale parameter fixed at 1.",'\n')
+		cat("Note: Scale parameter fixed to 1.",'\n')
 
 	if(model$model == "les"){
-		cat("Note: All non-numeraire alpha's set to 0.",'\n')
+		cat("Note: All non-numeraire alpha's fixed to 0.",'\n')
 	}else if (model$model == "alpha"){
-		cat("Note: All non-numeraire gamma's set to 1.",'\n')
+		cat("Note: All non-numeraire gamma's fixed to 1.",'\n')
 	}else if (model$model == "gamma"){
-		cat("Note: The alpha parameter is equal for all goods.",'\n')
+		cat("Note: Alpha parameter is equal for all goods.",'\n')
 	}else if (model$model == "gamma0")
-		cat("Note: The alpha parameter is equal for all goods and set to 1e-6.",'\n')
+		cat("Note: All alpha parameters fixed to 1e-6.",'\n')
 
 	if(model$stan_data$trunc_data == 1)
 		cat("Note: Estimation accounts for truncated form of data.",'\n')
