@@ -1092,7 +1092,7 @@ public:
                         current_statement_begin__ = 201;
                         lp_accum__.add(normal_log<propto__>(to_vector(get_base1(psi,k,"psi",1)), 0, prior_psi_sd));
                         current_statement_begin__ = 202;
-                        lp_accum__.add(normal_log<propto__>(to_vector(get_base1(gamma,k,"gamma",1)), 0, prior_gamma_sd));
+                        lp_accum__.add(normal_log<propto__>(to_vector(get_base1(gamma,k,"gamma",1)), 1, prior_gamma_sd));
                         current_statement_begin__ = 203;
                         lp_accum__.add(normal_log<propto__>(to_vector(get_base1(alpha,k,"alpha",1)), 0.5, prior_alpha_sd));
                     }

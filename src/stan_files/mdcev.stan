@@ -78,7 +78,7 @@ model {
 		to_vector(delta) ~ normal(0, prior_delta_sd);
 		for (k in 1:K){
 			to_vector(psi[k]) ~ normal(0, prior_psi_sd);
-			to_vector(gamma[k]) ~ normal(0, prior_gamma_sd);
+			to_vector(gamma[k]) ~ normal(1, prior_gamma_sd);
 			to_vector(alpha[k]) ~ normal(.5, prior_alpha_sd);
 		}
 	}

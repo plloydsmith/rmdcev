@@ -48,7 +48,7 @@ stan::io::program_reader prog_reader__() {
     reader.add_event(118, 0, "start", "/common/mdcev_tdata.stan");
     reader.add_event(148, 30, "end", "/common/mdcev_tdata.stan");
     reader.add_event(148, 27, "restart", "model_mdcev_lc");
-    reader.add_event(296, 173, "end", "model_mdcev_lc");
+    reader.add_event(259, 136, "end", "model_mdcev_lc");
     return reader;
 }
 
@@ -1402,7 +1402,7 @@ public:
             }
             if (!include_gqs__) return;
             // declare and define generated quantities
-            current_statement_begin__ = 255;
+            current_statement_begin__ = 252;
             local_scalar_t__ sum_log_lik;
             (void) sum_log_lik;  // dummy to suppress unused var warning
 
@@ -1411,15 +1411,15 @@ public:
             stan::math::assign(sum_log_lik,0);
 
 
-            current_statement_begin__ = 258;
+            current_statement_begin__ = 254;
             for (int i = 1; i <= I; ++i) {
 
-                current_statement_begin__ = 259;
+                current_statement_begin__ = 255;
                 stan::math::assign(sum_log_lik, stan::model::deep_copy((sum_log_lik + get_base1(log_like,i,"log_like",1))));
             }
 
             // validate generated quantities
-            current_statement_begin__ = 255;
+            current_statement_begin__ = 252;
             check_less_or_equal(function__,"sum_log_lik",sum_log_lik,0);
 
             // write generated quantities
