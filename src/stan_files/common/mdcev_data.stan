@@ -3,8 +3,8 @@ int I; // number of Individuals
 int J; // number of non-numeraire alternatives
 int NPsi; // number of alt covariates
 matrix[I * J, NPsi] dat_psi; // alt characteristics
-matrix[I, J] j_price; // non-numeraire price
-matrix[I, J] j_quant; // non-numeraire consumption
+matrix[I, J] price_j; // non-numeraire price
+matrix[I, J] quant_j; // non-numeraire consumption
 vector[I] income;
 int<lower=0, upper=1> flat_priors; //indicator to include flat priors for all parameters
 real prior_psi_sd;

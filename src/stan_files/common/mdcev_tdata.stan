@@ -9,9 +9,9 @@ vector[I] M;	//  Number of consumed goods (including numeraire)
 vector[I] log_M_fact;
 
 for(i in 1:I){
-	log_num[i] = log(income[i] - j_price[i] * j_quant[i]');
+	log_num[i] = log(income[i] - price_j[i] * quant_j[i]');
 	for(j in 1:J){
-		nonzero[i,j] = j_quant[i,j] > 0 ? 1 : 0;
+		nonzero[i,j] = quant_j[i,j] > 0 ? 1 : 0;
 	}
   	M[i] = sum(nonzero[i])+1; // add 1 for numeraire
 }

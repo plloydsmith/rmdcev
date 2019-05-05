@@ -12,6 +12,9 @@
 
 PrepareSimulationData <- function(stan_est, policies, nsims = 30, price_change_only = FALSE){
 	# Checks on simulation options
+	if (stan_est$algorithm == "Bayes" & stan_est$random_parameters != "fixed")
+		stop("Demand and welfare simulation not set up for RP-MDCEV models yet.", "\n")
+
 	model_num <- stan_est$stan_data$model_num
 
 
@@ -79,6 +82,7 @@ ProcessSimulationData <- function(est_sim, stan_est, policies, nsims, price_chan
 	J <- stan_est$stan_data$J
 	I <- stan_est$stan_data$I
 	model_num <- stan_est$stan_data$model_num
+
 	# gammas
 	if (model_num == 2)
 		gamma_sim <- matrix(1, nsims, J)
@@ -96,7 +100,7 @@ ProcessSimulationData <- function(est_sim, stan_est, policies, nsims, price_chan
 		else if (model_num == 3)
 			alpha_sim <- matrix(rep(alpha_sim,each=J+1), ncol=J+1, byrow=TRUE)
 
-	} else if (model_num ==4)
+	} else if (model_num == 4)
 		alpha_sim <- matrix(1e-6, nsims, J+1)
 
 	alpha_sim_list <- CreateListsRow(alpha_sim)
@@ -144,10 +148,10 @@ ProcessSimulationData <- function(est_sim, stan_est, policies, nsims, price_chan
 	income <- list(as.list(stan_est$stan_data$income))
 	names(income) <- "income"
 
-	quant_j <- list(CreateListsRow(stan_est$stan_data$j_quant))
+	quant_j <- list(CreateListsRow(stan_est$stan_data$quant_j))
 	names(quant_j) <- "quant_j"
 
-	price <- cbind(1, stan_est$stan_data$j_price) #add numeraire price to price matrix (<-1)
+	price <- cbind(1, stan_est$stan_data$price_j) #add numeraire price to price matrix (<-1)
 	price <- list(CreateListsRow(price))
 	names(price) <- "price"
 

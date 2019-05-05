@@ -111,7 +111,7 @@ transformed parameters {
 		lpsi[t] = util;
 	}
 
-	log_like = mdcev_ll(j_quant, j_price, log_num, log_inc, M, log_M_fact, // data
+	log_like = mdcev_ll(quant_j, price_j, log_num, log_inc, M, log_M_fact, // data
 			lpsi, gamma_individual, alpha_individual_1, alpha_individual_j, scale_full, 						// parameters
 			I, J, nonzero, trunc_data);
 	}
@@ -128,7 +128,20 @@ model {
 }
 
 generated quantities{
-    real<upper=0> sum_log_lik = 0;// log_lik for each sample
+   cov_matrix[RP] Sigma;                            // cov matrix
+   real<upper=0> sum_log_lik = 0;// log_lik for each sample
+
+	{
+	   matrix[RP, RP] L;
+	//	vector[RP] tau_trans = append_col(tau[1:NPsi], append_col(exp(tau[RP_g:(RP_g+Gamma)]),
+	//									exp(tau[RP_a:(RP_a+A)])/(1+exp(tau[RP_a:(RP_a+A)]))));
+		if (corr == 1){
+			L = diag_pre_multiply(tau, L_Omega);
+		} else if (corr == 0){
+			L = diag_matrix(tau);
+		}
+		Sigma = tcrossprod(L);
+	}
 
 	for(i in 1:I){
 		sum_log_lik = sum_log_lik + log_like[i];

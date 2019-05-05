@@ -33,22 +33,22 @@ matrix alpha_ll(vector alpha, int I, int J, int model_num) {
 return(alpha_full);
 }
 
-vector mdcev_ll(matrix j_quant, matrix j_price, vector log_num, vector log_inc,
+vector mdcev_ll(matrix quant_j, matrix price_j, vector log_num, vector log_inc,
 				vector M, vector log_M_fact, // data
 				matrix lpsi, matrix gamma_j, vector alpha1, matrix alpha_j, real scale_full,// parameters
 				int I, int J, matrix nonzero, int trunc_data)  {//options
 
 	vector[I] log_like;
 	vector[J] ones_j = rep_vector(1, J);
-	matrix[I, J] v_j= lpsi + (alpha_j - 1) .* log(j_quant ./ gamma_j + 1) - log(j_price);
+	matrix[I, J] v_j= lpsi + (alpha_j - 1) .* log(quant_j ./ gamma_j + 1) - log(price_j);
 	vector[I] v1 = (alpha1 - 1) .* log_num / scale_full;
-	matrix[I, J] logf = log(1 - alpha_j) - log(j_quant + gamma_j);
+	matrix[I, J] logf = log(1 - alpha_j) - log(quant_j + gamma_j);
 	vector[I] logf1 = log(1 - alpha1) - log_num;
 	v_j = v_j / scale_full;
 
 	if (trunc_data == 0){
 		log_like = (1 - M) * log(scale_full) + logf1 + v1 + (nonzero .* (logf + v_j)) * ones_j +
-			log(inv(exp(logf1)) + (nonzero .* j_price ./ exp(logf)) * ones_j) -
+			log(inv(exp(logf1)) + (nonzero .* price_j ./ exp(logf)) * ones_j) -
 			M .* log(exp(v1) + exp(v_j) * ones_j) + log_M_fact;
 
 	} else if (trunc_data == 1){
@@ -58,10 +58,10 @@ vector mdcev_ll(matrix j_quant, matrix j_price, vector log_num, vector log_inc,
 		vector[I] sumv;
 
 		like_cond = exp((1 - M) * log(scale_full) + logf1 + v1 + (nonzero .* (logf + v_j)) * ones_j +
-			log(inv(exp(logf1)) + (nonzero .* j_price ./ exp(logf)) * ones_j) -
+			log(inv(exp(logf1)) + (nonzero .* price_j ./ exp(logf)) * ones_j) -
 			M .* log(exp(v1) + exp(v_j) * ones_j) + log_M_fact);
 
-		v_1 = append_col((alpha1 - 1) .* log_inc, lpsi - log(j_price));
+		v_1 = append_col((alpha1 - 1) .* log_inc, lpsi - log(price_j));
 		v_1 = exp(v_1 / scale_full);
 		sumv = v_1 * rep_vector(1, J+1);
 

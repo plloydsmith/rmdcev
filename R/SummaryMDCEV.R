@@ -143,7 +143,7 @@ timeTaken <- paste(formatC(tmpH,width=2,format='d',flag=0),
 	if(length(dropcolumns)>0) output = output[,-dropcolumns, drop=FALSE]
 
 	cat("\nAverage consumption of non-numeraire alternatives:\n")
-	mean_consumption <-  round(colMeans(model$stan_data$j_quant),2)
+	mean_consumption <-  round(colMeans(model$stan_data$quant_j),2)
 	names(mean_consumption) <-c(1:model$stan_data$J)
 	print(mean_consumption )
 	cat("\n")
