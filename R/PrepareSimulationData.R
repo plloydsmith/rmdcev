@@ -11,14 +11,13 @@
 #' @export
 
 PrepareSimulationData <- function(stan_est, policies, nsims = 30, price_change_only = FALSE){
-	# Checks on simulation options
+
 	if (stan_est$algorithm == "Bayes" & stan_est$random_parameters != "fixed")
 		stop("Demand and welfare simulation not set up for RP-MDCEV models yet.", "\n")
 
 	model_num <- stan_est$stan_data$model_num
 
-
-
+	# Checks on simulation options
 	if (stan_est$algorithm == "MLE" && nsims > stan_est$n_draws){
 		nsims <- stan_est$n_draws
 		warning("Number of simulations > Number of mvn draws from stan_est. nsims has been set to: ", nsims)
