@@ -3,7 +3,7 @@ context("Test Data load")
 
 library(rmdcev)
 
-tol <- 0.01
+tol <- 0.1
 
 data(data_rec, package = "rmdcev")
 data_rec
@@ -39,6 +39,7 @@ test_that("MLE gamma0", {
 					   data = subset(data_rec, id < 100),
 					   model = "gamma0",
 					   algorithm = "MLE",
+					   std_error = "deltamethod",
 					   print_iterations = FALSE)
 
 	output.sum <- SummaryMDCEV(output)
@@ -46,7 +47,7 @@ test_that("MLE gamma0", {
 	expect_equal(output$model, "gamma0")
 	print(output$log.likelihood, digits =10)
 
-	expect_true(abs(output$log.likelihood - (-2684.757401))< tol)
+	expect_true(abs(output$log.likelihood - (-2684.757401)) < tol)
 	expect_true(abs(output$bic - 5456.822) < tol)
 	expect_true(abs(output[["stan_fit"]][["par"]][["scale"]] - 0.8592168) < tol)
 	expect_true(abs(output[["stan_fit"]][["par"]][["psi"]][[1]] - -7.635813) < tol)

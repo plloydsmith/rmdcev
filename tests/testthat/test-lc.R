@@ -9,6 +9,7 @@ result <- FitMDCEV(psi_formula = ~ 1,
 				   data = subset(data_rec, id < 500),
 				   model = "gamma0",
 				   algorithm = "MLE",
+				   std_error = "deltamethod",
 				   n_classes = 2,
 				   print_iterations = FALSE)
 output.sum <- SummaryMDCEV(result)
