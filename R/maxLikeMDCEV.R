@@ -62,7 +62,7 @@ maxlikeMDCEV <- function(stan_data, initial.parameters,
 			init$alpha <- matrix(rep(init.par$alpha, stan_data$K), nrow=stan_data$K, ncol=1)
 			init$gamma <- matrix(rep(init.par$gamma, stan_data$K), nrow=stan_data$K, ncol=stan_data$J)
 		} else if (stan_data$model_num == 2){
-			init$alpha <- matrix(rep(init.par$alpha, stan_data$K), nrow=stan_data$K, ncol=stan_data$J)
+			init$alpha <- matrix(rep(init.par$alpha, stan_data$K), nrow=stan_data$K, ncol=stan_data$J+1)
 		} else if (stan_data$model_num == 4){
 			init$gamma <- matrix(rep(init.par$gamma, stan_data$K), nrow=stan_data$K, ncol=stan_data$J)
 		}
