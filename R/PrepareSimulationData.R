@@ -10,7 +10,10 @@
 #' and n_classes for number of classes and model_num for model type
 #' @export
 
-PrepareSimulationData <- function(stan_est, policies, nsims = 30, price_change_only = FALSE){
+PrepareSimulationData <- function(stan_est,
+								  policies,
+								  nsims = 30,
+								  price_change_only = FALSE){
 
 	if (stan_est$algorithm == "Bayes" & stan_est$random_parameters != "fixed")
 		stop("Demand and welfare simulation not set up for RP-MDCEV models yet.", "\n")

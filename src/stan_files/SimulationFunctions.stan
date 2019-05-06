@@ -1,35 +1,5 @@
 //Code for MDCEV Simulation Functions <- "
 functions {
-vector[] DrawError2_rng(real quant_num, vector quant_j, vector price_j,
-					vector psi_j, vector gamma_j, vector alpha, real scale,
-					int ngoods, int nerrs, int cond_error){
-
-	vector[ngoods+1] error[nerrs];
-
-	if (cond_error == 0){	// Unconditional
-		for(err in 1:nerrs){
-			error[err] = rep_vector(0, ngoods+1);
-			for(j in 2:ngoods+1) // keep outside good error to zero
-				error[err, j] = -log(-log(uniform_rng(0, 1))) * scale; //uniform(0,1) draws
-		}
-	} else if (cond_error == 1){	// Conditional
-		// Cacluate the demand function, g
-		vector[ngoods + 1] cond_demand = append_row(quant_num, quant_j);
-		// compute vk and v1
-		real v1 = (alpha[1] - 1) * log(quant_num);
-		vector[ngoods] vk = psi_j + (alpha[2:ngoods+1] - 1) .* log(quant_j ./ gamma_j + 1) - log(price_j);
-		// ek = v1 - vk and assume error term is zero for outside good
-		vector[ngoods + 1] ek = append_row(0, (v1 - vk) / scale);
-
-		// Calculate errors
-		// For unvisited alternatives, draw from truncated multivariate logistic distribution
-		for(err in 1:nerrs)
-			for(j in 1:ngoods+1)
-				error[err, j] = cond_demand[j] > 0 ? ek[j] * scale :
-							-log(-log(uniform_rng(0, 1) * exp(-exp(-ek[j])))) * scale;
-		}
-return(error);
-}
 
 row_vector Shuffle_rng(row_vector inv, int nerrs){
 
@@ -75,8 +45,8 @@ vector[] DrawError_rng(real quant_num, vector quant_j, vector price_j,
 	vector[nerrs] temp0 = rep_vector(0, nerrs);
 
 	if (cond_error == 0){	// Unconditional
-		error[1] = rep_row_vector(0, nerrs);
-		for(j in 2:ngoods+1)
+	//	error[1] = rep_row_vector(0, nerrs);
+		for(j in 1:ngoods+1)
 			error[j] = -log(-log(DrawMlhs_rng(nerrs, draw_mlhs))) * scale;
 
 	} else if (cond_error == 1){	// Conditional
@@ -93,7 +63,8 @@ vector[] DrawError_rng(real quant_num, vector quant_j, vector price_j,
 		for(j in 1:ngoods+1)
 			error[j] = cond_demand[j] > 0 ? rep_row_vector(ek[j] * scale, nerrs) :
 					-log(-log(DrawMlhs_rng(nerrs, draw_mlhs) * exp(-exp(-ek[j])))) * scale;
-		}
+	}
+
 	error_t = error';
 	for(err in 1:nerrs)
 		out[err] = error_t[err]';
@@ -316,7 +287,7 @@ vector HicksianDemand(real util, vector price,
 		real lambda_num;
 		real lambda_den;
 		real lambda;
-		real alpha_1 = alpha[1];
+		real alpha_1 = alpha[1]; // all alpha's are equal
 		vector[ngoods+1] g_psi = g .* mu .* col(parm_matrix, 2); // obtain gamma_psi
 		vector[ngoods+1] b;
 		vector[ngoods+1] c;
