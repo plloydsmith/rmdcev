@@ -46,8 +46,8 @@ test_that("MLE gamma0", {
 	expect_equal(output$model, "gamma0")
 	print(output$log.likelihood, digits =10)
 
-	expect_true(abs(output$log.likelihood - (-2596.84))< tol)
-	expect_true(abs(output$bic - 5354.50) < tol)
+	expect_true(abs(output$log.likelihood - (-2596.8366))< tol)
+	expect_true(abs(output$bic - 5354.502) < tol)
 	expect_true(abs(output[["stan_fit"]][["par"]][["scale"]] - 0.78) < tol)
 	expect_true(abs(output[["stan_fit"]][["par"]][["psi"]][[2]] - -8.05) < tol)
 	expect_equal(length(output[["stan_fit"]][["par"]][["alpha"]]), 0)
