@@ -94,8 +94,8 @@ transformed parameters {
 		else
 			alpha_individual_j = rep_matrix(alpha_individual_1, J);
 	} else {
-		alpha_individual_1 = rep_vector(1e-06, I);
-		alpha_individual_j = rep_matrix(1e-06, I, J);
+		alpha_individual_1 = rep_vector(1e-03, I);
+		alpha_individual_j = rep_matrix(1e-03, I, J);
 	}
 
 	if (model_num == 2)

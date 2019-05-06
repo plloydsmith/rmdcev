@@ -36,7 +36,7 @@ static int current_statement_begin__;
 stan::io::program_reader prog_reader__() {
     stan::io::program_reader reader;
     reader.add_event(0, 0, "start", "model_SimulationFunctions");
-    reader.add_event(655, 653, "end", "model_SimulationFunctions");
+    reader.add_event(652, 650, "end", "model_SimulationFunctions");
     return reader;
 }
 
@@ -727,7 +727,7 @@ MarshallianDemand(const T0__& income,
                         current_statement_begin__ = 162;
                         stan::model::assign(X, 
                                     stan::model::cons_list(stan::model::index_uni(m), stan::model::nil_index_list()), 
-                                    ((pow((lambda / get_base1(mu,m,"mu",1)),(1 / (alpha_1 - 1))) - get_base1(d,m,"d",1)) * get_base1(g,m,"g",1)), 
+                                    ((pow((lambda / get_base1(mu,m,"mu",1)),inv((alpha_1 - 1))) - get_base1(d,m,"d",1)) * get_base1(g,m,"g",1)), 
                                     "assigning variable X");
                     }
                     current_statement_begin__ = 163;
@@ -1181,19 +1181,13 @@ HicksianDemand(const T0__& util,
             stan::math::initialize(lambda_den, DUMMY_VAR__);
             stan::math::fill(lambda_den,DUMMY_VAR__);
             current_statement_begin__ = 289;
-            local_scalar_t__ lambda;
-            (void) lambda;  // dummy to suppress unused var warning
-
-            stan::math::initialize(lambda, DUMMY_VAR__);
-            stan::math::fill(lambda,DUMMY_VAR__);
-            current_statement_begin__ = 290;
             local_scalar_t__ alpha_1;
             (void) alpha_1;  // dummy to suppress unused var warning
 
             stan::math::initialize(alpha_1, DUMMY_VAR__);
             stan::math::fill(alpha_1,DUMMY_VAR__);
             stan::math::assign(alpha_1,get_base1(alpha,1,"alpha",1));
-            current_statement_begin__ = 291;
+            current_statement_begin__ = 290;
             validate_non_negative_index("g_psi", "(ngoods + 1)", (ngoods + 1));
             Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,1>  g_psi(static_cast<Eigen::VectorXd::Index>((ngoods + 1)));
             (void) g_psi;  // dummy to suppress unused var warning
@@ -1201,14 +1195,14 @@ HicksianDemand(const T0__& util,
             stan::math::initialize(g_psi, DUMMY_VAR__);
             stan::math::fill(g_psi,DUMMY_VAR__);
             stan::math::assign(g_psi,elt_multiply(elt_multiply(g,mu),col(parm_matrix,2)));
-            current_statement_begin__ = 292;
+            current_statement_begin__ = 291;
             validate_non_negative_index("b", "(ngoods + 1)", (ngoods + 1));
             Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,1>  b(static_cast<Eigen::VectorXd::Index>((ngoods + 1)));
             (void) b;  // dummy to suppress unused var warning
 
             stan::math::initialize(b, DUMMY_VAR__);
             stan::math::fill(b,DUMMY_VAR__);
-            current_statement_begin__ = 293;
+            current_statement_begin__ = 292;
             validate_non_negative_index("c", "(ngoods + 1)", (ngoods + 1));
             Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,1>  c(static_cast<Eigen::VectorXd::Index>((ngoods + 1)));
             (void) c;  // dummy to suppress unused var warning
@@ -1217,61 +1211,59 @@ HicksianDemand(const T0__& util,
             stan::math::fill(c,DUMMY_VAR__);
 
 
-            current_statement_begin__ = 295;
+            current_statement_begin__ = 294;
             for (int j = 1; j <= (ngoods + 1); ++j) {
-                current_statement_begin__ = 296;
+                current_statement_begin__ = 295;
                 stan::model::assign(b, 
                             stan::model::cons_list(stan::model::index_uni(j), stan::model::nil_index_list()), 
                             pow(get_base1(mu,j,"mu",1),(-(alpha_1) / (alpha_1 - 1))), 
                             "assigning variable b");
             }
-            current_statement_begin__ = 298;
+            current_statement_begin__ = 297;
             stan::math::assign(c, elt_multiply(g_psi,b));
-            current_statement_begin__ = 300;
+            current_statement_begin__ = 299;
             while (as_bool(logical_eq(exit,0))) {
 
+                current_statement_begin__ = 301;
+                stan::math::assign(lambda_num, (((alpha_1 * util) + sum(stan::model::rvalue(g_psi, stan::model::cons_list(stan::model::index_min_max(1, M), stan::model::nil_index_list()), "g_psi"))) - get_base1(g_psi,1,"g_psi",1)));
                 current_statement_begin__ = 302;
-                stan::math::assign(lambda_num, (((alpha_1 * util) + sum(stan::model::rvalue(g_psi, stan::model::cons_list(stan::model::index_min_max(1, M), stan::model::nil_index_list()), "g_psi"))) - (get_base1(g_psi,1,"g_psi",1) / get_base1(g,1,"g",1))));
-                current_statement_begin__ = 303;
                 stan::math::assign(lambda_den, sum(stan::model::rvalue(c, stan::model::cons_list(stan::model::index_min_max(1, M), stan::model::nil_index_list()), "c")));
-                current_statement_begin__ = 304;
-                stan::math::assign(lambda, pow((lambda_num / lambda_den),(-((alpha_1 - 1)) / alpha_1)));
-                current_statement_begin__ = 305;
-                stan::math::assign(lambda1, (1 / lambda));
-                current_statement_begin__ = 310;
+                current_statement_begin__ = 303;
+                stan::math::assign(lambda1, pow((lambda_num / lambda_den),((alpha_1 - 1) / alpha_1)));
+                current_statement_begin__ = 308;
                 if (as_bool((primitive_value(logical_gt(lambda1,get_base1(mu,std::min((M + 1),(ngoods + 1)),"mu",1))) || primitive_value(logical_eq(M,(ngoods + 1)))))) {
 
-                    current_statement_begin__ = 313;
+                    current_statement_begin__ = 311;
                     for (int m = 1; m <= M; ++m) {
-                        current_statement_begin__ = 314;
+                        current_statement_begin__ = 312;
                         stan::model::assign(X, 
                                     stan::model::cons_list(stan::model::index_uni(m), stan::model::nil_index_list()), 
-                                    ((pow(inv((lambda * get_base1(mu,m,"mu",1))),inv((alpha_1 - 1))) - get_base1(d,m,"d",1)) * get_base1(g,m,"g",1)), 
+                                    ((pow((lambda1 / get_base1(mu,m,"mu",1)),inv((alpha_1 - 1))) - get_base1(d,m,"d",1)) * get_base1(g,m,"g",1)), 
                                     "assigning variable X");
                     }
-                    current_statement_begin__ = 315;
+                    current_statement_begin__ = 313;
                     stan::math::assign(exit, 1);
                 } else if (as_bool(logical_lt(M,(ngoods + 1)))) {
-                    current_statement_begin__ = 318;
+                    current_statement_begin__ = 316;
                     stan::math::assign(M, (M + 1));
                 }
             }
             }
         } else if (as_bool(logical_eq(algo_gen,1))) {
             {
-            current_statement_begin__ = 321;
+            current_statement_begin__ = 319;
             local_scalar_t__ lambda_l;
             (void) lambda_l;  // dummy to suppress unused var warning
 
             stan::math::initialize(lambda_l, DUMMY_VAR__);
             stan::math::fill(lambda_l,DUMMY_VAR__);
-            current_statement_begin__ = 322;
+            current_statement_begin__ = 320;
             local_scalar_t__ lambda_u;
             (void) lambda_u;  // dummy to suppress unused var warning
 
             stan::math::initialize(lambda_u, DUMMY_VAR__);
             stan::math::fill(lambda_u,DUMMY_VAR__);
-            current_statement_begin__ = 323;
+            current_statement_begin__ = 321;
             validate_non_negative_index("price_ord", "(ngoods + 1)", (ngoods + 1));
             Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,1>  price_ord(static_cast<Eigen::VectorXd::Index>((ngoods + 1)));
             (void) price_ord;  // dummy to suppress unused var warning
@@ -1279,7 +1271,7 @@ HicksianDemand(const T0__& util,
             stan::math::initialize(price_ord, DUMMY_VAR__);
             stan::math::fill(price_ord,DUMMY_VAR__);
             stan::math::assign(price_ord,col(parm_matrix,2));
-            current_statement_begin__ = 324;
+            current_statement_begin__ = 322;
             validate_non_negative_index("a", "(ngoods + 1)", (ngoods + 1));
             Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,1>  a(static_cast<Eigen::VectorXd::Index>((ngoods + 1)));
             (void) a;  // dummy to suppress unused var warning
@@ -1287,7 +1279,7 @@ HicksianDemand(const T0__& util,
             stan::math::initialize(a, DUMMY_VAR__);
             stan::math::fill(a,DUMMY_VAR__);
             stan::math::assign(a,col(parm_matrix,4));
-            current_statement_begin__ = 325;
+            current_statement_begin__ = 323;
             validate_non_negative_index("psi", "(ngoods + 1)", (ngoods + 1));
             Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,1>  psi(static_cast<Eigen::VectorXd::Index>((ngoods + 1)));
             (void) psi;  // dummy to suppress unused var warning
@@ -1295,7 +1287,7 @@ HicksianDemand(const T0__& util,
             stan::math::initialize(psi, DUMMY_VAR__);
             stan::math::fill(psi,DUMMY_VAR__);
             stan::math::assign(psi,elt_multiply(mu,price_ord));
-            current_statement_begin__ = 326;
+            current_statement_begin__ = 324;
             validate_non_negative_index("g_psi_a", "(ngoods + 1)", (ngoods + 1));
             Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,1>  g_psi_a(static_cast<Eigen::VectorXd::Index>((ngoods + 1)));
             (void) g_psi_a;  // dummy to suppress unused var warning
@@ -1303,7 +1295,7 @@ HicksianDemand(const T0__& util,
             stan::math::initialize(g_psi_a, DUMMY_VAR__);
             stan::math::fill(g_psi_a,DUMMY_VAR__);
             stan::math::assign(g_psi_a,elt_divide(elt_multiply(g,psi),a));
-            current_statement_begin__ = 327;
+            current_statement_begin__ = 325;
             validate_non_negative_index("a_a_1", "(ngoods + 1)", (ngoods + 1));
             Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,1>  a_a_1(static_cast<Eigen::VectorXd::Index>((ngoods + 1)));
             (void) a_a_1;  // dummy to suppress unused var warning
@@ -1311,7 +1303,7 @@ HicksianDemand(const T0__& util,
             stan::math::initialize(a_a_1, DUMMY_VAR__);
             stan::math::fill(a_a_1,DUMMY_VAR__);
             stan::math::assign(a_a_1,elt_divide(a,subtract(a,1)));
-            current_statement_begin__ = 328;
+            current_statement_begin__ = 326;
             validate_non_negative_index("mu_a_a_1", "(ngoods + 1)", (ngoods + 1));
             Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,1>  mu_a_a_1(static_cast<Eigen::VectorXd::Index>((ngoods + 1)));
             (void) mu_a_a_1;  // dummy to suppress unused var warning
@@ -1320,39 +1312,39 @@ HicksianDemand(const T0__& util,
             stan::math::fill(mu_a_a_1,DUMMY_VAR__);
 
 
-            current_statement_begin__ = 330;
+            current_statement_begin__ = 328;
             for (int j = 1; j <= (ngoods + 1); ++j) {
-                current_statement_begin__ = 331;
+                current_statement_begin__ = 329;
                 stan::model::assign(mu_a_a_1, 
                             stan::model::cons_list(stan::model::index_uni(j), stan::model::nil_index_list()), 
                             pow(inv(get_base1(mu,j,"mu",1)),get_base1(a_a_1,j,"a_a_1",1)), 
                             "assigning variable mu_a_a_1");
             }
-            current_statement_begin__ = 333;
+            current_statement_begin__ = 331;
             while (as_bool(logical_eq(exit,0))) {
 
-                current_statement_begin__ = 334;
+                current_statement_begin__ = 332;
                 stan::math::assign(lambda1, get_base1(mu,(M + 1),"mu",1));
-                current_statement_begin__ = 337;
+                current_statement_begin__ = 335;
                 stan::math::assign(util_new, ComputeUtilM(M,lambda1,g_psi_a,a_a_1,mu_a_a_1,psi,g,price_ord,d,model_num, pstream__));
-                current_statement_begin__ = 339;
+                current_statement_begin__ = 337;
                 if (as_bool((primitive_value(logical_gte(util_new,util)) || primitive_value(logical_eq((M + 1),(ngoods + 1)))))) {
 
-                    current_statement_begin__ = 340;
+                    current_statement_begin__ = 338;
                     if (as_bool(logical_lt(util_new,util))) {
-                        current_statement_begin__ = 341;
+                        current_statement_begin__ = 339;
                         stan::math::assign(M, (M + 1));
                     }
-                    current_statement_begin__ = 342;
+                    current_statement_begin__ = 340;
                     stan::math::assign(lambda_l, (logical_lt(util_new,util) ? stan::math::promote_scalar<local_scalar_t__>(0) : stan::math::promote_scalar<local_scalar_t__>(lambda1) ));
-                    current_statement_begin__ = 343;
+                    current_statement_begin__ = 341;
                     stan::math::assign(lambda_u, get_base1(mu,M,"mu",1));
-                    current_statement_begin__ = 344;
+                    current_statement_begin__ = 342;
                     stan::math::assign(lambda1, ((lambda_l + lambda_u) / 2));
-                    current_statement_begin__ = 346;
+                    current_statement_begin__ = 344;
                     for (int n = 1; n <= max_loop; ++n) {
                         {
-                        current_statement_begin__ = 347;
+                        current_statement_begin__ = 345;
                         local_scalar_t__ lambda_mid;
                         (void) lambda_mid;  // dummy to suppress unused var warning
 
@@ -1361,45 +1353,45 @@ HicksianDemand(const T0__& util,
                         stan::math::assign(lambda_mid,((lambda_l + lambda_u) / 2));
 
 
-                        current_statement_begin__ = 349;
+                        current_statement_begin__ = 347;
                         stan::math::assign(util_new, ComputeUtilM(M,lambda1,g_psi_a,a_a_1,mu_a_a_1,psi,g,price_ord,d,model_num, pstream__));
-                        current_statement_begin__ = 352;
+                        current_statement_begin__ = 350;
                         if (as_bool(logical_lt(util_new,util))) {
-                            current_statement_begin__ = 353;
+                            current_statement_begin__ = 351;
                             stan::math::assign(lambda_u, lambda_mid);
                         } else if (as_bool(logical_gt(util_new,util))) {
-                            current_statement_begin__ = 355;
+                            current_statement_begin__ = 353;
                             stan::math::assign(lambda_l, lambda_mid);
                         }
-                        current_statement_begin__ = 357;
+                        current_statement_begin__ = 355;
                         stan::math::assign(lambda1, ((lambda_l + lambda_u) / 2));
-                        current_statement_begin__ = 359;
+                        current_statement_begin__ = 357;
                         if (as_bool(logical_lt(stan::math::fabs((((lambda_l - lambda_u) / (lambda_l + lambda_u)) * 0.5)),tol_l))) {
-                            current_statement_begin__ = 359;
+                            current_statement_begin__ = 357;
                             break;
                         }
                         }
                     }
-                    current_statement_begin__ = 363;
+                    current_statement_begin__ = 361;
                     for (int m = 1; m <= M; ++m) {
-                        current_statement_begin__ = 364;
+                        current_statement_begin__ = 362;
                         stan::model::assign(X, 
                                     stan::model::cons_list(stan::model::index_uni(m), stan::model::nil_index_list()), 
-                                    ((pow((lambda1 / get_base1(mu,m,"mu",1)),(1 / (get_base1(a,m,"a",1) - 1))) - get_base1(d,m,"d",1)) * get_base1(g,m,"g",1)), 
+                                    ((pow((lambda1 / get_base1(mu,m,"mu",1)),inv((get_base1(a,m,"a",1) - 1))) - get_base1(d,m,"d",1)) * get_base1(g,m,"g",1)), 
                                     "assigning variable X");
                     }
-                    current_statement_begin__ = 366;
+                    current_statement_begin__ = 363;
                     stan::math::assign(exit, 1);
                 } else if (as_bool((primitive_value(logical_lt(util_new,util)) && primitive_value(logical_lt((M + 1),(ngoods + 1)))))) {
-                    current_statement_begin__ = 369;
+                    current_statement_begin__ = 366;
                     stan::math::assign(M, (M + 1));
                 }
             }
             }
         }
-        current_statement_begin__ = 373;
+        current_statement_begin__ = 370;
         stan::math::assign(hdemand, stan::model::rvalue(X, stan::model::cons_list(stan::model::index_multi(order_x), stan::model::nil_index_list()), "X"));
-        current_statement_begin__ = 374;
+        current_statement_begin__ = 371;
         return stan::math::promote_scalar<fun_return_scalar_t__>(hdemand);
         }
     } catch (const std::exception& e) {
@@ -1449,19 +1441,19 @@ CalcmdemandOne_rng(const T0__& income,
     int current_statement_begin__ = -1;
     try {
         {
-        current_statement_begin__ = 382;
+        current_statement_begin__ = 379;
         int ngoods(0);
         (void) ngoods;  // dummy to suppress unused var warning
 
         stan::math::fill(ngoods, std::numeric_limits<int>::min());
         stan::math::assign(ngoods,num_elements(gamma_sims));
-        current_statement_begin__ = 383;
+        current_statement_begin__ = 380;
         int nsims(0);
         (void) nsims;  // dummy to suppress unused var warning
 
         stan::math::fill(nsims, std::numeric_limits<int>::min());
         stan::math::assign(nsims,1);
-        current_statement_begin__ = 384;
+        current_statement_begin__ = 381;
         validate_non_negative_index("mdemand_out", "nsims", nsims);
         validate_non_negative_index("mdemand_out", "(ngoods + 1)", (ngoods + 1));
         Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,Eigen::Dynamic>  mdemand_out(static_cast<Eigen::VectorXd::Index>(nsims),static_cast<Eigen::VectorXd::Index>((ngoods + 1)));
@@ -1471,10 +1463,10 @@ CalcmdemandOne_rng(const T0__& income,
         stan::math::fill(mdemand_out,DUMMY_VAR__);
 
 
-        current_statement_begin__ = 386;
+        current_statement_begin__ = 383;
         for (int sim = 1; sim <= nsims; ++sim) {
             {
-            current_statement_begin__ = 387;
+            current_statement_begin__ = 384;
             validate_non_negative_index("psi_j", "ngoods", ngoods);
             Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,1>  psi_j(static_cast<Eigen::VectorXd::Index>(ngoods));
             (void) psi_j;  // dummy to suppress unused var warning
@@ -1482,7 +1474,7 @@ CalcmdemandOne_rng(const T0__& income,
             stan::math::initialize(psi_j, DUMMY_VAR__);
             stan::math::fill(psi_j,DUMMY_VAR__);
             stan::math::assign(psi_j,psi_sims);
-            current_statement_begin__ = 388;
+            current_statement_begin__ = 385;
             validate_non_negative_index("gamma", "(ngoods + 1)", (ngoods + 1));
             Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,1>  gamma(static_cast<Eigen::VectorXd::Index>((ngoods + 1)));
             (void) gamma;  // dummy to suppress unused var warning
@@ -1490,7 +1482,7 @@ CalcmdemandOne_rng(const T0__& income,
             stan::math::initialize(gamma, DUMMY_VAR__);
             stan::math::fill(gamma,DUMMY_VAR__);
             stan::math::assign(gamma,append_row(1,gamma_sims));
-            current_statement_begin__ = 389;
+            current_statement_begin__ = 386;
             validate_non_negative_index("alpha", "(ngoods + 1)", (ngoods + 1));
             Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,1>  alpha(static_cast<Eigen::VectorXd::Index>((ngoods + 1)));
             (void) alpha;  // dummy to suppress unused var warning
@@ -1498,20 +1490,20 @@ CalcmdemandOne_rng(const T0__& income,
             stan::math::initialize(alpha, DUMMY_VAR__);
             stan::math::fill(alpha,DUMMY_VAR__);
             stan::math::assign(alpha,alpha_sims);
-            current_statement_begin__ = 390;
+            current_statement_begin__ = 387;
             local_scalar_t__ scale;
             (void) scale;  // dummy to suppress unused var warning
 
             stan::math::initialize(scale, DUMMY_VAR__);
             stan::math::fill(scale,DUMMY_VAR__);
             stan::math::assign(scale,scale_sims);
-            current_statement_begin__ = 391;
+            current_statement_begin__ = 388;
             validate_non_negative_index("error", "(ngoods + 1)", (ngoods + 1));
             validate_non_negative_index("error", "nerrs", nerrs);
             vector<Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,1> > error(nerrs, (Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,1> (static_cast<Eigen::VectorXd::Index>((ngoods + 1)))));
             stan::math::initialize(error, DUMMY_VAR__);
             stan::math::fill(error,DUMMY_VAR__);
-            current_statement_begin__ = 392;
+            current_statement_begin__ = 389;
             validate_non_negative_index("mdemand", "nerrs", nerrs);
             validate_non_negative_index("mdemand", "(ngoods + 1)", (ngoods + 1));
             Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,Eigen::Dynamic>  mdemand(static_cast<Eigen::VectorXd::Index>(nerrs),static_cast<Eigen::VectorXd::Index>((ngoods + 1)));
@@ -1519,14 +1511,14 @@ CalcmdemandOne_rng(const T0__& income,
 
             stan::math::initialize(mdemand, DUMMY_VAR__);
             stan::math::fill(mdemand,DUMMY_VAR__);
-            current_statement_begin__ = 393;
+            current_statement_begin__ = 390;
             validate_non_negative_index("mdemand_sims", "(ngoods + 1)", (ngoods + 1));
             Eigen::Matrix<local_scalar_t__,1,Eigen::Dynamic>  mdemand_sims(static_cast<Eigen::VectorXd::Index>((ngoods + 1)));
             (void) mdemand_sims;  // dummy to suppress unused var warning
 
             stan::math::initialize(mdemand_sims, DUMMY_VAR__);
             stan::math::fill(mdemand_sims,DUMMY_VAR__);
-            current_statement_begin__ = 394;
+            current_statement_begin__ = 391;
             validate_non_negative_index("mdemand_trans", "(ngoods + 1)", (ngoods + 1));
             validate_non_negative_index("mdemand_trans", "nerrs", nerrs);
             Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,Eigen::Dynamic>  mdemand_trans(static_cast<Eigen::VectorXd::Index>((ngoods + 1)),static_cast<Eigen::VectorXd::Index>(nerrs));
@@ -1536,28 +1528,28 @@ CalcmdemandOne_rng(const T0__& income,
             stan::math::fill(mdemand_trans,DUMMY_VAR__);
 
 
-            current_statement_begin__ = 396;
+            current_statement_begin__ = 393;
             for (int err = 1; err <= nerrs; ++err) {
-                current_statement_begin__ = 397;
+                current_statement_begin__ = 394;
                 for (int j = 1; j <= (ngoods + 1); ++j) {
-                    current_statement_begin__ = 398;
+                    current_statement_begin__ = 395;
                     stan::model::assign(error, 
                                 stan::model::cons_list(stan::model::index_uni(err), stan::model::cons_list(stan::model::index_uni(j), stan::model::nil_index_list())), 
                                 (-(stan::math::log(-(stan::math::log(uniform_rng(0,1, base_rng__))))) * scale), 
                                 "assigning variable error");
                 }
             }
-            current_statement_begin__ = 401;
+            current_statement_begin__ = 398;
             for (int err = 1; err <= nerrs; ++err) {
                 {
-                current_statement_begin__ = 402;
+                current_statement_begin__ = 399;
                 validate_non_negative_index("MUzero_b", "(ngoods + 1)", (ngoods + 1));
                 Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,1>  MUzero_b(static_cast<Eigen::VectorXd::Index>((ngoods + 1)));
                 (void) MUzero_b;  // dummy to suppress unused var warning
 
                 stan::math::initialize(MUzero_b, DUMMY_VAR__);
                 stan::math::fill(MUzero_b,DUMMY_VAR__);
-                current_statement_begin__ = 403;
+                current_statement_begin__ = 400;
                 validate_non_negative_index("psi_b_err", "(ngoods + 1)", (ngoods + 1));
                 Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,1>  psi_b_err(static_cast<Eigen::VectorXd::Index>((ngoods + 1)));
                 (void) psi_b_err;  // dummy to suppress unused var warning
@@ -1566,35 +1558,35 @@ CalcmdemandOne_rng(const T0__& income,
                 stan::math::fill(psi_b_err,DUMMY_VAR__);
 
 
-                current_statement_begin__ = 404;
+                current_statement_begin__ = 401;
                 stan::math::assign(psi_b_err, stan::math::exp(add(append_row(0,psi_j),get_base1(error,err,"error",1))));
-                current_statement_begin__ = 405;
+                current_statement_begin__ = 402;
                 stan::math::assign(MUzero_b, elt_divide(psi_b_err,price));
-                current_statement_begin__ = 407;
+                current_statement_begin__ = 404;
                 stan::model::assign(mdemand, 
                             stan::model::cons_list(stan::model::index_uni(err), stan::model::nil_index_list()), 
                             transpose(MarshallianDemand(income,price,MUzero_b,gamma,alpha,ngoods,algo_gen,tol,max_loop, pstream__)), 
                             "assigning variable mdemand");
                 }
             }
-            current_statement_begin__ = 410;
+            current_statement_begin__ = 407;
             stan::math::assign(mdemand_trans, transpose(mdemand));
-            current_statement_begin__ = 412;
+            current_statement_begin__ = 409;
             for (int g = 1; g <= (ngoods + 1); ++g) {
-                current_statement_begin__ = 413;
+                current_statement_begin__ = 410;
                 stan::model::assign(mdemand_sims, 
                             stan::model::cons_list(stan::model::index_uni(g), stan::model::nil_index_list()), 
                             mean(get_base1(mdemand_trans,g,"mdemand_trans",1)), 
                             "assigning variable mdemand_sims");
             }
-            current_statement_begin__ = 415;
+            current_statement_begin__ = 412;
             stan::model::assign(mdemand_out, 
                         stan::model::cons_list(stan::model::index_uni(sim), stan::model::nil_index_list()), 
                         mdemand_sims, 
                         "assigning variable mdemand_out");
             }
         }
-        current_statement_begin__ = 418;
+        current_statement_begin__ = 415;
         return stan::math::promote_scalar<fun_return_scalar_t__>(mdemand_out);
         }
     } catch (const std::exception& e) {
@@ -1650,25 +1642,25 @@ CalcWTP_rng(const T0__& income,
     int current_statement_begin__ = -1;
     try {
         {
-        current_statement_begin__ = 441;
+        current_statement_begin__ = 438;
         int ngoods(0);
         (void) ngoods;  // dummy to suppress unused var warning
 
         stan::math::fill(ngoods, std::numeric_limits<int>::min());
         stan::math::assign(ngoods,num_elements(quant_j));
-        current_statement_begin__ = 442;
+        current_statement_begin__ = 439;
         int nsims(0);
         (void) nsims;  // dummy to suppress unused var warning
 
         stan::math::fill(nsims, std::numeric_limits<int>::min());
         stan::math::assign(nsims,num_elements(scale_sims));
-        current_statement_begin__ = 443;
+        current_statement_begin__ = 440;
         int npols(0);
         (void) npols;  // dummy to suppress unused var warning
 
         stan::math::fill(npols, std::numeric_limits<int>::min());
         stan::math::assign(npols,size(price_p_policy));
-        current_statement_begin__ = 444;
+        current_statement_begin__ = 441;
         validate_non_negative_index("wtp", "nsims", nsims);
         validate_non_negative_index("wtp", "npols", npols);
         Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,Eigen::Dynamic>  wtp(static_cast<Eigen::VectorXd::Index>(nsims),static_cast<Eigen::VectorXd::Index>(npols));
@@ -1676,7 +1668,7 @@ CalcWTP_rng(const T0__& income,
 
         stan::math::initialize(wtp, DUMMY_VAR__);
         stan::math::fill(wtp,DUMMY_VAR__);
-        current_statement_begin__ = 445;
+        current_statement_begin__ = 442;
         local_scalar_t__ quant_num;
         (void) quant_num;  // dummy to suppress unused var warning
 
@@ -1685,10 +1677,10 @@ CalcWTP_rng(const T0__& income,
         stan::math::assign(quant_num,(income - multiply(transpose(quant_j),stan::model::rvalue(price, stan::model::cons_list(stan::model::index_min_max(2, (ngoods + 1)), stan::model::nil_index_list()), "price"))));
 
 
-        current_statement_begin__ = 447;
+        current_statement_begin__ = 444;
         for (int sim = 1; sim <= nsims; ++sim) {
             {
-            current_statement_begin__ = 448;
+            current_statement_begin__ = 445;
             validate_non_negative_index("psi_j", "ngoods", ngoods);
             Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,1>  psi_j(static_cast<Eigen::VectorXd::Index>(ngoods));
             (void) psi_j;  // dummy to suppress unused var warning
@@ -1696,7 +1688,7 @@ CalcWTP_rng(const T0__& income,
             stan::math::initialize(psi_j, DUMMY_VAR__);
             stan::math::fill(psi_j,DUMMY_VAR__);
             stan::math::assign(psi_j,transpose(get_base1(psi_sims,sim,"psi_sims",1)));
-            current_statement_begin__ = 449;
+            current_statement_begin__ = 446;
             validate_non_negative_index("psi_p_policy", "npols", npols);
             validate_non_negative_index("psi_p_policy", "ngoods", ngoods);
             Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,Eigen::Dynamic>  psi_p_policy(static_cast<Eigen::VectorXd::Index>(npols),static_cast<Eigen::VectorXd::Index>(ngoods));
@@ -1705,7 +1697,7 @@ CalcWTP_rng(const T0__& income,
             stan::math::initialize(psi_p_policy, DUMMY_VAR__);
             stan::math::fill(psi_p_policy,DUMMY_VAR__);
             stan::math::assign(psi_p_policy,get_base1(psi_p_sims,sim,"psi_p_sims",1));
-            current_statement_begin__ = 451;
+            current_statement_begin__ = 448;
             validate_non_negative_index("gamma", "(ngoods + 1)", (ngoods + 1));
             Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,1>  gamma(static_cast<Eigen::VectorXd::Index>((ngoods + 1)));
             (void) gamma;  // dummy to suppress unused var warning
@@ -1713,7 +1705,7 @@ CalcWTP_rng(const T0__& income,
             stan::math::initialize(gamma, DUMMY_VAR__);
             stan::math::fill(gamma,DUMMY_VAR__);
             stan::math::assign(gamma,append_row(1,get_base1(gamma_sims,sim,"gamma_sims",1)));
-            current_statement_begin__ = 452;
+            current_statement_begin__ = 449;
             validate_non_negative_index("alpha", "(ngoods + 1)", (ngoods + 1));
             Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,1>  alpha(static_cast<Eigen::VectorXd::Index>((ngoods + 1)));
             (void) alpha;  // dummy to suppress unused var warning
@@ -1721,27 +1713,27 @@ CalcWTP_rng(const T0__& income,
             stan::math::initialize(alpha, DUMMY_VAR__);
             stan::math::fill(alpha,DUMMY_VAR__);
             stan::math::assign(alpha,get_base1(alpha_sims,sim,"alpha_sims",1));
-            current_statement_begin__ = 453;
+            current_statement_begin__ = 450;
             local_scalar_t__ scale;
             (void) scale;  // dummy to suppress unused var warning
 
             stan::math::initialize(scale, DUMMY_VAR__);
             stan::math::fill(scale,DUMMY_VAR__);
             stan::math::assign(scale,get_base1(scale_sims,sim,"scale_sims",1));
-            current_statement_begin__ = 454;
+            current_statement_begin__ = 451;
             validate_non_negative_index("error", "(ngoods + 1)", (ngoods + 1));
             validate_non_negative_index("error", "nerrs", nerrs);
             vector<Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,1> > error(nerrs, (Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,1> (static_cast<Eigen::VectorXd::Index>((ngoods + 1)))));
             stan::math::initialize(error, DUMMY_VAR__);
             stan::math::fill(error,DUMMY_VAR__);
-            current_statement_begin__ = 455;
+            current_statement_begin__ = 452;
             validate_non_negative_index("wtp_policy", "npols", npols);
             Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,1>  wtp_policy(static_cast<Eigen::VectorXd::Index>(npols));
             (void) wtp_policy;  // dummy to suppress unused var warning
 
             stan::math::initialize(wtp_policy, DUMMY_VAR__);
             stan::math::fill(wtp_policy,DUMMY_VAR__);
-            current_statement_begin__ = 456;
+            current_statement_begin__ = 453;
             validate_non_negative_index("util", "nerrs", nerrs);
             Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,1>  util(static_cast<Eigen::VectorXd::Index>(nerrs));
             (void) util;  // dummy to suppress unused var warning
@@ -1750,26 +1742,26 @@ CalcWTP_rng(const T0__& income,
             stan::math::fill(util,DUMMY_VAR__);
 
 
-            current_statement_begin__ = 458;
+            current_statement_begin__ = 455;
             stan::math::assign(error, DrawError_rng(quant_num,quant_j,stan::model::rvalue(price, stan::model::cons_list(stan::model::index_min_max(2, (ngoods + 1)), stan::model::nil_index_list()), "price"),psi_j,stan::model::rvalue(gamma, stan::model::cons_list(stan::model::index_min_max(2, (ngoods + 1)), stan::model::nil_index_list()), "gamma"),alpha,scale,ngoods,nerrs,cond_error,draw_mlhs, base_rng__, pstream__));
-            current_statement_begin__ = 463;
+            current_statement_begin__ = 460;
             for (int err = 1; err <= nerrs; ++err) {
                 {
-                current_statement_begin__ = 464;
+                current_statement_begin__ = 461;
                 validate_non_negative_index("mdemand", "(ngoods + 1)", (ngoods + 1));
                 Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,1>  mdemand(static_cast<Eigen::VectorXd::Index>((ngoods + 1)));
                 (void) mdemand;  // dummy to suppress unused var warning
 
                 stan::math::initialize(mdemand, DUMMY_VAR__);
                 stan::math::fill(mdemand,DUMMY_VAR__);
-                current_statement_begin__ = 465;
+                current_statement_begin__ = 462;
                 validate_non_negative_index("MUzero_b", "(ngoods + 1)", (ngoods + 1));
                 Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,1>  MUzero_b(static_cast<Eigen::VectorXd::Index>((ngoods + 1)));
                 (void) MUzero_b;  // dummy to suppress unused var warning
 
                 stan::math::initialize(MUzero_b, DUMMY_VAR__);
                 stan::math::fill(MUzero_b,DUMMY_VAR__);
-                current_statement_begin__ = 468;
+                current_statement_begin__ = 465;
                 validate_non_negative_index("psi_b_err", "(ngoods + 1)", (ngoods + 1));
                 Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,1>  psi_b_err(static_cast<Eigen::VectorXd::Index>((ngoods + 1)));
                 (void) psi_b_err;  // dummy to suppress unused var warning
@@ -1778,30 +1770,30 @@ CalcWTP_rng(const T0__& income,
                 stan::math::fill(psi_b_err,DUMMY_VAR__);
 
 
-                current_statement_begin__ = 469;
+                current_statement_begin__ = 466;
                 stan::math::assign(psi_b_err, stan::math::exp(add(append_row(0,psi_j),get_base1(error,err,"error",1))));
-                current_statement_begin__ = 470;
+                current_statement_begin__ = 467;
                 stan::math::assign(MUzero_b, elt_divide(psi_b_err,price));
-                current_statement_begin__ = 472;
+                current_statement_begin__ = 469;
                 if (as_bool(logical_eq(cond_error,1))) {
 
-                    current_statement_begin__ = 473;
+                    current_statement_begin__ = 470;
                     stan::math::assign(mdemand, append_row(quant_num,quant_j));
                 } else if (as_bool(logical_eq(cond_error,0))) {
-                    current_statement_begin__ = 475;
+                    current_statement_begin__ = 472;
                     stan::math::assign(mdemand, MarshallianDemand(income,price,MUzero_b,gamma,alpha,ngoods,algo_gen,tol,max_loop, pstream__));
                 }
-                current_statement_begin__ = 478;
+                current_statement_begin__ = 475;
                 stan::model::assign(util, 
                             stan::model::cons_list(stan::model::index_uni(err), stan::model::nil_index_list()), 
                             ComputeUtilJ(income,stan::model::rvalue(mdemand, stan::model::cons_list(stan::model::index_min_max(2, (ngoods + 1)), stan::model::nil_index_list()), "mdemand"),stan::model::rvalue(price, stan::model::cons_list(stan::model::index_min_max(2, (ngoods + 1)), stan::model::nil_index_list()), "price"),stan::model::rvalue(psi_b_err, stan::model::cons_list(stan::model::index_min_max(2, (ngoods + 1)), stan::model::nil_index_list()), "psi_b_err"),stan::model::rvalue(gamma, stan::model::cons_list(stan::model::index_min_max(2, (ngoods + 1)), stan::model::nil_index_list()), "gamma"),alpha,ngoods,model_num, pstream__), 
                             "assigning variable util");
                 }
             }
-            current_statement_begin__ = 483;
+            current_statement_begin__ = 480;
             for (int policy = 1; policy <= npols; ++policy) {
                 {
-                current_statement_begin__ = 484;
+                current_statement_begin__ = 481;
                 validate_non_negative_index("price_p", "(ngoods + 1)", (ngoods + 1));
                 Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,1>  price_p(static_cast<Eigen::VectorXd::Index>((ngoods + 1)));
                 (void) price_p;  // dummy to suppress unused var warning
@@ -1809,7 +1801,7 @@ CalcWTP_rng(const T0__& income,
                 stan::math::initialize(price_p, DUMMY_VAR__);
                 stan::math::fill(price_p,DUMMY_VAR__);
                 stan::math::assign(price_p,add(price,get_base1(price_p_policy,policy,"price_p_policy",1)));
-                current_statement_begin__ = 485;
+                current_statement_begin__ = 482;
                 validate_non_negative_index("psi_p", "ngoods", ngoods);
                 Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,1>  psi_p(static_cast<Eigen::VectorXd::Index>(ngoods));
                 (void) psi_p;  // dummy to suppress unused var warning
@@ -1817,7 +1809,7 @@ CalcWTP_rng(const T0__& income,
                 stan::math::initialize(psi_p, DUMMY_VAR__);
                 stan::math::fill(psi_p,DUMMY_VAR__);
                 stan::math::assign(psi_p,transpose(get_base1(psi_p_policy,policy,"psi_p_policy",1)));
-                current_statement_begin__ = 486;
+                current_statement_begin__ = 483;
                 validate_non_negative_index("wtp_err", "nerrs", nerrs);
                 Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,1>  wtp_err(static_cast<Eigen::VectorXd::Index>(nerrs));
                 (void) wtp_err;  // dummy to suppress unused var warning
@@ -1826,10 +1818,10 @@ CalcWTP_rng(const T0__& income,
                 stan::math::fill(wtp_err,DUMMY_VAR__);
 
 
-                current_statement_begin__ = 488;
+                current_statement_begin__ = 485;
                 for (int err = 1; err <= nerrs; ++err) {
                     {
-                    current_statement_begin__ = 490;
+                    current_statement_begin__ = 487;
                     validate_non_negative_index("MUzero_p", "(ngoods + 1)", (ngoods + 1));
                     Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,1>  MUzero_p(static_cast<Eigen::VectorXd::Index>((ngoods + 1)));
                     (void) MUzero_p;  // dummy to suppress unused var warning
@@ -1837,7 +1829,7 @@ CalcWTP_rng(const T0__& income,
                     stan::math::initialize(MUzero_p, DUMMY_VAR__);
                     stan::math::fill(MUzero_p,DUMMY_VAR__);
                     stan::math::assign(MUzero_p,elt_divide(stan::math::exp(add(append_row(0,psi_p),get_base1(error,err,"error",1))),price_p));
-                    current_statement_begin__ = 491;
+                    current_statement_begin__ = 488;
                     validate_non_negative_index("hdemand", "(ngoods + 1)", (ngoods + 1));
                     Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,1>  hdemand(static_cast<Eigen::VectorXd::Index>((ngoods + 1)));
                     (void) hdemand;  // dummy to suppress unused var warning
@@ -1846,30 +1838,30 @@ CalcWTP_rng(const T0__& income,
                     stan::math::fill(hdemand,DUMMY_VAR__);
 
 
-                    current_statement_begin__ = 493;
+                    current_statement_begin__ = 490;
                     stan::math::assign(hdemand, HicksianDemand(get_base1(util,err,"util",1),price_p,MUzero_p,gamma,alpha,ngoods,algo_gen,model_num,tol,max_loop, pstream__));
-                    current_statement_begin__ = 496;
+                    current_statement_begin__ = 493;
                     stan::model::assign(wtp_err, 
                                 stan::model::cons_list(stan::model::index_uni(err), stan::model::nil_index_list()), 
                                 (income - multiply(transpose(price_p),hdemand)), 
                                 "assigning variable wtp_err");
                     }
                 }
-                current_statement_begin__ = 498;
+                current_statement_begin__ = 495;
                 stan::model::assign(wtp_policy, 
                             stan::model::cons_list(stan::model::index_uni(policy), stan::model::nil_index_list()), 
                             mean(wtp_err), 
                             "assigning variable wtp_policy");
                 }
             }
-            current_statement_begin__ = 500;
+            current_statement_begin__ = 497;
             stan::model::assign(wtp, 
                         stan::model::cons_list(stan::model::index_uni(sim), stan::model::nil_index_list()), 
                         transpose(wtp_policy), 
                         "assigning variable wtp");
             }
         }
-        current_statement_begin__ = 502;
+        current_statement_begin__ = 499;
         return stan::math::promote_scalar<fun_return_scalar_t__>(wtp);
         }
     } catch (const std::exception& e) {
@@ -1930,25 +1922,25 @@ CalcWTPPriceOnly_rng(const T0__& income,
     int current_statement_begin__ = -1;
     try {
         {
-        current_statement_begin__ = 523;
+        current_statement_begin__ = 520;
         int ngoods(0);
         (void) ngoods;  // dummy to suppress unused var warning
 
         stan::math::fill(ngoods, std::numeric_limits<int>::min());
         stan::math::assign(ngoods,num_elements(quant_j));
-        current_statement_begin__ = 524;
+        current_statement_begin__ = 521;
         int nsims(0);
         (void) nsims;  // dummy to suppress unused var warning
 
         stan::math::fill(nsims, std::numeric_limits<int>::min());
         stan::math::assign(nsims,num_elements(scale_sims));
-        current_statement_begin__ = 525;
+        current_statement_begin__ = 522;
         int npols(0);
         (void) npols;  // dummy to suppress unused var warning
 
         stan::math::fill(npols, std::numeric_limits<int>::min());
         stan::math::assign(npols,size(price_p_policy));
-        current_statement_begin__ = 526;
+        current_statement_begin__ = 523;
         validate_non_negative_index("wtp", "nsims", nsims);
         validate_non_negative_index("wtp", "npols", npols);
         Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,Eigen::Dynamic>  wtp(static_cast<Eigen::VectorXd::Index>(nsims),static_cast<Eigen::VectorXd::Index>(npols));
@@ -1956,7 +1948,7 @@ CalcWTPPriceOnly_rng(const T0__& income,
 
         stan::math::initialize(wtp, DUMMY_VAR__);
         stan::math::fill(wtp,DUMMY_VAR__);
-        current_statement_begin__ = 527;
+        current_statement_begin__ = 524;
         local_scalar_t__ quant_num;
         (void) quant_num;  // dummy to suppress unused var warning
 
@@ -1965,10 +1957,10 @@ CalcWTPPriceOnly_rng(const T0__& income,
         stan::math::assign(quant_num,(income - multiply(transpose(quant_j),stan::model::rvalue(price, stan::model::cons_list(stan::model::index_min_max(2, (ngoods + 1)), stan::model::nil_index_list()), "price"))));
 
 
-        current_statement_begin__ = 529;
+        current_statement_begin__ = 526;
         for (int sim = 1; sim <= nsims; ++sim) {
             {
-            current_statement_begin__ = 530;
+            current_statement_begin__ = 527;
             validate_non_negative_index("psi_j", "ngoods", ngoods);
             Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,1>  psi_j(static_cast<Eigen::VectorXd::Index>(ngoods));
             (void) psi_j;  // dummy to suppress unused var warning
@@ -1976,13 +1968,13 @@ CalcWTPPriceOnly_rng(const T0__& income,
             stan::math::initialize(psi_j, DUMMY_VAR__);
             stan::math::fill(psi_j,DUMMY_VAR__);
             stan::math::assign(psi_j,transpose(get_base1(psi_sims,sim,"psi_sims",1)));
-            current_statement_begin__ = 531;
+            current_statement_begin__ = 528;
             validate_non_negative_index("psi_b_err", "(ngoods + 1)", (ngoods + 1));
             validate_non_negative_index("psi_b_err", "nerrs", nerrs);
             vector<Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,1> > psi_b_err(nerrs, (Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,1> (static_cast<Eigen::VectorXd::Index>((ngoods + 1)))));
             stan::math::initialize(psi_b_err, DUMMY_VAR__);
             stan::math::fill(psi_b_err,DUMMY_VAR__);
-            current_statement_begin__ = 532;
+            current_statement_begin__ = 529;
             validate_non_negative_index("gamma", "(ngoods + 1)", (ngoods + 1));
             Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,1>  gamma(static_cast<Eigen::VectorXd::Index>((ngoods + 1)));
             (void) gamma;  // dummy to suppress unused var warning
@@ -1990,7 +1982,7 @@ CalcWTPPriceOnly_rng(const T0__& income,
             stan::math::initialize(gamma, DUMMY_VAR__);
             stan::math::fill(gamma,DUMMY_VAR__);
             stan::math::assign(gamma,append_row(1,get_base1(gamma_sims,sim,"gamma_sims",1)));
-            current_statement_begin__ = 533;
+            current_statement_begin__ = 530;
             validate_non_negative_index("alpha", "(ngoods + 1)", (ngoods + 1));
             Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,1>  alpha(static_cast<Eigen::VectorXd::Index>((ngoods + 1)));
             (void) alpha;  // dummy to suppress unused var warning
@@ -1998,27 +1990,27 @@ CalcWTPPriceOnly_rng(const T0__& income,
             stan::math::initialize(alpha, DUMMY_VAR__);
             stan::math::fill(alpha,DUMMY_VAR__);
             stan::math::assign(alpha,get_base1(alpha_sims,sim,"alpha_sims",1));
-            current_statement_begin__ = 534;
+            current_statement_begin__ = 531;
             local_scalar_t__ scale;
             (void) scale;  // dummy to suppress unused var warning
 
             stan::math::initialize(scale, DUMMY_VAR__);
             stan::math::fill(scale,DUMMY_VAR__);
             stan::math::assign(scale,get_base1(scale_sims,sim,"scale_sims",1));
-            current_statement_begin__ = 535;
+            current_statement_begin__ = 532;
             validate_non_negative_index("error", "(ngoods + 1)", (ngoods + 1));
             validate_non_negative_index("error", "nerrs", nerrs);
             vector<Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,1> > error(nerrs, (Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,1> (static_cast<Eigen::VectorXd::Index>((ngoods + 1)))));
             stan::math::initialize(error, DUMMY_VAR__);
             stan::math::fill(error,DUMMY_VAR__);
-            current_statement_begin__ = 536;
+            current_statement_begin__ = 533;
             validate_non_negative_index("wtp_policy", "npols", npols);
             Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,1>  wtp_policy(static_cast<Eigen::VectorXd::Index>(npols));
             (void) wtp_policy;  // dummy to suppress unused var warning
 
             stan::math::initialize(wtp_policy, DUMMY_VAR__);
             stan::math::fill(wtp_policy,DUMMY_VAR__);
-            current_statement_begin__ = 537;
+            current_statement_begin__ = 534;
             validate_non_negative_index("util", "nerrs", nerrs);
             Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,1>  util(static_cast<Eigen::VectorXd::Index>(nerrs));
             (void) util;  // dummy to suppress unused var warning
@@ -2027,19 +2019,19 @@ CalcWTPPriceOnly_rng(const T0__& income,
             stan::math::fill(util,DUMMY_VAR__);
 
 
-            current_statement_begin__ = 539;
+            current_statement_begin__ = 536;
             stan::math::assign(error, DrawError_rng(quant_num,quant_j,stan::model::rvalue(price, stan::model::cons_list(stan::model::index_min_max(2, (ngoods + 1)), stan::model::nil_index_list()), "price"),psi_j,stan::model::rvalue(gamma, stan::model::cons_list(stan::model::index_min_max(2, (ngoods + 1)), stan::model::nil_index_list()), "gamma"),alpha,scale,ngoods,nerrs,cond_error,draw_mlhs, base_rng__, pstream__));
-            current_statement_begin__ = 544;
+            current_statement_begin__ = 541;
             for (int err = 1; err <= nerrs; ++err) {
                 {
-                current_statement_begin__ = 545;
+                current_statement_begin__ = 542;
                 validate_non_negative_index("mdemand", "(ngoods + 1)", (ngoods + 1));
                 Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,1>  mdemand(static_cast<Eigen::VectorXd::Index>((ngoods + 1)));
                 (void) mdemand;  // dummy to suppress unused var warning
 
                 stan::math::initialize(mdemand, DUMMY_VAR__);
                 stan::math::fill(mdemand,DUMMY_VAR__);
-                current_statement_begin__ = 546;
+                current_statement_begin__ = 543;
                 validate_non_negative_index("MUzero_b", "(ngoods + 1)", (ngoods + 1));
                 Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,1>  MUzero_b(static_cast<Eigen::VectorXd::Index>((ngoods + 1)));
                 (void) MUzero_b;  // dummy to suppress unused var warning
@@ -2048,33 +2040,33 @@ CalcWTPPriceOnly_rng(const T0__& income,
                 stan::math::fill(MUzero_b,DUMMY_VAR__);
 
 
-                current_statement_begin__ = 547;
+                current_statement_begin__ = 544;
                 stan::model::assign(psi_b_err, 
                             stan::model::cons_list(stan::model::index_uni(err), stan::model::nil_index_list()), 
                             stan::math::exp(add(append_row(0,psi_j),get_base1(error,err,"error",1))), 
                             "assigning variable psi_b_err");
-                current_statement_begin__ = 548;
+                current_statement_begin__ = 545;
                 stan::math::assign(MUzero_b, elt_divide(get_base1(psi_b_err,err,"psi_b_err",1),price));
-                current_statement_begin__ = 550;
+                current_statement_begin__ = 547;
                 if (as_bool(logical_eq(cond_error,1))) {
 
-                    current_statement_begin__ = 551;
+                    current_statement_begin__ = 548;
                     stan::math::assign(mdemand, append_row(quant_num,quant_j));
                 } else if (as_bool(logical_eq(cond_error,0))) {
-                    current_statement_begin__ = 553;
+                    current_statement_begin__ = 550;
                     stan::math::assign(mdemand, MarshallianDemand(income,price,MUzero_b,gamma,alpha,ngoods,algo_gen,tol,max_loop, pstream__));
                 }
-                current_statement_begin__ = 556;
+                current_statement_begin__ = 553;
                 stan::model::assign(util, 
                             stan::model::cons_list(stan::model::index_uni(err), stan::model::nil_index_list()), 
                             ComputeUtilJ(income,stan::model::rvalue(mdemand, stan::model::cons_list(stan::model::index_min_max(2, (ngoods + 1)), stan::model::nil_index_list()), "mdemand"),stan::model::rvalue(price, stan::model::cons_list(stan::model::index_min_max(2, (ngoods + 1)), stan::model::nil_index_list()), "price"),stan::model::rvalue(psi_b_err, stan::model::cons_list(stan::model::index_uni(err), stan::model::cons_list(stan::model::index_min_max(2, (ngoods + 1)), stan::model::nil_index_list())), "psi_b_err"),stan::model::rvalue(gamma, stan::model::cons_list(stan::model::index_min_max(2, (ngoods + 1)), stan::model::nil_index_list()), "gamma"),alpha,ngoods,model_num, pstream__), 
                             "assigning variable util");
                 }
             }
-            current_statement_begin__ = 561;
+            current_statement_begin__ = 558;
             for (int policy = 1; policy <= npols; ++policy) {
                 {
-                current_statement_begin__ = 562;
+                current_statement_begin__ = 559;
                 validate_non_negative_index("price_p", "(ngoods + 1)", (ngoods + 1));
                 Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,1>  price_p(static_cast<Eigen::VectorXd::Index>((ngoods + 1)));
                 (void) price_p;  // dummy to suppress unused var warning
@@ -2082,7 +2074,7 @@ CalcWTPPriceOnly_rng(const T0__& income,
                 stan::math::initialize(price_p, DUMMY_VAR__);
                 stan::math::fill(price_p,DUMMY_VAR__);
                 stan::math::assign(price_p,add(price,get_base1(price_p_policy,policy,"price_p_policy",1)));
-                current_statement_begin__ = 563;
+                current_statement_begin__ = 560;
                 validate_non_negative_index("wtp_err", "nerrs", nerrs);
                 Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,1>  wtp_err(static_cast<Eigen::VectorXd::Index>(nerrs));
                 (void) wtp_err;  // dummy to suppress unused var warning
@@ -2091,10 +2083,10 @@ CalcWTPPriceOnly_rng(const T0__& income,
                 stan::math::fill(wtp_err,DUMMY_VAR__);
 
 
-                current_statement_begin__ = 565;
+                current_statement_begin__ = 562;
                 for (int err = 1; err <= nerrs; ++err) {
                     {
-                    current_statement_begin__ = 566;
+                    current_statement_begin__ = 563;
                     validate_non_negative_index("MUzero_p", "(ngoods + 1)", (ngoods + 1));
                     Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,1>  MUzero_p(static_cast<Eigen::VectorXd::Index>((ngoods + 1)));
                     (void) MUzero_p;  // dummy to suppress unused var warning
@@ -2102,7 +2094,7 @@ CalcWTPPriceOnly_rng(const T0__& income,
                     stan::math::initialize(MUzero_p, DUMMY_VAR__);
                     stan::math::fill(MUzero_p,DUMMY_VAR__);
                     stan::math::assign(MUzero_p,elt_divide(get_base1(psi_b_err,err,"psi_b_err",1),price_p));
-                    current_statement_begin__ = 567;
+                    current_statement_begin__ = 564;
                     validate_non_negative_index("hdemand", "(ngoods + 1)", (ngoods + 1));
                     Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,1>  hdemand(static_cast<Eigen::VectorXd::Index>((ngoods + 1)));
                     (void) hdemand;  // dummy to suppress unused var warning
@@ -2111,30 +2103,30 @@ CalcWTPPriceOnly_rng(const T0__& income,
                     stan::math::fill(hdemand,DUMMY_VAR__);
 
 
-                    current_statement_begin__ = 569;
+                    current_statement_begin__ = 566;
                     stan::math::assign(hdemand, HicksianDemand(get_base1(util,err,"util",1),price_p,MUzero_p,gamma,alpha,ngoods,algo_gen,model_num,tol,max_loop, pstream__));
-                    current_statement_begin__ = 572;
+                    current_statement_begin__ = 569;
                     stan::model::assign(wtp_err, 
                                 stan::model::cons_list(stan::model::index_uni(err), stan::model::nil_index_list()), 
                                 (income - multiply(transpose(price_p),hdemand)), 
                                 "assigning variable wtp_err");
                     }
                 }
-                current_statement_begin__ = 574;
+                current_statement_begin__ = 571;
                 stan::model::assign(wtp_policy, 
                             stan::model::cons_list(stan::model::index_uni(policy), stan::model::nil_index_list()), 
                             mean(wtp_err), 
                             "assigning variable wtp_policy");
                 }
             }
-            current_statement_begin__ = 576;
+            current_statement_begin__ = 573;
             stan::model::assign(wtp, 
                         stan::model::cons_list(stan::model::index_uni(sim), stan::model::nil_index_list()), 
                         transpose(wtp_policy), 
                         "assigning variable wtp");
             }
         }
-        current_statement_begin__ = 578;
+        current_statement_begin__ = 575;
         return stan::math::promote_scalar<fun_return_scalar_t__>(wtp);
         }
     } catch (const std::exception& e) {
@@ -2195,32 +2187,32 @@ CalcMarshallianDemand_rng(const T0__& income,
     int current_statement_begin__ = -1;
     try {
         {
-        current_statement_begin__ = 587;
+        current_statement_begin__ = 584;
         int ngoods(0);
         (void) ngoods;  // dummy to suppress unused var warning
 
         stan::math::fill(ngoods, std::numeric_limits<int>::min());
         stan::math::assign(ngoods,num_elements(quant_j));
-        current_statement_begin__ = 588;
+        current_statement_begin__ = 585;
         int nsims(0);
         (void) nsims;  // dummy to suppress unused var warning
 
         stan::math::fill(nsims, std::numeric_limits<int>::min());
         stan::math::assign(nsims,num_elements(scale_sims));
-        current_statement_begin__ = 589;
+        current_statement_begin__ = 586;
         int npols(0);
         (void) npols;  // dummy to suppress unused var warning
 
         stan::math::fill(npols, std::numeric_limits<int>::min());
         stan::math::assign(npols,size(price_p_policy));
-        current_statement_begin__ = 590;
+        current_statement_begin__ = 587;
         validate_non_negative_index("mdemand_out", "npols", npols);
         validate_non_negative_index("mdemand_out", "(ngoods + 1)", (ngoods + 1));
         validate_non_negative_index("mdemand_out", "nsims", nsims);
         vector<Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,Eigen::Dynamic> > mdemand_out(nsims, (Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,Eigen::Dynamic> (static_cast<Eigen::VectorXd::Index>(npols),static_cast<Eigen::VectorXd::Index>((ngoods + 1)))));
         stan::math::initialize(mdemand_out, DUMMY_VAR__);
         stan::math::fill(mdemand_out,DUMMY_VAR__);
-        current_statement_begin__ = 591;
+        current_statement_begin__ = 588;
         local_scalar_t__ quant_num;
         (void) quant_num;  // dummy to suppress unused var warning
 
@@ -2229,10 +2221,10 @@ CalcMarshallianDemand_rng(const T0__& income,
         stan::math::assign(quant_num,(income - multiply(transpose(quant_j),stan::model::rvalue(price, stan::model::cons_list(stan::model::index_min_max(2, (ngoods + 1)), stan::model::nil_index_list()), "price"))));
 
 
-        current_statement_begin__ = 593;
+        current_statement_begin__ = 590;
         for (int sim = 1; sim <= nsims; ++sim) {
             {
-            current_statement_begin__ = 594;
+            current_statement_begin__ = 591;
             validate_non_negative_index("psi_j", "ngoods", ngoods);
             Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,1>  psi_j(static_cast<Eigen::VectorXd::Index>(ngoods));
             (void) psi_j;  // dummy to suppress unused var warning
@@ -2240,7 +2232,7 @@ CalcMarshallianDemand_rng(const T0__& income,
             stan::math::initialize(psi_j, DUMMY_VAR__);
             stan::math::fill(psi_j,DUMMY_VAR__);
             stan::math::assign(psi_j,transpose(get_base1(psi_sims,sim,"psi_sims",1)));
-            current_statement_begin__ = 595;
+            current_statement_begin__ = 592;
             validate_non_negative_index("psi_p_policy", "npols", npols);
             validate_non_negative_index("psi_p_policy", "ngoods", ngoods);
             Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,Eigen::Dynamic>  psi_p_policy(static_cast<Eigen::VectorXd::Index>(npols),static_cast<Eigen::VectorXd::Index>(ngoods));
@@ -2249,7 +2241,7 @@ CalcMarshallianDemand_rng(const T0__& income,
             stan::math::initialize(psi_p_policy, DUMMY_VAR__);
             stan::math::fill(psi_p_policy,DUMMY_VAR__);
             stan::math::assign(psi_p_policy,get_base1(psi_p_sims,sim,"psi_p_sims",1));
-            current_statement_begin__ = 597;
+            current_statement_begin__ = 594;
             validate_non_negative_index("gamma", "(ngoods + 1)", (ngoods + 1));
             Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,1>  gamma(static_cast<Eigen::VectorXd::Index>((ngoods + 1)));
             (void) gamma;  // dummy to suppress unused var warning
@@ -2257,7 +2249,7 @@ CalcMarshallianDemand_rng(const T0__& income,
             stan::math::initialize(gamma, DUMMY_VAR__);
             stan::math::fill(gamma,DUMMY_VAR__);
             stan::math::assign(gamma,append_row(1,get_base1(gamma_sims,sim,"gamma_sims",1)));
-            current_statement_begin__ = 598;
+            current_statement_begin__ = 595;
             validate_non_negative_index("alpha", "(ngoods + 1)", (ngoods + 1));
             Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,1>  alpha(static_cast<Eigen::VectorXd::Index>((ngoods + 1)));
             (void) alpha;  // dummy to suppress unused var warning
@@ -2265,20 +2257,20 @@ CalcMarshallianDemand_rng(const T0__& income,
             stan::math::initialize(alpha, DUMMY_VAR__);
             stan::math::fill(alpha,DUMMY_VAR__);
             stan::math::assign(alpha,get_base1(alpha_sims,sim,"alpha_sims",1));
-            current_statement_begin__ = 599;
+            current_statement_begin__ = 596;
             local_scalar_t__ scale;
             (void) scale;  // dummy to suppress unused var warning
 
             stan::math::initialize(scale, DUMMY_VAR__);
             stan::math::fill(scale,DUMMY_VAR__);
             stan::math::assign(scale,get_base1(scale_sims,sim,"scale_sims",1));
-            current_statement_begin__ = 600;
+            current_statement_begin__ = 597;
             validate_non_negative_index("error", "(ngoods + 1)", (ngoods + 1));
             validate_non_negative_index("error", "nerrs", nerrs);
             vector<Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,1> > error(nerrs, (Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,1> (static_cast<Eigen::VectorXd::Index>((ngoods + 1)))));
             stan::math::initialize(error, DUMMY_VAR__);
             stan::math::fill(error,DUMMY_VAR__);
-            current_statement_begin__ = 601;
+            current_statement_begin__ = 598;
             validate_non_negative_index("mdemand_pols", "npols", npols);
             validate_non_negative_index("mdemand_pols", "(ngoods + 1)", (ngoods + 1));
             Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,Eigen::Dynamic>  mdemand_pols(static_cast<Eigen::VectorXd::Index>(npols),static_cast<Eigen::VectorXd::Index>((ngoods + 1)));
@@ -2286,7 +2278,7 @@ CalcMarshallianDemand_rng(const T0__& income,
 
             stan::math::initialize(mdemand_pols, DUMMY_VAR__);
             stan::math::fill(mdemand_pols,DUMMY_VAR__);
-            current_statement_begin__ = 602;
+            current_statement_begin__ = 599;
             validate_non_negative_index("util", "nerrs", nerrs);
             Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,1>  util(static_cast<Eigen::VectorXd::Index>(nerrs));
             (void) util;  // dummy to suppress unused var warning
@@ -2295,26 +2287,26 @@ CalcMarshallianDemand_rng(const T0__& income,
             stan::math::fill(util,DUMMY_VAR__);
 
 
-            current_statement_begin__ = 604;
+            current_statement_begin__ = 601;
             stan::math::assign(error, DrawError_rng(quant_num,quant_j,stan::model::rvalue(price, stan::model::cons_list(stan::model::index_min_max(2, (ngoods + 1)), stan::model::nil_index_list()), "price"),psi_j,stan::model::rvalue(gamma, stan::model::cons_list(stan::model::index_min_max(2, (ngoods + 1)), stan::model::nil_index_list()), "gamma"),alpha,scale,ngoods,nerrs,cond_error,draw_mlhs, base_rng__, pstream__));
-            current_statement_begin__ = 609;
+            current_statement_begin__ = 606;
             for (int err = 1; err <= nerrs; ++err) {
                 {
-                current_statement_begin__ = 610;
+                current_statement_begin__ = 607;
                 validate_non_negative_index("mdemand_util", "(ngoods + 1)", (ngoods + 1));
                 Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,1>  mdemand_util(static_cast<Eigen::VectorXd::Index>((ngoods + 1)));
                 (void) mdemand_util;  // dummy to suppress unused var warning
 
                 stan::math::initialize(mdemand_util, DUMMY_VAR__);
                 stan::math::fill(mdemand_util,DUMMY_VAR__);
-                current_statement_begin__ = 611;
+                current_statement_begin__ = 608;
                 validate_non_negative_index("MUzero_b", "(ngoods + 1)", (ngoods + 1));
                 Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,1>  MUzero_b(static_cast<Eigen::VectorXd::Index>((ngoods + 1)));
                 (void) MUzero_b;  // dummy to suppress unused var warning
 
                 stan::math::initialize(MUzero_b, DUMMY_VAR__);
                 stan::math::fill(MUzero_b,DUMMY_VAR__);
-                current_statement_begin__ = 614;
+                current_statement_begin__ = 611;
                 validate_non_negative_index("psi_b_err", "(ngoods + 1)", (ngoods + 1));
                 Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,1>  psi_b_err(static_cast<Eigen::VectorXd::Index>((ngoods + 1)));
                 (void) psi_b_err;  // dummy to suppress unused var warning
@@ -2323,30 +2315,30 @@ CalcMarshallianDemand_rng(const T0__& income,
                 stan::math::fill(psi_b_err,DUMMY_VAR__);
 
 
-                current_statement_begin__ = 615;
+                current_statement_begin__ = 612;
                 stan::math::assign(psi_b_err, stan::math::exp(add(append_row(0,psi_j),get_base1(error,err,"error",1))));
-                current_statement_begin__ = 616;
+                current_statement_begin__ = 613;
                 stan::math::assign(MUzero_b, elt_divide(psi_b_err,price));
-                current_statement_begin__ = 618;
+                current_statement_begin__ = 615;
                 if (as_bool(logical_eq(cond_error,1))) {
 
-                    current_statement_begin__ = 619;
+                    current_statement_begin__ = 616;
                     stan::math::assign(mdemand_util, append_row(quant_num,quant_j));
                 } else if (as_bool(logical_eq(cond_error,0))) {
-                    current_statement_begin__ = 621;
+                    current_statement_begin__ = 618;
                     stan::math::assign(mdemand_util, MarshallianDemand(income,price,MUzero_b,gamma,alpha,ngoods,algo_gen,tol,max_loop, pstream__));
                 }
-                current_statement_begin__ = 624;
+                current_statement_begin__ = 621;
                 stan::model::assign(util, 
                             stan::model::cons_list(stan::model::index_uni(err), stan::model::nil_index_list()), 
                             ComputeUtilJ(income,stan::model::rvalue(mdemand_util, stan::model::cons_list(stan::model::index_min_max(2, (ngoods + 1)), stan::model::nil_index_list()), "mdemand_util"),stan::model::rvalue(price, stan::model::cons_list(stan::model::index_min_max(2, (ngoods + 1)), stan::model::nil_index_list()), "price"),stan::model::rvalue(psi_b_err, stan::model::cons_list(stan::model::index_min_max(2, (ngoods + 1)), stan::model::nil_index_list()), "psi_b_err"),stan::model::rvalue(gamma, stan::model::cons_list(stan::model::index_min_max(2, (ngoods + 1)), stan::model::nil_index_list()), "gamma"),alpha,ngoods,model_num, pstream__), 
                             "assigning variable util");
                 }
             }
-            current_statement_begin__ = 629;
+            current_statement_begin__ = 626;
             for (int policy = 1; policy <= npols; ++policy) {
                 {
-                current_statement_begin__ = 630;
+                current_statement_begin__ = 627;
                 validate_non_negative_index("price_p", "(ngoods + 1)", (ngoods + 1));
                 Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,1>  price_p(static_cast<Eigen::VectorXd::Index>((ngoods + 1)));
                 (void) price_p;  // dummy to suppress unused var warning
@@ -2354,7 +2346,7 @@ CalcMarshallianDemand_rng(const T0__& income,
                 stan::math::initialize(price_p, DUMMY_VAR__);
                 stan::math::fill(price_p,DUMMY_VAR__);
                 stan::math::assign(price_p,add(price,get_base1(price_p_policy,policy,"price_p_policy",1)));
-                current_statement_begin__ = 631;
+                current_statement_begin__ = 628;
                 validate_non_negative_index("psi_p", "ngoods", ngoods);
                 Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,1>  psi_p(static_cast<Eigen::VectorXd::Index>(ngoods));
                 (void) psi_p;  // dummy to suppress unused var warning
@@ -2362,14 +2354,14 @@ CalcMarshallianDemand_rng(const T0__& income,
                 stan::math::initialize(psi_p, DUMMY_VAR__);
                 stan::math::fill(psi_p,DUMMY_VAR__);
                 stan::math::assign(psi_p,transpose(get_base1(psi_p_policy,policy,"psi_p_policy",1)));
-                current_statement_begin__ = 632;
+                current_statement_begin__ = 629;
                 validate_non_negative_index("mdemand_g", "(ngoods + 1)", (ngoods + 1));
                 Eigen::Matrix<local_scalar_t__,1,Eigen::Dynamic>  mdemand_g(static_cast<Eigen::VectorXd::Index>((ngoods + 1)));
                 (void) mdemand_g;  // dummy to suppress unused var warning
 
                 stan::math::initialize(mdemand_g, DUMMY_VAR__);
                 stan::math::fill(mdemand_g,DUMMY_VAR__);
-                current_statement_begin__ = 633;
+                current_statement_begin__ = 630;
                 validate_non_negative_index("mdemand_p", "nerrs", nerrs);
                 validate_non_negative_index("mdemand_p", "(ngoods + 1)", (ngoods + 1));
                 Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,Eigen::Dynamic>  mdemand_p(static_cast<Eigen::VectorXd::Index>(nerrs),static_cast<Eigen::VectorXd::Index>((ngoods + 1)));
@@ -2377,7 +2369,7 @@ CalcMarshallianDemand_rng(const T0__& income,
 
                 stan::math::initialize(mdemand_p, DUMMY_VAR__);
                 stan::math::fill(mdemand_p,DUMMY_VAR__);
-                current_statement_begin__ = 634;
+                current_statement_begin__ = 631;
                 validate_non_negative_index("mdemand_trans", "(ngoods + 1)", (ngoods + 1));
                 validate_non_negative_index("mdemand_trans", "nerrs", nerrs);
                 Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,Eigen::Dynamic>  mdemand_trans(static_cast<Eigen::VectorXd::Index>((ngoods + 1)),static_cast<Eigen::VectorXd::Index>(nerrs));
@@ -2387,10 +2379,10 @@ CalcMarshallianDemand_rng(const T0__& income,
                 stan::math::fill(mdemand_trans,DUMMY_VAR__);
 
 
-                current_statement_begin__ = 636;
+                current_statement_begin__ = 633;
                 for (int err = 1; err <= nerrs; ++err) {
                     {
-                    current_statement_begin__ = 637;
+                    current_statement_begin__ = 634;
                     validate_non_negative_index("MUzero_p", "(ngoods + 1)", (ngoods + 1));
                     Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,1>  MUzero_p(static_cast<Eigen::VectorXd::Index>((ngoods + 1)));
                     (void) MUzero_p;  // dummy to suppress unused var warning
@@ -2400,38 +2392,38 @@ CalcMarshallianDemand_rng(const T0__& income,
                     stan::math::assign(MUzero_p,elt_divide(stan::math::exp(add(append_row(0,psi_p),get_base1(error,err,"error",1))),price_p));
 
 
-                    current_statement_begin__ = 639;
+                    current_statement_begin__ = 636;
                     stan::model::assign(mdemand_p, 
                                 stan::model::cons_list(stan::model::index_uni(err), stan::model::nil_index_list()), 
                                 transpose(MarshallianDemand(income,price,MUzero_p,gamma,alpha,ngoods,algo_gen,tol,max_loop, pstream__)), 
                                 "assigning variable mdemand_p");
                     }
                 }
-                current_statement_begin__ = 642;
+                current_statement_begin__ = 639;
                 stan::math::assign(mdemand_trans, transpose(mdemand_p));
-                current_statement_begin__ = 644;
+                current_statement_begin__ = 641;
                 for (int g = 1; g <= (ngoods + 1); ++g) {
-                    current_statement_begin__ = 645;
+                    current_statement_begin__ = 642;
                     stan::model::assign(mdemand_g, 
                                 stan::model::cons_list(stan::model::index_uni(g), stan::model::nil_index_list()), 
                                 mean(get_base1(mdemand_trans,g,"mdemand_trans",1)), 
                                 "assigning variable mdemand_g");
                 }
-                current_statement_begin__ = 647;
+                current_statement_begin__ = 644;
                 stan::model::assign(mdemand_pols, 
                             stan::model::cons_list(stan::model::index_uni(policy), stan::model::nil_index_list()), 
                             mdemand_g, 
                             "assigning variable mdemand_pols");
                 }
             }
-            current_statement_begin__ = 649;
+            current_statement_begin__ = 646;
             stan::model::assign(mdemand_out, 
                         stan::model::cons_list(stan::model::index_uni(sim), stan::model::nil_index_list()), 
                         mdemand_pols, 
                         "assigning variable mdemand_out");
             }
         }
-        current_statement_begin__ = 651;
+        current_statement_begin__ = 648;
         return stan::math::promote_scalar<fun_return_scalar_t__>(mdemand_out);
         }
     } catch (const std::exception& e) {

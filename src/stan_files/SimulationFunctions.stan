@@ -159,7 +159,7 @@ vector MarshallianDemand(real income, vector price, vector MUzero, vector gamma,
 			if (lambda > mu[min(M + 1, ngoods + 1)] || M == ngoods+1){
 				// Compute demands (using eq. 12 in Pinjari and Bhat)
 				for (m in 1:M)
-					X[m] = (pow(lambda / mu[m], 1 / (alpha_1 - 1)) - d[m]) * g[m];
+					X[m] = (pow(lambda / mu[m], inv(alpha_1 - 1)) - d[m]) * g[m];
 				exit = 1;
 
 			} else if ( M < ngoods + 1)
@@ -286,7 +286,6 @@ vector HicksianDemand(real util, vector price,
 	if (algo_gen == 0) { //Hybrid approach to demand simulation (constant alpha's)
 		real lambda_num;
 		real lambda_den;
-		real lambda;
 		real alpha_1 = alpha[1]; // all alpha's are equal
 		vector[ngoods+1] g_psi = g .* mu .* col(parm_matrix, 2); // obtain gamma_psi
 		vector[ngoods+1] b;
@@ -299,10 +298,9 @@ vector HicksianDemand(real util, vector price,
 
 		while (exit == 0){
 			// Calculate 1/lambda for a given M
-			lambda_num = alpha_1 * util + sum(g_psi[1:M]) - g_psi[1] / g[1]; // utility not expenditure and subtract numeriare psi
+			lambda_num = alpha_1 * util + sum(g_psi[1:M]) - g_psi[1]; // utility not expenditure and subtract numeriare psi
 			lambda_den = sum(c[1:M]);
-			lambda = pow(lambda_num / lambda_den, -(alpha_1 - 1) / alpha_1); // new exponent term
-			lambda1 = 1 / lambda;   // Compare 1/lambda to MU
+			lambda1 = pow(lambda_num / lambda_den, (alpha_1 - 1) / alpha_1); // create 1/lambda term
 
 			// Compare 1/lambda to baseline utility of the next lowest alternative
 			// (M+1). If lambda exceeds this value then all lower-valued
@@ -311,7 +309,7 @@ vector HicksianDemand(real util, vector price,
 
 				// Compute demands (using eq. 12 in Pinjari and Bhat)
 				for (m in 1:M)
-					X[m] = (pow(inv(lambda * mu[m]), inv(alpha_1 - 1)) - d[m]) * g[m];
+					X[m] = (pow(lambda1 / mu[m], inv(alpha_1 - 1)) - d[m]) * g[m];
 				exit = 1;
 
 			} else if (M < ngoods + 1)
@@ -361,8 +359,7 @@ vector HicksianDemand(real util, vector price,
 
 			// Compute demands (using eq. 12 in Pinjari and Bhat)
 			for (m in 1:M)
-				X[m] = ((lambda1 / mu[m]) ^ (1 / (a[m] - 1))  -d[m]) * g[m];
-
+				X[m] = (pow(lambda1 / mu[m], inv(a[m] - 1)) - d[m]) * g[m];
 			exit = 1;
 
 			} else if (util_new < util && M+1 < ngoods+1)

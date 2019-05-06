@@ -28,7 +28,7 @@ matrix alpha_ll(vector alpha, int I, int J, int model_num) {
 	else if (model_num == 3)
 	  alpha_full = rep_matrix(alpha[1], I, J+1);
 	else
-	  alpha_full = rep_matrix(1e-06, I, J+1);
+	  alpha_full = rep_matrix(1e-03, I, J+1);
 
 return(alpha_full);
 }

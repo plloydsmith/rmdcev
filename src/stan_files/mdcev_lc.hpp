@@ -146,7 +146,7 @@ alpha_ll(const Eigen::Matrix<T0__, Eigen::Dynamic,1>& alpha,
             stan::math::assign(alpha_full, rep_matrix(get_base1(alpha,1,"alpha",1),I,(J + 1)));
         } else {
             current_statement_begin__ = 33;
-            stan::math::assign(alpha_full, rep_matrix(9.9999999999999995e-007,I,(J + 1)));
+            stan::math::assign(alpha_full, rep_matrix(0.001,I,(J + 1)));
         }
         current_statement_begin__ = 35;
         return stan::math::promote_scalar<fun_return_scalar_t__>(alpha_full);
@@ -1048,9 +1048,9 @@ public:
             } else {
 
                 current_statement_begin__ = 218;
-                stan::math::assign(alpha_individual_1, rep_vector(9.9999999999999995e-007,I));
+                stan::math::assign(alpha_individual_1, rep_vector(0.001,I));
                 current_statement_begin__ = 219;
-                stan::math::assign(alpha_individual_j, rep_matrix(9.9999999999999995e-007,I,J));
+                stan::math::assign(alpha_individual_j, rep_matrix(0.001,I,J));
             }
             current_statement_begin__ = 222;
             if (as_bool(logical_eq(model_num,2))) {
@@ -1352,9 +1352,9 @@ public:
             } else {
 
                 current_statement_begin__ = 218;
-                stan::math::assign(alpha_individual_1, rep_vector(9.9999999999999995e-007,I));
+                stan::math::assign(alpha_individual_1, rep_vector(0.001,I));
                 current_statement_begin__ = 219;
-                stan::math::assign(alpha_individual_j, rep_matrix(9.9999999999999995e-007,I,J));
+                stan::math::assign(alpha_individual_j, rep_matrix(0.001,I,J));
             }
             current_statement_begin__ = 222;
             if (as_bool(logical_eq(model_num,2))) {

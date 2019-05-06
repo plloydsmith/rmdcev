@@ -1,6 +1,6 @@
 context("Test Simulations")
 
-tol <- 0.00001
+tol <- 0.001
 data(data_rec, package = "rmdcev")
 data_rec
 result <- FitMDCEV(psi_formula = ~ factor(good_name) -1,
@@ -32,7 +32,7 @@ quant <- c(quant_num, quant_j)
 psi_j <- result[["stan_data"]][["dat_psi"]][1:ngoods,] %*% t(result[["stan_fit"]][["par"]][["psi"]])
 gamma_j <- result[["stan_fit"]][["par"]][["gamma"]]
 gamma <- c(1, gamma_j)
-alpha <- rep(1e-06, ngoods+1)
+alpha <- rep(1e-03, ngoods+1)
 #alpha <- rep(result[["stan_fit"]][["par"]][["alpha"]], ngoods+1)
 #alpha <- c(result[["stan_fit"]][["par"]][["alpha"]], rep(0,ngoods))
 scale <- result[["stan_fit"]][["par"]][["scale"]]
@@ -45,8 +45,7 @@ max_loop = 999
 
 error <- DrawError_rng(quant_num, quant_j, price[-1],
 				  psi_j, gamma_j, alpha, scale,
-				  ngoods = ngoods, nerrs = 2, cond_error = 0, draw_mlhs = 1)
-
+				  ngoods = ngoods, nerrs = 2, cond_error = 1, draw_mlhs = 1)
 
 	psi_b_err <- exp(c(0, psi_j) + error[[1]])
 	MUzero_b <- psi_b_err / price
@@ -72,7 +71,7 @@ mdemand <- MarshallianDemand(income, price, MUzero_b, gamma, alpha,
 							 psi_b_err[-1], gamma[-1], alpha,
 							 ngoods, model_num)
 
-	expect_true(abs(util - 1000011.04297481) < tol)
+	expect_true(abs(util - 1011.104111) < tol)
 
 	price_p <- price + c(.001,rep(1,ngoods))
  	MUzero_p <- psi_b_err / price_p
@@ -80,12 +79,12 @@ mdemand <- MarshallianDemand(income, price, MUzero_b, gamma, alpha,
 	hdemand <- HicksianDemand(util, price_p, MUzero_p,  gamma, alpha,
 			ngoods, algo_gen = 0, model_num, tol_l = tol_l, max_loop = max_loop)
 	wtp_err <- income - t(price_p) %*% hdemand
-	expect_true(abs(wtp_err - (-62.4994989953)) < tol)
+	expect_true(abs(wtp_err - (-62.4995)) < tol)
 
 	hdemand <- HicksianDemand(util, price_p, MUzero_p, gamma, alpha,
 							  ngoods, algo_gen = 1, model_num, tol_l = tol_l, max_loop = max_loop)
 	wtp_err <- income - t(price_p) %*% hdemand
-	expect_true(abs(wtp_err - (-62.4994989953)) < tol)
+	expect_true(abs(wtp_err - (-62.4995)) < tol)
 
 })
 
@@ -93,7 +92,7 @@ test_that("Test full simulation function", {
 
 	# Test conditional errors
 	wtp <- SimulateMDCEV(df_sim$df_indiv, df_common = df_sim$df_common, sim_options = df_sim$sim_options,
-						 cond_err = 1, nerrs = 3, sim_type = "welfare")
+						 cond_err =1, nerrs = 3, sim_type = "welfare")
 	sum_wtp <- SummaryWelfare(wtp)
 	expect_true(sum(abs(sum_wtp$Mean)) < .01)
 
