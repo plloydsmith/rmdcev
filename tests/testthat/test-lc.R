@@ -4,7 +4,7 @@ tol <- 0.01
 data(data_rec, package = "rmdcev")
 data_rec
 
-result <- FitMDCEV(psi_formula = ~ factor(good_name) -1,
+result <- FitMDCEV(psi_formula = ~ 1,
 				   lc_formula = ~ university + ageindex,
 				   data = subset(data_rec, id < 500),
 				   model = "gamma0",
@@ -14,13 +14,13 @@ result <- FitMDCEV(psi_formula = ~ factor(good_name) -1,
 output.sum <- SummaryMDCEV(result)
 
 test_that("LC 2-classes", {
-	expect_true(abs(result$log.likelihood - (-12032.07)) < tol)
+	expect_true(abs(result$log.likelihood - (-12612.51)) < tol)
 
 	print(result$log.likelihood, digits =10)
-	expect_true(abs(result$bic - 24517.65) < tol)
-	expect_true(abs(result[["stan_fit"]][["par"]][["scale"]][[1]] - 0.81) < tol)
-	expect_true(abs(result[["stan_fit"]][["par"]][["psi"]][2,2] - -8.19) < tol)
-	expect_true(abs(result[["stan_fit"]][["par"]][["delta"]][[1,2]] - -1.37) < tol)
+	expect_true(abs(result$bic - 25479.74) < tol)
+	expect_true(abs(result[["stan_fit"]][["par"]][["scale"]][[1]] - 0.6834624) < tol)
+	expect_true(abs(result[["stan_fit"]][["par"]][["psi"]][2,1] - -7.493115) < tol)
+	expect_true(abs(result[["stan_fit"]][["par"]][["delta"]][[1,2]] - .4318454) < tol)
 })
 
 
