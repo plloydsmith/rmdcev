@@ -19,12 +19,13 @@ maxlikeMDCEV <- function(stan_data, initial.parameters,
 
 	if (is.null(initial.parameters)){
 		stan_fit <- rstan::optimizing(stan.model, data = stan_data_temp, as_vector = FALSE, seed = mle_options$seed,
-									  verbose = mle_options$print_iterations,
-							   draws = mle_options$n_draws, hessian = mle_options$hessian)
+									  verbose = mle_options$print_iterations, iter = mle_options$max_iterations,
+							   			draws = mle_options$n_draws, hessian = mle_options$hessian)
 	} else {
 		stan_fit <- rstan::optimizing(stan.model, data = stan_data_temp, as_vector = FALSE, seed = mle_options$seed,
-									  verbose = mle_options$print_iterations, init = initial.parameters,
-						   draws = mle_options$n_draws, hessian = mle_options$hessian)
+									  verbose = mle_options$print_iterations, iter = mle_options$max_iterations,
+									  init = initial.parameters,
+						   				draws = mle_options$n_draws, hessian = mle_options$hessian)
 	}
 
 	if (mle_options$keep_loglik == 0)

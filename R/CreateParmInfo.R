@@ -56,7 +56,6 @@ parm_names <- list(psi_names=psi_names,
 				   scale_names=scale_names,
 				   all_names = c(psi_names, gamma_names, alpha_names, scale_names))
 
-
 n_parameters <- n_psi + n_alpha + n_gamma + n_scale
 n_vars = list(n_psi = n_psi, n_alpha = n_alpha, n_gamma = n_gamma, n_scale = n_scale)
 
@@ -65,14 +64,12 @@ if (stan_data$K > 1){
 	n_vars <- purrr::map(n_vars, function(x){x* stan_data$K})
 	n_vars$n_beta <- stan_data$L * (stan_data$K - 1)
 
+	all_names <- GenClassNames(parm_names$all_names, stan_data$K)
 
-all_names <- GenClassNames(parm_names$all_names, stan_data$K)
+	delta.names <- GenClassNames(colnames(stan_data[["data_class"]]), stan_data$K)
+	parm_names$delta.names <-	grep("class1", delta.names, invert=TRUE, value = TRUE)
 
-delta.names <- GenClassNames(colnames(stan_data[["data_class"]]), stan_data$K)
-parm_names$delta.names <-	grep("class1", delta.names, invert=TRUE, value = TRUE)
-
-parm_names$all_names <- c(all_names, parm_names$delta.names)
-
+	parm_names$all_names <- c(all_names, parm_names$delta.names)
 }
 
 if (algorithm == "Bayes"){

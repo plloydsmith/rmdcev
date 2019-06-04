@@ -16,6 +16,7 @@
 #'     for maximum liklihood estimation.
 #' @param flat_priors indicator if completely uninformative priors should be specified. If using MLE, the
 #' optimizing function will then be equal to log-likelihood. Defaults to 1 if MLE used and 0 if Bayes used.
+#' @param max_iterations Maximum number of iterations in MLE estimation.
 #' @param print_iterations Whether to print iteration information
 #' @param std_errors Compute standard errors using the delta method ("deltamethod")
 #' or multivariate normal draws ("mvn"). The default is "mvn" as only mvn parameter draws are required
@@ -56,6 +57,7 @@ FitMDCEV <- function(data,
 					 fixed_scale = 0,
 					 trunc_data = 0,
 					 seed = "123",
+					 max_iterations = 2000,
 					 initial.parameters = NULL,
 					 algorithm = c("MLE", "Bayes"),
 					 #	std_errors = "draws", # still need to implement
@@ -98,6 +100,7 @@ FitMDCEV <- function(data,
 						n_classes = n_classes,
 						trunc_data = trunc_data,
 						seed = seed,
+						max_iterations = max_iterations,
 						print_iterations = print_iterations,
 						hessian = hessian,
 						n_draws = n_draws,
@@ -156,11 +159,11 @@ FitMDCEV <- function(data,
 
 	}
 	end.time <- proc.time()
-	result$parms_info <- parms_info
 
 	if(algorithm == "Bayes" || std_errors == "deltamethod")
 		result$n_draws <- NULL
 
+	result$parms_info <- parms_info
 	result$stan_data <- stan_data
 	result$algorithm <- algorithm
 	result$random_parameters <- random_parameters
