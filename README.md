@@ -44,13 +44,13 @@ You can switch build_vignettes to TRUE but it will take a lot longer to install 
 
 ## Estimation
 
-As an example, we can simulate some data using the Gamma specification.
+As an example, we can simulate some data using the Hybrid specification.
 
 ```{r}
 
 library(pacman)
 p_load(tidyverse, rmdcev)
-model <- "gamma"
+model <- "hybrid"
 sim.data <- GenerateMDCEVData(model = model, nobs = 1000, ngoods = 10)
 ```
 
