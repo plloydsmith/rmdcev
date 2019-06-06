@@ -1,0 +1,11 @@
+rmdcev v0.8.0 (Release date: 2019-06-06)
+==============
+
+Changes:
+
+* Changed model names to reflect Bhat (2008)
+Old names -> New names
+les -> gamma
+alpha -> alpha
+gamma -> hybrid
+gamma0 -> hybrid0
