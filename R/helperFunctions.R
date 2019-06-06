@@ -40,6 +40,8 @@ DoCbind <- function(x){
 #' @title CreateBlankPolicies
 #' @description Create 'zero effect' policies that can be modified
 #' @inheritParams PrepareSimulationData
+#' @param price_change_only Logical value for whether to include policy changes to dat_psi.
+#' TRUE implies that only price changes are used in simulation.
 #' @param npols Number of policies to simulate
 #' @param ngoods Number of non-numeraire goods
 #' @param dat_psi Psi data matrix used in estimation

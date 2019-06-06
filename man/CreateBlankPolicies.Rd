@@ -12,6 +12,9 @@ CreateBlankPolicies(npols, ngoods, dat_psi, price_change_only)
 \item{ngoods}{Number of non-numeraire goods}
 
 \item{dat_psi}{Psi data matrix used in estimation}
+
+\item{price_change_only}{Logical value for whether to include policy changes to dat_psi.
+TRUE implies that only price changes are used in simulation.}
 }
 \description{
 Create 'zero effect' policies that can be modified

@@ -1,7 +1,6 @@
 context("Test Bayes fixed")
 
-
-library(rmdcev)
+#library(rmdcev)
 
 tol <- 0.01
 
