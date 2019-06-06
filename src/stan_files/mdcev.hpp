@@ -146,7 +146,7 @@ alpha_ll(const Eigen::Matrix<T0__, Eigen::Dynamic,1>& alpha,
             stan::math::assign(alpha_full, rep_matrix(get_base1(alpha,1,"alpha",1),I,(J + 1)));
         } else {
             current_statement_begin__ = 34;
-            stan::math::assign(alpha_full, rep_matrix(9.9999999999999995e-007,I,(J + 1)));
+            stan::math::assign(alpha_full, rep_matrix(0.001,I,(J + 1)));
         }
         current_statement_begin__ = 36;
         return stan::math::promote_scalar<fun_return_scalar_t__>(alpha_full);

@@ -9,8 +9,14 @@ maxlikeMDCEV(stan_data, initial.parameters, mle_options)
 \arguments{
 \item{stan_data}{data for model}
 
-\item{initial.parameters}{Specify initial parameters intead of
-starting at random.}
+\item{initial.parameters}{Specify initial parameters intead of starting at random.
+Initial parameter values should be included in a named list. For the "gamma" specification,
+initial parameters can be specified as:
+init = list(psi = array(0, dim = c(1, num_psi)),
+            gamma = array(1, dim = c(1, num_goods)),
+            alpha = array(0.5, dim = c(1, 0)),
+            scale = array(1, dim = c(1)))
+where num_psi is number of psi parameters and num_goods is number of non-numeraire goods}
 
 \item{mle_options}{modeling options for MLE}
 }

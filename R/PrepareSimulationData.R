@@ -5,15 +5,13 @@
 #' price_p with additive price increases, and
 #' dat_psi_p with new psi data
 #' @param nsims Number of simulation draws to use for parameter uncertainty
-#' @param price_change_only Choose if there is no change in dat_psi_p variables
 #' @return A list with individual-specific data (df_indiv) and common data (df_common)
 #' and n_classes for number of classes and model_num for model type
 #' @export
 
 PrepareSimulationData <- function(stan_est,
 								  policies,
-								  nsims = 30,
-								  price_change_only = FALSE){
+								  nsims = 30){
 
 	if (stan_est$algorithm == "Bayes" & stan_est$random_parameters != "fixed")
 		stop("Demand and welfare simulation not set up for RP-MDCEV models yet.", "\n")
@@ -36,7 +34,7 @@ PrepareSimulationData <- function(stan_est,
 		left_join(stan_est$est_pars, by = "sim_id")
 
 	if(stan_est$n_classes == 1){
-		sim_welfare <- ProcessSimulationData(est_sim, stan_est, policies, nsims, price_change_only)
+		sim_welfare <- ProcessSimulationData(est_sim, stan_est, policies, nsims)
 		df_common <- sim_welfare
 		df_common$df_indiv <- NULL
 
@@ -56,7 +54,7 @@ PrepareSimulationData <- function(stan_est,
 		est_sim_lc <- purrr::map(est_sim_lc, function(x){ x %>%
 				select(-class)})
 
-		sim_welfare <- purrr::map(est_sim_lc, ProcessSimulationData, stan_est, policies, nsims, price_change_only)
+		sim_welfare <- purrr::map(est_sim_lc, ProcessSimulationData, stan_est, policies, nsims)
 
 		df_common <- purrr::map(sim_welfare, `[`, c("price_p_list", "gamma_sim_list", "alpha_sim_list", "scale_sim"))
 		names(df_common) <- rep("df_common", stan_est$n_classes)
@@ -66,7 +64,7 @@ PrepareSimulationData <- function(stan_est,
 
 	sim_options <- list(n_classes = stan_est$n_classes,
 					model_num = model_num,
-					price_change_only = price_change_only)
+					price_change_only = policies$price_change_only)
 
 	df_wtp <- list(df_indiv = df_indiv,
 			   df_common = df_common,
@@ -75,11 +73,12 @@ PrepareSimulationData <- function(stan_est,
 return(df_wtp)
 }
 
-#'@importFrom rlang .data
+#' @title ProcessSimulationData
+#' @description Internal function for WTP simulation
+#' @inheritParams PrepareSimulationData
+#' @param est_sim Cleaned up parameter simulations from PrepareSimulationData
 #'
-#'
-#'
-ProcessSimulationData <- function(est_sim, stan_est, policies, nsims, price_change_only){
+ProcessSimulationData <- function(est_sim, stan_est, policies, nsims){
 
 	J <- stan_est$stan_data$J
 	I <- stan_est$stan_data$I
@@ -128,7 +127,7 @@ ProcessSimulationData <- function(est_sim, stan_est, policies, nsims, price_chan
 	psi_sim <- list(psi_sim)
 	names(psi_sim) <- "psi_sim"
 
-	if (price_change_only == FALSE) {
+	if (policies$price_change_only == FALSE) {
 	# psi_p
 	psi_p_sim <- purrr::map(psi_temp, function(psi){ purrr::map(policies[["dat_psi_p"]], MultiplyMatrix, x = psi, n_rows = I)})
 	psi_p_sim <- purrr::map(psi_p_sim, DoCbind)
@@ -142,7 +141,7 @@ ProcessSimulationData <- function(est_sim, stan_est, policies, nsims, price_chan
 	psi_p_sim <- list(psi_p_sim)
 	names(psi_p_sim) <- "psi_p_sim"
 
-	} else if (price_change_only == TRUE){
+	} else if (policies$price_change_only == TRUE){
 		psi_p_sim <- NULL
 	}
 

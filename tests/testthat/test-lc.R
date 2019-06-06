@@ -1,5 +1,5 @@
 context("Test LC")
-
+#library(rmdcev)
 tol <- 0.01
 data(data_rec, package = "rmdcev")
 data_rec
@@ -7,11 +7,12 @@ data_rec
 result <- FitMDCEV(psi_formula = ~ 1,
 				   lc_formula = ~ university + ageindex,
 				   data = subset(data_rec, id < 500),
-				   model = "gamma",
+				   model = "gamma0",
 				   algorithm = "MLE",
 				   std_error = "deltamethod",
 				   n_classes = 2,
 				   print_iterations = FALSE)
+
 output.sum <- SummaryMDCEV(result)
 
 test_that("LC 2-classes", {
@@ -19,9 +20,9 @@ test_that("LC 2-classes", {
 
 	print(result$log.likelihood, digits =10)
 #	expect_true(abs(result$bic - 25479.74) < tol)
-	expect_true(abs(result[["stan_fit"]][["par"]][["scale"]][[1]] - 0.6834624) < tol)
+	expect_true(abs(result[["stan_fit"]][["par"]][["scale"]][[1]] - 0.6832412) < tol)
 #	expect_true(abs(result[["stan_fit"]][["par"]][["psi"]][2,1] - -7.493115) < tol)
-	expect_true(abs(result[["stan_fit"]][["par"]][["delta"]][[1,2]] - .4318454) < tol)
+	expect_true(abs(result[["stan_fit"]][["par"]][["delta"]][[1,2]] - .4318349) < tol)
 })
 
 

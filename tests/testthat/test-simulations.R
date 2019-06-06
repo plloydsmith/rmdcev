@@ -10,9 +10,9 @@ result <- FitMDCEV(psi_formula = ~ factor(good_name) -1,
 				   print_iterations = FALSE)
 
 ngoods <- result$stan_data[["J"]]
-model_num <- 4
+model_num <- 1
 npols <- 2
-policies<-	CreateBlankPolicies(npols, ngoods, result$stan_data[["dat_psi"]])
+policies<-	CreateBlankPolicies(npols, ngoods, result$stan_data[["dat_psi"]], price_change_only = TRUE)
 
 df_sim <- PrepareSimulationData(result, policies, nsims = 3)
 income <- df_sim[["df_indiv"]][["income"]][[1]]
@@ -51,11 +51,11 @@ error <- DrawError_rng(quant_num, quant_j, price[-1],
 	MUzero_b <- psi_b_err / price
 #	 Test hybrid algo
 	mdemand <- MarshallianDemand(income, price, MUzero_b, gamma, alpha,
-								 ngoods, algo_gen = 0, tol_e = tol_e, max_loop = max_loop);
+								 ngoods, algo_gen = 0, tol_e = tol_e, max_loop = max_loop)
 	expect_true(sum(abs(mdemand - quant)) < tol)
 	# Test general algo
 	mdemand <- MarshallianDemand(income, price, MUzero_b, gamma, alpha,
-								 ngoods, algo_gen = 1, tol_e = tol_e, max_loop = max_loop);
+								 ngoods, algo_gen = 1, tol_e = tol_e, max_loop = max_loop)
 	expect_true(sum(abs(mdemand - quant)) < tol)
 
 error <- c(0.0000000000, -0.77612399, -0.55169780, -0.02143232, -0.81241994, -0.19768961,

@@ -4,7 +4,7 @@
 \alias{CreateBlankPolicies}
 \title{CreateBlankPolicies}
 \usage{
-CreateBlankPolicies(npols, ngoods, dat_psi)
+CreateBlankPolicies(npols, ngoods, dat_psi, price_change_only)
 }
 \arguments{
 \item{npols}{Number of policies to simulate}

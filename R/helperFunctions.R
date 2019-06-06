@@ -39,14 +39,21 @@ DoCbind <- function(x){
 
 #' @title CreateBlankPolicies
 #' @description Create 'zero effect' policies that can be modified
+#' @inheritParams PrepareSimulationData
 #' @param npols Number of policies to simulate
 #' @param ngoods Number of non-numeraire goods
 #' @param dat_psi Psi data matrix used in estimation
 #' @export
-CreateBlankPolicies <- function(npols, ngoods, dat_psi){
+CreateBlankPolicies <- function(npols, ngoods, dat_psi, price_change_only){
 	price_p <- CreateListsRow(matrix(0, nrow = npols, ncol = ngoods + 1))
-	dat_psi_p <- lapply(seq_len(npols), function(X) dat_psi)
-	out <- list(price_p = price_p, dat_psi_p = dat_psi_p)
+
+	if (price_change_only == FALSE)
+		dat_psi_p <- lapply(seq_len(npols), function(X) dat_psi)
+	else if (price_change_only == TRUE)
+		dat_psi_p <- NULL
+
+	out <- list(price_p = price_p, dat_psi_p = dat_psi_p,
+				price_change_only = price_change_only)
 	return(out)
 }
 
