@@ -24,8 +24,14 @@
 #' @param n_draws The number of MVN draws for standard error calculations
 #' @param keep_loglik Whether to keep the log_lik calculations
 #' @param hessian Wheter to keep the Hessian matrix
-#' @param initial.parameters Specify initial parameters intead of
-#'     starting at random.
+#' @param initial.parameters Specify initial parameters intead of starting at random.
+#' Initial parameter values should be included in a named list. For the "gamma" specification,
+#' initial parameters can be specified as:
+#' init = list(psi = array(0, dim = c(1, num_psi)),
+#'             gamma = array(1, dim = c(1, num_goods)),
+#'             alpha = array(0.5, dim = c(1, 0)),
+#'             scale = array(1, dim = c(1)))
+#' where num_psi is number of psi parameters and num_goods is number of non-numeraire goods
 #' @param prior_psi_sd standard deviation for normal prior with mean 0.
 #' @param prior_gamma_sd standard deviation for normal prior with mean 0.
 #' @param prior_alpha_sd standard deviation for normal prior with mean 0.5.
@@ -60,7 +66,6 @@ FitMDCEV <- function(data,
 					 max_iterations = 2000,
 					 initial.parameters = NULL,
 					 algorithm = c("MLE", "Bayes"),
-					 #	std_errors = "draws", # still need to implement
 					 flat_priors = NULL,
 					 print_iterations = TRUE,
 					 #mle_tol = 0.0001,
@@ -91,9 +96,9 @@ FitMDCEV <- function(data,
 		stop("MLE can only be used with fixed parameters. Switch random_parameters to 'fixed' or change algorithm to Bayes", "\n")
 
 	if (algorithm == "MLE" && is.null(flat_priors)){
-		flat_priors = 1
+		flat_priors <- 1
 	} else if (algorithm == "Bayes" && is.null(flat_priors))
-		flat_priors = 0
+		flat_priors <- 0
 
 	mle_options <- list(fixed_scale = fixed_scale,
 						model = model,
