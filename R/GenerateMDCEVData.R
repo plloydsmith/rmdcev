@@ -37,7 +37,7 @@ GenerateMDCEVData <- function(model, nobs = 1000, ngoods = 10,
 	gamma_true <- cbind(parms, true)
 
 	true <- scale_parms
-	parms <- 'scale1'
+	parms <- 'scale'
 	scale_true <- cbind(parms, true)
 
 	# Create psi variables that vary over alternatives
