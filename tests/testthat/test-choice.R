@@ -32,19 +32,19 @@ test_that("MLE names", {
 })
 
 
-context("MLE gamma0 specification")
+context("MLE hybrid0 specification")
 
-test_that("MLE gamma0", {
+test_that("MLE hybrid0", {
 	output <- FitMDCEV(psi_formula = ~ 1,
 					   data = subset(data_rec, id < 100),
-					   model = "gamma0",
+					   model = "hybrid0",
 					   algorithm = "MLE",
 					   std_error = "deltamethod",
 					   print_iterations = FALSE)
 
 	output.sum <- SummaryMDCEV(output)
 	expect_equal(length(output.sum$Std.err), 19)
-	expect_equal(output$model, "gamma0")
+	expect_equal(output$model, "hybrid0")
 	print(output$log.likelihood, digits =10)
 
 	expect_true(abs(output$log.likelihood - (-2684.757401)) < tol)

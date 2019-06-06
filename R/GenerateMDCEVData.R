@@ -57,7 +57,7 @@ GenerateMDCEVData <- function(model, nobs = 1000, ngoods = 10,
 					colnames(dat_psi))
 	parms_true <- cbind(parms, true)
 
-	if (model == "les"){
+	if (model == "gamma"){
 		model_num <- 1
 		alpha_parms <- c(alpha_parms, rep(0, ngoods))
 		true <- alpha_parms[1]
@@ -74,7 +74,7 @@ GenerateMDCEVData <- function(model, nobs = 1000, ngoods = 10,
 		alpha_true <- cbind(parms, true)
 		parms_true <- rbind(parms_true, alpha_true, scale_true)
 		algo_gen <- 1
-	} else if (model == "gamma"){
+	} else if (model == "hybrid"){
 		model_num <- 3
 		alpha_parms <- rep(alpha_parms, ngoods+1)
 		true <- alpha_parms[1]
@@ -82,9 +82,9 @@ GenerateMDCEVData <- function(model, nobs = 1000, ngoods = 10,
 		alpha_true <- cbind(parms, true)
 		parms_true <- rbind(parms_true, gamma_true, alpha_true, scale_true)
 		algo_gen <- 0
-	} else if (model == "gamma0"){
+	} else if (model == "hybrid0"){
 		model_num <- 4
-		alpha_parms <- rep(1e-6, ngoods+1)
+		alpha_parms <- rep(1e-3, ngoods+1)
 		parms_true <- rbind(parms_true, gamma_true, scale_true)
 		algo_gen <- 0
 	} else

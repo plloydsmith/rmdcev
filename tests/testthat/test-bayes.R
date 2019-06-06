@@ -17,7 +17,7 @@ data_rec
 
 	output <- FitMDCEV(psi_formula = ~ factor(good_name) -1,
 								data = subset(data_rec, id < 500),
-								model = "gamma0",
+								model = "hybrid0",
 								algorithm = "Bayes",
 							random_parameters = "fixed",
 					   print_iterations = FALSE,
@@ -30,7 +30,7 @@ data_rec
 	expect_equal(output$parms_info$n_vars$n_parms_total, 35)
 
 	output <- SummaryMDCEV(output)
-test_that("Bayes gamma0 specification", {
+test_that("Bayes hybrid0 specification", {
 	expect_equal(output$z.stat[1], Inf)
 })
 

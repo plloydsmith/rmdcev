@@ -7,7 +7,7 @@ data_rec
 result <- FitMDCEV(psi_formula = ~ 1,
 				   lc_formula = ~ university + ageindex,
 				   data = subset(data_rec, id < 500),
-				   model = "gamma0",
+				   model = "hybrid0",
 				   algorithm = "MLE",
 				   std_error = "deltamethod",
 				   n_classes = 2,

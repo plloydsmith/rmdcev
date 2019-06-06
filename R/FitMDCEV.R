@@ -7,7 +7,7 @@
 #' Notes I is number of individuals and J is number of non-numeraire goods.
 #' @param weights An optional vector of sampling or frequency weights.
 #' @param model A string indicating which model specification is estimated.
-#' The options are "alpha","les", "gamma", and "gamma0".
+#' The options are "alpha", "gamma", "hybrid" and "hybrid0".
 #' @param n_classes The number of latent classes.
 #' @param fixed_scale Whether to fix scale at 1.
 #' @param trunc_data Whether the estimation should be adjusted for truncation
@@ -25,7 +25,7 @@
 #' @param keep_loglik Whether to keep the log_lik calculations
 #' @param hessian Wheter to keep the Hessian matrix
 #' @param initial.parameters Specify initial parameters intead of starting at random.
-#' Initial parameter values should be included in a named list. For the "gamma" specification,
+#' Initial parameter values should be included in a named list. For the "hybrid" specification,
 #' initial parameters can be specified as:
 #' init = list(psi = array(0, dim = c(1, num_psi)),
 #'             gamma = array(1, dim = c(1, num_goods)),
@@ -58,7 +58,7 @@ FitMDCEV <- function(data,
 					 psi_formula = NULL,
 					 lc_formula = NULL,
 					 weights = NULL,
-					 model = c("alpha", "les", "gamma", "gamma0"),
+					 model = c("alpha", "gamma", "hybrid", "hybrid0"),
 					 n_classes = 1,
 					 fixed_scale = 0,
 					 trunc_data = 0,

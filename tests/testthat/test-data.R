@@ -29,6 +29,8 @@ test_that("ChechMdcev data works", {
 #skip_on_cran(
 #
 
+context("Test MLE names")
+
 test_that("MLE names", {
 	expect_error(FitMDCEV(psi_formula = ~ factor(good_name) -1,
 									 data = data_rec,
@@ -42,7 +44,7 @@ psi_formula = ~ factor(good_name) -1
 lc_formula = NULL
 weights = NULL
 num_price = NULL
-model = "gamma0"
+model = "hybrid0"
 n_classes = 1
 fixed_scale = 0
 trunc_data = 0
@@ -98,19 +100,19 @@ bayes_options <- list(n_iterations = n_iterations,
 stan_data <- processMDCEVdata(data_rec, psi_formula, lc_formula, mle_options)
 parms_info <- CreateParmInfo(stan_data, algorithm, random_parameters)
 
-test_that("Gamma0 parm names", {
+test_that("hybrid0 parm names", {
 	expect_equal(parms_info$n_vars$n_parms_total, length(parms_info$parm_names$all_names))
 })
 
-test_that("Gamma0 LC 2 parm names", {
+test_that("hybrid0 LC 2 parm names", {
 	mle_options$n_classes = 2
 	lc_formula = ~ university + ageindex
 	stan_data <- processMDCEVdata(data_rec, psi_formula, lc_formula,  mle_options)
 	parms_info <- CreateParmInfo(stan_data, algorithm, random_parameters)
 	expect_equal(parms_info$n_vars$n_parms_total, length(parms_info$parm_names$all_names))
 })
-test_that("Gamma parm names", {
-	mle_options$model = "gamma"
+test_that("hybrid parm names", {
+	mle_options$model = "hybrid"
 	stan_data <- processMDCEVdata(data_rec, psi_formula, lc_formula, mle_options)
 	parms_info <- CreateParmInfo(stan_data, algorithm, random_parameters)
 	expect_equal(parms_info$n_vars$n_parms_total, length(parms_info$parm_names$all_names))
@@ -124,8 +126,8 @@ test_that("alpha parm names", {
 	expect_equal(parms_info$n_vars$n_parms_total, length(parms_info$parm_names$all_names))
 })
 
-test_that("les parm names", {
-	mle_options$model = "les"
+test_that("gamma parm names", {
+	mle_options$model = "gamma"
 	stan_data <- processMDCEVdata(data_rec, psi_formula, lc_formula, mle_options)
 	parms_info <- CreateParmInfo(stan_data, algorithm, random_parameters)
 	expect_equal(parms_info$n_vars$n_parms_total, length(parms_info$parm_names$all_names))

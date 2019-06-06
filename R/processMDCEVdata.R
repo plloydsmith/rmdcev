@@ -12,13 +12,13 @@ processMDCEVdata <- function(data, psi_formula, lc_formula, model_options){
 	J <- length(unique(data$good))
 	I <- length(unique(data$id))
 
-	if (model_options$model == "les"){
+	if (model_options$model == "gamma"){
 		model_num <- 1
 	} else if (model_options$model == "alpha"){
 		model_num <- 2
-	} else if (model_options$model == "gamma"){
+	} else if (model_options$model == "hybrid"){
 		model_num <- 3
-	} else if (model_options$model == "gamma0"){
+	} else if (model_options$model == "hybrid0"){
 		model_num <- 4
 	} else
 		stop("No model specificied. Choose a model specification")

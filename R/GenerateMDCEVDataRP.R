@@ -26,7 +26,7 @@ GenerateMDCEVDataRP <- function(model,
 	num_psi <- length(psi_j_parms)
 	RP <- num_psi + ngoods + 1
 
-	if (model == "les"){
+	if (model == "gamma"){
 		model_num <- 1
 		algo_gen <- 1
 		a <- c(rep(-Inf, num_psi), rep(0.01, RP-num_psi))
@@ -37,12 +37,12 @@ GenerateMDCEVDataRP <- function(model,
 		algo_gen <- 1
 		a <- c(rep(-Inf, num_psi), rep(0.01, RP-num_psi))
 		b <- c(rep(Inf, num_psi), rep(.99, RP-num_psi))
-	} else if (model == "gamma"){
+	} else if (model == "hybrid"){
 		model_num <- 3
 		algo_gen <- 0
 		a <- c(rep(-Inf, num_psi), rep(0.01, RP-num_psi))
 		b <- c(rep(Inf, num_psi), rep(Inf, RP-num_psi-1), .99)
-	} else if (model == "gamma0"){
+	} else if (model == "hybrid0"){
 		RP <- RP - 1 # subtract one for fixed alpha
 		model_num <- 4
 		algo_gen <- 0
@@ -92,14 +92,14 @@ GenerateMDCEVDataRP <- function(model,
 
 	gamma_sims <- beta_individual[,(num_psi+1):(num_psi+ngoods)] #%x% rep(1, ngoods)
 
-	if (model == "les"){
+	if (model == "gamma"){
 		alpha_sims <- cbind(beta_individual[,RP], matrix(0, nobs, ngoods))
 	} else if (model == "alpha"){
 		alpha_sims <- beta_individual[,(num_psi+ngoods+1):RP]
 		gamma_sims <- matrix(1, nobs, ngoods)
-	} else if (model == "gamma"){
+	} else if (model == "hybrid"){
 		alpha_sims <- matrix(rep(beta_individual[,(num_psi+ngoods+1):RP],ngoods+1), nrow = nobs, ncol = ngoods+1, byrow = F)
-	} else if (model == "gamma0"){
+	} else if (model == "hybrid0"){
 		alpha_sims <- matrix(1e-6, nobs, ngoods+1)
 	} else
 		stop("No model specificied. Choose a model")

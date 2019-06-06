@@ -5,7 +5,7 @@ data(data_rec, package = "rmdcev")
 data_rec
 result <- FitMDCEV(psi_formula = ~ factor(good_name) -1,
 				   data = subset(data_rec, id < 100),
-				   model = "gamma0",
+				   model = "hybrid0",
 				   algorithm = "MLE",
 				   print_iterations = FALSE)
 
