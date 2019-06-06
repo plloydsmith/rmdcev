@@ -102,7 +102,7 @@ ProcessSimulationData <- function(est_sim, stan_est, policies, nsims){
 			alpha_sim <- matrix(rep(alpha_sim,each=J+1), ncol=J+1, byrow=TRUE)
 
 	} else if (model_num == 4)
-		alpha_sim <- matrix(1e-6, nsims, J+1)
+		alpha_sim <- matrix(1e-3, nsims, J+1)
 
 	alpha_sim_list <- CreateListsRow(alpha_sim)
 
