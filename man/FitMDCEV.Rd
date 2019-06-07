@@ -5,7 +5,7 @@
 \title{FitMDCEV}
 \usage{
 FitMDCEV(data, psi_formula = NULL, lc_formula = NULL, weights = NULL,
-  model = c("alpha", "les", "gamma", "gamma0"), n_classes = 1,
+  model = c("alpha", "gamma", "hybrid", "hybrid0"), n_classes = 1,
   fixed_scale = 0, trunc_data = 0, seed = "123",
   max_iterations = 2000, initial.parameters = NULL,
   algorithm = c("MLE", "Bayes"), flat_priors = NULL,
@@ -29,7 +29,7 @@ Notes I is number of individuals and J is number of non-numeraire goods.}
 \item{weights}{An optional vector of sampling or frequency weights.}
 
 \item{model}{A string indicating which model specification is estimated.
-The options are "alpha","les", "gamma", and "gamma0".}
+The options are "alpha", "gamma", "hybrid" and "hybrid0".}
 
 \item{n_classes}{The number of latent classes.}
 
@@ -42,7 +42,7 @@ The options are "alpha","les", "gamma", and "gamma0".}
 \item{max_iterations}{Maximum number of iterations in MLE estimation.}
 
 \item{initial.parameters}{Specify initial parameters intead of starting at random.
-Initial parameter values should be included in a named list. For the "gamma" specification,
+Initial parameter values should be included in a named list. For the "hybrid" specification,
 initial parameters can be specified as:
 init = list(psi = array(0, dim = c(1, num_psi)),
             gamma = array(1, dim = c(1, num_goods)),

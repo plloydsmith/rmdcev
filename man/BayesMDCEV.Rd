@@ -13,7 +13,7 @@ BayesMDCEV(stan_data, bayes_options, initial.parameters,
 \item{bayes_options}{list of Bayes options}
 
 \item{initial.parameters}{Specify initial parameters intead of starting at random.
-Initial parameter values should be included in a named list. For the "gamma" specification,
+Initial parameter values should be included in a named list. For the "hybrid" specification,
 initial parameters can be specified as:
 init = list(psi = array(0, dim = c(1, num_psi)),
             gamma = array(1, dim = c(1, num_goods)),

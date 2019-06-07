@@ -12,7 +12,7 @@ GenerateMDCEVDataRP(model, nobs = 1000, ngoods = 10, inc_lo = 1e+05,
 }
 \arguments{
 \item{model}{A string indicating which model specification is estimated.
-The options are "alpha","les", "gamma", and "gamma0".}
+The options are "alpha", "gamma", "hybrid" and "hybrid0".}
 
 \item{nobs}{Number of individuals}
 
