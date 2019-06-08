@@ -14,13 +14,13 @@ matrix:
   include:
     - os:
       - linux
-      - osx
       addons:
         apt:
           sources:
             - ubuntu-toolchain-r-test
           packages:
             - g++-7
+      - osx
       env:
         - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
 
