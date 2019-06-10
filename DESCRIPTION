@@ -8,7 +8,7 @@ Authors@R:
            role = c("aut", "cre"),
            email = "plloydsmith@gmail.com")
 Maintainer: Patrick Lloyd-Smith <plloydsmith@gmail.com>
-Description: The rmdcev R package estimates different multiple discrete-continuous extreme value
+Description: The 'rmdcev' R package estimates different multiple discrete-continuous extreme value
 	(MDCEV) demand model specifications with observed and unobserved individual heterogeneity. Fixed parameter,
 	latent class, and random parameter models can be estimated. These models are estimated using
 	maximum likelihood or Bayesian estimation techniques and are implemented in Stan, which is a
