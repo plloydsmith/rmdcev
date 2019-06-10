@@ -45,4 +45,3 @@ Suggests:
     knitr,
     rmarkdown,
 	testthat
-VignetteBuilder: knitr
