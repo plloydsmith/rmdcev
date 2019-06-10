@@ -114,7 +114,7 @@ SummaryDemand <- function(demand, ci = 0.95){
 	npols <- nrow(demand[[1]][[1]])
 
 
-	demand <- tibble(demand = unlist(demand),
+	out <- tibble(demand = unlist(demand),
 					  id = rep(1:nobs, each = nsims*ngoods*npols),
 					  good = rep(1:ngoods, each = npols, times = nsims*nobs),
 					  policy = rep(paste0(rep("policy",npols), 1:npols), times =nobs*nsims*ngoods ),
@@ -127,9 +127,9 @@ SummaryDemand <- function(demand, ci = 0.95){
 				  ci_lo = round(stats::quantile(demand, (1-ci)/2),2),
 				  ci_hi = round(stats::quantile(demand, ci+(1-ci)/2),2))
 
-	colnames(demand) <- c("policy", "Good", "Mean", "Std.Dev", paste0("ci_lo",(1-ci)/2*100, "%"), paste0("ci_hi",(ci+(1-ci)/2)*100, "%"))
+	colnames(out) <- c("policy", "Good", "Mean", "Std.Dev", paste0("ci_lo",(1-ci)/2*100, "%"), paste0("ci_hi",(ci+(1-ci)/2)*100, "%"))
 
-	return(demand)
+	return(out)
 }
 
 #' @title StanWelfare
