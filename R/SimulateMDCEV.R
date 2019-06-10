@@ -107,7 +107,7 @@ SummaryWelfare <- function(wtp, ci = 0.95){
 #' @param ci confidence interval (for 95\% input 0.95)
 #' @return demand_sum summary table of demand results
 #' @export
-SummaryDemand <- function(wtp, ci = 0.95){
+SummaryDemand <- function(demand, ci = 0.95){
 	nobs <- length(demand)
 	nsims <- length(demand[[1]])
 	ngoods <- ncol(demand[[1]][[1]])
