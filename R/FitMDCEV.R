@@ -162,6 +162,9 @@ FitMDCEV <- function(data,
 
 		result[["stan_fit"]][["theta_tilde"]] <- NULL
 
+		if(length(names(result$est_pars)) == 0)
+			stop("Hessian matrix is not positive definite")
+
 	}
 	end.time <- proc.time()
 
