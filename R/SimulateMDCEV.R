@@ -101,6 +101,37 @@ SummaryWelfare <- function(wtp, ci = 0.95){
 	return(wtp_sum)
 }
 
+#' @title SummaryDemand
+#' @description Provide a summary of demands each policy
+#' @param demand list of welfare changes from SimulateDemand
+#' @param ci confidence interval (for 95\% input 0.95)
+#' @return demand_sum summary table of demand results
+#' @export
+SummaryDemand <- function(wtp, ci = 0.95){
+	nobs <- length(demand)
+	nsims <- length(demand[[1]])
+	ngoods <- ncol(demand[[1]][[1]])
+	npols <- nrow(demand[[1]][[1]])
+
+
+	demand <- tibble(demand = unlist(demand),
+					  id = rep(1:nobs, each = nsims*ngoods*npols),
+					  good = rep(1:ngoods, each = npols, times = nsims*nobs),
+					  policy = rep(paste0(rep("policy",npols), 1:npols), times =nobs*nsims*ngoods ),
+					  sim_id = rep(1:nsims, each = ngoods*npols, times = nobs)) %>%
+		group_by(.data$good, .data$policy, .data$sim_id) %>%
+		summarise(demand = mean(demand)) %>%
+		group_by(.data$policy, .data$good) %>%
+		summarise(mean = round(mean(demand),2),
+				  std_dev = round(stats::sd(demand),2),
+				  ci_lo = round(stats::quantile(demand, (1-ci)/2),2),
+				  ci_hi = round(stats::quantile(demand, ci+(1-ci)/2),2))
+
+	colnames(demand) <- c("policy", "Good", "Mean", "Std.Dev", paste0("ci_lo",(1-ci)/2*100, "%"), paste0("ci_hi",(ci+(1-ci)/2)*100, "%"))
+
+	return(demand)
+}
+
 #' @title StanWelfare
 #' @description Use Stan functions to simulate Welfare
 #' @param df_indiv list of income, quant_j, price, psi, and psi_p that vary by individual
@@ -158,24 +189,37 @@ StanWelfare <- function(df_indiv, df_common, sim_options){
 #' @export
 StanDemand <- function(df_indiv, df_common, sim_options){
 
-	#	df_indiv <- df_wtp$df_indiv
-	#	df_common <- df_wtp$df_common
-
 	message("Compiling simulation code")
 	expose_stan_functions(stanmodels$SimulationFunctions)
 
 	message("Simulating demand...")
-	demand <- purrr::pmap(df_indiv, CalcMarshallianDemand_rng,
-			price_p=df_common$price_p_list,
-			gamma_sim=df_common$gamma_sim_list,
-			alpha_sim=df_common$alpha_sim_list,
-			scale_sim=df_common$scale_sim,
-			nerrs=sim_options$nerrs,
-			cond_error=sim_options$cond_error,
-			draw_mlhs=sim_options$draw_mlhs,
-			algo_gen=sim_options$algo_gen,
-			model_num=sim_options$model_num,
-			tol = sim_options$tol,
-			max_loop = sim_options$max_loop)
+
+	if (sim_options$price_change_only == FALSE){
+		demand <- purrr::pmap(df_indiv, CalcMarshallianDemand_rng,
+						   price_p=df_common$price_p_list,
+						   gamma_sim=df_common$gamma_sim_list,
+						   alpha_sim=df_common$alpha_sim_list,
+						   scale_sim=df_common$scale_sim,
+						   nerrs=sim_options$nerrs,
+						   cond_error=sim_options$cond_error,
+						   draw_mlhs=sim_options$draw_mlhs,
+						   algo_gen=sim_options$algo_gen,
+						   model_num=sim_options$model_num,
+						   tol = sim_options$tol,
+						   max_loop = sim_options$max_loop)
+	} else if (sim_options$price_change_only == TRUE){
+		demand <- purrr::pmap(df_indiv, CalcMarshallianDemandPriceOnly_rng,
+						   price_p=df_common$price_p_list,
+						   gamma_sim=df_common$gamma_sim_list,
+						   alpha_sim=df_common$alpha_sim_list,
+						   scale_sim=df_common$scale_sim,
+						   nerrs=sim_options$nerrs,
+						   cond_error=sim_options$cond_error,
+						   draw_mlhs=sim_options$draw_mlhs,
+						   algo_gen=sim_options$algo_gen,
+						   model_num=sim_options$model_num,
+						   tol = sim_options$tol,
+						   max_loop = sim_options$max_loop)
+	}
 	return(demand)
 }

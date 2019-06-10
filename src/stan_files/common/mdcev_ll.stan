@@ -1,10 +1,4 @@
 
-/* These functions (without the underscores) are all documented in R
-   See also Appendix C of Pinheiro and Bates
-https://books.google.com/books?id=3TVDAAAAQBAJ&lpg=PR3&dq=Pinheiro%20and%20Bates&pg=PA511#v=onepage&q&f=false
-  These functions may be numerically unstable
-*/
-
 matrix gamma_ll(vector gamma, int I, int J, int model_num) {
 
 	matrix[I, J] gamma_j;

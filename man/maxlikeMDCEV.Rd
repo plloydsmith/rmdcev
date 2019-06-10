@@ -7,7 +7,7 @@
 maxlikeMDCEV(stan_data, initial.parameters, mle_options)
 }
 \arguments{
-\item{stan_data}{data for model}
+\item{stan_data}{data for model fromatted from processMDCEVdata}
 
 \item{initial.parameters}{Specify initial parameters intead of starting at random.
 Initial parameter values should be included in a named list. For the "hybrid" specification,
