@@ -4,12 +4,12 @@
 \alias{SummaryDemand}
 \title{SummaryDemand}
 \usage{
-SummaryDemand(wtp, ci = 0.95)
+SummaryDemand(demand, ci = 0.95)
 }
 \arguments{
-\item{ci}{confidence interval (for 95\% input 0.95)}
-
 \item{demand}{list of welfare changes from SimulateDemand}
+
+\item{ci}{confidence interval (for 95\% input 0.95)}
 }
 \value{
 demand_sum summary table of demand results
