@@ -71,7 +71,7 @@ SimulateMDCEV <- function(df_indiv, df_common, sim_options,
 
 	time <- proc.time() - start.time
 	n_simulations <- length(unlist(out)) * nerrs
-	cat("\n", formatC(n_simulations, format = "e", digits = 2), "simulations finished in", round(time[3]/60, 2), "minutes.",
+	message("\n", formatC(n_simulations, format = "e", digits = 2), "simulations finished in", round(time[3]/60, 2), "minutes.",
 		"(",round(n_simulations/time[3], 0),"per second)")
 
 return(out)
