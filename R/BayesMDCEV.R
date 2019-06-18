@@ -7,7 +7,7 @@
 #' @param include.stanfit default isTRUE,
 #' @import dplyr
 #' @import rstan
-#' @export
+#' @keywords internal
 BayesMDCEV <- function(stan_data, bayes_options,
 								 initial.parameters,
 								 keep.samples = FALSE,
@@ -82,7 +82,7 @@ BayesMDCEV <- function(stan_data, bayes_options,
 #' @importFrom rstan stan sampling
 #' @import Rcpp
 #' @return A stanfit object.
-#' @export
+#' @keywords internal
 RunStanSampling <- function(stan_data, stan.model, bayes_options)
 {
 

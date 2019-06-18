@@ -19,3 +19,8 @@ TRUE implies that only price changes are used in simulation.}
 \description{
 Create 'zero effect' policies that can be modified
 }
+\examples{
+\dontrun{
+CreateBlankPolicies(npols = 2, ngoods = 10, dat_psi = NULL, price_change_only = TRUE)
+}
+}

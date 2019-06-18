@@ -1,7 +1,7 @@
 #' @title CheckMdcevData
 #' @description Check MDCEV data
 #' @inheritParams FitMDCEV
-#' @export
+#' @keywords internal
 CheckMdcevData <- function(data){
 
 	message("Checking data...")

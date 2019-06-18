@@ -38,3 +38,24 @@ wtp a list for each individual holding a nsims x npols matrix of wtp
 \description{
 Simulate welfare or demand for MDCEV model
 }
+\examples{
+\dontrun{
+data(data_rec, package = "rmdcev")
+mdcev_est <- FitMDCEV(psi_formula = ~ 1,
+data = subset(data_rec, id < 500),
+model = "hybrid0",
+algorithm = "MLE")
+
+policies <- CreateBlankPolicies(npols = 2,
+ngoods = mdcev_est[["stan_data"]][["J"]],
+dat_psi = mdcev_est[["stan_data"]][["dat_psi"]],
+price_change_only = TRUE)
+
+df_sim <- PrepareSimulationData(mdcev_est, policies)
+
+wtp <- SimulateMDCEV(df_sim$df_indiv,
+df_common = df_sim$df_common,
+sim_options = df_sim$sim_options,
+cond_err = 1, nerrs = 5, sim_type = "welfare")
+}
+}

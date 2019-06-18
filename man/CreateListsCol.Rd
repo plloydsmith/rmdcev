@@ -12,3 +12,9 @@ CreateListsCol(x)
 \description{
 Convert matrix x to a list with each row as an element
 }
+\examples{
+
+tmp <- matrix(0, nrow = 10, ncol = 5)
+tmp_list <- CreateListsCol(tmp)
+
+}

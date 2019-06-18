@@ -8,7 +8,21 @@
 #' @return A list with individual-specific data (df_indiv) and common data (df_common)
 #' and n_classes for number of classes and model_num for model type
 #' @export
-
+#' @examples
+#' \dontrun{
+#' data(data_rec, package = "rmdcev")
+#' mdcev_est <- FitMDCEV(psi_formula = ~ 1,
+#' data = subset(data_rec, id < 500),
+#' model = "hybrid0",
+#' algorithm = "MLE")
+#'
+#' policies <- CreateBlankPolicies(npols = 2,
+#' ngoods = mdcev_est[["stan_data"]][["J"]],
+#' dat_psi = mdcev_est[["stan_data"]][["dat_psi"]],
+#' price_change_only = TRUE)
+#'
+#' df_sim <- PrepareSimulationData(mdcev_est, policies)
+#'}
 PrepareSimulationData <- function(stan_est,
 								  policies,
 								  nsims = 30){
@@ -77,7 +91,7 @@ return(df_wtp)
 #' @description Internal function for WTP simulation
 #' @inheritParams PrepareSimulationData
 #' @param est_sim Cleaned up parameter simulations from PrepareSimulationData
-#'
+#' @keywords internal
 ProcessSimulationData <- function(est_sim, stan_est, policies, nsims){
 
 	J <- stan_est$stan_data$J

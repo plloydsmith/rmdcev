@@ -4,8 +4,18 @@
 #' @param printCI set to TRUE to print 95\% confidence intervals
 #' @return A matrix of coefficients, s.d. and z-tests (invisible)
 #' @export
+#' @examples
+#' \dontrun{
+#' data(data_rec, package = "rmdcev")
+#' mdcev_est <- FitMDCEV(psi_formula = ~ 1,
+#' data = subset(data_rec, id < 500),
+#' model = "hybrid0",
+#' algorithm = "MLE")
+#'
+#' SummaryMDCEV(mdcev_est)
+#' }
 SummaryMDCEV <- function(model, printCI = FALSE){
-#model <- result
+
 	if (model$random_parameters == "corr"){
 		stop("SummaryMDCEV not set up for correlated random parameter models. Use print/traceplot on model.fit$stan_fit to examine output", "\n")
 	}

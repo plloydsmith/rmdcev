@@ -14,3 +14,4 @@ Notes I is number of individuals and J is number of non-numeraire goods.}
 \description{
 Check MDCEV data
 }
+\keyword{internal}

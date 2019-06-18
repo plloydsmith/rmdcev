@@ -4,6 +4,10 @@
 #' @param corr Whether to draw correlated random parameters (=1) or uncorrelated (=0)
 #' @return list with data for stan model and parms_true with parameter values
 #' @export
+#' @examples
+#' \dontrun{
+#' data <- GenerateMDCEVDataRP(model = "hybrid0")
+#'}
 GenerateMDCEVDataRP <- function(model,
 								nobs = 1000,
 								ngoods = 10,

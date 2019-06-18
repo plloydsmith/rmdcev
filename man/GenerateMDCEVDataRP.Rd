@@ -48,3 +48,8 @@ list with data for stan model and parms_true with parameter values
 \description{
 Simulate random parameter data for MDCEV model
 }
+\examples{
+\dontrun{
+data <- GenerateMDCEVDataRP(model = "hybrid0")
+}
+}

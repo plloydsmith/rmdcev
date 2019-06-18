@@ -14,6 +14,26 @@
 #' @param sim_type Either "welfare" or "demand"
 #' @return wtp a list for each individual holding a nsims x npols matrix of wtp
 #' @export
+#' @examples
+#' \dontrun{
+#' data(data_rec, package = "rmdcev")
+#' mdcev_est <- FitMDCEV(psi_formula = ~ 1,
+#' data = subset(data_rec, id < 500),
+#' model = "hybrid0",
+#' algorithm = "MLE")
+#'
+#' policies <- CreateBlankPolicies(npols = 2,
+#' ngoods = mdcev_est[["stan_data"]][["J"]],
+#' dat_psi = mdcev_est[["stan_data"]][["dat_psi"]],
+#' price_change_only = TRUE)
+#'
+#' df_sim <- PrepareSimulationData(mdcev_est, policies)
+#'
+#' wtp <- SimulateMDCEV(df_sim$df_indiv,
+#' df_common = df_sim$df_common,
+#' sim_options = df_sim$sim_options,
+#' cond_err = 1, nerrs = 5, sim_type = "welfare")
+#'}
 SimulateMDCEV <- function(df_indiv, df_common, sim_options,
 						sim_type = c("welfare", "demand"),
 						nerrs = 30,
@@ -83,6 +103,26 @@ return(out)
 #' @param ci confidence interval (for 95\% input 0.95)
 #' @return wtp_sum summary table of welfare results
 #' @export
+#' @examples
+#' \dontrun{
+#' data(data_rec, package = "rmdcev")
+#' mdcev_est <- FitMDCEV(psi_formula = ~ 1,
+#' data = subset(data_rec, id < 500),
+#' model = "hybrid0",
+#' algorithm = "MLE")
+#'
+#' policies <- CreateBlankPolicies(npols = 2,
+#' ngoods = mdcev_est[["stan_data"]][["J"]],
+#' dat_psi = mdcev_est[["stan_data"]][["dat_psi"]],
+#' price_change_only = TRUE)
+#'
+#' df_sim <- PrepareSimulationData(mdcev_est, policies)
+#'
+#' wtp <- SimulateMDCEV(df_sim$df_indiv, df_common = df_sim$df_common,
+#' sim_options = df_sim$sim_options,
+#' cond_err = 1, nerrs = 5, sim_type = "welfare")
+#'SummaryWelfare(wtp)
+#'}
 SummaryWelfare <- function(wtp, ci = 0.95){
 
 	wtp_sum <- apply(simplify2array(wtp),1:2, mean)
@@ -107,6 +147,26 @@ SummaryWelfare <- function(wtp, ci = 0.95){
 #' @param ci confidence interval (for 95\% input 0.95)
 #' @return demand_sum summary table of demand results
 #' @export
+#' @examples
+#' \dontrun{
+#' data(data_rec, package = "rmdcev")
+#' mdcev_est <- FitMDCEV(psi_formula = ~ 1,
+#' data = subset(data_rec, id < 500),
+#' model = "hybrid0",
+#' algorithm = "MLE")
+#'
+#' policies <- CreateBlankPolicies(npols = 2,
+#' ngoods = mdcev_est[["stan_data"]][["J"]],
+#' dat_psi = mdcev_est[["stan_data"]][["dat_psi"]],
+#' price_change_only = TRUE)
+#'
+#' df_sim <- PrepareSimulationData(mdcev_est, policies)
+#'
+#' wtp <- SimulateMDCEV(df_sim$df_indiv, df_common = df_sim$df_common,
+#' sim_options = df_sim$sim_options,
+#' cond_err = 1, nerrs = 5, sim_type = "demand")
+#'SummaryDemand(wtp)
+#'}
 SummaryDemand <- function(demand, ci = 0.95){
 	nobs <- length(demand)
 	nsims <- length(demand[[1]])
@@ -138,7 +198,7 @@ SummaryDemand <- function(demand, ci = 0.95){
 #' @param df_common list of parameters that are constant for all individuals
 #' @param sim_options list of simualtion options
 #' @return wtp list
-#' @export
+#' @keywords internal
 StanWelfare <- function(df_indiv, df_common, sim_options){
 
 #	df_indiv <- df_wtp$df_indiv
@@ -186,7 +246,7 @@ StanWelfare <- function(df_indiv, df_common, sim_options){
 #' @param df_common list of parameters that are constant for all individuals
 #' @param sim_options list of simualtion options
 #' @return demand with nsim lists of npolsXngoods+1 matrices
-#' @export
+#' @keywords internal
 StanDemand <- function(df_indiv, df_common, sim_options){
 
 	message("Compiling simulation code")

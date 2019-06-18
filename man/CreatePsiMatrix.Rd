@@ -14,3 +14,4 @@ CreatePsiMatrix(psi_j = NULL, psi_i = NULL)
 \description{
 Creates the Psi data matrix for use in mdcev model
 }
+\keyword{internal}

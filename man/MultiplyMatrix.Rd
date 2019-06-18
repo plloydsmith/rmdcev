@@ -16,3 +16,4 @@ MultiplyMatrix(mat_temp, x, n_rows)
 \description{
 Convert list to matrix by row
 }
+\keyword{internal}

@@ -105,3 +105,13 @@ A stanfit object
 \description{
 Fit a MDCEV model using MLE or Bayes
 }
+\examples{
+\dontrun{
+data(data_rec, package = "rmdcev")
+
+mdcev_est <- FitMDCEV(psi_formula = ~ 1,
+data = subset(data_rec, id < 500),
+model = "hybrid0",
+algorithm = "MLE")
+}
+}

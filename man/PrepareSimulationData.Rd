@@ -22,3 +22,19 @@ and n_classes for number of classes and model_num for model type
 \description{
 Prepare Data for WTP simulation
 }
+\examples{
+\dontrun{
+data(data_rec, package = "rmdcev")
+mdcev_est <- FitMDCEV(psi_formula = ~ 1,
+data = subset(data_rec, id < 500),
+model = "hybrid0",
+algorithm = "MLE")
+
+policies <- CreateBlankPolicies(npols = 2,
+ngoods = mdcev_est[["stan_data"]][["J"]],
+dat_psi = mdcev_est[["stan_data"]][["dat_psi"]],
+price_change_only = TRUE)
+
+df_sim <- PrepareSimulationData(mdcev_est, policies)
+}
+}

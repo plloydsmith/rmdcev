@@ -23,3 +23,4 @@ A stanfit object.
 Wrapper function for \code{rstan:stan} and
 \code{rstan:sampling} to run Stan Bayes analysis.
 }
+\keyword{internal}

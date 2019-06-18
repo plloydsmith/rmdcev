@@ -20,3 +20,4 @@ dat_psi_p with new psi data}
 \description{
 Internal function for WTP simulation
 }
+\keyword{internal}

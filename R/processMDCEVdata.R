@@ -2,7 +2,7 @@
 #' @description Process MDCEV data
 #' @inheritParams FitMDCEV
 #' @param model_options list of model options
-#' @export
+#' @keywords internal
 processMDCEVdata <- function(data, psi_formula, lc_formula, model_options){
 
 	dat_psi <- stats::model.matrix(psi_formula, data)

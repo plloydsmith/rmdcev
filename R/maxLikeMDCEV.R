@@ -3,7 +3,6 @@
 #' @param stan_data data for model fromatted from processMDCEVdata
 #' @inheritParams FitMDCEV
 #' @param mle_options modeling options for MLE
-
 maxlikeMDCEV <- function(stan_data, initial.parameters,
 						 mle_options)
 {
@@ -91,7 +90,6 @@ return(result)
 #' @description This function reduces the size of the stan.fit object
 #' @param stan_fit A stanfit object.
 #' @return A stanfit object with a reduced size.
-#' @export
 ReduceStanFitSize <- function(stan_fit) {
 	stan_fit[["par"]][["log_like"]] <- NULL
 	stan_fit[["theta_tilde"]] <- stan_fit[["theta_tilde"]][,1:ncol(stan_fit[["hessian"]])]

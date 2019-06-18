@@ -3,6 +3,11 @@
 #' @param x matrix to be converted to list
 #' @return A list
 #' @export
+#' @examples
+#'
+#' tmp <- matrix(0, nrow = 10, ncol = 5)
+#' tmp_list <- CreateListsRow(tmp)
+#'
 CreateListsRow <- function(x){
 	out <- lapply(seq_len(nrow(x)), function(i) x[i,])
 	return(out)
@@ -12,6 +17,11 @@ CreateListsRow <- function(x){
 #' @description Convert matrix x to a list with each row as an element
 #' @param x matrix to be converted to list
 #' @export
+#' @examples
+#'
+#' tmp <- matrix(0, nrow = 10, ncol = 5)
+#' tmp_list <- CreateListsCol(tmp)
+#'
 CreateListsCol <- function(x){
 	out <- lapply(seq_len(ncol(x)), function(i) x[,i])
 	return(out)
@@ -22,7 +32,7 @@ CreateListsCol <- function(x){
 #' @param x matrix B to be multiplied
 #' @param mat_temp matrix A to be multipled
 #' @param n_rows number of rows for final matrix
-#' @export
+#' @keywords internal
 MultiplyMatrix <- function(mat_temp, x, n_rows){
 	out <- matrix(mat_temp %*% x , nrow = n_rows, byrow = TRUE)
 	return(out)
@@ -31,7 +41,7 @@ MultiplyMatrix <- function(mat_temp, x, n_rows){
 #' @title DoCbind
 #' @description Convert list to matrix
 #' @param x list to be converted
-#' @export
+#' @keywords internal
 DoCbind <- function(x){
 	out <- do.call(cbind, x)
 	return(out)
@@ -46,7 +56,12 @@ DoCbind <- function(x){
 #' @param ngoods Number of non-numeraire goods
 #' @param dat_psi Psi data matrix used in estimation
 #' @export
+#' @examples
+#'\dontrun{
+#' CreateBlankPolicies(npols = 2, ngoods = 10, dat_psi = NULL, price_change_only = TRUE)
+#'}
 CreateBlankPolicies <- function(npols, ngoods, dat_psi, price_change_only){
+
 	price_p <- CreateListsRow(matrix(0, nrow = npols, ncol = ngoods + 1))
 
 	if (price_change_only == FALSE)
@@ -63,7 +78,7 @@ CreateBlankPolicies <- function(npols, ngoods, dat_psi, price_change_only){
 #' @param psi_j matrix (JXn_psi_j) of good-specific attributes
 #' @param psi_i matrix (IXn_psi_i) of people-specific attributes
 #' @description Creates the Psi data matrix for use in mdcev model
-#' @export
+#' @keywords internal
 CreatePsiMatrix <- function(psi_j = NULL, psi_i = NULL){
 	if(!is.na(psi_i))
 		psi_i <- purrr::map(psi_i, function(x) {rep(x, each= nrow(psi_j))})
@@ -78,7 +93,7 @@ return(dat_psi)
 #' @param data est_par object from results
 #' @param parm_name name of parameter to get simulations
 #' @description Pulls out specific mdcev parameter simulations
-#' @export
+#' @keywords internal
 GrabParms <- function(data, parm_name){
 	out <- data %>%
 		filter(stringr::str_detect(.data$parms, parm_name)) %>%

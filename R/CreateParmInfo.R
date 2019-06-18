@@ -3,7 +3,7 @@
 #' @param stan_data data for model
 #' @inheritParams FitMDCEV
 #' @return A list of parameter names and numbers
-#' @export
+#' @keywords internal
 CreateParmInfo <- function(stan_data, algorithm, random_parameters){
 
 J <- stan_data$J

@@ -19,3 +19,4 @@ demand with nsim lists of npolsXngoods+1 matrices
 \description{
 Use Stan functions to simulate Marshallian demand
 }
+\keyword{internal}

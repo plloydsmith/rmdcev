@@ -19,3 +19,4 @@ wtp list
 \description{
 Use Stan functions to simulate Welfare
 }
+\keyword{internal}

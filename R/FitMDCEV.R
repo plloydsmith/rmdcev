@@ -53,7 +53,15 @@
 #'     and \code{rstan::sampling}.
 #' @return A stanfit object
 #' @export
+#' @examples
+#' \dontrun{
+#' data(data_rec, package = "rmdcev")
 #'
+#' mdcev_est <- FitMDCEV(psi_formula = ~ 1,
+#' data = subset(data_rec, id < 500),
+#' model = "hybrid0",
+#' algorithm = "MLE")
+#'}
 FitMDCEV <- function(data,
 					 psi_formula = NULL,
 					 lc_formula = NULL,

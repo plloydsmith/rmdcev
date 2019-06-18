@@ -17,6 +17,10 @@
 #' @param max_loop maximum number of loops for simulations if using general approach
 #' @return list with data for stan model and parms_true with parameter values
 #' @export
+#' @examples
+#' \dontrun{
+#' data <- GenerateMDCEVData(model = "hybrid0")
+#'}
 GenerateMDCEVData <- function(model, nobs = 1000, ngoods = 10,
 							  inc_lo = 100000, inc_hi = 150000,
 							  price_lo = 100, price_hi = 500,
@@ -115,7 +119,7 @@ GenerateMDCEVData <- function(model, nobs = 1000, ngoods = 10,
 				  nerrs=nerrs, algo_gen = algo_gen,
 				  tol = tol, max_loop = max_loop)
 
-	# Convert simulated data into estimation data
+	# Convert simulated data into data form for estimation
 	quant <- matrix(unlist(quant), nrow = nobs, byrow = TRUE)
 	quant <- quant[,2:(ncol(quant))]
 	quant <- as.vector(t(quant))

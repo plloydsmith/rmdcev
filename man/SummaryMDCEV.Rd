@@ -17,3 +17,14 @@ A matrix of coefficients, s.d. and z-tests (invisible)
 \description{
 Prints mdcev estimation results to console. The output format is borrowed from the Apollo package
 }
+\examples{
+\dontrun{
+data(data_rec, package = "rmdcev")
+mdcev_est <- FitMDCEV(psi_formula = ~ 1,
+data = subset(data_rec, id < 500),
+model = "hybrid0",
+algorithm = "MLE")
+
+SummaryMDCEV(mdcev_est)
+}
+}
