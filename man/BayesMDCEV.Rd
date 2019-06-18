@@ -28,3 +28,4 @@ where num_psi is number of psi parameters and num_goods is number of non-numerai
 \description{
 Fit a MDCEV model using Bayesian estimation and Stan
 }
+\keyword{internal}
