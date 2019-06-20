@@ -1,4 +1,3 @@
-library(rmdcev)
 context("Test Bayes fixed")
 
 #library(rmdcev)

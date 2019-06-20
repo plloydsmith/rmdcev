@@ -1,4 +1,3 @@
-library(rmdcev)
 context("Test LC")
 #library(rmdcev)
 tol <- 0.01

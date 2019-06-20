@@ -1,4 +1,3 @@
-library(rmdcev)
 context("Test Data load")
 
 tol <- 0.1
