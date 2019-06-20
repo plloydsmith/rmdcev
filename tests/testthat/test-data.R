@@ -19,16 +19,6 @@ test_that("ChechMdcev data works", {
 })
 
 
-# sprintf("%.10f",output$log.likelihood)
-# sprintf("%.10f",output$bic)
-# sprintf("%.10f",output[["stan_fit"]][["par"]][["scale"]] )
-# sprintf("%.10f",output[["stan_fit"]][["par"]][["psi"]] )
-# sprintf("%.10f",output[["stan_fit"]][["par"]][["alpha"]] )
-# sprintf("%.10f",output[["stan_fit"]][["par"]][["gamma"]] )
-
-#skip_on_cran(
-#
-
 context("Test MLE names")
 
 test_that("MLE names", {
@@ -46,7 +36,7 @@ weights = NULL
 num_price = NULL
 model = "hybrid0"
 n_classes = 1
-fixed_scale = 0
+fixed_scale1 = 0
 trunc_data = 0
 seed = "123"
 initial.parameters = NULL
@@ -62,15 +52,8 @@ prior_beta_m_sd = 10
 n_draws = 30
 keep_loglik = 0
 random_parameters = "fixed"
-show_stan_warnings = TRUE
-n_iterations = 200
-n_chains = 4
-n_cores = 1
-max_tree_depth = 10
-adapt_delta = 0.8
-lkj_shape_prior = 4
 
-mle_options <- list(fixed_scale = fixed_scale,
+mle_options <- list(fixed_scale1 = fixed_scale1,
 					model = model,
 					n_classes = n_classes,
 					trunc_data = trunc_data,
@@ -85,17 +68,6 @@ mle_options <- list(fixed_scale = fixed_scale,
 					prior_alpha_sd = prior_alpha_sd,
 					prior_scale_sd = prior_scale_sd,
 					prior_beta_m_sd = prior_beta_m_sd)
-
-bayes_options <- list(n_iterations = n_iterations,
-					  n_chains = n_chains,
-					  n_cores = 1,
-					  keep_loglik = keep_loglik,
-					  random_parameters = random_parameters,
-					  seed = seed,
-					  max_tree_depth = max_tree_depth,
-					  adapt_delta = adapt_delta,
-					  show_stan_warnings = show_stan_warnings,
-					  lkj_shape_prior = lkj_shape_prior)
 
 stan_data <- processMDCEVdata(data_rec, psi_formula, lc_formula, mle_options)
 parms_info <- CreateParmInfo(stan_data, algorithm, random_parameters)

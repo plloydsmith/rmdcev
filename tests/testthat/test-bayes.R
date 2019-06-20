@@ -21,6 +21,7 @@ data_rec
 								algorithm = "Bayes",
 							random_parameters = "fixed",
 					   print_iterations = FALSE,
+		#			   n_cores = 1,
 					   n_chains = 1,
 					   n_iterations = 10,
 					   show_stan_warnings = FALSE)

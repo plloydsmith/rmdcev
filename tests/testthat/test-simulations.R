@@ -91,10 +91,9 @@ mdemand <- MarshallianDemand(income, price, MUzero_b, gamma, alpha,
 test_that("Test demand simulation", {
 
 	# Test conditional errors
-#	demand <- SimulateMDCEV(df_sim$df_indiv, df_common = df_sim$df_common, sim_options = df_sim$sim_options,
-#						 cond_err =1, nerrs = 3, sim_type = "demand")
-#	sum_wtp <- SummaryWelfare(demand)
-#	expect_true(sum(abs(sum_wtp$Mean)) < .01)
+	demand <- SimulateMDCEV(df_sim$df_indiv, df_common = df_sim$df_common, sim_options = df_sim$sim_options,
+						 cond_err =1, nerrs = 3, sim_type = "demand")
+	expect_true(abs(demand[[1]][[1]][1,1] - 62499.5) < .01)
 
 	# Test unconditional errors (currently returns -Inf for gamam0)
 	#	wtp <- SimulateMDCEV(df_sim$df_indiv, df_common = df_sim$df_common, sim_options = df_sim$sim_options,
