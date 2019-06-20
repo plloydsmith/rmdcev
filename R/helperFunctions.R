@@ -96,7 +96,7 @@ return(dat_psi)
 #' @keywords internal
 GrabParms <- function(data, parm_name){
 	out <- data %>%
-		filter(stringr::str_detect(.data$parms, parm_name)) %>%
+		dplyr::filter(stringr::str_detect(.data$parms, parm_name)) %>%
 		tidyr::spread_(key_col = 'sim_id',
 				value_col = 'value') %>%
 		dplyr::select(-parms) %>%

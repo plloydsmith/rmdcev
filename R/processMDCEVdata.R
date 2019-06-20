@@ -50,7 +50,7 @@ processMDCEVdata <- function(data, psi_formula, lc_formula, model_options){
 
 	if (model_options$n_classes > 1){
 		data_class <- tbl_df(data) %>%
-			distinct(id, .keep_all = T) %>%
+			dplyr::distinct(id, .keep_all = T) %>%
 			stats::model.matrix(lc_formula, .)
 		stan_data$data_class <- as.matrix(data_class)
 		stan_data$L <- ncol(data_class) # number of membership variables

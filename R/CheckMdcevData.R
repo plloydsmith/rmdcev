@@ -25,7 +25,7 @@ CheckMdcevData <- function(data){
 		mutate(expend = .data$price * .data$quant) %>%
 		group_by(.data$id) %>%
 		summarise(numeraire = mean(.data$income) - sum(.data$expend)) %>%
-		select(.data$numeraire)
+		dplyr::select(.data$numeraire)
 
 	if (sum(check$numeraire < 0) > 0){
 		print(paste0("Numeraire is less than 0 for individuals in rows: ",

@@ -163,15 +163,15 @@ FitMDCEV <- function(data,
 		# Get parameter estimates in matrix form
 		result$est_pars <- rstan::extract(result$stan_fit, permuted = TRUE, inc_warmup = FALSE) %>%
 				as.data.frame() %>%
-				select(-starts_with("log_like"), -starts_with("sum_log_lik"),
-					   -starts_with("tau_unif"), -.data$lp__)
+				dplyr::select(-tidyselect::starts_with("log_like"), -tidyselect::starts_with("sum_log_lik"),
+					   -tidyselect::starts_with("tau_unif"), -.data$lp__)
 
 	} else if (algorithm == "MLE") {
 		result <- maxlikeMDCEV(stan_data, initial.parameters, mle_options)
 
 		# Get parameter estimates in matrix form
 		result$est_pars <- tbl_df(result[["stan_fit"]][["theta_tilde"]]) %>%
-			select(-starts_with("log_like"), -starts_with("sum_log_lik"))
+			dplyr::select(-tidyselect::starts_with("log_like"), -tidyselect::starts_with("sum_log_lik"))
 
 		result[["stan_fit"]][["theta_tilde"]] <- NULL
 

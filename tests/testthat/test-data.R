@@ -1,9 +1,12 @@
-context("Test Data load")
+library(rmdcev)
 
 tol <- 0.01
 
 data(data_rec, package = "rmdcev")
 data_rec
+
+context("Test Data load")
+
 test_that("Data ok", {
 	expect_equal(data_rec$id[18], 2)
 })
@@ -23,7 +26,6 @@ test_that("MLE names", {
 									 algorithm = "MLE",
 									 print_iterations = FALSE))
 })
-
 
 psi_formula = ~ factor(good_name) -1
 lc_formula = NULL

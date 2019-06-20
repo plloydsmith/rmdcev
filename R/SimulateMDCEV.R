@@ -130,8 +130,8 @@ SummaryWelfare <- function(wtp, ci = 0.95){
 
 	wtp_sum <- tbl_df(wtp_sum) %>%
 		tidyr::gather(policy, wtp) %>%
-		group_by(.data$policy) %>%
-		summarise(mean = round(mean(wtp),2),
+		dplyr::group_by(.data$policy) %>%
+		dplyr::summarise(mean = round(mean(wtp),2),
 				  std_dev = round(stats::sd(wtp),2),
 				  ci_lo = round(stats::quantile(wtp, (1-ci)/2),2),
 				  ci_hi = round(stats::quantile(wtp, ci+(1-ci)/2),2))
@@ -174,15 +174,15 @@ SummaryDemand <- function(demand, ci = 0.95){
 	npols <- nrow(demand[[1]][[1]])
 
 
-	out <- tibble(demand = unlist(demand),
+	out <- tibble::tibble(demand = unlist(demand),
 					  id = rep(1:nobs, each = nsims*ngoods*npols),
 					  good = rep(1:ngoods, each = npols, times = nsims*nobs),
 					  policy = rep(paste0(rep("policy",npols), 1:npols), times =nobs*nsims*ngoods ),
 					  sim_id = rep(1:nsims, each = ngoods*npols, times = nobs)) %>%
-		group_by(.data$good, .data$policy, .data$sim_id) %>%
-		summarise(demand = mean(demand)) %>%
-		group_by(.data$policy, .data$good) %>%
-		summarise(mean = round(mean(demand),2),
+		dplyr::group_by(.data$good, .data$policy, .data$sim_id) %>%
+		dplyr::summarise(demand = mean(demand)) %>%
+		dplyr::group_by(.data$policy, .data$good) %>%
+		dplyr::summarise(mean = round(mean(demand),2),
 				  std_dev = round(stats::sd(demand),2),
 				  ci_lo = round(stats::quantile(demand, (1-ci)/2),2),
 				  ci_hi = round(stats::quantile(demand, ci+(1-ci)/2),2))

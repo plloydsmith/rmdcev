@@ -26,6 +26,8 @@ Imports:
     rstan (>= 2.18.2),
     rstantools (>= 1.5.1),
     dplyr (>= 0.7.8),
+    tidyselect,
+    parallel,
     stringr,
     purrr,
     tibble,

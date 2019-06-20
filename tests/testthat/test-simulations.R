@@ -1,3 +1,4 @@
+library(rmdcev)
 context("Test Simulations")
 
 tol <- 0.001

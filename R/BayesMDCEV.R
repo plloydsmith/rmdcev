@@ -20,11 +20,11 @@ BayesMDCEV <- function(stan_data, bayes_options,
 	options(mc.cores = parallel::detectCores())
 
 	# Create indices for individual level psi parameters
-	indexes <- tibble(individual = rep(1:stan_data$I, each = stan_data$J),
+	indexes <- tibble::tibble(individual = rep(1:stan_data$I, each = stan_data$J),
 						  task = rep(1:stan_data$I, each = stan_data$J),
 						  row = 1:(stan_data$I*stan_data$J)) %>%
-		group_by(task) %>%
-		summarise(task_individual = first(individual),
+		dplyr::group_by(task) %>%
+		dplyr::summarise(task_individual = first(individual),
 				  start = first(row),
 				  end = last(row))
 

@@ -43,9 +43,9 @@ PrepareSimulationData <- function(stan_est,
 
 	# Sample from parameter estimate draws
 	est_sim <- stan_est$est_pars %>%
-		distinct(sim_id) %>%
-		sample_n(., nsims ) %>%
-		left_join(stan_est$est_pars, by = "sim_id")
+		dplyr::distinct(sim_id) %>%
+		dplyr::sample_n(., nsims ) %>%
+		dplyr::left_join(stan_est$est_pars, by = "sim_id")
 
 	if(stan_est$n_classes == 1){
 		sim_welfare <- ProcessSimulationData(est_sim, stan_est, policies, nsims)
@@ -57,9 +57,9 @@ PrepareSimulationData <- function(stan_est,
 	} else if(stan_est$n_classes > 1){
 
 		est_sim_lc <- suppressWarnings(est_sim %>% # suppress warnings about scale not having a class parameter
-									   	filter(!stringr::str_detect(.data$parms, "delta")) %>%
+									   	dplyr::filter(!stringr::str_detect(.data$parms, "delta")) %>%
 									   	tidyr::separate(.data$parms, into = c("parms", "class", "good")) %>%
-									   	mutate(good = ifelse(is.na(as.numeric(.data$good)), "0", .data$good )) %>%
+									   	dplyr::mutate(good = ifelse(is.na(as.numeric(.data$good)), "0", .data$good )) %>%
 									   	tidyr::unite(parms, parms, good))
 
 		est_sim_lc <- split( est_sim_lc , f = est_sim_lc$class )
