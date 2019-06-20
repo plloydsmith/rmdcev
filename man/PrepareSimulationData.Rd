@@ -23,7 +23,7 @@ and n_classes for number of classes and model_num for model type
 Prepare Data for WTP simulation
 }
 \examples{
-\dontrun{
+\donttest{
 data(data_rec, package = "rmdcev")
 mdcev_est <- FitMDCEV(psi_formula = ~ 1,
 data = subset(data_rec, id < 500),

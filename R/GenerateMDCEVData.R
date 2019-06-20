@@ -18,7 +18,7 @@
 #' @return list with data for stan model and parms_true with parameter values
 #' @export
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' data <- GenerateMDCEVData(model = "hybrid0")
 #'}
 GenerateMDCEVData <- function(model, nobs = 1000, ngoods = 10,

@@ -9,7 +9,7 @@
 #' @param model A string indicating which model specification is estimated.
 #' The options are "alpha", "gamma", "hybrid" and "hybrid0".
 #' @param n_classes The number of latent classes.
-#' @param fixed_scale Whether to fix scale at 1.
+#' @param fixed_scale1 Whether to fix scale at 1.
 #' @param trunc_data Whether the estimation should be adjusted for truncation
 #' @param seed Random seed.
 #' @param algorithm Either "Bayes" for Bayes or "MLE"
@@ -37,6 +37,8 @@
 #' @param prior_alpha_sd standard deviation for normal prior with mean 0.5.
 #' @param prior_scale_sd standard deviation for normal prior with mean 1.
 #' @param prior_delta_sd standard deviation for normal prior with mean 0.
+#' @param alpha_fixed indicator if alpha parameters should be fixed (i.e. not random).
+#' @param gamma_fixed indicator if gamma parameters should be fixed (i.e. not random).
 #' @param lkj_shape_prior Prior for Cholesky matrix
 #' @param n_iterations The number of iterations in Bayesian estimation.
 #' @param n_chains The number of chains in Bayesian estimation.
@@ -54,7 +56,7 @@
 #' @return A stanfit object
 #' @export
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' data(data_rec, package = "rmdcev")
 #'
 #' mdcev_est <- FitMDCEV(psi_formula = ~ 1,
@@ -68,7 +70,7 @@ FitMDCEV <- function(data,
 					 weights = NULL,
 					 model = c("alpha", "gamma", "hybrid", "hybrid0"),
 					 n_classes = 1,
-					 fixed_scale = 0,
+					 fixed_scale1 = 0,
 					 trunc_data = 0,
 					 seed = "123",
 					 max_iterations = 2000,
@@ -83,6 +85,8 @@ FitMDCEV <- function(data,
 					 prior_alpha_sd = 0.5,
 					 prior_scale_sd = 1,
 					 prior_delta_sd = 10,
+					 gamma_fixed = 0,
+					 alpha_fixed = 0,
 					 std_errors = "mvn",
 					 n_draws = 50,
 					 keep_loglik = 0,
@@ -108,7 +112,7 @@ FitMDCEV <- function(data,
 	} else if (algorithm == "Bayes" && is.null(flat_priors))
 		flat_priors <- 0
 
-	mle_options <- list(fixed_scale = fixed_scale,
+	mle_options <- list(fixed_scale1 = fixed_scale1,
 						model = model,
 						n_classes = n_classes,
 						trunc_data = trunc_data,
@@ -123,7 +127,9 @@ FitMDCEV <- function(data,
 						prior_gamma_sd = prior_gamma_sd,
 						prior_alpha_sd = prior_alpha_sd,
 						prior_scale_sd = prior_scale_sd,
-						prior_delta_sd = prior_delta_sd)
+						prior_delta_sd = prior_delta_sd,
+						gamma_fixed = gamma_fixed,
+						alpha_fixed = alpha_fixed)
 
 	bayes_options <- list(n_iterations = n_iterations,
 						n_chains = n_chains,
@@ -155,7 +161,7 @@ FitMDCEV <- function(data,
 										include.stanfit = TRUE)
 
 		# Get parameter estimates in matrix form
-		result$est_pars <- extract(result$stan_fit, permuted = TRUE, inc_warmup = FALSE) %>%
+		result$est_pars <- rstan::extract(result$stan_fit, permuted = TRUE, inc_warmup = FALSE) %>%
 				as.data.frame() %>%
 				select(-starts_with("log_like"), -starts_with("sum_log_lik"),
 					   -starts_with("tau_unif"), -.data$lp__)
@@ -175,6 +181,7 @@ FitMDCEV <- function(data,
 
 	}
 	end.time <- proc.time()
+
 
 	if(algorithm == "Bayes" || std_errors == "deltamethod")
 		result$n_draws <- NULL
@@ -198,8 +205,8 @@ FitMDCEV <- function(data,
 	# Rename variables
 	if (random_parameters == "fixed"){
 		names(result$est_pars)[1:parms_info$n_vars$n_parms_total] <- parms_info$parm_names$all_names
-	result$aic <- -2 * result$log.likelihood + 2 * parms_info$n_vars$n_parms_total
-	result$bic <- -2 * result$log.likelihood + log(result$effective.sample.size) * parms_info$n_vars$n_parms_total
+		result$aic <- -2 * result$log.likelihood + 2 * parms_info$n_vars$n_parms_total
+		result$bic <- -2 * result$log.likelihood + log(result$effective.sample.size) * parms_info$n_vars$n_parms_total
 	}
 
 	result$est_pars <- result$est_pars %>%

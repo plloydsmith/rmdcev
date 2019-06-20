@@ -9,7 +9,7 @@
 #' and n_classes for number of classes and model_num for model type
 #' @export
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' data(data_rec, package = "rmdcev")
 #' mdcev_est <- FitMDCEV(psi_formula = ~ 1,
 #' data = subset(data_rec, id < 500),
@@ -121,9 +121,9 @@ ProcessSimulationData <- function(est_sim, stan_est, policies, nsims){
 	alpha_sim_list <- CreateListsRow(alpha_sim)
 
 	# scales
-	if (stan_est$stan_data$fixed_scale == 0)
+	if (stan_est$stan_data$fixed_scale1 == 0)
 		scale_sim <- t(GrabParms(est_sim, "scale"))
-	else if (stan_est$stan_data$fixed_scale == 1)
+	else if (stan_est$stan_data$fixed_scale1 == 1)
 		scale_sim = matrix(1, nsims, 1)
 
 	# psi

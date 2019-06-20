@@ -6,16 +6,16 @@
 \usage{
 FitMDCEV(data, psi_formula = NULL, lc_formula = NULL, weights = NULL,
   model = c("alpha", "gamma", "hybrid", "hybrid0"), n_classes = 1,
-  fixed_scale = 0, trunc_data = 0, seed = "123",
+  fixed_scale1 = 0, trunc_data = 0, seed = "123",
   max_iterations = 2000, initial.parameters = NULL,
   algorithm = c("MLE", "Bayes"), flat_priors = NULL,
   print_iterations = TRUE, hessian = TRUE, prior_psi_sd = 10,
   prior_gamma_sd = 10, prior_alpha_sd = 0.5, prior_scale_sd = 1,
-  prior_delta_sd = 10, std_errors = "mvn", n_draws = 50,
-  keep_loglik = 0, random_parameters = "fixed",
-  show_stan_warnings = TRUE, n_iterations = 200, n_chains = 4,
-  n_cores = 4, max_tree_depth = 10, adapt_delta = 0.8,
-  lkj_shape_prior = 4)
+  prior_delta_sd = 10, gamma_fixed = 0, alpha_fixed = 0,
+  std_errors = "mvn", n_draws = 50, keep_loglik = 0,
+  random_parameters = "fixed", show_stan_warnings = TRUE,
+  n_iterations = 200, n_chains = 4, n_cores = 4,
+  max_tree_depth = 10, adapt_delta = 0.8, lkj_shape_prior = 4)
 }
 \arguments{
 \item{data}{The (IxJ) data to be passed to Stan including 1) id, 2) good, 3) quant,
@@ -33,7 +33,7 @@ The options are "alpha", "gamma", "hybrid" and "hybrid0".}
 
 \item{n_classes}{The number of latent classes.}
 
-\item{fixed_scale}{Whether to fix scale at 1.}
+\item{fixed_scale1}{Whether to fix scale at 1.}
 
 \item{trunc_data}{Whether the estimation should be adjusted for truncation}
 
@@ -69,6 +69,10 @@ optimizing function will then be equal to log-likelihood. Defaults to 1 if MLE u
 \item{prior_scale_sd}{standard deviation for normal prior with mean 1.}
 
 \item{prior_delta_sd}{standard deviation for normal prior with mean 0.}
+
+\item{gamma_fixed}{indicator if gamma parameters should be fixed (i.e. not random).}
+
+\item{alpha_fixed}{indicator if alpha parameters should be fixed (i.e. not random).}
 
 \item{std_errors}{Compute standard errors using the delta method ("deltamethod")
 or multivariate normal draws ("mvn"). The default is "mvn" as only mvn parameter draws are required
@@ -106,7 +110,7 @@ A stanfit object
 Fit a MDCEV model using MLE or Bayes
 }
 \examples{
-\dontrun{
+\donttest{
 data(data_rec, package = "rmdcev")
 
 mdcev_est <- FitMDCEV(psi_formula = ~ 1,

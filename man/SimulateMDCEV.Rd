@@ -39,7 +39,7 @@ wtp a list for each individual holding a nsims x npols matrix of wtp
 Simulate welfare or demand for MDCEV model
 }
 \examples{
-\dontrun{
+\donttest{
 data(data_rec, package = "rmdcev")
 mdcev_est <- FitMDCEV(psi_formula = ~ 1,
 data = subset(data_rec, id < 500),

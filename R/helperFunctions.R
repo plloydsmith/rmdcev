@@ -57,7 +57,7 @@ DoCbind <- function(x){
 #' @param dat_psi Psi data matrix used in estimation
 #' @export
 #' @examples
-#'\dontrun{
+#' \donttest{
 #' CreateBlankPolicies(npols = 2, ngoods = 10, dat_psi = NULL, price_change_only = TRUE)
 #'}
 CreateBlankPolicies <- function(npols, ngoods, dat_psi, price_change_only){

@@ -2,19 +2,21 @@ Package: rmdcev
 Type: Package
 Title: Multiple Discrete-Continuous Extreme Value (MDCEV) Model
 Version: 0.9.0
-Authors@R:
+Authors@R: c(
     person(given = "Patrick",
            family = "Lloyd-Smith",
            role = c("aut", "cre"),
-           email = "patrick.lloydsmith@usask.ca")
+           email = "patrick.lloydsmith@usask.ca"),
+    person("Trustees of", "Columbia University", 
+         role = "cph"))
 Maintainer: Patrick Lloyd-Smith <patrick.lloydsmith@usask.ca>
 Description: Estimates different multiple discrete-continuous extreme value
-	(MDCEV) demand model specifications with observed and unobserved individual heterogeneity (Bhat (2008) <doi.org/10.1016/j.trb.2007.06.002>). Fixed parameter,
+	(MDCEV) demand model specifications with observed and unobserved individual heterogeneity (Bhat (2008) <doi:10.1016/j.trb.2007.06.002>). Fixed parameter,
 	latent class, and random parameter models can be estimated. These models are estimated using
-	maximum likelihood or Bayesian estimation techniques and are implemented in Stan, which is a
+	maximum likelihood or Bayesian estimation techniques and are implemented in 'Stan', which is a
 	C++ package for performing full Bayesian inference (see Stan Development Team (2018) <http://mc-stan.org>). 
-	The package also includes demand simulation (Pinjari and Bhat (2011) <https://repositories.lib.utexas.edu/handle/2152/23880>) 
-	and welfare simulation (Lloyd-Smith (2018) <doi.org/10.1016/j.jocm.2017.12.002>).
+	The 'rmdcev' package also includes functions for demand simulation (Pinjari and Bhat (2011) <https://repositories.lib.utexas.edu/handle/2152/23880>) 
+	and welfare simulation (Lloyd-Smith (2018) <doi:10.1016/j.jocm.2017.12.002>).
 License: MIT + file LICENSE
 Depends:
     R (>= 3.4.0),

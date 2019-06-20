@@ -18,7 +18,7 @@ A matrix of coefficients, s.d. and z-tests (invisible)
 Prints mdcev estimation results to console. The output format is borrowed from the Apollo package
 }
 \examples{
-\dontrun{
+\donttest{
 data(data_rec, package = "rmdcev")
 mdcev_est <- FitMDCEV(psi_formula = ~ 1,
 data = subset(data_rec, id < 500),

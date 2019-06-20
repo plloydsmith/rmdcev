@@ -18,7 +18,7 @@ wtp_sum summary table of welfare results
 Provide a summary of welfare changes for each policy
 }
 \examples{
-\dontrun{
+\donttest{
 data(data_rec, package = "rmdcev")
 mdcev_est <- FitMDCEV(psi_formula = ~ 1,
 data = subset(data_rec, id < 500),

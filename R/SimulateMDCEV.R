@@ -15,7 +15,7 @@
 #' @return wtp a list for each individual holding a nsims x npols matrix of wtp
 #' @export
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' data(data_rec, package = "rmdcev")
 #' mdcev_est <- FitMDCEV(psi_formula = ~ 1,
 #' data = subset(data_rec, id < 500),
@@ -104,7 +104,7 @@ return(out)
 #' @return wtp_sum summary table of welfare results
 #' @export
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' data(data_rec, package = "rmdcev")
 #' mdcev_est <- FitMDCEV(psi_formula = ~ 1,
 #' data = subset(data_rec, id < 500),
@@ -148,7 +148,7 @@ SummaryWelfare <- function(wtp, ci = 0.95){
 #' @return demand_sum summary table of demand results
 #' @export
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' data(data_rec, package = "rmdcev")
 #' mdcev_est <- FitMDCEV(psi_formula = ~ 1,
 #' data = subset(data_rec, id < 500),

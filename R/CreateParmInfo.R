@@ -25,13 +25,12 @@ if (stan_data$model_num == 1){
 } else if (stan_data$model_num == 4){
 	n_alpha <- 0
 	n_gamma <- J
-} else
-	stop("No model specificied. Choose a model specification")
+}
 
-if (stan_data$fixed_scale == 1){
+if (stan_data$fixed_scale1 == 1){
 	n_scale <- 0
 	scale_names <- NULL
-} else{
+} else {
 	n_scale <- 1
 	scale_names <- "scale"
 }
@@ -59,7 +58,6 @@ parm_names <- list(psi_names=psi_names,
 n_parameters <- n_psi + n_alpha + n_gamma + n_scale
 n_vars = list(n_psi = n_psi, n_alpha = n_alpha, n_gamma = n_gamma, n_scale = n_scale)
 
-#standard deviations
 if (stan_data$K > 1){
 	n_vars <- purrr::map(n_vars, function(x){x* stan_data$K})
 	n_vars$n_beta <- stan_data$L * (stan_data$K - 1)
@@ -71,15 +69,29 @@ if (stan_data$K > 1){
 
 	parm_names$all_names <- c(all_names, parm_names$delta.names)
 }
-
+#standard deviations
 if (algorithm == "Bayes"){
-	if (random_parameters == "uncorr"){
-		n_vars$n_std_dev <- Reduce("+",n_vars) - n_scale # scale is constant
-		parm_names$sd_names <- paste0("sd.", c(psi_names, gamma_names, alpha_names))
-	} else if (random_parameters == "corr"){
-		n_vars$n_std_dev <- Reduce("+",n_vars)
-		n_vars$n_std_corr <- n_vars$n_std_dev * (n_vars$n_std_dev-1) / 2
-		parm_names$sd_names <- paste0("sd.", c(psi_names, gamma_names, alpha_names))
+	if(random_parameters != "fixed"){
+		if(stan_data$gamma_fixed == 1){
+			n_gamma_rp <- 0
+			gamma_sd_names <- NULL
+		} else if(stan_data$gamma_fixed == 0){
+			n_gamma_rp <- n_gamma
+			gamma_sd_names <- gamma_names
+		}
+
+		if(stan_data$alpha_fixed == 1){
+			n_alpha_rp <- 0
+			alpha_sd_names <- NULL
+		} else if(stan_data$alpha_fixed == 0){
+			n_alpha_rp <- n_alpha
+			alpha_sd_names <- alpha_names
+		}
+		n_vars$n_std_dev <- n_psi + n_gamma_rp + n_alpha_rp
+		parm_names$sd_names <- paste0("sd.", c(psi_names, gamma_sd_names, alpha_sd_names))
+		if (random_parameters == "corr"){
+			n_vars$n_std_corr <- n_vars$n_std_dev * (n_vars$n_std_dev-1) / 2
+		}
 	}
 }
 

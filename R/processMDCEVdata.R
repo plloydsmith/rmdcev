@@ -43,8 +43,10 @@ processMDCEVdata <- function(data, psi_formula, lc_formula, model_options){
 			 prior_scale = model_options$prior_scale_sd,
 			 prior_delta = model_options$prior_delta_sd,
 			 model_num = model_num,
-			 fixed_scale = model_options$fixed_scale,
-			 trunc_data = model_options$trunc_data)
+			 fixed_scale1 = model_options$fixed_scale1,
+			 trunc_data = model_options$trunc_data,
+			 gamma_fixed = model_options$gamma_fixed,
+			 alpha_fixed = model_options$alpha_fixed)
 
 	if (model_options$n_classes > 1){
 		data_class <- tbl_df(data) %>%

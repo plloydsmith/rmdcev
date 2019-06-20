@@ -5,7 +5,7 @@
 #' @return A matrix of coefficients, s.d. and z-tests (invisible)
 #' @export
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' data(data_rec, package = "rmdcev")
 #' mdcev_est <- FitMDCEV(psi_formula = ~ 1,
 #' data = subset(data_rec, id < 500),
@@ -172,7 +172,7 @@ timeTaken <- paste(formatC(tmpH,width=2,format='d',flag=0),
 	cat("Parameter estimates -------------------------------- ","\n")
 	if(nrow(output)>options("max.print")) options(max.print=nrow(output)+100)
 	print(output)
-	if(model$stan_data$fixed_scale == 1)
+	if(model$stan_data$fixed_scale1 == 1)
 		cat("Note: Scale parameter fixed to 1.",'\n')
 
 	if(model$model == "gamma"){
