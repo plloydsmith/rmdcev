@@ -44,7 +44,6 @@ prior_psi_sd = 10
 prior_gamma_sd = 10
 prior_alpha_sd = 0.5
 prior_scale_sd = 1
-prior_beta_m_sd = 10
 prior_delta_sd = 10
 gamma_fixed = 1
 alpha_fixed = 1
