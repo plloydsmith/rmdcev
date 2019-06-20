@@ -54,13 +54,13 @@ test_that("MLE hybrid0", {
 context("MLE hybrid specification")
 
 test_that("MLE hybrid", {
-#	output <- FitMDCEV(psi_formula = ~ 1,
-#					   data = subset(data_rec, id < 100),
-#					   model = "hybrid",
-#					   algorithm = "MLE",
-#					   std_error = "deltamethod",
-#					   print_iterations = FALSE)
+	output <- FitMDCEV(psi_formula = ~ 1,
+					   data = subset(data_rec, id < 100),
+					   model = "hybrid",
+					   algorithm = "MLE",
+					   std_error = "deltamethod",
+					   print_iterations = FALSE)
 
-#	output.sum <- SummaryMDCEV(output)
-#	expect_equal(length(output.sum$Std.err), 20)
+	output.sum <- SummaryMDCEV(output)
+	expect_equal(length(output.sum$Std.err), 20)
 })

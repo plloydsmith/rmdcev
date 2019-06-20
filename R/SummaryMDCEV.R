@@ -15,7 +15,7 @@
 #' SummaryMDCEV(mdcev_est)
 #' }
 SummaryMDCEV <- function(model, printCI = FALSE){
-
+#model <- mdcev_rp
 	if (model$random_parameters == "corr"){
 		stop("SummaryMDCEV not set up for correlated random parameter models. Use print/traceplot on model.fit$stan_fit to examine output", "\n")
 	}
@@ -97,38 +97,59 @@ timeTaken <- paste(formatC(tmpH,width=2,format='d',flag=0),
 		}
 	} else if (model$algorithm == "Bayes"){
 		output <- model$est_pars
-		bayes_extra <- tbl_df(summary(model$stan_fit)$summary) %>%
-			mutate(parms = row.names(summary(model$stan_fit)$summary))
+
+		bayes_extra <- tbl_df(rstan::summary(model$stan_fit)$summary) %>%
+			mutate(parms = row.names(rstan::summary(model$stan_fit)$summary))
 
 		if (model$random_parameters == "fixed"){
 
 			bayes_extra <- bayes_extra %>%
 				filter(!grepl(c("log_lik"), parms)) %>%
 				filter(!grepl(c("lp_"), parms)) %>%
-				select(n_eff, Rhat) %>%
-				mutate(n_eff = round(n_eff, 0),
-					   Rhat = round(Rhat, 2))
+				select(parms, n_eff, Rhat) %>%
+				mutate(parms = factor(parms,levels=unique(parms)),
+					   n_eff = round(as.numeric(n_eff), 0),
+					   Rhat = round(as.numeric(Rhat), 2))
 
 		} else if (model$random_parameters == "uncorr"){
 
+			output_non_mu <- output %>%
+				filter(stringr::str_detect(parms, "gamma|alpha|tau|scale"))
+
 			output <- output %>%
-				filter(stringr::str_detect(parms, "mu|tau|scale")) %>%
+				filter(stringr::str_detect(parms, "mu")) %>%
+				bind_rows(output_non_mu) %>%
 				arrange(sim_id)
 
 			output$parms <- rep(c(model[["parms_info"]][["parm_names"]][["all_names"]],
 						 model[["parms_info"]][["parm_names"]][["sd_names"]]), max(output$sim_id))
 
 			# Transform estimates
+			if(model[["stan_data"]][["gamma_fixed"]]==0){
 			output <- output %>%
-				mutate(value = ifelse(grepl(c("gamma"), parms), exp(value),
-							   ifelse(grepl(c("alpha"), parms), exp(value)/ (1 + exp(value)), value)))
+				mutate(value = ifelse(grepl(c("gamma"), parms), exp(value), value))
+			}
+			if(model[["stan_data"]][["alpha_fixed"]]==0){
+				output <- output %>%
+					mutate(value = ifelse(grepl(c("alpha"), parms), 1 / (1 + exp(-value)), value))
+			}
+
+			bayes_extra_non_mu <- bayes_extra %>%
+				filter(grepl(c("gamma|alpha|scale|tau"), parms)) %>%
+				filter(!grepl(c("tau_unif"), parms))
 
 			bayes_extra <- bayes_extra %>%
-					filter(grepl(c("mu|scale|tau"), parms)) %>%
-					filter(!grepl(c("tau_unif"), parms)) %>%
-					select(n_eff, Rhat) %>%
-					mutate(n_eff = round(n_eff, 0),
-						   Rhat = round(Rhat, 2))
+				filter(grepl(c("mu"), parms)) %>%
+				bind_rows(bayes_extra_non_mu)
+
+			bayes_extra$parms <- c(model[["parms_info"]][["parm_names"]][["all_names"]],
+								  model[["parms_info"]][["parm_names"]][["sd_names"]])
+
+			bayes_extra <- bayes_extra %>%
+					select(parms, n_eff, Rhat) %>%
+					mutate(parms = factor(parms,levels=unique(parms)),
+							n_eff = round(as.numeric(n_eff), 0),
+					   Rhat = round(as.numeric(Rhat), 2))
 			}
 
 		output <- output %>%
@@ -138,9 +159,8 @@ timeTaken <- paste(formatC(tmpH,width=2,format='d',flag=0),
 					  Std.err = round(stats::sd(value),3),
 					  z.stat = round(mean(value) / stats::sd(value),2),
 					  ci_lo95 = round(stats::quantile(value, 0.025),3),
-					  ci_hi95 = round(stats::quantile(value, 0.975),3))
-
-		output <- cbind(output, bayes_extra)
+					  ci_hi95 = round(stats::quantile(value, 0.975),3)) %>%
+			left_join(bayes_extra, by = "parms")
 	}
 
 	output <- as.data.frame(output)
