@@ -38,17 +38,17 @@ stan::io::program_reader prog_reader__() {
     reader.add_event(0, 0, "start", "model_mdcev");
     reader.add_event(3, 3, "include", "/common/mdcev_ll.stan");
     reader.add_event(3, 0, "start", "/common/mdcev_ll.stan");
-    reader.add_event(80, 77, "end", "/common/mdcev_ll.stan");
-    reader.add_event(80, 4, "restart", "model_mdcev");
-    reader.add_event(86, 10, "include", "/common/mdcev_data.stan");
-    reader.add_event(86, 0, "start", "/common/mdcev_data.stan");
-    reader.add_event(103, 17, "end", "/common/mdcev_data.stan");
-    reader.add_event(103, 11, "restart", "model_mdcev");
-    reader.add_event(112, 20, "include", "/common/mdcev_tdata.stan");
-    reader.add_event(112, 0, "start", "/common/mdcev_tdata.stan");
-    reader.add_event(142, 30, "end", "/common/mdcev_tdata.stan");
-    reader.add_event(142, 21, "restart", "model_mdcev");
-    reader.add_event(225, 102, "end", "model_mdcev");
+    reader.add_event(74, 71, "end", "/common/mdcev_ll.stan");
+    reader.add_event(74, 4, "restart", "model_mdcev");
+    reader.add_event(80, 10, "include", "/common/mdcev_data.stan");
+    reader.add_event(80, 0, "start", "/common/mdcev_data.stan");
+    reader.add_event(97, 17, "end", "/common/mdcev_data.stan");
+    reader.add_event(97, 11, "restart", "model_mdcev");
+    reader.add_event(106, 20, "include", "/common/mdcev_tdata.stan");
+    reader.add_event(106, 0, "start", "/common/mdcev_tdata.stan");
+    reader.add_event(136, 30, "end", "/common/mdcev_tdata.stan");
+    reader.add_event(136, 21, "restart", "model_mdcev");
+    reader.add_event(219, 102, "end", "model_mdcev");
     return reader;
 }
 
@@ -68,7 +68,7 @@ gamma_ll(const Eigen::Matrix<T0__, Eigen::Dynamic,1>& gamma,
     int current_statement_begin__ = -1;
     try {
         {
-        current_statement_begin__ = 13;
+        current_statement_begin__ = 7;
         validate_non_negative_index("gamma_j", "I", I);
         validate_non_negative_index("gamma_j", "J", J);
         Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,Eigen::Dynamic>  gamma_j(static_cast<Eigen::VectorXd::Index>(I),static_cast<Eigen::VectorXd::Index>(J));
@@ -78,15 +78,15 @@ gamma_ll(const Eigen::Matrix<T0__, Eigen::Dynamic,1>& gamma,
         stan::math::fill(gamma_j,DUMMY_VAR__);
 
 
-        current_statement_begin__ = 15;
+        current_statement_begin__ = 9;
         if (as_bool(logical_eq(model_num,2))) {
-            current_statement_begin__ = 16;
+            current_statement_begin__ = 10;
             stan::math::assign(gamma_j, rep_matrix(1,I,J));
         } else {
-            current_statement_begin__ = 18;
+            current_statement_begin__ = 12;
             stan::math::assign(gamma_j, rep_matrix(transpose(gamma),I));
         }
-        current_statement_begin__ = 20;
+        current_statement_begin__ = 14;
         return stan::math::promote_scalar<fun_return_scalar_t__>(gamma_j);
         }
     } catch (const std::exception& e) {
@@ -124,7 +124,7 @@ alpha_ll(const Eigen::Matrix<T0__, Eigen::Dynamic,1>& alpha,
     int current_statement_begin__ = -1;
     try {
         {
-        current_statement_begin__ = 25;
+        current_statement_begin__ = 19;
         validate_non_negative_index("alpha_full", "I", I);
         validate_non_negative_index("alpha_full", "(J + 1)", (J + 1));
         Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,Eigen::Dynamic>  alpha_full(static_cast<Eigen::VectorXd::Index>(I),static_cast<Eigen::VectorXd::Index>((J + 1)));
@@ -134,21 +134,21 @@ alpha_ll(const Eigen::Matrix<T0__, Eigen::Dynamic,1>& alpha,
         stan::math::fill(alpha_full,DUMMY_VAR__);
 
 
-        current_statement_begin__ = 27;
+        current_statement_begin__ = 21;
         if (as_bool(logical_eq(model_num,1))) {
-            current_statement_begin__ = 28;
+            current_statement_begin__ = 22;
             stan::math::assign(alpha_full, append_col(rep_vector(get_base1(alpha,1,"alpha",1),I),rep_matrix(0,I,J)));
         } else if (as_bool(logical_eq(model_num,2))) {
-            current_statement_begin__ = 30;
+            current_statement_begin__ = 24;
             stan::math::assign(alpha_full, rep_matrix(transpose(alpha),I));
         } else if (as_bool(logical_eq(model_num,3))) {
-            current_statement_begin__ = 32;
+            current_statement_begin__ = 26;
             stan::math::assign(alpha_full, rep_matrix(get_base1(alpha,1,"alpha",1),I,(J + 1)));
         } else {
-            current_statement_begin__ = 34;
+            current_statement_begin__ = 28;
             stan::math::assign(alpha_full, rep_matrix(0.001,I,(J + 1)));
         }
-        current_statement_begin__ = 36;
+        current_statement_begin__ = 30;
         return stan::math::promote_scalar<fun_return_scalar_t__>(alpha_full);
         }
     } catch (const std::exception& e) {
@@ -197,14 +197,14 @@ mdcev_ll(const Eigen::Matrix<T0__, Eigen::Dynamic,Eigen::Dynamic>& quant_j,
     int current_statement_begin__ = -1;
     try {
         {
-        current_statement_begin__ = 44;
+        current_statement_begin__ = 38;
         validate_non_negative_index("log_like", "I", I);
         Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,1>  log_like(static_cast<Eigen::VectorXd::Index>(I));
         (void) log_like;  // dummy to suppress unused var warning
 
         stan::math::initialize(log_like, DUMMY_VAR__);
         stan::math::fill(log_like,DUMMY_VAR__);
-        current_statement_begin__ = 45;
+        current_statement_begin__ = 39;
         validate_non_negative_index("ones_j", "J", J);
         Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,1>  ones_j(static_cast<Eigen::VectorXd::Index>(J));
         (void) ones_j;  // dummy to suppress unused var warning
@@ -212,7 +212,7 @@ mdcev_ll(const Eigen::Matrix<T0__, Eigen::Dynamic,Eigen::Dynamic>& quant_j,
         stan::math::initialize(ones_j, DUMMY_VAR__);
         stan::math::fill(ones_j,DUMMY_VAR__);
         stan::math::assign(ones_j,rep_vector(1,J));
-        current_statement_begin__ = 46;
+        current_statement_begin__ = 40;
         validate_non_negative_index("v_j", "I", I);
         validate_non_negative_index("v_j", "J", J);
         Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,Eigen::Dynamic>  v_j(static_cast<Eigen::VectorXd::Index>(I),static_cast<Eigen::VectorXd::Index>(J));
@@ -221,7 +221,7 @@ mdcev_ll(const Eigen::Matrix<T0__, Eigen::Dynamic,Eigen::Dynamic>& quant_j,
         stan::math::initialize(v_j, DUMMY_VAR__);
         stan::math::fill(v_j,DUMMY_VAR__);
         stan::math::assign(v_j,subtract(add(lpsi,elt_multiply(subtract(alpha_j,1),stan::math::log(add(elt_divide(quant_j,gamma_j),1)))),stan::math::log(price_j)));
-        current_statement_begin__ = 47;
+        current_statement_begin__ = 41;
         validate_non_negative_index("v1", "I", I);
         Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,1>  v1(static_cast<Eigen::VectorXd::Index>(I));
         (void) v1;  // dummy to suppress unused var warning
@@ -229,7 +229,7 @@ mdcev_ll(const Eigen::Matrix<T0__, Eigen::Dynamic,Eigen::Dynamic>& quant_j,
         stan::math::initialize(v1, DUMMY_VAR__);
         stan::math::fill(v1,DUMMY_VAR__);
         stan::math::assign(v1,divide(elt_multiply(subtract(alpha1,1),log_num),scale_full));
-        current_statement_begin__ = 48;
+        current_statement_begin__ = 42;
         validate_non_negative_index("logf", "I", I);
         validate_non_negative_index("logf", "J", J);
         Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,Eigen::Dynamic>  logf(static_cast<Eigen::VectorXd::Index>(I),static_cast<Eigen::VectorXd::Index>(J));
@@ -238,7 +238,7 @@ mdcev_ll(const Eigen::Matrix<T0__, Eigen::Dynamic,Eigen::Dynamic>& quant_j,
         stan::math::initialize(logf, DUMMY_VAR__);
         stan::math::fill(logf,DUMMY_VAR__);
         stan::math::assign(logf,subtract(stan::math::log(subtract(1,alpha_j)),stan::math::log(add(quant_j,gamma_j))));
-        current_statement_begin__ = 49;
+        current_statement_begin__ = 43;
         validate_non_negative_index("logf1", "I", I);
         Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,1>  logf1(static_cast<Eigen::VectorXd::Index>(I));
         (void) logf1;  // dummy to suppress unused var warning
@@ -248,16 +248,16 @@ mdcev_ll(const Eigen::Matrix<T0__, Eigen::Dynamic,Eigen::Dynamic>& quant_j,
         stan::math::assign(logf1,subtract(stan::math::log(subtract(1,alpha1)),log_num));
 
 
-        current_statement_begin__ = 50;
+        current_statement_begin__ = 44;
         stan::math::assign(v_j, stan::model::deep_copy(divide(v_j,scale_full)));
-        current_statement_begin__ = 52;
+        current_statement_begin__ = 46;
         if (as_bool(logical_eq(trunc_data,0))) {
 
-            current_statement_begin__ = 53;
+            current_statement_begin__ = 47;
             stan::math::assign(log_like, add(subtract(add(add(add(add(multiply(subtract(1,M),stan::math::log(scale_full)),logf1),v1),multiply(elt_multiply(nonzero,add(logf,v_j)),ones_j)),stan::math::log(add(inv(stan::math::exp(logf1)),multiply(elt_divide(elt_multiply(nonzero,price_j),stan::math::exp(logf)),ones_j)))),elt_multiply(M,stan::math::log(add(stan::math::exp(v1),multiply(stan::math::exp(v_j),ones_j))))),log_M_fact));
         } else if (as_bool(logical_eq(trunc_data,1))) {
             {
-            current_statement_begin__ = 58;
+            current_statement_begin__ = 52;
             validate_non_negative_index("v_1", "I", I);
             validate_non_negative_index("v_1", "(J + 1)", (J + 1));
             Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,Eigen::Dynamic>  v_1(static_cast<Eigen::VectorXd::Index>(I),static_cast<Eigen::VectorXd::Index>((J + 1)));
@@ -265,21 +265,21 @@ mdcev_ll(const Eigen::Matrix<T0__, Eigen::Dynamic,Eigen::Dynamic>& quant_j,
 
             stan::math::initialize(v_1, DUMMY_VAR__);
             stan::math::fill(v_1,DUMMY_VAR__);
-            current_statement_begin__ = 59;
+            current_statement_begin__ = 53;
             validate_non_negative_index("like_cond", "I", I);
             Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,1>  like_cond(static_cast<Eigen::VectorXd::Index>(I));
             (void) like_cond;  // dummy to suppress unused var warning
 
             stan::math::initialize(like_cond, DUMMY_VAR__);
             stan::math::fill(like_cond,DUMMY_VAR__);
-            current_statement_begin__ = 60;
+            current_statement_begin__ = 54;
             validate_non_negative_index("like_trunc", "I", I);
             Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,1>  like_trunc(static_cast<Eigen::VectorXd::Index>(I));
             (void) like_trunc;  // dummy to suppress unused var warning
 
             stan::math::initialize(like_trunc, DUMMY_VAR__);
             stan::math::fill(like_trunc,DUMMY_VAR__);
-            current_statement_begin__ = 61;
+            current_statement_begin__ = 55;
             validate_non_negative_index("sumv", "I", I);
             Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,1>  sumv(static_cast<Eigen::VectorXd::Index>(I));
             (void) sumv;  // dummy to suppress unused var warning
@@ -288,29 +288,29 @@ mdcev_ll(const Eigen::Matrix<T0__, Eigen::Dynamic,Eigen::Dynamic>& quant_j,
             stan::math::fill(sumv,DUMMY_VAR__);
 
 
-            current_statement_begin__ = 63;
+            current_statement_begin__ = 57;
             stan::math::assign(like_cond, stan::math::exp(add(subtract(add(add(add(add(multiply(subtract(1,M),stan::math::log(scale_full)),logf1),v1),multiply(elt_multiply(nonzero,add(logf,v_j)),ones_j)),stan::math::log(add(inv(stan::math::exp(logf1)),multiply(elt_divide(elt_multiply(nonzero,price_j),stan::math::exp(logf)),ones_j)))),elt_multiply(M,stan::math::log(add(stan::math::exp(v1),multiply(stan::math::exp(v_j),ones_j))))),log_M_fact)));
-            current_statement_begin__ = 67;
+            current_statement_begin__ = 61;
             stan::math::assign(v_1, append_col(elt_multiply(subtract(alpha1,1),log_inc),subtract(lpsi,stan::math::log(price_j))));
-            current_statement_begin__ = 68;
+            current_statement_begin__ = 62;
             stan::math::assign(v_1, stan::model::deep_copy(stan::math::exp(divide(v_1,scale_full))));
-            current_statement_begin__ = 69;
+            current_statement_begin__ = 63;
             stan::math::assign(sumv, multiply(v_1,rep_vector(1,(J + 1))));
-            current_statement_begin__ = 71;
+            current_statement_begin__ = 65;
             stan::math::assign(like_trunc, elt_divide(col(v_1,1),sumv));
-            current_statement_begin__ = 73;
+            current_statement_begin__ = 67;
             for (int i = 1; i <= I; ++i) {
-                current_statement_begin__ = 74;
+                current_statement_begin__ = 68;
                 stan::model::assign(like_trunc, 
                             stan::model::cons_list(stan::model::index_uni(i), stan::model::nil_index_list()), 
                             stan::model::deep_copy((logical_lt(get_base1(like_trunc,i,"like_trunc",1),1) ? stan::math::promote_scalar<local_scalar_t__>(get_base1(like_trunc,i,"like_trunc",1)) : stan::math::promote_scalar<local_scalar_t__>(1) )), 
                             "assigning variable like_trunc");
             }
-            current_statement_begin__ = 76;
+            current_statement_begin__ = 70;
             stan::math::assign(log_like, stan::math::log(elt_divide(like_cond,subtract(1,like_trunc))));
             }
         }
-        current_statement_begin__ = 79;
+        current_statement_begin__ = 73;
         return stan::math::promote_scalar<fun_return_scalar_t__>(log_like);
         }
     } catch (const std::exception& e) {
@@ -359,7 +359,7 @@ private:
     double prior_alpha_sd;
     double prior_scale_sd;
     int model_num;
-    int fixed_scale;
+    int fixed_scale1;
     int trunc_data;
     vector_d weights;
     int K;
@@ -410,25 +410,25 @@ public:
 
         // initialize member variables
         try {
-            current_statement_begin__ = 88;
+            current_statement_begin__ = 82;
             context__.validate_dims("data initialization", "I", "int", context__.to_vec());
             I = int(0);
             vals_i__ = context__.vals_i("I");
             pos__ = 0;
             I = vals_i__[pos__++];
-            current_statement_begin__ = 89;
+            current_statement_begin__ = 83;
             context__.validate_dims("data initialization", "J", "int", context__.to_vec());
             J = int(0);
             vals_i__ = context__.vals_i("J");
             pos__ = 0;
             J = vals_i__[pos__++];
-            current_statement_begin__ = 90;
+            current_statement_begin__ = 84;
             context__.validate_dims("data initialization", "NPsi", "int", context__.to_vec());
             NPsi = int(0);
             vals_i__ = context__.vals_i("NPsi");
             pos__ = 0;
             NPsi = vals_i__[pos__++];
-            current_statement_begin__ = 91;
+            current_statement_begin__ = 85;
             validate_non_negative_index("dat_psi", "(I * J)", (I * J));
             validate_non_negative_index("dat_psi", "NPsi", NPsi);
             context__.validate_dims("data initialization", "dat_psi", "matrix_d", context__.to_vec((I * J),NPsi));
@@ -444,7 +444,7 @@ public:
                     dat_psi(m_mat__,n_mat__) = vals_r__[pos__++];
                 }
             }
-            current_statement_begin__ = 92;
+            current_statement_begin__ = 86;
             validate_non_negative_index("price_j", "I", I);
             validate_non_negative_index("price_j", "J", J);
             context__.validate_dims("data initialization", "price_j", "matrix_d", context__.to_vec(I,J));
@@ -460,7 +460,7 @@ public:
                     price_j(m_mat__,n_mat__) = vals_r__[pos__++];
                 }
             }
-            current_statement_begin__ = 93;
+            current_statement_begin__ = 87;
             validate_non_negative_index("quant_j", "I", I);
             validate_non_negative_index("quant_j", "J", J);
             context__.validate_dims("data initialization", "quant_j", "matrix_d", context__.to_vec(I,J));
@@ -476,7 +476,7 @@ public:
                     quant_j(m_mat__,n_mat__) = vals_r__[pos__++];
                 }
             }
-            current_statement_begin__ = 94;
+            current_statement_begin__ = 88;
             validate_non_negative_index("income", "I", I);
             context__.validate_dims("data initialization", "income", "vector_d", context__.to_vec(I));
             validate_non_negative_index("income", "I", I);
@@ -487,55 +487,55 @@ public:
             for (size_t i_vec__ = 0; i_vec__ < income_i_vec_lim__; ++i_vec__) {
                 income[i_vec__] = vals_r__[pos__++];
             }
-            current_statement_begin__ = 95;
+            current_statement_begin__ = 89;
             context__.validate_dims("data initialization", "flat_priors", "int", context__.to_vec());
             flat_priors = int(0);
             vals_i__ = context__.vals_i("flat_priors");
             pos__ = 0;
             flat_priors = vals_i__[pos__++];
-            current_statement_begin__ = 96;
+            current_statement_begin__ = 90;
             context__.validate_dims("data initialization", "prior_psi_sd", "double", context__.to_vec());
             prior_psi_sd = double(0);
             vals_r__ = context__.vals_r("prior_psi_sd");
             pos__ = 0;
             prior_psi_sd = vals_r__[pos__++];
-            current_statement_begin__ = 97;
+            current_statement_begin__ = 91;
             context__.validate_dims("data initialization", "prior_gamma_sd", "double", context__.to_vec());
             prior_gamma_sd = double(0);
             vals_r__ = context__.vals_r("prior_gamma_sd");
             pos__ = 0;
             prior_gamma_sd = vals_r__[pos__++];
-            current_statement_begin__ = 98;
+            current_statement_begin__ = 92;
             context__.validate_dims("data initialization", "prior_alpha_sd", "double", context__.to_vec());
             prior_alpha_sd = double(0);
             vals_r__ = context__.vals_r("prior_alpha_sd");
             pos__ = 0;
             prior_alpha_sd = vals_r__[pos__++];
-            current_statement_begin__ = 99;
+            current_statement_begin__ = 93;
             context__.validate_dims("data initialization", "prior_scale_sd", "double", context__.to_vec());
             prior_scale_sd = double(0);
             vals_r__ = context__.vals_r("prior_scale_sd");
             pos__ = 0;
             prior_scale_sd = vals_r__[pos__++];
-            current_statement_begin__ = 100;
+            current_statement_begin__ = 94;
             context__.validate_dims("data initialization", "model_num", "int", context__.to_vec());
             model_num = int(0);
             vals_i__ = context__.vals_i("model_num");
             pos__ = 0;
             model_num = vals_i__[pos__++];
-            current_statement_begin__ = 101;
-            context__.validate_dims("data initialization", "fixed_scale", "int", context__.to_vec());
-            fixed_scale = int(0);
-            vals_i__ = context__.vals_i("fixed_scale");
+            current_statement_begin__ = 95;
+            context__.validate_dims("data initialization", "fixed_scale1", "int", context__.to_vec());
+            fixed_scale1 = int(0);
+            vals_i__ = context__.vals_i("fixed_scale1");
             pos__ = 0;
-            fixed_scale = vals_i__[pos__++];
-            current_statement_begin__ = 102;
+            fixed_scale1 = vals_i__[pos__++];
+            current_statement_begin__ = 96;
             context__.validate_dims("data initialization", "trunc_data", "int", context__.to_vec());
             trunc_data = int(0);
             vals_i__ = context__.vals_i("trunc_data");
             pos__ = 0;
             trunc_data = vals_i__[pos__++];
-            current_statement_begin__ = 103;
+            current_statement_begin__ = 97;
             validate_non_negative_index("weights", "I", I);
             context__.validate_dims("data initialization", "weights", "vector_d", context__.to_vec(I));
             validate_non_negative_index("weights", "I", I);
@@ -546,19 +546,19 @@ public:
             for (size_t i_vec__ = 0; i_vec__ < weights_i_vec_lim__; ++i_vec__) {
                 weights[i_vec__] = vals_r__[pos__++];
             }
-            current_statement_begin__ = 104;
+            current_statement_begin__ = 98;
             context__.validate_dims("data initialization", "K", "int", context__.to_vec());
             K = int(0);
             vals_i__ = context__.vals_i("K");
             pos__ = 0;
             K = vals_i__[pos__++];
-            current_statement_begin__ = 107;
+            current_statement_begin__ = 101;
             context__.validate_dims("data initialization", "L", "int", context__.to_vec());
             L = int(0);
             vals_i__ = context__.vals_i("L");
             pos__ = 0;
             L = vals_i__[pos__++];
-            current_statement_begin__ = 108;
+            current_statement_begin__ = 102;
             validate_non_negative_index("data_class", "I", I);
             validate_non_negative_index("data_class", "L", L);
             context__.validate_dims("data initialization", "data_class", "vector_d", context__.to_vec(I,L));
@@ -574,7 +574,7 @@ public:
                     data_class[i_0__][i_vec__] = vals_r__[pos__++];
             }
             }
-            current_statement_begin__ = 109;
+            current_statement_begin__ = 103;
             context__.validate_dims("data initialization", "prior_delta_sd", "double", context__.to_vec());
             prior_delta_sd = double(0);
             vals_r__ = context__.vals_r("prior_delta_sd");
@@ -582,143 +582,143 @@ public:
             prior_delta_sd = vals_r__[pos__++];
 
             // validate, data variables
+            current_statement_begin__ = 82;
+            current_statement_begin__ = 83;
+            current_statement_begin__ = 84;
+            current_statement_begin__ = 85;
+            current_statement_begin__ = 86;
+            current_statement_begin__ = 87;
             current_statement_begin__ = 88;
             current_statement_begin__ = 89;
+            check_greater_or_equal(function__,"flat_priors",flat_priors,0);
+            check_less_or_equal(function__,"flat_priors",flat_priors,1);
             current_statement_begin__ = 90;
             current_statement_begin__ = 91;
             current_statement_begin__ = 92;
             current_statement_begin__ = 93;
             current_statement_begin__ = 94;
-            current_statement_begin__ = 95;
-            check_greater_or_equal(function__,"flat_priors",flat_priors,0);
-            check_less_or_equal(function__,"flat_priors",flat_priors,1);
-            current_statement_begin__ = 96;
-            current_statement_begin__ = 97;
-            current_statement_begin__ = 98;
-            current_statement_begin__ = 99;
-            current_statement_begin__ = 100;
             check_greater_or_equal(function__,"model_num",model_num,1);
             check_less_or_equal(function__,"model_num",model_num,4);
-            current_statement_begin__ = 101;
-            check_greater_or_equal(function__,"fixed_scale",fixed_scale,0);
-            check_less_or_equal(function__,"fixed_scale",fixed_scale,1);
-            current_statement_begin__ = 102;
+            current_statement_begin__ = 95;
+            check_greater_or_equal(function__,"fixed_scale1",fixed_scale1,0);
+            check_less_or_equal(function__,"fixed_scale1",fixed_scale1,1);
+            current_statement_begin__ = 96;
             check_greater_or_equal(function__,"trunc_data",trunc_data,0);
             check_less_or_equal(function__,"trunc_data",trunc_data,1);
+            current_statement_begin__ = 97;
+            current_statement_begin__ = 98;
+            current_statement_begin__ = 101;
+            current_statement_begin__ = 102;
             current_statement_begin__ = 103;
-            current_statement_begin__ = 104;
-            current_statement_begin__ = 107;
-            current_statement_begin__ = 108;
-            current_statement_begin__ = 109;
             // initialize data variables
-            current_statement_begin__ = 114;
+            current_statement_begin__ = 108;
             G = int(0);
             stan::math::fill(G, std::numeric_limits<int>::min());
             stan::math::assign(G,(J + 1));
-            current_statement_begin__ = 115;
+            current_statement_begin__ = 109;
             A = int(0);
             stan::math::fill(A, std::numeric_limits<int>::min());
-            current_statement_begin__ = 116;
+            current_statement_begin__ = 110;
             Gamma = int(0);
             stan::math::fill(Gamma, std::numeric_limits<int>::min());
-            current_statement_begin__ = 117;
+            current_statement_begin__ = 111;
             validate_non_negative_index("log_inc", "I", I);
             log_inc = vector_d(static_cast<Eigen::VectorXd::Index>(I));
             stan::math::fill(log_inc,DUMMY_VAR__);
             stan::math::assign(log_inc,stan::math::log(income));
-            current_statement_begin__ = 118;
+            current_statement_begin__ = 112;
             validate_non_negative_index("log_num", "I", I);
             log_num = vector_d(static_cast<Eigen::VectorXd::Index>(I));
             stan::math::fill(log_num,DUMMY_VAR__);
-            current_statement_begin__ = 119;
+            current_statement_begin__ = 113;
             validate_non_negative_index("nonzero", "I", I);
             validate_non_negative_index("nonzero", "J", J);
             nonzero = matrix_d(static_cast<Eigen::VectorXd::Index>(I),static_cast<Eigen::VectorXd::Index>(J));
             stan::math::fill(nonzero,DUMMY_VAR__);
-            current_statement_begin__ = 120;
+            current_statement_begin__ = 114;
             validate_non_negative_index("M", "I", I);
             M = vector_d(static_cast<Eigen::VectorXd::Index>(I));
             stan::math::fill(M,DUMMY_VAR__);
-            current_statement_begin__ = 121;
+            current_statement_begin__ = 115;
             validate_non_negative_index("log_M_fact", "I", I);
             log_M_fact = vector_d(static_cast<Eigen::VectorXd::Index>(I));
             stan::math::fill(log_M_fact,DUMMY_VAR__);
 
-            current_statement_begin__ = 123;
+            current_statement_begin__ = 117;
             for (int i = 1; i <= I; ++i) {
 
-                current_statement_begin__ = 124;
+                current_statement_begin__ = 118;
                 stan::model::assign(log_num, 
                             stan::model::cons_list(stan::model::index_uni(i), stan::model::nil_index_list()), 
                             stan::math::log((get_base1(income,i,"income",1) - multiply(get_base1(price_j,i,"price_j",1),transpose(get_base1(quant_j,i,"quant_j",1))))), 
                             "assigning variable log_num");
-                current_statement_begin__ = 125;
+                current_statement_begin__ = 119;
                 for (int j = 1; j <= J; ++j) {
 
-                    current_statement_begin__ = 126;
+                    current_statement_begin__ = 120;
                     stan::model::assign(nonzero, 
                                 stan::model::cons_list(stan::model::index_uni(i), stan::model::cons_list(stan::model::index_uni(j), stan::model::nil_index_list())), 
                                 (logical_gt(get_base1(quant_j,i,j,"quant_j",1),0) ? 1 : 0 ), 
                                 "assigning variable nonzero");
                 }
-                current_statement_begin__ = 128;
+                current_statement_begin__ = 122;
                 stan::model::assign(M, 
                             stan::model::cons_list(stan::model::index_uni(i), stan::model::nil_index_list()), 
                             (sum(get_base1(nonzero,i,"nonzero",1)) + 1), 
                             "assigning variable M");
             }
-            current_statement_begin__ = 131;
+            current_statement_begin__ = 125;
             stan::math::assign(log_M_fact, stan::math::lgamma(M));
-            current_statement_begin__ = 133;
+            current_statement_begin__ = 127;
             if (as_bool((primitive_value(logical_eq(model_num,1)) || primitive_value(logical_eq(model_num,3))))) {
 
-                current_statement_begin__ = 134;
+                current_statement_begin__ = 128;
                 stan::math::assign(A, 1);
-                current_statement_begin__ = 135;
+                current_statement_begin__ = 129;
                 stan::math::assign(Gamma, J);
             } else if (as_bool(logical_eq(model_num,2))) {
 
-                current_statement_begin__ = 137;
+                current_statement_begin__ = 131;
                 stan::math::assign(A, G);
-                current_statement_begin__ = 138;
+                current_statement_begin__ = 132;
                 stan::math::assign(Gamma, 0);
             } else if (as_bool(logical_eq(model_num,4))) {
 
-                current_statement_begin__ = 140;
+                current_statement_begin__ = 134;
                 stan::math::assign(A, 0);
-                current_statement_begin__ = 141;
+                current_statement_begin__ = 135;
                 stan::math::assign(Gamma, J);
             }
 
             // validate transformed data
+            current_statement_begin__ = 108;
+            current_statement_begin__ = 109;
+            current_statement_begin__ = 110;
+            current_statement_begin__ = 111;
+            current_statement_begin__ = 112;
+            current_statement_begin__ = 113;
             current_statement_begin__ = 114;
             current_statement_begin__ = 115;
-            current_statement_begin__ = 116;
-            current_statement_begin__ = 117;
-            current_statement_begin__ = 118;
-            current_statement_begin__ = 119;
-            current_statement_begin__ = 120;
-            current_statement_begin__ = 121;
 
             // validate, set parameter ranges
             num_params_r__ = 0U;
             param_ranges_i__.clear();
-            current_statement_begin__ = 146;
+            current_statement_begin__ = 140;
             validate_non_negative_index("psi", "NPsi", NPsi);
             validate_non_negative_index("psi", "K", K);
             num_params_r__ += NPsi * K;
-            current_statement_begin__ = 147;
+            current_statement_begin__ = 141;
             validate_non_negative_index("gamma", "Gamma", Gamma);
             validate_non_negative_index("gamma", "K", K);
             num_params_r__ += Gamma * K;
-            current_statement_begin__ = 148;
+            current_statement_begin__ = 142;
             validate_non_negative_index("alpha", "A", A);
             validate_non_negative_index("alpha", "K", K);
             num_params_r__ += A * K;
-            current_statement_begin__ = 149;
-            validate_non_negative_index("scale", "(logical_eq(fixed_scale,0) ? K : 0 )", (logical_eq(fixed_scale,0) ? K : 0 ));
-            num_params_r__ += (logical_eq(fixed_scale,0) ? K : 0 );
-            current_statement_begin__ = 150;
+            current_statement_begin__ = 143;
+            validate_non_negative_index("scale", "(logical_eq(fixed_scale1,0) ? K : 0 )", (logical_eq(fixed_scale1,0) ? K : 0 ));
+            num_params_r__ += (logical_eq(fixed_scale1,0) ? K : 0 );
+            current_statement_begin__ = 144;
         validate_non_negative_index("delta", "(K - 1)", (K - 1));
             validate_non_negative_index("delta", "L", L);
             num_params_r__ += (K - 1) * L;
@@ -800,10 +800,10 @@ public:
             throw std::runtime_error("variable scale missing");
         vals_r__ = context__.vals_r("scale");
         pos__ = 0U;
-        validate_non_negative_index("scale", "(logical_eq(fixed_scale,0) ? K : 0 )", (logical_eq(fixed_scale,0) ? K : 0 ));
-        context__.validate_dims("initialization", "scale", "vector_d", context__.to_vec((logical_eq(fixed_scale,0) ? K : 0 )));
-        vector_d scale(static_cast<Eigen::VectorXd::Index>((logical_eq(fixed_scale,0) ? K : 0 )));
-        for (int j1__ = 0U; j1__ < (logical_eq(fixed_scale,0) ? K : 0 ); ++j1__)
+        validate_non_negative_index("scale", "(logical_eq(fixed_scale1,0) ? K : 0 )", (logical_eq(fixed_scale1,0) ? K : 0 ));
+        context__.validate_dims("initialization", "scale", "vector_d", context__.to_vec((logical_eq(fixed_scale1,0) ? K : 0 )));
+        vector_d scale(static_cast<Eigen::VectorXd::Index>((logical_eq(fixed_scale1,0) ? K : 0 )));
+        for (int j1__ = 0U; j1__ < (logical_eq(fixed_scale1,0) ? K : 0 ); ++j1__)
             scale(j1__) = vals_r__[pos__++];
         try {
             writer__.vector_lb_unconstrain(0,scale);
@@ -894,9 +894,9 @@ public:
             Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,1>  scale;
             (void) scale;  // dummy to suppress unused var warning
             if (jacobian__)
-                scale = in__.vector_lb_constrain(0,(logical_eq(fixed_scale,0) ? K : 0 ),lp__);
+                scale = in__.vector_lb_constrain(0,(logical_eq(fixed_scale1,0) ? K : 0 ),lp__);
             else
-                scale = in__.vector_lb_constrain(0,(logical_eq(fixed_scale,0) ? K : 0 ));
+                scale = in__.vector_lb_constrain(0,(logical_eq(fixed_scale1,0) ? K : 0 ));
 
             Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,Eigen::Dynamic>  delta;
             (void) delta;  // dummy to suppress unused var warning
@@ -907,7 +907,7 @@ public:
 
 
             // transformed parameters
-            current_statement_begin__ = 154;
+            current_statement_begin__ = 148;
             validate_non_negative_index("log_like", "I", I);
             Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,1>  log_like(static_cast<Eigen::VectorXd::Index>(I));
             (void) log_like;  // dummy to suppress unused var warning
@@ -916,10 +916,10 @@ public:
             stan::math::fill(log_like,DUMMY_VAR__);
 
 
-            current_statement_begin__ = 156;
+            current_statement_begin__ = 150;
             if (as_bool(logical_eq(K,1))) {
                 {
-                current_statement_begin__ = 157;
+                current_statement_begin__ = 151;
                 validate_non_negative_index("lpsi", "I", I);
                 validate_non_negative_index("lpsi", "J", J);
                 Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,Eigen::Dynamic>  lpsi(static_cast<Eigen::VectorXd::Index>(I),static_cast<Eigen::VectorXd::Index>(J));
@@ -928,7 +928,7 @@ public:
                 stan::math::initialize(lpsi, DUMMY_VAR__);
                 stan::math::fill(lpsi,DUMMY_VAR__);
                 stan::math::assign(lpsi,to_matrix(multiply(stan::model::rvalue(dat_psi, stan::model::cons_list(stan::model::index_omni(), stan::model::nil_index_list()), "dat_psi"),get_base1(psi,1,"psi",1)),I,J,0));
-                current_statement_begin__ = 158;
+                current_statement_begin__ = 152;
                 validate_non_negative_index("gamma_j", "I", I);
                 validate_non_negative_index("gamma_j", "J", J);
                 Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,Eigen::Dynamic>  gamma_j(static_cast<Eigen::VectorXd::Index>(I),static_cast<Eigen::VectorXd::Index>(J));
@@ -937,7 +937,7 @@ public:
                 stan::math::initialize(gamma_j, DUMMY_VAR__);
                 stan::math::fill(gamma_j,DUMMY_VAR__);
                 stan::math::assign(gamma_j,gamma_ll(get_base1(gamma,1,"gamma",1),I,J,model_num, pstream__));
-                current_statement_begin__ = 159;
+                current_statement_begin__ = 153;
                 validate_non_negative_index("alpha_full", "I", I);
                 validate_non_negative_index("alpha_full", "(J + 1)", (J + 1));
                 Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,Eigen::Dynamic>  alpha_full(static_cast<Eigen::VectorXd::Index>(I),static_cast<Eigen::VectorXd::Index>((J + 1)));
@@ -946,21 +946,21 @@ public:
                 stan::math::initialize(alpha_full, DUMMY_VAR__);
                 stan::math::fill(alpha_full,DUMMY_VAR__);
                 stan::math::assign(alpha_full,alpha_ll(get_base1(alpha,1,"alpha",1),I,J,model_num, pstream__));
-                current_statement_begin__ = 160;
+                current_statement_begin__ = 154;
                 local_scalar_t__ scale_full;
                 (void) scale_full;  // dummy to suppress unused var warning
 
                 stan::math::initialize(scale_full, DUMMY_VAR__);
                 stan::math::fill(scale_full,DUMMY_VAR__);
-                stan::math::assign(scale_full,(logical_eq(fixed_scale,0) ? stan::math::promote_scalar<local_scalar_t__>(get_base1(scale,1,"scale",1)) : stan::math::promote_scalar<local_scalar_t__>(1.0) ));
+                stan::math::assign(scale_full,(logical_eq(fixed_scale1,0) ? stan::math::promote_scalar<local_scalar_t__>(get_base1(scale,1,"scale",1)) : stan::math::promote_scalar<local_scalar_t__>(1.0) ));
 
 
-                current_statement_begin__ = 162;
+                current_statement_begin__ = 156;
                 stan::math::assign(log_like, mdcev_ll(quant_j,price_j,log_num,log_inc,M,log_M_fact,lpsi,gamma_j,col(alpha_full,1),block(alpha_full,1,2,I,J),scale_full,I,J,nonzero,trunc_data, pstream__));
                 }
             } else if (as_bool(logical_gt(K,1))) {
                 {
-                current_statement_begin__ = 167;
+                current_statement_begin__ = 161;
                 validate_non_negative_index("log_like_util", "I", I);
                 validate_non_negative_index("log_like_util", "K", K);
                 vector<Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,1> > log_like_util(K, (Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,1> (static_cast<Eigen::VectorXd::Index>(I))));
@@ -968,10 +968,10 @@ public:
                 stan::math::fill(log_like_util,DUMMY_VAR__);
 
 
-                current_statement_begin__ = 168;
+                current_statement_begin__ = 162;
                 for (int k = 1; k <= K; ++k) {
                     {
-                    current_statement_begin__ = 169;
+                    current_statement_begin__ = 163;
                     validate_non_negative_index("lpsi", "I", I);
                     validate_non_negative_index("lpsi", "J", J);
                     Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,Eigen::Dynamic>  lpsi(static_cast<Eigen::VectorXd::Index>(I),static_cast<Eigen::VectorXd::Index>(J));
@@ -980,7 +980,7 @@ public:
                     stan::math::initialize(lpsi, DUMMY_VAR__);
                     stan::math::fill(lpsi,DUMMY_VAR__);
                     stan::math::assign(lpsi,to_matrix(multiply(stan::model::rvalue(dat_psi, stan::model::cons_list(stan::model::index_omni(), stan::model::nil_index_list()), "dat_psi"),get_base1(psi,k,"psi",1)),I,J,0));
-                    current_statement_begin__ = 170;
+                    current_statement_begin__ = 164;
                     validate_non_negative_index("gamma_full", "I", I);
                     validate_non_negative_index("gamma_full", "J", J);
                     Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,Eigen::Dynamic>  gamma_full(static_cast<Eigen::VectorXd::Index>(I),static_cast<Eigen::VectorXd::Index>(J));
@@ -989,7 +989,7 @@ public:
                     stan::math::initialize(gamma_full, DUMMY_VAR__);
                     stan::math::fill(gamma_full,DUMMY_VAR__);
                     stan::math::assign(gamma_full,gamma_ll(get_base1(gamma,k,"gamma",1),I,J,model_num, pstream__));
-                    current_statement_begin__ = 171;
+                    current_statement_begin__ = 165;
                     validate_non_negative_index("alpha_full", "I", I);
                     validate_non_negative_index("alpha_full", "(J + 1)", (J + 1));
                     Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,Eigen::Dynamic>  alpha_full(static_cast<Eigen::VectorXd::Index>(I),static_cast<Eigen::VectorXd::Index>((J + 1)));
@@ -998,26 +998,26 @@ public:
                     stan::math::initialize(alpha_full, DUMMY_VAR__);
                     stan::math::fill(alpha_full,DUMMY_VAR__);
                     stan::math::assign(alpha_full,alpha_ll(get_base1(alpha,k,"alpha",1),I,J,model_num, pstream__));
-                    current_statement_begin__ = 172;
+                    current_statement_begin__ = 166;
                     local_scalar_t__ scale_full;
                     (void) scale_full;  // dummy to suppress unused var warning
 
                     stan::math::initialize(scale_full, DUMMY_VAR__);
                     stan::math::fill(scale_full,DUMMY_VAR__);
-                    stan::math::assign(scale_full,(logical_eq(fixed_scale,0) ? stan::math::promote_scalar<local_scalar_t__>(get_base1(scale,k,"scale",1)) : stan::math::promote_scalar<local_scalar_t__>(1.0) ));
+                    stan::math::assign(scale_full,(logical_eq(fixed_scale1,0) ? stan::math::promote_scalar<local_scalar_t__>(get_base1(scale,k,"scale",1)) : stan::math::promote_scalar<local_scalar_t__>(1.0) ));
 
 
-                    current_statement_begin__ = 174;
+                    current_statement_begin__ = 168;
                     stan::model::assign(log_like_util, 
                                 stan::model::cons_list(stan::model::index_uni(k), stan::model::nil_index_list()), 
                                 mdcev_ll(quant_j,price_j,log_num,log_inc,M,log_M_fact,lpsi,gamma_full,col(alpha_full,1),block(alpha_full,1,2,I,J),scale_full,I,J,nonzero,trunc_data, pstream__), 
                                 "assigning variable log_like_util");
                     }
                 }
-                current_statement_begin__ = 178;
+                current_statement_begin__ = 172;
                 for (int i = 1; i <= I; ++i) {
                     {
-                    current_statement_begin__ = 179;
+                    current_statement_begin__ = 173;
                     validate_non_negative_index("ltheta", "K", K);
                     Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,1>  ltheta(static_cast<Eigen::VectorXd::Index>(K));
                     (void) ltheta;  // dummy to suppress unused var warning
@@ -1025,7 +1025,7 @@ public:
                     stan::math::initialize(ltheta, DUMMY_VAR__);
                     stan::math::fill(ltheta,DUMMY_VAR__);
                     stan::math::assign(ltheta,log_softmax(append_row(0,multiply(delta,get_base1(data_class,i,"data_class",1)))));
-                    current_statement_begin__ = 180;
+                    current_statement_begin__ = 174;
                     validate_non_negative_index("lps", "K", K);
                     Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,1>  lps(static_cast<Eigen::VectorXd::Index>(K));
                     (void) lps;  // dummy to suppress unused var warning
@@ -1034,16 +1034,16 @@ public:
                     stan::math::fill(lps,DUMMY_VAR__);
 
 
-                    current_statement_begin__ = 181;
+                    current_statement_begin__ = 175;
                     for (int k = 1; k <= K; ++k) {
 
-                        current_statement_begin__ = 182;
+                        current_statement_begin__ = 176;
                         stan::model::assign(lps, 
                                     stan::model::cons_list(stan::model::index_uni(k), stan::model::nil_index_list()), 
                                     (get_base1(ltheta,k,"ltheta",1) + get_base1(get_base1(log_like_util,k,"log_like_util",1),i,"log_like_util",2)), 
                                     "assigning variable lps");
                     }
-                    current_statement_begin__ = 184;
+                    current_statement_begin__ = 178;
                     stan::model::assign(log_like, 
                                 stan::model::cons_list(stan::model::index_uni(i), stan::model::nil_index_list()), 
                                 log_sum_exp(lps), 
@@ -1064,41 +1064,41 @@ public:
 
             const char* function__ = "validate transformed params";
             (void) function__;  // dummy to suppress unused var warning
-            current_statement_begin__ = 154;
+            current_statement_begin__ = 148;
 
             // model body
 
-            current_statement_begin__ = 191;
+            current_statement_begin__ = 185;
             if (as_bool(logical_eq(flat_priors,0))) {
 
-                current_statement_begin__ = 192;
+                current_statement_begin__ = 186;
                 lp_accum__.add(normal_log<propto__>(scale, 1, prior_scale_sd));
-                current_statement_begin__ = 194;
+                current_statement_begin__ = 188;
                 if (as_bool(logical_eq(K,1))) {
 
-                    current_statement_begin__ = 195;
+                    current_statement_begin__ = 189;
                     lp_accum__.add(normal_log<propto__>(get_base1(psi,1,"psi",1), 0, prior_psi_sd));
-                    current_statement_begin__ = 196;
+                    current_statement_begin__ = 190;
                     lp_accum__.add(normal_log<propto__>(get_base1(gamma,1,"gamma",1), 0, prior_gamma_sd));
-                    current_statement_begin__ = 197;
+                    current_statement_begin__ = 191;
                     lp_accum__.add(normal_log<propto__>(get_base1(alpha,1,"alpha",1), 0.5, prior_alpha_sd));
                 } else if (as_bool(logical_gt(K,1))) {
 
-                    current_statement_begin__ = 199;
+                    current_statement_begin__ = 193;
                     lp_accum__.add(normal_log<propto__>(to_vector(delta), 0, prior_delta_sd));
-                    current_statement_begin__ = 200;
+                    current_statement_begin__ = 194;
                     for (int k = 1; k <= K; ++k) {
 
-                        current_statement_begin__ = 201;
+                        current_statement_begin__ = 195;
                         lp_accum__.add(normal_log<propto__>(to_vector(get_base1(psi,k,"psi",1)), 0, prior_psi_sd));
-                        current_statement_begin__ = 202;
+                        current_statement_begin__ = 196;
                         lp_accum__.add(normal_log<propto__>(to_vector(get_base1(gamma,k,"gamma",1)), 1, prior_gamma_sd));
-                        current_statement_begin__ = 203;
+                        current_statement_begin__ = 197;
                         lp_accum__.add(normal_log<propto__>(to_vector(get_base1(alpha,k,"alpha",1)), 0.5, prior_alpha_sd));
                     }
                 }
             }
-            current_statement_begin__ = 208;
+            current_statement_begin__ = 202;
             lp_accum__.add(sum(elt_multiply(log_like,weights)));
 
         } catch (const std::exception& e) {
@@ -1153,7 +1153,7 @@ public:
         dims__.push_back(A);
         dimss__.push_back(dims__);
         dims__.resize(0);
-        dims__.push_back((logical_eq(fixed_scale,0) ? K : 0 ));
+        dims__.push_back((logical_eq(fixed_scale1,0) ? K : 0 ));
         dimss__.push_back(dims__);
         dims__.resize(0);
         dims__.push_back((K - 1));
@@ -1200,7 +1200,7 @@ public:
         for (size_t k_0__ = 0; k_0__ < dim_alpha_0__; ++k_0__) {
             alpha.push_back(in__.vector_lub_constrain(0,1,A));
         }
-        vector_d scale = in__.vector_lb_constrain(0,(logical_eq(fixed_scale,0) ? K : 0 ));
+        vector_d scale = in__.vector_lb_constrain(0,(logical_eq(fixed_scale1,0) ? K : 0 ));
         matrix_d delta = in__.matrix_constrain((K - 1),L);
             for (int k_1__ = 0; k_1__ < NPsi; ++k_1__) {
                 for (int k_0__ = 0; k_0__ < K; ++k_0__) {
@@ -1217,7 +1217,7 @@ public:
                 vars__.push_back(alpha[k_0__][k_1__]);
                 }
             }
-            for (int k_0__ = 0; k_0__ < (logical_eq(fixed_scale,0) ? K : 0 ); ++k_0__) {
+            for (int k_0__ = 0; k_0__ < (logical_eq(fixed_scale1,0) ? K : 0 ); ++k_0__) {
             vars__.push_back(scale[k_0__]);
             }
             for (int k_1__ = 0; k_1__ < L; ++k_1__) {
@@ -1235,7 +1235,7 @@ public:
         (void) DUMMY_VAR__;  // suppress unused var warning
 
         try {
-            current_statement_begin__ = 154;
+            current_statement_begin__ = 148;
             validate_non_negative_index("log_like", "I", I);
             Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,1>  log_like(static_cast<Eigen::VectorXd::Index>(I));
             (void) log_like;  // dummy to suppress unused var warning
@@ -1244,10 +1244,10 @@ public:
             stan::math::fill(log_like,DUMMY_VAR__);
 
 
-            current_statement_begin__ = 156;
+            current_statement_begin__ = 150;
             if (as_bool(logical_eq(K,1))) {
                 {
-                current_statement_begin__ = 157;
+                current_statement_begin__ = 151;
                 validate_non_negative_index("lpsi", "I", I);
                 validate_non_negative_index("lpsi", "J", J);
                 Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,Eigen::Dynamic>  lpsi(static_cast<Eigen::VectorXd::Index>(I),static_cast<Eigen::VectorXd::Index>(J));
@@ -1256,7 +1256,7 @@ public:
                 stan::math::initialize(lpsi, DUMMY_VAR__);
                 stan::math::fill(lpsi,DUMMY_VAR__);
                 stan::math::assign(lpsi,to_matrix(multiply(stan::model::rvalue(dat_psi, stan::model::cons_list(stan::model::index_omni(), stan::model::nil_index_list()), "dat_psi"),get_base1(psi,1,"psi",1)),I,J,0));
-                current_statement_begin__ = 158;
+                current_statement_begin__ = 152;
                 validate_non_negative_index("gamma_j", "I", I);
                 validate_non_negative_index("gamma_j", "J", J);
                 Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,Eigen::Dynamic>  gamma_j(static_cast<Eigen::VectorXd::Index>(I),static_cast<Eigen::VectorXd::Index>(J));
@@ -1265,7 +1265,7 @@ public:
                 stan::math::initialize(gamma_j, DUMMY_VAR__);
                 stan::math::fill(gamma_j,DUMMY_VAR__);
                 stan::math::assign(gamma_j,gamma_ll(get_base1(gamma,1,"gamma",1),I,J,model_num, pstream__));
-                current_statement_begin__ = 159;
+                current_statement_begin__ = 153;
                 validate_non_negative_index("alpha_full", "I", I);
                 validate_non_negative_index("alpha_full", "(J + 1)", (J + 1));
                 Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,Eigen::Dynamic>  alpha_full(static_cast<Eigen::VectorXd::Index>(I),static_cast<Eigen::VectorXd::Index>((J + 1)));
@@ -1274,21 +1274,21 @@ public:
                 stan::math::initialize(alpha_full, DUMMY_VAR__);
                 stan::math::fill(alpha_full,DUMMY_VAR__);
                 stan::math::assign(alpha_full,alpha_ll(get_base1(alpha,1,"alpha",1),I,J,model_num, pstream__));
-                current_statement_begin__ = 160;
+                current_statement_begin__ = 154;
                 local_scalar_t__ scale_full;
                 (void) scale_full;  // dummy to suppress unused var warning
 
                 stan::math::initialize(scale_full, DUMMY_VAR__);
                 stan::math::fill(scale_full,DUMMY_VAR__);
-                stan::math::assign(scale_full,(logical_eq(fixed_scale,0) ? stan::math::promote_scalar<local_scalar_t__>(get_base1(scale,1,"scale",1)) : stan::math::promote_scalar<local_scalar_t__>(1.0) ));
+                stan::math::assign(scale_full,(logical_eq(fixed_scale1,0) ? stan::math::promote_scalar<local_scalar_t__>(get_base1(scale,1,"scale",1)) : stan::math::promote_scalar<local_scalar_t__>(1.0) ));
 
 
-                current_statement_begin__ = 162;
+                current_statement_begin__ = 156;
                 stan::math::assign(log_like, mdcev_ll(quant_j,price_j,log_num,log_inc,M,log_M_fact,lpsi,gamma_j,col(alpha_full,1),block(alpha_full,1,2,I,J),scale_full,I,J,nonzero,trunc_data, pstream__));
                 }
             } else if (as_bool(logical_gt(K,1))) {
                 {
-                current_statement_begin__ = 167;
+                current_statement_begin__ = 161;
                 validate_non_negative_index("log_like_util", "I", I);
                 validate_non_negative_index("log_like_util", "K", K);
                 vector<Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,1> > log_like_util(K, (Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,1> (static_cast<Eigen::VectorXd::Index>(I))));
@@ -1296,10 +1296,10 @@ public:
                 stan::math::fill(log_like_util,DUMMY_VAR__);
 
 
-                current_statement_begin__ = 168;
+                current_statement_begin__ = 162;
                 for (int k = 1; k <= K; ++k) {
                     {
-                    current_statement_begin__ = 169;
+                    current_statement_begin__ = 163;
                     validate_non_negative_index("lpsi", "I", I);
                     validate_non_negative_index("lpsi", "J", J);
                     Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,Eigen::Dynamic>  lpsi(static_cast<Eigen::VectorXd::Index>(I),static_cast<Eigen::VectorXd::Index>(J));
@@ -1308,7 +1308,7 @@ public:
                     stan::math::initialize(lpsi, DUMMY_VAR__);
                     stan::math::fill(lpsi,DUMMY_VAR__);
                     stan::math::assign(lpsi,to_matrix(multiply(stan::model::rvalue(dat_psi, stan::model::cons_list(stan::model::index_omni(), stan::model::nil_index_list()), "dat_psi"),get_base1(psi,k,"psi",1)),I,J,0));
-                    current_statement_begin__ = 170;
+                    current_statement_begin__ = 164;
                     validate_non_negative_index("gamma_full", "I", I);
                     validate_non_negative_index("gamma_full", "J", J);
                     Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,Eigen::Dynamic>  gamma_full(static_cast<Eigen::VectorXd::Index>(I),static_cast<Eigen::VectorXd::Index>(J));
@@ -1317,7 +1317,7 @@ public:
                     stan::math::initialize(gamma_full, DUMMY_VAR__);
                     stan::math::fill(gamma_full,DUMMY_VAR__);
                     stan::math::assign(gamma_full,gamma_ll(get_base1(gamma,k,"gamma",1),I,J,model_num, pstream__));
-                    current_statement_begin__ = 171;
+                    current_statement_begin__ = 165;
                     validate_non_negative_index("alpha_full", "I", I);
                     validate_non_negative_index("alpha_full", "(J + 1)", (J + 1));
                     Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,Eigen::Dynamic>  alpha_full(static_cast<Eigen::VectorXd::Index>(I),static_cast<Eigen::VectorXd::Index>((J + 1)));
@@ -1326,26 +1326,26 @@ public:
                     stan::math::initialize(alpha_full, DUMMY_VAR__);
                     stan::math::fill(alpha_full,DUMMY_VAR__);
                     stan::math::assign(alpha_full,alpha_ll(get_base1(alpha,k,"alpha",1),I,J,model_num, pstream__));
-                    current_statement_begin__ = 172;
+                    current_statement_begin__ = 166;
                     local_scalar_t__ scale_full;
                     (void) scale_full;  // dummy to suppress unused var warning
 
                     stan::math::initialize(scale_full, DUMMY_VAR__);
                     stan::math::fill(scale_full,DUMMY_VAR__);
-                    stan::math::assign(scale_full,(logical_eq(fixed_scale,0) ? stan::math::promote_scalar<local_scalar_t__>(get_base1(scale,k,"scale",1)) : stan::math::promote_scalar<local_scalar_t__>(1.0) ));
+                    stan::math::assign(scale_full,(logical_eq(fixed_scale1,0) ? stan::math::promote_scalar<local_scalar_t__>(get_base1(scale,k,"scale",1)) : stan::math::promote_scalar<local_scalar_t__>(1.0) ));
 
 
-                    current_statement_begin__ = 174;
+                    current_statement_begin__ = 168;
                     stan::model::assign(log_like_util, 
                                 stan::model::cons_list(stan::model::index_uni(k), stan::model::nil_index_list()), 
                                 mdcev_ll(quant_j,price_j,log_num,log_inc,M,log_M_fact,lpsi,gamma_full,col(alpha_full,1),block(alpha_full,1,2,I,J),scale_full,I,J,nonzero,trunc_data, pstream__), 
                                 "assigning variable log_like_util");
                     }
                 }
-                current_statement_begin__ = 178;
+                current_statement_begin__ = 172;
                 for (int i = 1; i <= I; ++i) {
                     {
-                    current_statement_begin__ = 179;
+                    current_statement_begin__ = 173;
                     validate_non_negative_index("ltheta", "K", K);
                     Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,1>  ltheta(static_cast<Eigen::VectorXd::Index>(K));
                     (void) ltheta;  // dummy to suppress unused var warning
@@ -1353,7 +1353,7 @@ public:
                     stan::math::initialize(ltheta, DUMMY_VAR__);
                     stan::math::fill(ltheta,DUMMY_VAR__);
                     stan::math::assign(ltheta,log_softmax(append_row(0,multiply(delta,get_base1(data_class,i,"data_class",1)))));
-                    current_statement_begin__ = 180;
+                    current_statement_begin__ = 174;
                     validate_non_negative_index("lps", "K", K);
                     Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,1>  lps(static_cast<Eigen::VectorXd::Index>(K));
                     (void) lps;  // dummy to suppress unused var warning
@@ -1362,16 +1362,16 @@ public:
                     stan::math::fill(lps,DUMMY_VAR__);
 
 
-                    current_statement_begin__ = 181;
+                    current_statement_begin__ = 175;
                     for (int k = 1; k <= K; ++k) {
 
-                        current_statement_begin__ = 182;
+                        current_statement_begin__ = 176;
                         stan::model::assign(lps, 
                                     stan::model::cons_list(stan::model::index_uni(k), stan::model::nil_index_list()), 
                                     (get_base1(ltheta,k,"ltheta",1) + get_base1(get_base1(log_like_util,k,"log_like_util",1),i,"log_like_util",2)), 
                                     "assigning variable lps");
                     }
-                    current_statement_begin__ = 184;
+                    current_statement_begin__ = 178;
                     stan::model::assign(log_like, 
                                 stan::model::cons_list(stan::model::index_uni(i), stan::model::nil_index_list()), 
                                 log_sum_exp(lps), 
@@ -1382,7 +1382,7 @@ public:
             }
 
             // validate transformed parameters
-            current_statement_begin__ = 154;
+            current_statement_begin__ = 148;
 
             // write transformed parameters
             if (include_tparams__) {
@@ -1392,14 +1392,14 @@ public:
             }
             if (!include_gqs__) return;
             // declare and define generated quantities
-            current_statement_begin__ = 212;
+            current_statement_begin__ = 206;
             local_scalar_t__ sum_log_lik;
             (void) sum_log_lik;  // dummy to suppress unused var warning
 
             stan::math::initialize(sum_log_lik, DUMMY_VAR__);
             stan::math::fill(sum_log_lik,DUMMY_VAR__);
             stan::math::assign(sum_log_lik,0);
-            current_statement_begin__ = 213;
+            current_statement_begin__ = 207;
             validate_non_negative_index("theta", "(logical_gt(K,1) ? I : 0 )", (logical_gt(K,1) ? I : 0 ));
             validate_non_negative_index("theta", "K", K);
             vector<Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,1> > theta(K, (Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,1> (static_cast<Eigen::VectorXd::Index>((logical_gt(K,1) ? I : 0 )))));
@@ -1407,15 +1407,15 @@ public:
             stan::math::fill(theta,DUMMY_VAR__);
 
 
-            current_statement_begin__ = 215;
+            current_statement_begin__ = 209;
             for (int i = 1; i <= I; ++i) {
 
-                current_statement_begin__ = 216;
+                current_statement_begin__ = 210;
                 stan::math::assign(sum_log_lik, stan::model::deep_copy((sum_log_lik + get_base1(log_like,i,"log_like",1))));
-                current_statement_begin__ = 217;
+                current_statement_begin__ = 211;
                 if (as_bool(logical_gt(K,1))) {
                     {
-                    current_statement_begin__ = 218;
+                    current_statement_begin__ = 212;
                     validate_non_negative_index("theta1", "K", K);
                     Eigen::Matrix<local_scalar_t__,Eigen::Dynamic,1>  theta1(static_cast<Eigen::VectorXd::Index>(K));
                     (void) theta1;  // dummy to suppress unused var warning
@@ -1425,9 +1425,9 @@ public:
                     stan::math::assign(theta1,log_softmax(append_row(0,multiply(delta,get_base1(data_class,i,"data_class",1)))));
 
 
-                    current_statement_begin__ = 219;
+                    current_statement_begin__ = 213;
                     for (int k = 1; k <= K; ++k) {
-                        current_statement_begin__ = 220;
+                        current_statement_begin__ = 214;
                         stan::model::assign(theta, 
                                     stan::model::cons_list(stan::model::index_uni(k), stan::model::cons_list(stan::model::index_uni(i), stan::model::nil_index_list())), 
                                     get_base1(theta1,k,"theta1",1), 
@@ -1438,8 +1438,8 @@ public:
             }
 
             // validate generated quantities
-            current_statement_begin__ = 212;
-            current_statement_begin__ = 213;
+            current_statement_begin__ = 206;
+            current_statement_begin__ = 207;
 
             // write generated quantities
         vars__.push_back(sum_log_lik);
@@ -1504,7 +1504,7 @@ public:
                 param_names__.push_back(param_name_stream__.str());
             }
         }
-        for (int k_0__ = 1; k_0__ <= (logical_eq(fixed_scale,0) ? K : 0 ); ++k_0__) {
+        for (int k_0__ = 1; k_0__ <= (logical_eq(fixed_scale1,0) ? K : 0 ); ++k_0__) {
             param_name_stream__.str(std::string());
             param_name_stream__ << "scale" << '.' << k_0__;
             param_names__.push_back(param_name_stream__.str());
@@ -1567,7 +1567,7 @@ public:
                 param_names__.push_back(param_name_stream__.str());
             }
         }
-        for (int k_0__ = 1; k_0__ <= (logical_eq(fixed_scale,0) ? K : 0 ); ++k_0__) {
+        for (int k_0__ = 1; k_0__ <= (logical_eq(fixed_scale1,0) ? K : 0 ); ++k_0__) {
             param_name_stream__.str(std::string());
             param_name_stream__ << "scale" << '.' << k_0__;
             param_names__.push_back(param_name_stream__.str());

@@ -7,7 +7,7 @@ functions {
 data {
 // declares I J NPsi K dat_psi price_j quant_j income num_price M_factorial
 // prior_psi_sd prior_gamma_sd prior_alpha_sd prior_scale_sd
-// model_num fixed_scale trunc_data flat_priors weights
+// model_num fixed_scale1 trunc_data flat_priors weights
 #include /common/mdcev_data.stan
 	int K; // number of mixtures
 
@@ -25,7 +25,7 @@ parameters {
 	vector[NPsi] psi[K];
 	vector<lower=0 >[Gamma] gamma[K];
 	vector<lower=0, upper=1>[A] alpha[K];
-	vector<lower=0>[fixed_scale == 0 ? K : 0] scale;
+	vector<lower=0>[fixed_scale1 == 0 ? K : 0] scale;
   	matrix[K - 1, L] delta;  // mixture regression coeffs
 }
 
@@ -36,7 +36,7 @@ transformed parameters {
   		matrix[I, J] lpsi = to_matrix(dat_psi[] * psi[1], I, J, 0);
 		matrix[I, J] gamma_j = gamma_ll(gamma[1], I, J, model_num);
 		matrix[I, J+1] alpha_full = alpha_ll(alpha[1], I, J, model_num);
-		real scale_full = fixed_scale == 0 ? scale[1] : 1.0;
+		real scale_full = fixed_scale1 == 0 ? scale[1] : 1.0;
 
 		log_like = mdcev_ll(quant_j, price_j, log_num, log_inc, M, log_M_fact, // data
 				lpsi, gamma_j, col(alpha_full, 1), block(alpha_full, 1, 2, I, J), scale_full, // parameters
@@ -48,7 +48,7 @@ transformed parameters {
 				matrix[I, J] lpsi = to_matrix(dat_psi[] * psi[k], I, J, 0);
 				matrix[I, J] gamma_full = gamma_ll(gamma[k], I, J, model_num);
 				matrix[I, J+1] alpha_full = alpha_ll(alpha[k], I, J, model_num);
-				real scale_full = fixed_scale == 0 ? scale[k] : 1.0;
+				real scale_full = fixed_scale1 == 0 ? scale[k] : 1.0;
 
 			log_like_util[k] = mdcev_ll(quant_j, price_j, log_num, log_inc, M, log_M_fact, // data
 				lpsi, gamma_full, col(alpha_full, 1), block(alpha_full, 1, 2, I, J), scale_full, 						// parameters

@@ -13,15 +13,17 @@ data {
   int end[I]; // the ending observation for each task
   real<lower=1> lkj_shape; // shape parameter for LKJ prior
 //  vector[NPsi] psi_ndx;
-//  int<lower=0, upper=1>  gamma_ndx;
-//  int<lower=0, upper=1>  alpha_ndx;
+  int<lower=0, upper=1>  gamma_fixed;
+  int<lower=0, upper=1>  alpha_fixed;
 }
 
 transformed data {
 	int RP;
 //	int RP_psi
-//	int RP_gamma
-//	int RP_alpha
+	int n_gamma_rp;
+	int n_gamma_fixed;
+	int n_alpha_rp;
+	int n_alpha_fixed;
 	int RP_g;
 	int RP_a;
 #include /common/mdcev_tdata.stan
@@ -29,37 +31,33 @@ transformed data {
 //	n_psi_rp = sum(psi_ndx);
 //	n_psi_fixed = NPsi - sum(psi_ndx);
 
-//	if (gamma_ndx == 1){
-//		n_gamma_rp = Gamma;
-//		n_gamma_fixed = 0;
-//	} else if (gamma_ndx == 0){
-//		n_gamma_rp = 0;
-//		n_gamma_fixed = Gamma;
-//	}
-//	if (alpha_ndx == 1){
-//		n_alpha_rp = A;
-//		n_alpha_fixed = 0;
-//	} else if (alpha_ndx == 0){
-//		n_alpha_rp = 0;
-//		n_alpha_fixed = A;
-//	}
-// 	RP = n_psi_rp + n_gamma_rp + n_alpha_rp; // number of random parameters
-//	RP_g = n_psi_rp + 1; // location of first gamma
-//	RP_a = n_psi_rp + n_gamma_rp + 1; // location of alpha
- 	RP = NPsi + Gamma + A; // number of random parameters
+	if (gamma_fixed == 0){
+		n_gamma_rp = Gamma;
+	} else if (gamma_fixed == 1){
+		n_gamma_rp = 0;
+	}
+	if (alpha_fixed == 0){
+		n_alpha_rp = A;
+	} else if (alpha_fixed == 1){
+		n_alpha_rp = 0;
+	}
+ 	RP = NPsi + n_gamma_rp + n_alpha_rp; // number of random parameters
 	RP_g = NPsi + 1; // location of first gamma
-	RP_a = NPsi + Gamma + 1; // location of alpha
+	RP_a = NPsi + n_gamma_rp + 1; // location of alpha
+// 	RP = NPsi + Gamma + A; // number of random parameters
+//	RP_g = NPsi + 1; // location of first gamma
+//	RP_a = NPsi + Gamma + 1; // location of alpha
 }
 
 parameters {
 //	vector[n_psi_fixed] psi;
-//	vector<lower=0 >[n_gamma_fixed] gamma;
-//	vector<lower=0, upper=1>[n_alpha_fixed] alpha;
+	vector<lower=0 >[gamma_fixed == 1 ? Gamma : 0] gamma;
+	vector<lower=0, upper=1>[alpha_fixed == 1 ? A : 0] alpha;
 	vector[RP] mu;                                // means for beta
   	matrix[I, RP] z;                             // std normal draws
 	cholesky_factor_corr[corr == 1 ? RP : 0] L_Omega;                // cholesky factors
   	vector<lower=0,upper=pi()/2>[RP] tau_unif;
-	vector<lower=0>[fixed_scale == 0 ? 1 : 0] scale;
+	vector<lower=0>[fixed_scale1 == 0 ? 1 : 0] scale;
 }
 
 transformed parameters {
@@ -71,10 +69,11 @@ transformed parameters {
 	matrix[I, RP] beta;             // utility parameters (individual level)
 	matrix[I, J] lpsi;
    	matrix[I, NPsi] psi_individual;
+  	matrix[I, J+1] alpha_full;
   	vector[I] alpha_individual_1;
   	matrix[I, J] alpha_individual_j;
   	matrix[I, J] gamma_individual;
-	real scale_full = fixed_scale == 0 ? scale[1] : 1.0;
+	real scale_full = fixed_scale1 == 0 ? scale[1] : 1.0;
 
 	for (rp in 1:RP) tau[rp] = 2.5 * tan(tau_unif[rp]);
 
@@ -85,23 +84,33 @@ transformed parameters {
 		beta = rep_matrix(mu', I) + diag_post_multiply(z, tau);
 	}
 
-	if (model_num < 4){
-		alpha_individual_1 = exp(col(beta, RP_a)) ./ (1 + exp(col(beta, RP_a)));
-		if (model_num == 1)
-		  	alpha_individual_j = rep_matrix(0, I, J);
-		else if (model_num == 2)
-		  	alpha_individual_j = exp(block(beta, 1, RP_a + 1, I, J)) ./ (1 + exp(block(beta, 1, RP_a + 1, I, J)));
-		else
-			alpha_individual_j = rep_matrix(alpha_individual_1, J);
-	} else {
-		alpha_individual_1 = rep_vector(1e-03, I);
-		alpha_individual_j = rep_matrix(1e-03, I, J);
+	if (alpha_fixed == 0){
+		if (model_num < 4){
+			alpha_individual_1 = inv(1 + exp(-col(beta, RP_a)));
+			if (model_num == 1)
+			  	alpha_individual_j = rep_matrix(0, I, J);
+			else if (model_num == 2)
+			  	alpha_individual_j = inv(1 + exp(-block(beta, 1, RP_a + 1, I, J)));
+			else
+				alpha_individual_j = rep_matrix(alpha_individual_1, J);
+		} else {
+			alpha_individual_1 = rep_vector(1e-03, I);
+			alpha_individual_j = rep_matrix(1e-03, I, J);
+		}
+	} else if (alpha_fixed == 1){
+		alpha_full = alpha_ll(alpha, I, J, model_num);
+		alpha_individual_1 = col(alpha_full, 1);
+		alpha_individual_j = block(alpha_full, 1, 2, I, J);
 	}
 
-	if (model_num == 2)
-	  gamma_individual = rep_matrix(1, I, J);
-	else
-	  gamma_individual = exp(block(beta, 1, RP_g, I, J));
+	if (gamma_fixed == 0){
+		if (model_num == 2)
+	  		gamma_individual = rep_matrix(1, I, J);
+		else
+	  		gamma_individual = exp(block(beta, 1, RP_g, I, J));
+	} else if (gamma_fixed == 1){
+		gamma_individual = gamma_ll(gamma, I, J, model_num);
+	}
 
 	psi_individual = block(beta, 1, 1, I, NPsi);
 
@@ -119,6 +128,8 @@ transformed parameters {
 
 model {
   // priors on the parameters
+  	gamma ~ normal(0, prior_gamma_sd);
+	alpha ~ normal(.5, prior_alpha_sd);
 	to_vector(z) ~ normal(0, 1);
 	to_vector(mu) ~ normal(0, 10);
 	L_Omega ~ lkj_corr_cholesky(lkj_shape);                 // lkj prior
@@ -128,7 +139,7 @@ model {
 }
 
 generated quantities{
-   cov_matrix[RP] Sigma;                            // cov matrix
+   matrix[RP, RP] Sigma;                            // cov matrix
    real<upper=0> sum_log_lik = 0;// log_lik for each sample
 
 	{
