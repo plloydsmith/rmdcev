@@ -1,6 +1,4 @@
 context("Test Data load")
-
-
 library(rmdcev)
 
 tol <- 0.1
@@ -31,7 +29,6 @@ test_that("MLE names", {
 									 print_iterations = FALSE))
 })
 
-
 context("MLE hybrid0 specification")
 
 test_that("MLE hybrid0", {
@@ -53,4 +50,3 @@ test_that("MLE hybrid0", {
 	expect_true(abs(output[["stan_fit"]][["par"]][["psi"]][[1]] - -7.635813) < tol)
 	expect_equal(length(output[["stan_fit"]][["par"]][["alpha"]]), 0)
 })
-

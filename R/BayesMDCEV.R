@@ -52,7 +52,6 @@ BayesMDCEV <- function(stan_data, bayes_options,
 		stan_data$corr <- 1
 	}
 
-
 	if (bayes_options$show_stan_warnings == FALSE)
 		suppressWarnings(stan_fit <- RunStanSampling(stan_data, stan.model, bayes_options))
 	else if(bayes_options$show_stan_warnings == TRUE)
@@ -69,7 +68,7 @@ BayesMDCEV <- function(stan_data, bayes_options,
 
 #	result$stan_fit$par[["theta"]] <- NULL
 #	result$stan_fit$par[["beta_m"]] <- NULL
-	result
+return(result)
 }
 
 #' @title RunStanSampling

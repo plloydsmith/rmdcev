@@ -1,9 +1,5 @@
-
-
-
-
-
 context("Test Data load")
+
 tol <- 0.01
 
 data(data_rec, package = "rmdcev")
@@ -41,6 +37,7 @@ seed = "123"
 initial.parameters = NULL
 algorithm = "MLE"
 flat_priors = NULL
+max_iterations = 500
 print_iterations = TRUE
 hessian = TRUE
 prior_psi_sd = 10
@@ -48,6 +45,7 @@ prior_gamma_sd = 10
 prior_alpha_sd = 0.5
 prior_scale_sd = 1
 prior_beta_m_sd = 10
+prior_delta_sd = 10
 gamma_fixed = 1
 alpha_fixed = 1
 n_draws = 30
@@ -59,6 +57,7 @@ mle_options <- list(fixed_scale1 = fixed_scale1,
 					n_classes = n_classes,
 					trunc_data = trunc_data,
 					seed = seed,
+					max_iterations = max_iterations,
 					print_iterations = print_iterations,
 					hessian = hessian,
 					n_draws = n_draws,
@@ -68,7 +67,7 @@ mle_options <- list(fixed_scale1 = fixed_scale1,
 					prior_gamma_sd = prior_gamma_sd,
 					prior_alpha_sd = prior_alpha_sd,
 					prior_scale_sd = prior_scale_sd,
-					prior_beta_m_sd = prior_beta_m_sd,
+					prior_delta_sd = prior_delta_sd,
 					gamma_fixed = gamma_fixed,
 					alpha_fixed = alpha_fixed)
 

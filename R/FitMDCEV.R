@@ -166,7 +166,6 @@ FitMDCEV <- function(data,
 				select(-starts_with("log_like"), -starts_with("sum_log_lik"),
 					   -starts_with("tau_unif"), -.data$lp__)
 
-
 	} else if (algorithm == "MLE") {
 		result <- maxlikeMDCEV(stan_data, initial.parameters, mle_options)
 
@@ -181,7 +180,6 @@ FitMDCEV <- function(data,
 
 	}
 	end.time <- proc.time()
-
 
 	if(algorithm == "Bayes" || std_errors == "deltamethod")
 		result$n_draws <- NULL

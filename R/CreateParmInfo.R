@@ -70,28 +70,27 @@ if (stan_data$K > 1){
 	parm_names$all_names <- c(all_names, parm_names$delta.names)
 }
 #standard deviations
-if (algorithm == "Bayes"){
-	if(random_parameters != "fixed"){
-		if(stan_data$gamma_fixed == 1){
-			n_gamma_rp <- 0
-			gamma_sd_names <- NULL
-		} else if(stan_data$gamma_fixed == 0){
-			n_gamma_rp <- n_gamma
-			gamma_sd_names <- gamma_names
-		}
+if(random_parameters != "fixed"){
+	if(stan_data$gamma_fixed == 1){
+		n_gamma_rp <- 0
+		gamma_sd_names <- NULL
+	} else if(stan_data$gamma_fixed == 0){
+		n_gamma_rp <- n_gamma
+		gamma_sd_names <- gamma_names
+	}
 
-		if(stan_data$alpha_fixed == 1){
-			n_alpha_rp <- 0
-			alpha_sd_names <- NULL
-		} else if(stan_data$alpha_fixed == 0){
-			n_alpha_rp <- n_alpha
-			alpha_sd_names <- alpha_names
-		}
-		n_vars$n_std_dev <- n_psi + n_gamma_rp + n_alpha_rp
-		parm_names$sd_names <- paste0("sd.", c(psi_names, gamma_sd_names, alpha_sd_names))
-		if (random_parameters == "corr"){
-			n_vars$n_std_corr <- n_vars$n_std_dev * (n_vars$n_std_dev-1) / 2
-		}
+	if(stan_data$alpha_fixed == 1){
+		n_alpha_rp <- 0
+		alpha_sd_names <- NULL
+	} else if(stan_data$alpha_fixed == 0){
+		n_alpha_rp <- n_alpha
+		alpha_sd_names <- alpha_names
+	}
+	n_vars$n_std_dev <- n_psi + n_gamma_rp + n_alpha_rp
+	parm_names$sd_names <- paste0("sd.", c(psi_names, gamma_sd_names, alpha_sd_names))
+
+	if (random_parameters == "corr"){
+		n_vars$n_std_corr <- n_vars$n_std_dev * (n_vars$n_std_dev-1) / 2
 	}
 }
 
@@ -99,8 +98,6 @@ n_vars$n_parms_total <- Reduce("+",n_vars)
 
 parms_info <- list(n_vars = n_vars,
 				   parm_names = parm_names)
-
-#is.equal(sum(sapply(parm_names,length)), n_vars$n_parms_total)
 
 return(parms_info)
 }
