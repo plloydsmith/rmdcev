@@ -1,14 +1,13 @@
 
 
-library(rmdcev)
 
+
+
+context("Test Data load")
 tol <- 0.01
 
 data(data_rec, package = "rmdcev")
 data_rec
-
-context("Test Data load")
-
 test_that("Data ok", {
 	expect_equal(data_rec$id[18], 2)
 })
@@ -49,6 +48,8 @@ prior_gamma_sd = 10
 prior_alpha_sd = 0.5
 prior_scale_sd = 1
 prior_beta_m_sd = 10
+gamma_fixed = 1
+alpha_fixed = 1
 n_draws = 30
 keep_loglik = 0
 random_parameters = "fixed"
@@ -67,7 +68,9 @@ mle_options <- list(fixed_scale1 = fixed_scale1,
 					prior_gamma_sd = prior_gamma_sd,
 					prior_alpha_sd = prior_alpha_sd,
 					prior_scale_sd = prior_scale_sd,
-					prior_beta_m_sd = prior_beta_m_sd)
+					prior_beta_m_sd = prior_beta_m_sd,
+					gamma_fixed = gamma_fixed,
+					alpha_fixed = alpha_fixed)
 
 stan_data <- processMDCEVdata(data_rec, psi_formula, lc_formula, mle_options)
 parms_info <- CreateParmInfo(stan_data, algorithm, random_parameters)
