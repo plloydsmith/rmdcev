@@ -50,3 +50,18 @@ test_that("MLE hybrid0", {
 	expect_true(abs(output[["stan_fit"]][["par"]][["psi"]][[1]] - -7.635813) < tol)
 	expect_equal(length(output[["stan_fit"]][["par"]][["alpha"]]), 0)
 })
+
+
+context("MLE hybrid specification")
+
+test_that("MLE hybrid", {
+	output <- FitMDCEV(psi_formula = ~ 1,
+					   data = subset(data_rec, id < 100),
+					   model = "hybrid",
+					   algorithm = "MLE",
+					   std_error = "deltamethod",
+					   print_iterations = FALSE)
+
+	output.sum <- SummaryMDCEV(output)
+	expect_equal(length(output.sum$Std.err), 20)
+})
