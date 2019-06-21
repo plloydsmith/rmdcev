@@ -19,34 +19,18 @@ data {
 
 transformed data {
 	int RP;
-//	int RP_psi
-	int n_gamma_rp;
-	int n_gamma_fixed;
-	int n_alpha_rp;
-	int n_alpha_fixed;
 	int RP_g;
 	int RP_a;
 #include /common/mdcev_tdata.stan
-
+	{
+	int n_gamma_rp = gamma_fixed == 0 ? Gamma : 0;
+	int n_alpha_rp = alpha_fixed == 0 ? A : 0;
+	RP = NPsi + n_gamma_rp + n_alpha_rp; // number of random parameters
+	RP_g = NPsi + 1; // location of first gamma
+	RP_a = NPsi + n_gamma_rp + 1; // location of first alpha
+	}
 //	n_psi_rp = sum(psi_ndx);
 //	n_psi_fixed = NPsi - sum(psi_ndx);
-
-	if (gamma_fixed == 0){
-		n_gamma_rp = Gamma;
-	} else if (gamma_fixed == 1){
-		n_gamma_rp = 0;
-	}
-	if (alpha_fixed == 0){
-		n_alpha_rp = A;
-	} else if (alpha_fixed == 1){
-		n_alpha_rp = 0;
-	}
- 	RP = NPsi + n_gamma_rp + n_alpha_rp; // number of random parameters
-	RP_g = NPsi + 1; // location of first gamma
-	RP_a = NPsi + n_gamma_rp + 1; // location of alpha
-// 	RP = NPsi + Gamma + A; // number of random parameters
-//	RP_g = NPsi + 1; // location of first gamma
-//	RP_a = NPsi + Gamma + 1; // location of alpha
 }
 
 parameters {
