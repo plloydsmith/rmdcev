@@ -1,6 +1,4 @@
 
-<!-- README.md is generated from README.Rmd. Please edit that file -->
-
 # Multiple Discrete-Continuous Extreme Value (MDCEV) Model Estimation and Simulation in R: The rmdcev Package
 
 <!-- badges: start -->
@@ -50,6 +48,15 @@ if (!require(devtools)) {
 install_github("plloydsmith/rmdcev", build_vignettes = FALSE)
 ```
 
+Depending on your computer set-up, you may need to adjust your Makevars
+file of the .R folder (usually in your computer user folder) to ensure
+the first two lines are
+
+``` r
+CXX14 = $(BINPREF)g++ -m$(WIN) -std=c++1y
+CXX14FLAGS=-O3 -mtune=native -march=native
+```
+
 You can switch build\_vignettes to TRUE but it will take a lot longer to
 install (Note: The vignette will be complete soon). If installation
 fails, please let me know by [filing an
@@ -97,19 +104,21 @@ mdcev_est <- FitMDCEV(psi_formula = ~ b1 + b2 + b3 + b4 + b5 + b6 + b7 + b8-1,
 #> Checking data...
 #> Data is good
 #> Using MLE to estimate MDCEV
-#> Chain 1: Initial log joint probability = -17144.7
+#> Chain 1: Initial log joint probability = -17885.5
 #> Chain 1:     Iter      log prob        ||dx||      ||grad||       alpha      alpha0  # evals  Notes 
-#> Chain 1:       19      -14148.5      0.664993       279.006           1           1       25   
+#> Chain 1:       19      -14869.2      0.801289       238.643           1           1       24   
 #> Chain 1:     Iter      log prob        ||dx||      ||grad||       alpha      alpha0  # evals  Notes 
-#> Chain 1:       39      -14080.6     0.0979007       35.6496           1           1       47   
+#> Chain 1:       39      -14763.5      0.346585       155.473           1           1       47   
 #> Chain 1:     Iter      log prob        ||dx||      ||grad||       alpha      alpha0  # evals  Notes 
-#> Chain 1:       59      -14072.3     0.0364687       21.5479      0.2996           1       75   
+#> Chain 1:       59      -14752.5     0.0310867       9.44744           1           1       68   
 #> Chain 1:     Iter      log prob        ||dx||      ||grad||       alpha      alpha0  # evals  Notes 
-#> Chain 1:       79      -14071.7    0.00679215       2.50178      0.2447           1       98   
+#> Chain 1:       79        -14751     0.0165834       6.64363           1           1       90   
 #> Chain 1:     Iter      log prob        ||dx||      ||grad||       alpha      alpha0  # evals  Notes 
-#> Chain 1:       99      -14071.6    0.00268428      0.585792           1           1      121   
+#> Chain 1:       99      -14750.9     0.0228325       1.88743           1           1      114   
 #> Chain 1:     Iter      log prob        ||dx||      ||grad||       alpha      alpha0  # evals  Notes 
-#> Chain 1:      111      -14071.6   0.000172627      0.423097      0.5706      0.5706      134   
+#> Chain 1:      119      -14750.9    0.00349279       1.57032           1           1      136   
+#> Chain 1:     Iter      log prob        ||dx||      ||grad||       alpha      alpha0  # evals  Notes 
+#> Chain 1:      127      -14750.9   0.000798697      0.365787           1           1      145   
 #> Chain 1: Optimization terminated normally: 
 #> Chain 1:   Convergence detected: relative gradient magnitude is below tolerance
 ```
@@ -118,23 +127,23 @@ Summarize results
 
 ``` r
 SummaryMDCEV(mdcev_est)
-#> Model run using rmdcev for R, version 0.8.0 
+#> Model run using rmdcev for R, version 0.9.0 
 #> Estimation method                : MLE
 #> Model type                       : hybrid specification
 #> Number of classes                : 1
 #> Number of individuals            : 1000
 #> Number of non-numeraire alts     : 10
 #> Estimated parameters             : 20
-#> LL                               : -14071.61
-#> AIC                              : 28183.21
-#> BIC                              : 28281.37
+#> LL                               : -14750.88
+#> AIC                              : 29541.77
+#> BIC                              : 29639.92
 #> Standard errors calculated using : 50 MVN draws
 #> Exit of MLE                      : successful convergence
-#> Time taken (hh:mm:ss)            : 00:00:1.58
+#> Time taken (hh:mm:ss)            : 00:00:1.69
 #> 
 #> Average consumption of non-numeraire alternatives:
 #>     1     2     3     4     5     6     7     8     9    10 
-#> 25.78 29.63  6.75 31.63 23.53 14.60 13.83  6.79 15.70 22.92 
+#> 21.89 15.91  6.16 23.71  7.09 25.39 15.10 32.50 40.47 13.27 
 #> 
 #> 
 #> Psi specification:
@@ -142,26 +151,26 @@ SummaryMDCEV(mdcev_est)
 #> b1 + b2 + b3 + b4 + b5 + b6 + b7 + b8 - 1
 #> Parameter estimates --------------------------------  
 #>         Estimate Std.err z.stat
-#> psi_b1    -4.431   0.448  -9.88
-#> psi_b2     0.602   0.091   6.62
-#> psi_b3     1.769   0.138  12.78
-#> psi_b4    -1.321   0.107 -12.35
-#> psi_b5     2.838   0.138  20.58
-#> psi_b6    -1.845   0.100 -18.45
-#> psi_b7     0.914   0.068  13.35
-#> psi_b8     1.872   0.092  20.28
-#> gamma1     1.753   0.296   5.93
-#> gamma2     1.610   0.218   7.38
-#> gamma3     0.701   0.161   4.36
-#> gamma4     1.340   0.180   7.46
-#> gamma5     1.187   0.174   6.80
-#> gamma6     1.304   0.235   5.55
-#> gamma7     1.743   0.269   6.48
-#> gamma8     1.185   0.252   4.71
-#> gamma9     1.560   0.257   6.06
-#> gamma10    1.654   0.246   6.73
-#> alpha1     0.532   0.023  22.71
-#> scale      0.945   0.039  24.48
+#> psi_b1    -6.022   0.690  -8.72
+#> psi_b2     0.552   0.103   5.33
+#> psi_b3     2.220   0.148  15.01
+#> psi_b4    -1.612   0.122 -13.24
+#> psi_b5     3.209   0.206  15.57
+#> psi_b6    -2.190   0.150 -14.64
+#> psi_b7     1.090   0.116   9.41
+#> psi_b8     2.280   0.143  15.90
+#> gamma1     1.084   0.143   7.60
+#> gamma2     1.000   0.139   7.17
+#> gamma3     1.601   0.356   4.50
+#> gamma4     2.128   0.353   6.02
+#> gamma5     0.784   0.115   6.83
+#> gamma6     1.867   0.306   6.09
+#> gamma7     2.304   0.349   6.60
+#> gamma8     1.839   0.250   7.34
+#> gamma9     1.131   0.146   7.73
+#> gamma10    1.130   0.207   5.45
+#> alpha1     0.454   0.034  13.30
+#> scale      1.093   0.065  16.74
 #> Note: Alpha parameter is equal for all goods.
 ```
 
@@ -184,26 +193,26 @@ coefs <- mdcev_est$est_pars %>%
 #> # A tibble: 20 x 7
 #>    parms     mean     sd  zstat  cl_lo  cl_hi  true
 #>    <chr>    <dbl>  <dbl>  <dbl>  <dbl>  <dbl> <dbl>
-#>  1 alpha1   0.532 0.0234  22.7   0.493  0.579  0.5 
-#>  2 gamma1   1.75  0.296    5.93  1.36   2.45   1.74
-#>  3 gamma10  1.65  0.246    6.73  1.21   2.16   1.62
-#>  4 gamma2   1.61  0.218    7.38  1.27   2.00   1.93
-#>  5 gamma3   0.701 0.161    4.36  0.420  1.02   1.06
-#>  6 gamma4   1.34  0.180    7.46  1.07   1.69   1.10
-#>  7 gamma5   1.19  0.174    6.80  0.872  1.51   1.24
-#>  8 gamma6   1.30  0.235    5.55  0.956  1.70   1.28
-#>  9 gamma7   1.74  0.269    6.48  1.27   2.24   1.89
-#> 10 gamma8   1.18  0.252    4.71  0.846  1.85   1.26
-#> 11 gamma9   1.56  0.257    6.06  1.14   2.10   1.97
-#> 12 psi_b1  -4.43  0.448   -9.88 -5.17  -3.73  -5   
-#> 13 psi_b2   0.602 0.0909   6.62  0.460  0.799  0.5 
-#> 14 psi_b3   1.77  0.138   12.8   1.48   1.98   2   
-#> 15 psi_b4  -1.32  0.107  -12.3  -1.52  -1.11  -1.5 
-#> 16 psi_b5   2.84  0.138   20.6   2.63   3.13   3   
-#> 17 psi_b6  -1.85  0.1000 -18.5  -2.03  -1.63  -2   
-#> 18 psi_b7   0.914 0.0685  13.3   0.808  1.04   1   
-#> 19 psi_b8   1.87  0.0923  20.3   1.71   2.07   2   
-#> 20 scale    0.945 0.0386  24.5   0.874  1.01   1
+#>  1 alpha1   0.454 0.0342  13.3   0.386  0.508  0.5 
+#>  2 gamma1   1.08  0.143    7.60  0.882  1.38   1.16
+#>  3 gamma10  1.13  0.207    5.45  0.785  1.57   1.11
+#>  4 gamma2   1.000 0.139    7.17  0.728  1.22   1.04
+#>  5 gamma3   1.60  0.356    4.50  1.09   2.34   1.82
+#>  6 gamma4   2.13  0.353    6.02  1.50   2.74   1.76
+#>  7 gamma5   0.784 0.115    6.83  0.585  0.991  1.12
+#>  8 gamma6   1.87  0.306    6.09  1.38   2.41   1.92
+#>  9 gamma7   2.30  0.349    6.60  1.82   2.98   1.84
+#> 10 gamma8   1.84  0.250    7.34  1.42   2.37   1.64
+#> 11 gamma9   1.13  0.146    7.73  0.850  1.38   1.11
+#> 12 psi_b1  -6.02  0.690   -8.72 -7.43  -4.86  -5   
+#> 13 psi_b2   0.552 0.103    5.33  0.376  0.718  0.5 
+#> 14 psi_b3   2.22  0.148   15.0   1.94   2.51   2   
+#> 15 psi_b4  -1.61  0.122  -13.2  -1.82  -1.38  -1.5 
+#> 16 psi_b5   3.21  0.206   15.6   2.90   3.68   3   
+#> 17 psi_b6  -2.19  0.150  -14.6  -2.46  -1.91  -2   
+#> 18 psi_b7   1.09  0.116    9.41  0.889  1.27   1   
+#> 19 psi_b8   2.28  0.143   15.9   2.03   2.52   2   
+#> 20 scale    1.09  0.0653  16.7   0.992  1.21   1
 ```
 
 Compare outputs using a figure
@@ -241,7 +250,7 @@ wtp <- SimulateMDCEV(df_sim$df_indiv, df_common = df_sim$df_common, sim_options 
 #> Compiling simulation code
 #> Simulating welfare...
 #> 
-#>  3.00e+05 simulations finished in 0.06 minutes. ( 86957 per second)
+#> 3.00e+05simulations finished in0.06minutes.(77519per second)
 SummaryWelfare(wtp)
 #> # A tibble: 2 x 5
 #>   policy   Mean Std.Dev `ci_lo2.5%` `ci_hi97.5%`

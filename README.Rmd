@@ -2,8 +2,6 @@
 output: github_document
 ---
 
-<!-- README.md is generated from README.Rmd. Please edit that file -->
-
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
@@ -47,6 +45,13 @@ if (!require(devtools)) {
   library(devtools)
 }
 install_github("plloydsmith/rmdcev", build_vignettes = FALSE)
+```
+
+Depending on your computer set-up, you may need to adjust your Makevars file of the .R folder (usually in your computer user folder) to ensure the first two lines are
+
+``` r
+CXX14 = $(BINPREF)g++ -m$(WIN) -std=c++1y
+CXX14FLAGS=-O3 -mtune=native -march=native
 ```
 
 You can switch build_vignettes to TRUE but it will take a lot longer to install (Note: The vignette will be complete soon). If installation fails, please let me know by [filing an issue](https://github.com/plloydsmith/rmdcev/issues).
