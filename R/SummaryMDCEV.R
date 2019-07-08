@@ -178,8 +178,8 @@ timeTaken <- paste(formatC(tmpH,width=2,format='d',flag=0),
 	print(mean_consumption )
 	cat("\n")
 
-	cat("\nPsi specification:\n")
-	cat(paste(model$psi_formula, sep = "\n", collapse = "\n"), "\n", sep = "")
+#	cat("\nPsi specification:\n")
+#	cat(paste(model$psi_formula, sep = "\n", collapse = "\n"), "\n", sep = "")
 
 	if (model$n_classes > 1){
 		cat("\nMembership equation:\n")

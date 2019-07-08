@@ -25,7 +25,7 @@ Development is in progress. Currently users can estimate the following models:
 
 1. Fixed parameter models (maximum likelihood or Bayesian estimation)
 2. Latent class models (maximum likelihood estimation)
-3. Random parameters models
+3. Random parameters models (Bayesian estimation)
 
 Under development
 
