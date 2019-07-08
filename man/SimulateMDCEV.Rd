@@ -33,7 +33,9 @@ only model 3/4) alog_gen = 1 for General approach (i.e. heterogeneous alpha's, a
 \item{max_loop}{maximum number of loops for simulations if using general approach}
 }
 \value{
-wtp a list for each individual holding a nsims x npols matrix of wtp
+a list for each individual holding either 1) nsims x npols matrix of welfare changes if
+welfare is being simulated or 2) nsims number of lists of npols x # alternatives matrix of Marshallian demands is demand
+is being simulated.
 }
 \description{
 Simulate welfare or demand for MDCEV model
