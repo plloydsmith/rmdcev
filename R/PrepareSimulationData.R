@@ -26,7 +26,7 @@
 PrepareSimulationData <- function(stan_est,
 								  policies,
 								  nsims = 30){
-#stan_est <- result
+#stan_est <- mdcev_corr
 #	if (stan_est$random_parameters == "corr")
 #		stop("Demand and welfare simulation not set up for correlated RP-MDCEV models yet.", "\n")
 
@@ -174,7 +174,7 @@ if(random_parameters != "fixed"){
 	colnames(L) <- c(paste0(rep("parm_id", num_rand), 1:num_rand))
 
 	est_sim_tau <- bind_cols(sim_id, tbl_df(L)) %>%
-		tidyr::gather(.data$parm_id, .data$tau, -sim_id) %>%
+		tidyr::gather(parm_id, tau, -sim_id) %>%
 		dplyr::mutate(parm_id = as.numeric(gsub("[^0-9]", "", .data$parm_id))) %>%
 		dplyr::arrange(sim_id)
 
