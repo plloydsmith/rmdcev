@@ -26,7 +26,7 @@
 PrepareSimulationData <- function(stan_est,
 								  policies,
 								  nsims = 30){
-
+#stan_est <- result
 #	if (stan_est$random_parameters == "corr")
 #		stop("Demand and welfare simulation not set up for correlated RP-MDCEV models yet.", "\n")
 
@@ -58,9 +58,8 @@ PrepareSimulationData <- function(stan_est,
 
 		est_sim_lc <- suppressWarnings(est_sim %>% # suppress warnings about scale not having a class parameter
 									   	dplyr::filter(!stringr::str_detect(.data$parms, "delta")) %>%
-									   	tidyr::separate(.data$parms, into = c("parms", "class", "good")) %>%
-									   	dplyr::mutate(good = ifelse(is.na(as.numeric(.data$good)), "0", .data$good )) %>%
-									   	tidyr::unite(parms, parms, good))
+									   	tidyr::separate(.data$parms, into = c("class","parms"), sep = 7) %>%
+									   	dplyr::mutate(class = gsub("[^[:alnum:]]", "", class)))
 
 		est_sim_lc <- split( est_sim_lc , f = est_sim_lc$class )
 		names(est_sim_lc) <- rep("est_sim", stan_est$n_classes)
@@ -130,9 +129,9 @@ ProcessSimulationData <- function(est_sim, stan_est, policies, nsims){
 		alpha_sim_fixed <- t(GrabParms(est_sim, "alpha"))
 
 		if (model_num == 1) {
-			alpha_sim_fixed <- cbind(alpha_sim, matrix(0, nsims, J) )
+			alpha_sim_fixed <- cbind(alpha_sim_fixed, matrix(0, nsims, J) )
 		} else if (model_num == 3){
-			alpha_sim_fixed <- matrix(rep(alpha_sim,each=J+1), ncol=J+1, byrow=TRUE)
+			alpha_sim_fixed <- matrix(rep(alpha_sim_fixed, each=J+1), ncol=J+1, byrow=TRUE)
 		}
 	} else if (alpha_fixed == 0){
 		alpha_sim_fixed <- NULL
@@ -142,30 +141,30 @@ ProcessSimulationData <- function(est_sim, stan_est, policies, nsims){
 if(random_parameters != "fixed"){
 
 	est_sim_mu_tau <- est_sim %>%
-		filter(grepl(c("mu|tau"), parms)) %>%
-		separate(parms, into = c("parms", "parm_id"), sep = "\\.") %>%
-		mutate(parm_id = as.numeric(parm_id)) %>%
-		spread(parms, value)  %>%
-		arrange(sim_id)
+		dplyr::filter(grepl(c("mu|tau"), parms)) %>%
+		tidyr::separate(parms, into = c("parms", "parm_id"), sep = "\\.") %>%
+		dplyr::mutate(parm_id = as.numeric(.data$parm_id)) %>%
+		tidyr::spread(parms, value)  %>%
+		dplyr::arrange(sim_id)
 
 	if(random_parameters == "corr"){
 
 		num_rand <- stan_est[["stan_fit"]]@par_dims[["mu"]]
 
 		est_sim_tau <- est_sim_mu_tau %>%
-			select(sim_id, parm_id, tau) %>%
-			group_split(sim_id)
+			dplyr::select(sim_id, .data$parm_id, .data$tau) %>%
+			dplyr::group_split(sim_id)
 
 		est_sim_lomega <- est_sim %>%
-			filter(grepl(c("L_Omega"), parms))   %>%
-			arrange(sim_id) %>%
-			group_split(sim_id)
+			dplyr::filter(grepl(c("L_Omega"), parms))   %>%
+			dplyr::arrange(sim_id) %>%
+			dplyr::group_split(sim_id)
 
 		sim_id <- est_sim %>%
-			arrange(sim_id) %>%
-			distinct(sim_id)
+			dplyr::arrange(sim_id) %>%
+			dplyr::distinct(sim_id)
 
-		L <- map2(est_sim_tau, est_sim_lomega, function(x, y){
+		L <- purrr::map2(est_sim_tau, est_sim_lomega, function(x, y){
 			l_omega <- matrix(y$value, nrow = num_rand, byrow=F)
 			L <- as.vector(x$tau %*% l_omega)
 			return(L)
@@ -175,55 +174,55 @@ if(random_parameters != "fixed"){
 	colnames(L) <- c(paste0(rep("parm_id", num_rand), 1:num_rand))
 
 	est_sim_tau <- bind_cols(sim_id, tbl_df(L)) %>%
-		gather(parm_id, tau, -sim_id) %>%
-		mutate(parm_id = as.numeric(gsub("[^0-9]", "", parm_id))) %>%
-		arrange(sim_id)
+		tidyr::gather(.data$parm_id, .data$tau, -sim_id) %>%
+		dplyr::mutate(parm_id = as.numeric(gsub("[^0-9]", "", .data$parm_id))) %>%
+		dplyr::arrange(sim_id)
 
 	est_sim_mu_tau <- est_sim_mu_tau %>%
-		select(sim_id, parm_id, mu) %>%
-		left_join(est_sim_tau, by = c("sim_id", "parm_id"))
+		dplyr::select(sim_id, .data$parm_id, .data$mu) %>%
+		dplyr::left_join(est_sim_tau, by = c("sim_id", "parm_id"))
 
 	} else if(random_parameters == "uncorr"){
 
 	est_sim_mu_tau <- est_sim %>%
-		filter(grepl(c("mu|tau"), parms)) %>%
-		separate(parms, into = c("parms", "parm_id"), sep = "\\.") %>%
-		mutate(parm_id = as.numeric(parm_id)) %>%
-		spread(parms, value)  %>%
-		arrange(sim_id)
+		dplyr::filter(grepl(c("mu|tau"), parms)) %>%
+		tidyr::separate(parms, into = c("parms", "parm_id"), sep = "\\.") %>%
+		dplyr::mutate(parm_id = as.numeric(.data$parm_id)) %>%
+		tidyr::spread(parms, value)  %>%
+		dplyr::arrange(sim_id)
 	}
 
 	est_sim <- est_sim %>%
-		filter(str_detect(parms, "^z")) %>%
-		separate(parms, into = c("parms", "id", "parm_id"), sep = "\\.") %>%
-		spread(parms, value) %>%
-		mutate(parm_id = as.numeric(parm_id),
+		dplyr::filter(stringr::str_detect(parms, "^z")) %>%
+		tidyr::separate(parms, into = c("parms", "id", "parm_id"), sep = "\\.") %>%
+		tidyr::spread(parms, value) %>%
+		dplyr::mutate(parm_id = as.numeric(.data$parm_id),
 			   id= as.numeric(id)) %>%
-		arrange(id, sim_id, parm_id)  %>%
-		left_join(est_sim_mu_tau, by = c("sim_id", "parm_id")) %>%
-		arrange(id, sim_id, parm_id)	%>%
-		mutate(beta = mu + z *tau,
+		dplyr::arrange(id, sim_id, .data$parm_id)  %>%
+		dplyr::left_join(est_sim_mu_tau, by = c("sim_id", "parm_id")) %>%
+		dplyr::arrange(id, sim_id, .data$parm_id)	%>%
+		dplyr::mutate(beta = .data$mu + .data$z *.data$tau,
 			   parms = rep(stan_est[["parms_info"]][["parm_names"]][["sd_names"]],
 			   			nsims*stan_est[["n_individuals"]] )) %>%
-		select(-tau, -mu, -z)
+		dplyr::select(-.data$tau, -.data$mu, -.data$z)
 
 	# Transform gamma and alpha estimates
 	if(stan_est[["stan_data"]][["gamma_fixed"]]==0){
 		est_sim <- est_sim %>%
-			mutate(beta = ifelse(grepl(c("gamma"), parms), exp(beta), beta))
+			dplyr::mutate(beta = ifelse(grepl(c("gamma"), parms), exp(beta), beta))
 	}
 	if(stan_est[["stan_data"]][["alpha_fixed"]]==0){
 		est_sim <- est_sim %>%
-			mutate(beta = ifelse(grepl(c("alpha"), parms), 1 / (1 + exp(-beta)), beta))
+			dplyr::mutate(beta = ifelse(grepl(c("alpha"), parms), 1 / (1 + exp(-beta)), beta))
 	}
 
 	if (gamma_fixed == 0){
 		gamma_sim_rand <- est_sim %>%
-			filter(grepl(c("gamma"), parms)) %>%
-			select(id, sim_id, parm_id, beta) %>%
-			spread(parm_id, beta) %>%
-			select(-sim_id) %>%
-			group_split(id, keep = F)
+			dplyr::filter(grepl(c("gamma"), parms)) %>%
+			dplyr::select(id, sim_id, .data$parm_id, beta) %>%
+			tidyr::spread(.data$parm_id, beta) %>%
+			dplyr::select(-sim_id) %>%
+			dplyr::group_split(id, keep = F)
 
 		gamma_sim_rand <- purrr::map(gamma_sim_rand, ~as.matrix(.))
 
@@ -233,11 +232,11 @@ if(random_parameters != "fixed"){
 
 	if (alpha_fixed == 0){
 		alpha_sim_rand <- est_sim %>%
-			filter(grepl(c("alpha"), parms)) %>%
-			select(id, sim_id, parm_id, beta) %>%
-			spread(parm_id, beta) %>%
-			select(-sim_id) %>%
-			group_split(id, keep = F)
+			dplyr::filter(grepl(c("alpha"), parms)) %>%
+			dplyr::select(id, sim_id, .data$parm_id, beta) %>%
+			tidyr::spread(.data$parm_id, beta) %>%
+			dplyr::select(-sim_id) %>%
+			dplyr::group_split(id, keep = F)
 
 		alpha_sim_rand <- purrr::map(alpha_sim_rand, ~as.matrix(.))
 
@@ -246,11 +245,11 @@ if(random_parameters != "fixed"){
 	}
 
 	psi_sim_rand <- est_sim %>%
-		filter(grepl(c("psi"), parms)) %>%
-		select(id, sim_id, parm_id, beta) %>%
-		spread(parm_id, beta) %>%
-		select(-sim_id) %>%
-		group_split(id, keep = F)
+		dplyr::filter(grepl(c("psi"), parms)) %>%
+		dplyr::select(id, sim_id, .data$parm_id, beta) %>%
+		tidyr::spread(.data$parm_id, beta) %>%
+		dplyr::select(-sim_id) %>%
+		dplyr::group_split(id, keep = F)
 }
 
 if (random_parameters == "fixed"){
