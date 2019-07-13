@@ -431,7 +431,7 @@ return(mdemand_out);
  */
 matrix CalcWTP_rng(real income, vector quant_j, vector price,
 						vector[] price_p_policy, matrix[] psi_p_sims,
-						matrix psi_sims, vector[] gamma_sims, vector[] alpha_sims, vector scale_sims,
+						matrix psi_sims, matrix gamma_sims, matrix alpha_sims, vector scale_sims,
 						int nerrs, int cond_error, int draw_mlhs,
 						int algo_gen, int model_num, real tol, int max_loop){
 
@@ -445,8 +445,8 @@ matrix CalcWTP_rng(real income, vector quant_j, vector price,
 		vector[ngoods] psi_j = psi_sims[sim]';
 		matrix[npols, ngoods] psi_p_policy = psi_p_sims[sim]; //change for no psi_p
 //		vector[ngoods + 1] psi_b_err[nerrs]; // keep psi for use in policies
-		vector[ngoods + 1] gamma = append_row(1, gamma_sims[sim]);
-		vector[ngoods + 1] alpha = alpha_sims[sim];
+		vector[ngoods + 1] gamma = append_row(1, gamma_sims[sim]');
+		vector[ngoods + 1] alpha = alpha_sims[sim]';
 		real scale = scale_sims[sim];
 		vector[ngoods + 1] error[nerrs];
 		vector[npols] wtp_policy;
@@ -514,7 +514,7 @@ return(wtp);
  */
 matrix CalcWTPPriceOnly_rng(real income, vector quant_j, vector price,
 						vector[] price_p_policy,
-						matrix psi_sims, vector[] gamma_sims, vector[] alpha_sims, vector scale_sims,
+						matrix psi_sims, matrix gamma_sims, matrix alpha_sims, vector scale_sims,
 						int nerrs, int cond_error, int draw_mlhs, int algo_gen, int model_num, real tol, int max_loop){
 
 	int ngoods = num_elements(quant_j);
@@ -526,8 +526,8 @@ matrix CalcWTPPriceOnly_rng(real income, vector quant_j, vector price,
 	for (sim in 1:nsims){
 		vector[ngoods] psi_j = psi_sims[sim]';
 		vector[ngoods + 1] psi_b_err[nerrs]; // keep psi for use in policies
-		vector[ngoods + 1] gamma = append_row(1, gamma_sims[sim]);
-		vector[ngoods + 1] alpha = alpha_sims[sim];
+		vector[ngoods + 1] gamma = append_row(1, gamma_sims[sim]');
+		vector[ngoods + 1] alpha = alpha_sims[sim]';
 		real scale = scale_sims[sim];
 		vector[ngoods + 1] error[nerrs];
 		vector[npols] wtp_policy;
@@ -577,7 +577,7 @@ return(wtp);
 
 matrix[] CalcMarshallianDemand_rng(real income, vector quant_j, vector price,
 						vector[] price_p_policy, matrix[] psi_p_sims,
-						matrix psi_sims, vector[] gamma_sims, vector[] alpha_sims, vector scale_sims,
+						matrix psi_sims, matrix gamma_sims, matrix alpha_sims, vector scale_sims,
 						int nerrs, int cond_error, int draw_mlhs,
 						int algo_gen, int model_num, real tol, int max_loop){
 
@@ -591,8 +591,8 @@ matrix[] CalcMarshallianDemand_rng(real income, vector quant_j, vector price,
 		vector[ngoods] psi_j = psi_sims[sim]';
 		matrix[npols, ngoods] psi_p_policy = psi_p_sims[sim]; //change for no psi_p
 //		vector[ngoods + 1] psi_b_err[nerrs]; // keep psi for use in policies
-		vector[ngoods + 1] gamma = append_row(1, gamma_sims[sim]);
-		vector[ngoods + 1] alpha = alpha_sims[sim];
+		vector[ngoods + 1] gamma = append_row(1, gamma_sims[sim]');
+		vector[ngoods + 1] alpha = alpha_sims[sim]';
 		real scale = scale_sims[sim];
 		vector[ngoods + 1] error[nerrs];
 		matrix[npols, ngoods + 1] mdemand_pols;
@@ -651,7 +651,7 @@ return(mdemand_out);
 
 matrix[] CalcMarshallianDemandPriceOnly_rng(real income, vector quant_j, vector price,
 						vector[] price_p_policy,
-						matrix psi_sims, vector[] gamma_sims, vector[] alpha_sims, vector scale_sims,
+						matrix psi_sims, matrix gamma_sims, matrix alpha_sims, vector scale_sims,
 						int nerrs, int cond_error, int draw_mlhs,
 						int algo_gen, int model_num, real tol, int max_loop){
 
@@ -664,8 +664,8 @@ matrix[] CalcMarshallianDemandPriceOnly_rng(real income, vector quant_j, vector 
 	for (sim in 1:nsims){
 		vector[ngoods] psi_j = psi_sims[sim]';
 		vector[ngoods + 1] psi_b_err[nerrs]; // keep psi for use in policies
-		vector[ngoods + 1] gamma = append_row(1, gamma_sims[sim]);
-		vector[ngoods + 1] alpha = alpha_sims[sim];
+		vector[ngoods + 1] gamma = append_row(1, gamma_sims[sim]');
+		vector[ngoods + 1] alpha = alpha_sims[sim]';
 		real scale = scale_sims[sim];
 		vector[ngoods + 1] error[nerrs];
 		matrix[npols, ngoods + 1] mdemand_pols;

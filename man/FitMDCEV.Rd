@@ -78,7 +78,7 @@ optimizing function will then be equal to log-likelihood. Defaults to 1 if MLE u
 or multivariate normal draws ("mvn"). The default is "mvn" as only mvn parameter draws are required
 for demand and welfare simulation.}
 
-\item{n_draws}{The number of MVN draws for standard error calculations}
+\item{n_draws}{The number of multivariate normal draws for standard error calculations.}
 
 \item{keep_loglik}{Whether to keep the log_lik calculations}
 

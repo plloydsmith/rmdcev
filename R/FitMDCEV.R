@@ -21,7 +21,7 @@
 #' @param std_errors Compute standard errors using the delta method ("deltamethod")
 #' or multivariate normal draws ("mvn"). The default is "mvn" as only mvn parameter draws are required
 #' for demand and welfare simulation.
-#' @param n_draws The number of MVN draws for standard error calculations
+#' @param n_draws The number of multivariate normal draws for standard error calculations.
 #' @param keep_loglik Whether to keep the log_lik calculations
 #' @param hessian Wheter to keep the Hessian matrix
 #' @param initial.parameters Specify initial parameters intead of starting at random.
@@ -111,6 +111,11 @@ FitMDCEV <- function(data,
 		flat_priors <- 1
 	} else if (algorithm == "Bayes" && is.null(flat_priors))
 		flat_priors <- 0
+
+	if (random_parameters == "fixed"){
+		gamma_fixed <- 1
+		alpha_fixed <- 1
+	}
 
 	mle_options <- list(fixed_scale1 = fixed_scale1,
 						model = model,

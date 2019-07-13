@@ -16,9 +16,9 @@
 #' }
 SummaryMDCEV <- function(model, printCI = FALSE){
 #model <- mdcev_rp
-	if (model$random_parameters == "corr"){
-		stop("SummaryMDCEV not set up for correlated random parameter models. Use print/traceplot on model.fit$stan_fit to examine output", "\n")
-	}
+#	if (model$random_parameters == "corr"){
+#		stop("SummaryMDCEV not set up for correlated random parameter models. Use print/traceplot on model.fit$stan_fit to examine output", "\n")
+#	}
 
 	rmdcevVersion <- tryCatch(utils::packageDescription("rmdcev", fields = "Version"),
 							  warning=function(w) return("rmdcev"),
@@ -51,6 +51,7 @@ SummaryMDCEV <- function(model, printCI = FALSE){
 	cat("Exit of MLE                      : ", converge,"\n", sep="")
 
 	} else if(model$algorithm == "Bayes"){
+		cat("Random parameters                : ", model$random_parameters,"elated random parameters","\n", sep="")
 		cat("Number of chains                 : ", model[["stan_fit"]]@sim[["chains"]],"\n", sep="")
 		cat("Number of warmup draws per chain : ", model[["stan_fit"]]@sim[["warmup"]],"\n", sep="")
 		cat("Total post-warmup sample         : ", model[["stan_fit"]]@sim[["chains"]]*(model[["stan_fit"]]@sim[["iter"]]-model[["stan_fit"]]@sim[["warmup"]]),"\n", sep="")
@@ -103,15 +104,17 @@ timeTaken <- paste(formatC(tmpH,width=2,format='d',flag=0),
 
 		if (model$random_parameters == "fixed"){
 
+			parm.names <- unique(output$parms)
+
 			bayes_extra <- bayes_extra %>%
 				filter(!grepl(c("log_lik"), parms)) %>%
 				filter(!grepl(c("lp_"), parms)) %>%
 				select(parms, n_eff, Rhat) %>%
-				mutate(parms = factor(parms,levels=unique(parms)),
+				mutate(parms = factor(parm.names,levels=unique(parm.names)),
 					   n_eff = round(as.numeric(n_eff), 0),
 					   Rhat = round(as.numeric(Rhat), 2))
 
-		} else if (model$random_parameters == "uncorr"){
+		} else if (model$random_parameters != "fixed"){
 
 			output_non_mu <- output %>%
 				filter(stringr::str_detect(parms, "gamma|alpha|tau|scale"))
@@ -150,7 +153,7 @@ timeTaken <- paste(formatC(tmpH,width=2,format='d',flag=0),
 					mutate(parms = factor(parms,levels=unique(parms)),
 							n_eff = round(as.numeric(n_eff), 0),
 					   Rhat = round(as.numeric(Rhat), 2))
-			}
+		}
 
 		output <- output %>%
 			mutate(parms = factor(parms,levels=unique(parms))) %>%
@@ -207,8 +210,12 @@ timeTaken <- paste(formatC(tmpH,width=2,format='d',flag=0),
 	if(model$stan_data$trunc_data == 1)
 		cat("Note: Estimation accounts for truncated form of data.",'\n')
 
+	if(model$random_parameters == "corr"){
+		cat("Note: Full covariance matrix can be accessed using the print(model_est, pars = 'Sigma') command", '\n')
+	}
+
 	if(model$algorithm == "Bayes"){
-		cat("Note: For each parameter, n_eff is a crude measure of effective sample size, and Rhat is the potential scale reduction factor on split chains (at convergence, Rhat=1)", '\n')
+		cat("Note from Rstan: 'For each parameter, n_eff is a crude measure of effective sample size, and Rhat is the potential scale reduction factor on split chains (at convergence, Rhat=1)'", '\n')
 	}
 	if(model$n_classes > 1)
 		cat("Note: The membership equation parameters for class 1 are normalized to 0.",'\n')
