@@ -123,19 +123,19 @@ model {
 }
 
 generated quantities{
-   cov_matrix[RP] Sigma;                            // cov matrix
-   corr_matrix[RP] Omega;
+//   matrix[RP, RP] Sigma;                            // cov matrix
+ //  matrix[RP, RP] Omega;
    real<upper=0> sum_log_lik = 0;// log_lik for each sample
 
-	{
-	   matrix[RP, RP] L;
-		if (corr == 1){
-			Omega = multiply_lower_tri_self_transpose(L_Omega);  // correlation matrix
-			Sigma = quad_form_diag(Omega, tau);               // var-covar matrix
-		} else if (corr == 0){
-			Sigma = diag_matrix(tau);
-		}
-	}
+//	{
+//	   matrix[RP, RP] L;
+//		if (corr == 1){
+//			Omega = multiply_lower_tri_self_transpose(L_Omega);  // correlation matrix
+//			Sigma = quad_form_diag(Omega, tau);               // var-covar matrix
+//		} else if (corr == 0){
+//			Sigma = diag_matrix(tau);
+//		}
+//	}
 
 	for(i in 1:I){
 		sum_log_lik = sum_log_lik + log_like[i];

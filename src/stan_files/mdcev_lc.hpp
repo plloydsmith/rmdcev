@@ -1266,8 +1266,6 @@ public:
         names__.push_back("scale");
         names__.push_back("log_like");
         names__.push_back("tau");
-        names__.push_back("Sigma");
-        names__.push_back("Omega");
         names__.push_back("sum_log_lik");
     }
 
@@ -1302,14 +1300,6 @@ public:
         dims__.push_back(I);
         dimss__.push_back(dims__);
         dims__.resize(0);
-        dims__.push_back(RP);
-        dimss__.push_back(dims__);
-        dims__.resize(0);
-        dims__.push_back(RP);
-        dims__.push_back(RP);
-        dimss__.push_back(dims__);
-        dims__.resize(0);
-        dims__.push_back(RP);
         dims__.push_back(RP);
         dimss__.push_back(dims__);
         dims__.resize(0);
@@ -1576,20 +1566,6 @@ public:
             }
             if (!include_gqs__) return;
             // declare and define generated quantities
-            current_statement_begin__ = 241;
-            validate_non_negative_index("Sigma", "RP", RP);
-            validate_non_negative_index("Sigma", "RP", RP);
-            Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> Sigma(RP, RP);
-            stan::math::initialize(Sigma, DUMMY_VAR__);
-            stan::math::fill(Sigma, DUMMY_VAR__);
-
-            current_statement_begin__ = 242;
-            validate_non_negative_index("Omega", "RP", RP);
-            validate_non_negative_index("Omega", "RP", RP);
-            Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> Omega(RP, RP);
-            stan::math::initialize(Omega, DUMMY_VAR__);
-            stan::math::fill(Omega, DUMMY_VAR__);
-
             current_statement_begin__ = 243;
             double sum_log_lik;
             (void) sum_log_lik;  // dummy to suppress unused var warning
@@ -1598,28 +1574,6 @@ public:
             stan::math::assign(sum_log_lik,0);
 
             // generated quantities statements
-            {
-            current_statement_begin__ = 246;
-            validate_non_negative_index("L", "RP", RP);
-            validate_non_negative_index("L", "RP", RP);
-            Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, Eigen::Dynamic> L(RP, RP);
-            stan::math::initialize(L, DUMMY_VAR__);
-            stan::math::fill(L, DUMMY_VAR__);
-
-
-            current_statement_begin__ = 247;
-            if (as_bool(logical_eq(corr, 1))) {
-
-                current_statement_begin__ = 248;
-                stan::math::assign(Omega, multiply_lower_tri_self_transpose(L_Omega));
-                current_statement_begin__ = 249;
-                stan::math::assign(Sigma, quad_form_diag(Omega, tau));
-            } else if (as_bool(logical_eq(corr, 0))) {
-
-                current_statement_begin__ = 251;
-                stan::math::assign(Sigma, diag_matrix(tau));
-            }
-            }
             current_statement_begin__ = 255;
             for (int i = 1; i <= I; ++i) {
 
@@ -1628,28 +1582,6 @@ public:
             }
 
             // validate, write generated quantities
-            current_statement_begin__ = 241;
-            stan::math::check_cov_matrix(function__, "Sigma", Sigma);
-
-            size_t Sigma_j_2_max__ = RP;
-            size_t Sigma_j_1_max__ = RP;
-            for (size_t j_2__ = 0; j_2__ < Sigma_j_2_max__; ++j_2__) {
-                for (size_t j_1__ = 0; j_1__ < Sigma_j_1_max__; ++j_1__) {
-                    vars__.push_back(Sigma(j_1__, j_2__));
-                }
-            }
-
-            current_statement_begin__ = 242;
-            stan::math::check_corr_matrix(function__, "Omega", Omega);
-
-            size_t Omega_j_2_max__ = RP;
-            size_t Omega_j_1_max__ = RP;
-            for (size_t j_2__ = 0; j_2__ < Omega_j_2_max__; ++j_2__) {
-                for (size_t j_1__ = 0; j_1__ < Omega_j_1_max__; ++j_1__) {
-                    vars__.push_back(Omega(j_1__, j_2__));
-                }
-            }
-
             current_statement_begin__ = 243;
             check_less_or_equal(function__, "sum_log_lik", sum_log_lik, 0);
 
@@ -1756,24 +1688,6 @@ public:
         }
 
         if (!include_gqs__) return;
-        size_t Sigma_j_2_max__ = RP;
-        size_t Sigma_j_1_max__ = RP;
-        for (size_t j_2__ = 0; j_2__ < Sigma_j_2_max__; ++j_2__) {
-            for (size_t j_1__ = 0; j_1__ < Sigma_j_1_max__; ++j_1__) {
-                param_name_stream__.str(std::string());
-                param_name_stream__ << "Sigma" << '.' << j_1__ + 1 << '.' << j_2__ + 1;
-                param_names__.push_back(param_name_stream__.str());
-            }
-        }
-        size_t Omega_j_2_max__ = RP;
-        size_t Omega_j_1_max__ = RP;
-        for (size_t j_2__ = 0; j_2__ < Omega_j_2_max__; ++j_2__) {
-            for (size_t j_1__ = 0; j_1__ < Omega_j_1_max__; ++j_1__) {
-                param_name_stream__.str(std::string());
-                param_name_stream__ << "Omega" << '.' << j_1__ + 1 << '.' << j_2__ + 1;
-                param_names__.push_back(param_name_stream__.str());
-            }
-        }
         param_name_stream__.str(std::string());
         param_name_stream__ << "sum_log_lik";
         param_names__.push_back(param_name_stream__.str());
@@ -1848,18 +1762,6 @@ public:
         }
 
         if (!include_gqs__) return;
-        size_t Sigma_j_1_max__ = (RP + ((RP * (RP - 1)) / 2));
-        for (size_t j_1__ = 0; j_1__ < Sigma_j_1_max__; ++j_1__) {
-            param_name_stream__.str(std::string());
-            param_name_stream__ << "Sigma" << '.' << j_1__ + 1;
-            param_names__.push_back(param_name_stream__.str());
-        }
-        size_t Omega_j_1_max__ = ((RP * (RP - 1)) / 2);
-        for (size_t j_1__ = 0; j_1__ < Omega_j_1_max__; ++j_1__) {
-            param_name_stream__.str(std::string());
-            param_name_stream__ << "Omega" << '.' << j_1__ + 1;
-            param_names__.push_back(param_name_stream__.str());
-        }
         param_name_stream__.str(std::string());
         param_name_stream__ << "sum_log_lik";
         param_names__.push_back(param_name_stream__.str());
