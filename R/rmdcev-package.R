@@ -32,9 +32,8 @@ NULL
 
 ## quiets concerns of R CMD check re: the .'s that appear in pipelines
 if(getRversion() >= "2.15.1")
-	utils::globalVariables(c(".", "quant", "lp__", "good", "data",
-							"task", "individual", "CalcWTP_rng",
+	utils::globalVariables(c(".", "quant", "lp__", "good", "task", "individual", "CalcWTP_rng",
 							"CalcMarshallianDemand_rng", "CalcWTPPriceOnly_rng", "CalcMarshallianDemandPriceOnly_rng",
-							"CalcmdemandOne_rng", "parms", "sim_id", "value", "policy", "std_dev",
+							"CalcmdemandOne_rng", "parms", "sim_id","parm_id", "tau", "value", "policy", "std_dev",
 							"names_b", "parm_num", "n_eff", "Rhat",
 							"Estimate", "Std.err", "z.stat", "ci_lo95", "ci_hi95"))

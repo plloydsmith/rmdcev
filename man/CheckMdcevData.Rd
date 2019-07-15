@@ -4,12 +4,7 @@
 \alias{CheckMdcevData}
 \title{CheckMdcevData}
 \usage{
-CheckMdcevData(data)
-}
-\arguments{
-\item{data}{The (IxJ) data to be passed to Stan including 1) id, 2) good, 3) quant,
-4) price, 5) income, and columns for psi variables. Arrange data by id then good.
-Notes I is number of individuals and J is number of non-numeraire goods.}
+CheckMdcevData(data_input)
 }
 \description{
 Check MDCEV data

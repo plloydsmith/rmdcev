@@ -1,3 +1,12 @@
+rmdcev v1.0.0 (Release date: 2019-07-15)
+==============
+
+Changes:
+
+* Added RP-MDCEV demand and welfare simulations
+* Fixed error in LC-MDCEV simulations
+
+
 rmdcev v0.8.0 (Release date: 2019-06-06)
 ==============
 

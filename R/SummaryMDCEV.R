@@ -51,7 +51,9 @@ SummaryMDCEV <- function(model, printCI = FALSE){
 	cat("Exit of MLE                      : ", converge,"\n", sep="")
 
 	} else if(model$algorithm == "Bayes"){
+		if(model$random_parameters != "fixed"){
 		cat("Random parameters                : ", model$random_parameters,"elated random parameters","\n", sep="")
+	}
 		cat("Number of chains                 : ", model[["stan_fit"]]@sim[["chains"]],"\n", sep="")
 		cat("Number of warmup draws per chain : ", model[["stan_fit"]]@sim[["warmup"]],"\n", sep="")
 		cat("Total post-warmup sample         : ", model[["stan_fit"]]@sim[["chains"]]*(model[["stan_fit"]]@sim[["iter"]]-model[["stan_fit"]]@sim[["warmup"]]),"\n", sep="")
