@@ -1,4 +1,4 @@
-// saved as mdcev_hb_corr.stan
+// saved as mdcev_lc.stan
 functions {
 #include /common/mdcev_ll.stan
 }

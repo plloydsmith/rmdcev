@@ -20,14 +20,14 @@ header-includes:
 keywords: multiple discrete-continuous extreme value, Kuhn-Tucker, latent class, random
   parameters, demand estimation, welfare, preference heterogeneity, R
 bibliography: biblio.bib
-abstract: This paper introduces the package \pkg{rmdcev} in R for estimation and simulation
+abstract: This paper introduces the package **rmdcev** in R for estimation and simulation
   of multiple-discrete continuous extreme value (MDCEV) models with individual heterogeneity.
-  The models supported by \pkg{rmdcev} are the MDCEV model, the latent class MDCEV model,
+  The models supported by **rmdcev** are the MDCEV model, the latent class MDCEV model,
   and the random parameters MDCEV model. The models are fit using maximum likelihood
-  estimation or Bayesian estimation. The \pkg{rmdcev} package also implements demand
+  estimation or Bayesian estimation. The **rmdcev** package also implements demand
   forecasting and welfare calculation for policy simulation. The purpose of this paper
   is to describe the MDCEV estimation and simulation framework and to demonstrate
-  all the functionalities of \pkg{rmdcev}.
+  all the functionalities of **rmdcev**.
 ---
 
 ```{r setup, include = TRUE, echo = FALSE, message = FALSE, warning = FALSE, eval = TRUE}
@@ -54,11 +54,11 @@ library(rmdcev)
 
 Individual choice contexts are often characterized by both extensive (i.e. what alternative to choose) and intensive (i.e. how much of an alternative to consume) margins (@bhatmultiple2008). These multiple discrete-continuous choice situations are pervasive, arising in transportation, marketing, health, and decisions regarding environmental resources (@bhatmultiple2014). The multiple-discrete continuous extreme value (MDCEV) demand model, also commonly called Kuhn-Tucker (KT) models in economics, is often employed to analyze these MDC situations and substantial progress has been made in improving these econometric modeling structures (@vonhaefenkuhn-tucker2005; @bhatmultiple2014). Despite the large potential applications for MDCEV models, there remains a gap between this potential and actual examples of these models being used. One of the reasons cited for the lack of widespread use of MDCEV models is that estimating and simulating these models is challenging. The explanations of methods used to work with these models are spread across many papers and few user friendly software tools are available. The purpose of this paper is to present a unified account for MDCEV estimation and simulation alongside computer code.
 
-This paper presents an overview of the \proglang{R} [@r2008] package \pkg{rmdcev} which can estimate and simulate MDCEV models with discrete or continuous unobserved individual heterogeneity. Incoporating preference heterogeneity has been an important advancement in choice modeling. Unobserved preference heterogeneity can be accomodated assuming continuous distributions using random parameters or a latent class (LC) specification assuming a discrete distribution where people can be divided into distinct segments. Within each segment, the LC specification assumes preference homogeneity. The models in \pkg{rmdcev} can be fit using maximum likelihood estimation or Bayesian estimation. The \pkg{rmdcev} package also implements demand forecasting and welfare calculation for policy simulation. \pkg{rmdcev} is available from the Comprehensive R Archive Network (CRAN) at https://CRAN.R-project.org/package=rmdcev. 
+This paper presents an overview of the \proglang{R} [@r2008] package **rmdcev** which can estimate and simulate MDCEV models with discrete or continuous unobserved individual heterogeneity. Incoporating preference heterogeneity has been an important advancement in choice modeling. Unobserved preference heterogeneity can be accomodated assuming continuous distributions using random parameters or a latent class (LC) specification assuming a discrete distribution where people can be divided into distinct segments. Within each segment, the LC specification assumes preference homogeneity. The models in **rmdcev** can be fit using maximum likelihood estimation or Bayesian estimation. The **rmdcev** package also implements demand forecasting and welfare calculation for policy simulation. **rmdcev** is available from the Comprehensive R Archive Network (CRAN) at https://CRAN.R-project.org/package=rmdcev. 
 
-In addition to \pkg{rmdcev}, the [**apollo**](http://www.apollochoicemodelling.com/) package developed by Stephane Hess and David Palma at the Choice Modelling Centre in Leeds provides a flexible modelling platform for estimating MDCEV models and simulating demand behaviour [@hessapollo2019]. **apollo** estimates a full suite of choice models including discrete choice models and is thus more comprehensive then \pkg{rmdcev}. The main differences for MDCEV modeling between the two packages is that \pkg{rmdcev} 1) provides functions for calculating welfare implications of policy scenarios, 2) uses the Stan program [@carpenterstan2017] for Bayesian estimation and thus the user has access to specialized postestimation commands, and 3) is primarily coded in \proglang{C++} and thus around 20 times faster.
+In addition to **rmdcev**, the [**apollo**](http://www.apollochoicemodelling.com/) package developed by Stephane Hess and David Palma at the Choice Modelling Centre in Leeds provides a flexible modelling platform for estimating MDCEV models and simulating demand behaviour [@hessapollo2019]. **apollo** estimates a full suite of choice models including discrete choice models and is thus more comprehensive then **rmdcev**. The main differences for MDCEV modeling between the two packages is that **rmdcev** 1) provides functions for calculating welfare implications of policy scenarios, 2) uses the Stan program [@carpenterstan2017] for Bayesian estimation and thus the user has access to specialized postestimation commands, and 3) is primarily coded in \proglang{C++} and thus around 20 times faster.
 
-The paper first introduces the conceptual framework underlying MDCEV models and the connection to economic theory and welfare measures. Section [2](#models) also describes the various empirical specifications for MDCEV models. Section [3](#rmdcev) introduces the \pkg{rmdcev} package focusing first on estimation before moving on to discuss how to conduct welfare and demand simulations. Section [4](#conclusions) provides conclusions of the paper.
+The paper first introduces the conceptual framework underlying MDCEV models and the connection to economic theory and welfare measures. Section [2](#models) also describes the various empirical specifications for MDCEV models. Section [3](#rmdcev) introduces the **rmdcev** package focusing first on estimation before moving on to discuss how to conduct welfare and demand simulations. Section [4](#conclusions) provides conclusions of the paper.
 
 # Models {#models}
 
@@ -98,7 +98,7 @@ where $\theta$ is the vector of structural parameters ($\psi_k, \alpha_k, \gamma
 
 ## Multiple discrete-continuous extreme value model (MDCEV)
 
-The \pkg{rmdcev} package implements the random utility specification as introduced by @bhatmultiple2008. The model specifications included in \pkg{rmdcev} always assume an outside good (i.e. a good that is always consumed by every individual). The general utility function is specified as
+The **rmdcev** package implements the random utility specification as introduced by @bhatmultiple2008. The model specifications included in **rmdcev** always assume an outside good (i.e. a good that is always consumed by every individual). The general utility function is specified as
 
 \begin{equation}
 U(x_k, x_1) = \sum_{k=2}^{K} \frac{\gamma_k}{\alpha_k}\psi_k \left[ \left( \frac{x_k}{\gamma_k} + 1 \right)^{\alpha_k} - 1 \right] + \frac{\psi_1}{\alpha_1}x_1^{\alpha_1} \label{utilkt}
@@ -182,13 +182,13 @@ where $P_{is}$ has the same form as Equation (\ref{eq:ll_base}) but is now class
 
 ## Random parameters (RP-MDCEV) models
 
-The random parameter specification of the MDCEV model assumes that the structural parameters $\theta =  (\beta, \alpha_k , \gamma_k)$ are not neccesarily fixed but have an assumed distribution [@bhatmultiple2008]. In \pkg{rmdcev}, parameters are distributed multivariate normal with a mean $\bar{\theta}$ and variance covariance matrix $\sum_{\theta}$ [@vonhaefenkuhn-tucker2005]. This structure allows for continuous preference heterogeneity and accomodates more fleixlbe correlation patterns between alternatives in a simlar fashion to the mixed logit model in discrete choice models. The $\sigma$ parameter is always assumed to be a fixed parameter.
+The random parameter specification of the MDCEV model assumes that the structural parameters $\theta =  (\beta, \alpha_k , \gamma_k)$ are not neccesarily fixed but have an assumed distribution [@bhatmultiple2008]. In **rmdcev**, parameters are distributed multivariate normal with a mean $\bar{\theta}$ and variance covariance matrix $\sum_{\theta}$ [@vonhaefenkuhn-tucker2005]. This structure allows for continuous preference heterogeneity and accomodates more fleixlbe correlation patterns between alternatives in a simlar fashion to the mixed logit model in discrete choice models. The $\sigma$ parameter is always assumed to be a fixed parameter.
 
 The most flexible model specification is to estimate the full variance covariance matrix and if there are $Q$ parameters in $\theta$ then there are $Q(Q+1)/2$ unique variance covariance parameters to estimate in the correlated RP-MDCEV specification. An alternative is to assume the off-diagonal parameters are zero and estimate uncorrelated random parameters by estimating the $Q$ diagonal elements of $\sum_{\theta}$. If all elements of $\sum_{\theta}$ are assumed to be zero, the model collapses to the fixed MDCEV structure.
 
 ## A note on Bayesian versus classiscal maximum likelihood estimation
 
-The MDCEV model without unobserved heterogeneity can be estimated using Bayesian or classical maximum likelihood techniques. The LC-MDCEV model can only be estimated using classical maximum likelihood techniques as Bayesian approaches are challenged by the 'label switching' problem. The RP-MDCEV models can only be estimated using Bayesian techniques as random parameter models require simulated maximum likelihood estimators and these are not implemented in \pkg{rmdcev} at this time.
+The MDCEV model without unobserved heterogeneity can be estimated using Bayesian or classical maximum likelihood techniques. The LC-MDCEV model can only be estimated using classical maximum likelihood techniques as Bayesian approaches are challenged by the 'label switching' problem. The RP-MDCEV models can only be estimated using Bayesian techniques as random parameter models require simulated maximum likelihood estimators and these are not implemented in **rmdcev** at this time.
 
 While there are philosphical differences between Bayesian and classical maximum likelihood techniques to estimating models, the Bernstein-von Mises theorem suggests that the Bayesian posterior distribution are asymptotically equivalent to maximum likelihood estimates if the data generating process has been correctly specified [@traindiscrete2003].
 
@@ -196,7 +196,7 @@ While there are philosphical differences between Bayesian and classical maximum 
 
 ## Data format
 
-The \pkg{rmdcev} package accepts data in "long" format (i.e. one row per available non-numeraire alternative for each individual). There is no row for the numeraire good. If there are $I$ individuals and $J$ non-numeraire goods, then the data frame should have $IxJ$ rows. The following named columns are required in the data:
+The **rmdcev** package accepts data in "long" format (i.e. one row per available non-numeraire alternative for each individual). There is no row for the numeraire good. If there are $I$ individuals and $J$ non-numeraire goods, then the data frame should have $IxJ$ rows. The following named columns are required in the data:
 
 - **id**: The unique id variable for each individual
 - **good**: The variable containing the good number
@@ -555,11 +555,11 @@ mdcev_lc <- FitMDCEV(psi_formula = psi_formula,
 	SummaryMDCEV(mdcev_lc)
 ```
 
-In this LC example, we assume that there are two types of people that have different preferences for recreation. The probability of class assignment depends on unobserved factors and the three sociodemographic factors included in the membership equation. The summary output reports the average class probabiliies as being 32% for class 1 and 68% for class 2. The $\psi$ parameters across classes are similar although there are some noticable differences. The $\gamma$ parameters, on the other hand, show that satiation between classes is quite different between the classes. To assist speed and convergence issues, \pkg{rmdcev} uses the results of the MDCEV model as starting values when estimating the LC-MDCEV model. The MDCEV model output can be accessed from *mdcev_lc[['mdcev_fit']]* object for comparison.
+In this LC example, we assume that there are two types of people that have different preferences for recreation. The probability of class assignment depends on unobserved factors and the three sociodemographic factors included in the membership equation. The summary output reports the average class probabiliies as being 32% for class 1 and 68% for class 2. The $\psi$ parameters across classes are similar although there are some noticable differences. The $\gamma$ parameters, on the other hand, show that satiation between classes is quite different between the classes. To assist speed and convergence issues, **rmdcev** uses the results of the MDCEV model as starting values when estimating the LC-MDCEV model. The MDCEV model output can be accessed from *mdcev_lc[['mdcev_fit']]* object for comparison.
 
 ### Estimating RP-MDCEV models
 
-Random parameter models require defining and parameterizing the variance covariance matrix. For uncorrelated random parameters, the diagonal elements of the variance covariance matrix are estimated and the off-diagonal elements are assumed to be zero. For correlated random parameters, the variance covariance matrix is fully estimated and can be parameterized in many ways. The \pkg{rmdcev} package defines the variance covariance matrix in terms of Cholesky factors of the correlation matrix and a vector of standard deviations for numerical stability. Thus the variance covariance matrix is specified as
+Random parameter models require defining and parameterizing the variance covariance matrix. For uncorrelated random parameters, the diagonal elements of the variance covariance matrix are estimated and the off-diagonal elements are assumed to be zero. For correlated random parameters, the variance covariance matrix is fully estimated and can be parameterized in many ways. The **rmdcev** package defines the variance covariance matrix in terms of Cholesky factors of the correlation matrix and a vector of standard deviations for numerical stability. Thus the variance covariance matrix is specified as
 
 \begin{equation}
 \sum_{\theta}= diag(\tau) x LL^T x diag(\tau)
@@ -567,7 +567,7 @@ Random parameter models require defining and parameterizing the variance covaria
 
 where $\tau$ is a vector of standard deviations, and $L$ is the cholesky factors of the correlation matrix.
 
-In this example, we estimate an uncorrelated random parameters MDCEV model using \pkg{rmdcev}. We set the argument \code{random_parameters = "uncorr"} to indicate that uncorrelated random parameters will be estimated. All random parameters follow a normal distribution. We set the number of chains to 4 and the number of iterations per chain to 200.
+In this example, we estimate an uncorrelated random parameters MDCEV model using **rmdcev**. We set the argument \code{random_parameters = "uncorr"} to indicate that uncorrelated random parameters will be estimated. All random parameters follow a normal distribution. We set the number of chains to 4 and the number of iterations per chain to 200.
 
 ```{r,eval=F, echo=T, estimation_mdcev_rp, message = FALSE, warning = FALSE}
 mdcev_rp <- FitMDCEV(psi_formula = psi_formula,
@@ -589,7 +589,7 @@ The results show the means of the random parameters followed by the estimated st
 
 ## Simulating MDCEV demand and welfare scenarios
 
-The \pkg{rmdcev} package includes simulation functions for calculating welfare measures and forecasting demand under alternative policy scenaros. I first provide an overview of the approach used for simulation and then provide code examples.
+The **rmdcev** package includes simulation functions for calculating welfare measures and forecasting demand under alternative policy scenaros. I first provide an overview of the approach used for simulation and then provide code examples.
 
 ### Overview of simulation steps
 
@@ -605,7 +605,7 @@ Monte Carlo simulation techniques can be employed to draw simulated values of th
 \varepsilon_{k} = -log(-log(draw(0,1)))) * \sigma
 \end{equation}
 
-where $draw(0,1)$ is a draw between 0 and 1 and $\sigma$ is the scale parameter.\pkg{rmdcev} allows errors to be drawn using uniform draws or the Modified Latin Hypercube Sampling algorithm (@hesson2006).
+where $draw(0,1)$ is a draw between 0 and 1 and $\sigma$ is the scale parameter.**rmdcev** allows errors to be drawn using uniform draws or the Modified Latin Hypercube Sampling algorithm (@hesson2006).
 
 2. Conditional error draws: draw errors terms to reflect behaviour and dependent on whether alternative is consumed or not [@vonhaefenincorporating2003; @vonhaefenestimation2004]:
 
@@ -622,7 +622,7 @@ The main differences between these two error draw approaches is that in the cond
 
 #### Step 2: Calculating welfare measures and demand forecasts
 
-With the error draws in hand, the second step is to simulate demand or welfare changes. Compared to welfare measures in discrete choice models, welfare calculation in MDCEV models is more challenging because of the two Kuhn-Tucker conditions in Equation (\ref{eq:kt_conditions}). For a given policy scenario, a priori, we do not know which alternatives have a positive or zero consumption level. \pkg{rmdcev} implements the @pinjaricomputationally2011 efficient demand forecasting routine for simulating demand behaviour which relies on calculting Marshallian demands. For welfare calculations, we need to calculate the expenditure function in \ref{eq:welfare} which relies on Hicksian demands. These are calculated using the approach described by @lloydsmithnew2018. The demand and welfare simulation approaches share a lot of commonalities and thus I only fully describe the approach for welfare calculations below. The specific steps for demand simulation is explained in-depth in @pinjaricomputationally2011 and the interested reader is encouraged to read Section 4 of the paper for the exact details.
+With the error draws in hand, the second step is to simulate demand or welfare changes. Compared to welfare measures in discrete choice models, welfare calculation in MDCEV models is more challenging because of the two Kuhn-Tucker conditions in Equation (\ref{eq:kt_conditions}). For a given policy scenario, a priori, we do not know which alternatives have a positive or zero consumption level. **rmdcev** implements the @pinjaricomputationally2011 efficient demand forecasting routine for simulating demand behaviour which relies on calculting Marshallian demands. For welfare calculations, we need to calculate the expenditure function in \ref{eq:welfare} which relies on Hicksian demands. These are calculated using the approach described by @lloydsmithnew2018. The demand and welfare simulation approaches share a lot of commonalities and thus I only fully describe the approach for welfare calculations below. The specific steps for demand simulation is explained in-depth in @pinjaricomputationally2011 and the interested reader is encouraged to read Section 4 of the paper for the exact details.
 
 ### Welfare analysis
 
@@ -647,6 +647,7 @@ Go to step 3.
 **Step 4**: Compute the optimal Hicksian consumption levels for the first $I$ alternatives in the above descending order using the following equations
 
 \begin{align}
+\label{eq:optimal_x}
 x_1 &=   \left( \frac{p_1}{\lambda^E \psi_1} \right)^\frac{1}{\alpha_1-1}\text{, and} \\
 x_m &=   \left[ \left( \frac{p_m}{\lambda^E \psi_m} \right)^\frac{1}{\alpha_m-1}-1 \right]\gamma_m, \; \; \text{if} \; \; x_m > 0.
 \end{align}
@@ -675,16 +676,16 @@ In this context, there is no closed-form expressions for $\lambda^E$ and we need
 
 **Step 6**: If $|\lambda_l^E-\lambda_u^E| \leq \; tol_{\lambda}$ or $|\hat{U}-\bar{U}| \leq \; tol_{U}$, go to step 7. Else if $\hat{U}<\bar{U}$, update $\lambda^E_u= (\lambda_l^E+\lambda_u^E)/2$ and go to step 5. Else if $\hat{U}>\bar{U}$, update $\lambda^E_l= (\lambda_l^E+\lambda_u^E)/2$ and go to step 5.
 
-**Step 7**: Compute the optimal Hicksian consumption levels for the first $M$ alternatives in the above descending order using Equation (14). Set the remaining alternative consumption levels to zero and stop.
+**Step 7**: Compute the optimal Hicksian consumption levels for the first $M$ alternatives in the above descending order using Equation (\ref{eq:optimal_x}). Set the remaining alternative consumption levels to zero and stop.
 
 
 #### Welfare calculation example
 
-In \pkg{rmdcev}, the functions for welfare and demand simulation have been divided into 3 steps to allow users to parallelize operations as desired. 
+In **rmdcev**, the functions for welfare and demand simulation have been divided into 3 steps to allow users to parallelize operations as desired. 
 
 ##### 1. Define policy scenarios 
 
-In the first step, we define the number of alternative policy scenarios to use in simulation and then specify changes to the $\psi$ variables and prices of alternatives. The CreateBlankPolicies function has been created to easily set-up the required lists for the simulation. These policies can then be manually edited according to the specific policy scenario. For prices, \pkg{rmdcev} is set up to accept additive changes in prices that impact all individuals the same. For the $\psi$ variable changes, the package is set up to accept any new values for these variables. Depending on the number of individuals and number of policies, the generated policies list can be quite large. If the user is only interested in assessing price changes, then I recommend setting price_change_only to TRUE which ensures duplicate $\psi$ data is not created.
+In the first step, we define the number of alternative policy scenarios to use in simulation and then specify changes to the $\psi$ variables and prices of alternatives. The CreateBlankPolicies function has been created to easily set-up the required lists for the simulation. These policies can then be manually edited according to the specific policy scenario. For prices, **rmdcev** is set up to accept additive changes in prices that impact all individuals the same. For the $\psi$ variable changes, the package is set up to accept any new values for these variables. Depending on the number of individuals and number of policies, the generated policies list can be quite large. If the user is only interested in assessing price changes, then I recommend setting price_change_only to TRUE which ensures duplicate $\psi$ data is not created.
 
 In this example, we are interested in two separate policies. The first policy increases the costs of all recreation activities by \$1 and the second policy increases the cost of all hunting activities by \$10. The policy set-up for these two scenarios is demonstrated below.
 
@@ -728,11 +729,11 @@ The output of the SimulateMDCEV for welfare analysis is a list of matrices where
 
 The SummaryWelfare function computes summary statistics across all individuals. For example, the average welfare change for a \$1 increase in recreation costs per day is -\$120.
 
-The reason these last two steps are separate is to allow users to parallelize the simulation step as the last step can be computationally intensive. The number of simulations is a multiplicative function of the number of individuals, number of policies, number of parameter estimate simulations, and the number of error draws ($I$ x $npols$ x $nsims$ x $nerrs$). Even for modestly sized data, the total number of simulations can easily reach well into the millions or billions. All simulations are conducted at the individual level which allows the user to easily parallelize the SimulateMDCEV function using the **parallel** or related packages.
+The reason these last two steps are separate is to allow users to parallelize the simulation step as the last step can be computationally intensive. The number of simulations is a multiplicative function of the number of individuals, number of policies, number of parameter estimate simulations, and the number of error draws ($I$ x $npols$ x $nsims$ x $nerrs$). Even for modestly sized data, the total number of simulations can easily reach well into the millions or billions. All simulations are conducted at the individual level which allows the user to easily parallelize the SimulateMDCEV function using the **parallel** package or related packages.
 
 ### Demand forecasting
 
-This section demonstrates the demand forecasting capabilities of \pkg{rmdcev}. Please refer to the previous section for an overview of the three steps to simulation. 
+This section demonstrates the demand forecasting capabilities of **rmdcev**. Please refer to the previous section for an overview of the three steps to simulation. 
 
 ```{r, eval=F, echo=T, sim_mdcev_demand}
 policies <-	CreateBlankPolicies(npols = 2, 
@@ -758,7 +759,7 @@ The output of the demand simulation is a list of $I$ elements, one for each indi
 
 ## Creating simulated MDCEV data
 
-Simulated MDCEV data can be easilty created for model assessment and Monte Carlo analysis. To demonstrate this functionality of \pkg{rmdcev}, we can generate some fake data for 1,000 individuals with 10 non-numeraire alternatives and the following parameter values.
+Simulated MDCEV data can be easilty created for model assessment and Monte Carlo analysis. To demonstrate this functionality of **rmdcev**, we can generate some fake data for 1,000 individuals with 10 non-numeraire alternatives and the following parameter values.
 
 ```{r, eval=T, fake_simulate}
 model <- "hybrid"
@@ -804,6 +805,6 @@ coefs <- mdcev_est$est_pars %>%
 
 # Conclusions {#conclusions}
 
-The \pkg{rmdcev} package implements the multiple discrete-continuous extreme value model with heterogeneity that can be continuous (i.e. random parameters) or discrete (i.e. latent classes). Models can be estimated using maximum likelihood or Bayesian techniques. This paper demonstrates the use of the pacakage to estimate several model specifications and to derive demand forecasts and welfare implications of policy scenarios. To my knowledge, there is no other available statistical package that can estimate welfare implications of policy scenarios using MDCEV models. I hope that the publication of \pkg{rmdcev} will make MDCEV modeling available to a wider audience.
+The **rmdcev** package implements the multiple discrete-continuous extreme value model with heterogeneity that can be continuous (i.e. random parameters) or discrete (i.e. latent classes). Models can be estimated using maximum likelihood or Bayesian techniques. This paper demonstrates the use of the pacakage to estimate several model specifications and to derive demand forecasts and welfare implications of policy scenarios. To my knowledge, there is no other available statistical package that can estimate welfare implications of policy scenarios using MDCEV models. I hope that the publication of **rmdcev** will make MDCEV modeling available to a wider audience.
 
 # References
