@@ -37,20 +37,19 @@ parameters {
 //	vector[n_psi_fixed] psi;
 	vector<lower=0 >[gamma_fixed == 1 ? Gamma : 0] gamma;
 	vector<lower=0, upper=1>[alpha_fixed == 1 ? A : 0] alpha;
-	vector[RP] mu;                                // means for beta
+	vector[RP] mu;                                // means for random parameters
   	matrix[I, RP] z;                             // std normal draws
-	cholesky_factor_corr[corr == 1 ? RP : 0] L_Omega;                // cholesky factors
+	cholesky_factor_corr[corr == 1 ? RP : 0] L_Omega; // cholesky factors
   	vector<lower=0,upper=pi()/2>[RP] tau_unif;
 	vector<lower=0>[fixed_scale1 == 0 ? 1 : 0] scale;
 }
 
 transformed parameters {
 	vector[I] log_like;
-//	cholesky_factor_cov[RP] L;                       // cholesky factors
-  	vector<lower=0>[RP] tau;   	// diagonal of the part-worth covariance matrix
+  	vector<lower=0>[RP] tau;   	// diagonal of the covariance matrix
 
   	{
-	matrix[I, RP] beta;             // utility parameters (individual level)
+	matrix[I, RP] beta;             // individual level parameters
 	matrix[I, J] lpsi;
    	matrix[I, NPsi] psi_individual;
   	matrix[I, J+1] alpha_full;
@@ -63,7 +62,7 @@ transformed parameters {
 
 	// individual level parameters
 	if (corr == 1){
-		beta = rep_matrix(mu', I) + (z * diag_pre_multiply(tau, L_Omega));
+		beta = rep_matrix(mu', I) + z * diag_pre_multiply(tau, L_Omega);
 	} else if (corr == 0){
 		beta = rep_matrix(mu', I) + diag_post_multiply(z, tau);
 	}
