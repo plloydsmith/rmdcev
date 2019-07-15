@@ -54,7 +54,7 @@ CXX14 = $(BINPREF)g++ -m$(WIN) -std=c++1y
 CXX14FLAGS=-O3 -mtune=native -march=native
 ```
 
-You can switch build_vignettes to TRUE but it will take a lot longer to install (Note: The vignette will be complete soon). If installation fails, please let me know by [filing an issue](https://github.com/plloydsmith/rmdcev/issues).
+You can switch build_vignettes to TRUE but it will take a lot longer to install. If installation fails, please let me know by [filing an issue](https://github.com/plloydsmith/rmdcev/issues).
 
 ## References
 
