@@ -50,13 +50,14 @@ library(rmdcev)
 #opts_chunk$set(tidy.opts=list(width.cutoff=60),tidy=TRUE)
 ```
 
+
 # Introduction
 
 Individual choice contexts are often characterized by both extensive (i.e. what alternative to choose) and intensive (i.e. how much of an alternative to consume) margins (@bhatmultiple2008). These multiple discrete-continuous choice situations are pervasive, arising in transportation, marketing, health, and decisions regarding environmental resources (@bhatmultiple2014). The multiple-discrete continuous extreme value (MDCEV) demand model, also commonly called Kuhn-Tucker (KT) models in economics, is often employed to analyze these MDC situations and substantial progress has been made in improving these econometric modeling structures (@vonhaefenkuhn-tucker2005; @bhatmultiple2014). Despite the large potential applications for MDCEV models, there remains a gap between this potential and actual examples of these models being used. One of the reasons cited for the lack of widespread use of MDCEV models is that estimating and simulating these models is challenging. The explanations of methods used to work with these models are spread across many papers and few user friendly software tools are available. The purpose of this paper is to present a unified account for MDCEV estimation and simulation alongside computer code.
 
-This paper presents an overview of the \proglang{R} [@r2008] package **rmdcev** which can estimate and simulate MDCEV models with discrete or continuous unobserved individual heterogeneity. Incoporating preference heterogeneity has been an important advancement in choice modeling. Unobserved preference heterogeneity can be accomodated assuming continuous distributions using random parameters or a latent class (LC) specification assuming a discrete distribution where people can be divided into distinct segments. Within each segment, the LC specification assumes preference homogeneity. The models in **rmdcev** can be fit using maximum likelihood estimation or Bayesian estimation. The **rmdcev** package also implements demand forecasting and welfare calculation for policy simulation. **rmdcev** is available from the Comprehensive R Archive Network (CRAN) at https://CRAN.R-project.org/package=rmdcev. 
+This paper presents an overview of the R [@r2008] package **rmdcev** which can estimate and simulate MDCEV models with discrete or continuous unobserved individual heterogeneity. Incoporating preference heterogeneity has been an important advancement in choice modeling. Unobserved preference heterogeneity can be accomodated assuming continuous distributions using random parameters or a latent class (LC) specification assuming a discrete distribution where people can be divided into distinct segments. Within each segment, the LC specification assumes preference homogeneity. The models in **rmdcev** can be fit using maximum likelihood estimation or Bayesian estimation. The **rmdcev** package also implements demand forecasting and welfare calculation for policy simulation. **rmdcev** is available from the Comprehensive R Archive Network (CRAN) at https://CRAN.R-project.org/package=rmdcev. 
 
-In addition to **rmdcev**, the [**apollo**](http://www.apollochoicemodelling.com/) package developed by Stephane Hess and David Palma at the Choice Modelling Centre in Leeds provides a flexible modelling platform for estimating MDCEV models and simulating demand behaviour [@hessapollo2019]. **apollo** estimates a full suite of choice models including discrete choice models and is thus more comprehensive then **rmdcev**. The main differences for MDCEV modeling between the two packages is that **rmdcev** 1) provides functions for calculating welfare implications of policy scenarios, 2) uses the Stan program [@carpenterstan2017] for Bayesian estimation and thus the user has access to specialized postestimation commands, and 3) is primarily coded in \proglang{C++} and thus around 20 times faster.
+In addition to **rmdcev**, the [**apollo**](http://www.apollochoicemodelling.com/) package developed by Stephane Hess and David Palma at the Choice Modelling Centre in Leeds provides a flexible modelling platform for estimating MDCEV models and simulating demand behaviour [@hessapollo2019]. **apollo** estimates a full suite of choice models including discrete choice models and is thus more comprehensive then **rmdcev**. The main differences for MDCEV modeling between the two packages is that **rmdcev** 1) provides functions for calculating welfare implications of policy scenarios, 2) uses the Stan program [@carpenterstan2017] for Bayesian estimation and thus the user has access to specialized postestimation commands, and 3) is primarily coded in C++ and thus around 20 times faster.
 
 The paper first introduces the conceptual framework underlying MDCEV models and the connection to economic theory and welfare measures. Section [2](#models) also describes the various empirical specifications for MDCEV models. Section [3](#rmdcev) introduces the **rmdcev** package focusing first on estimation before moving on to discuss how to conduct welfare and demand simulations. Section [4](#conclusions) provides conclusions of the paper.
 
@@ -286,20 +287,20 @@ psi_formula <- ~ beach + birding + camping + cycling + fish + garden + golf +
 
 ```
 
-We specify the hybrid model specification where a single $\alpha$ is estimated for the numeraire and non-numeraire alternatives by setting model = "hybrid". We use maximum likelihood estimation by setting algorithm = "MLE". Standard errors can be calculated using the delta method using the std_errors option. For these examples we are going to use a subset of 500 individuals from the data.
+We specify the hybrid model specification where a single $\alpha$ is estimated for the numeraire and non-numeraire alternatives by setting **model = "hybrid"**. We use maximum likelihood estimation by setting **algorithm = "MLE"**. Standard errors can be calculated using the delta method using the **std_errors** option as shown below. For these examples we are going to use a subset of 200 individuals from the data.
 
 The syntax for the model is the following:
 
 ```{r, echo=T, estimation_mdcev_hybrid}
 mdcev_mle <- FitMDCEV(psi_formula = psi_formula,
-                        data = subset(data_rec, id < 501),
+                        data = subset(data_rec, id < 201),
                         model = "hybrid",
                         algorithm = "MLE",
 					  	std_errors = "deltamethod",
                         print_iterations = FALSE)
 ```
 
-The function first checks to ensure the data has the necessary variables, is arranged properly, and that all individuals spend positive amounts on the numeraire good. If the data passes these checks, the model is then estimated. Setting print_iterations = TRUE will print out intermediate iteration results as the model converges.
+The function first checks to ensure the data has the necessary variables, is arranged properly, and that all individuals spend positive amounts on the numeraire good. If the data passes these checks, the model is then estimated. Setting **print_iterations = TRUE** will print out intermediate iteration results as the model converges.
 
 The output of the function can be accessed by calling SummaryMDCEV.
 
@@ -309,11 +310,11 @@ SummaryMDCEV(mdcev_mle)
 
 The summary includes overall model and estimation information and the parameter estimates.
 
-In the next example, we estimate the $\alpha$-profile of the utility function by changing the model argument to "alpha".
+In the next example, we estimate the $\alpha$-profile of the utility function by changing the model argument to **"alpha"**.
 
-```{r, echo=T, estimation_mdcev_alpha}
+```{r, estimation_mdcev_alpha, message = FALSE, warning = FALSE}
 mdcev_mle <- FitMDCEV(psi_formula = psi_formula,
-                    data = subset(data_rec, id < 501),
+                    data = subset(data_rec, id < 201),
                     model = "alpha",
                     algorithm = "MLE",
 				  	std_error = "deltamethod",
@@ -326,18 +327,18 @@ SummaryMDCEV(mdcev_mle)
 
 The parameter estimates are quite different from the previous model as all the non-numeraire $\gamma$ parameters are fixed at 1 and alternative-specific $\alpha_k$ parameters are estimated.
 
-The $\gamma$-profile version of the model can be estimated by changing the model to "gamma" as the next example demonstrates.
+The $\gamma$-profile version of the model can be estimated by changing the model to **"gamma"** as the next example demonstrates.
 
-```{r, echo=T, estimation_mdcev_les}
+```{r, estimation_mdcev_les, message = FALSE, warning = FALSE}
 mdcev_mle <- FitMDCEV(psi_formula = psi_formula,
-                    data = subset(data_rec, id < 501),
+                    data = subset(data_rec, id < 201),
                     model = "gamma",
                     algorithm = "MLE",
 				  	std_error = "deltamethod",
                     print_iterations = FALSE)
 ```
 
-```{r, echo=T, echo=T,summary_mdcev_les}
+```{r,  echo=T,summary_mdcev_les}
 SummaryMDCEV(mdcev_mle)
 ```
 
@@ -345,7 +346,7 @@ The same number of parameters are estimated in all three models and the log-like
 
 ### Estimating MDCEV using Bayesian techniques
 
-The exact same models can be fit using Bayesian estimation by changing the algorithm call to "Bayes". Bayesian estimation is implemented using the Stan programming language [@carpenterstan2017]. The Bayesian framework requires careful choice of priors for the parameters. All priors are assumed to follow a normal distribution with a fixed mean and the user can change the standard deviation through these options in the FitMDCEV function.
+The exact same models can be fit using Bayesian estimation by changing the algorithm call to **"Bayes"**. Bayesian estimation is implemented using the Stan programming language [@carpenterstan2017]. The Bayesian framework requires careful choice of priors for the parameters. All priors are assumed to follow a normal distribution with a fixed mean and the user can change the standard deviation through these options in the FitMDCEV function.
 
 - **prior_psi_sd** standard deviation for normal prior with mean 0.
 - **prior_gamma_sd** standard deviation for normal prior with mean 0.
@@ -371,94 +372,11 @@ There are also a number of further options for Bayesian estimation. For example,
 
 - **lkj_shape_prior** Prior for Cholesky matrix for correlated random parameters
 
-In this example, we estimate the hybrid0 specification using Bayesian techniques.
+In this example, we estimate the hybrid0 specification using Bayesian techniques. We set the number of iterations to 200 and use 4 independent chains.
 
-```{r,eval=F, echo=T, estimation_mdcev_bayes, message = FALSE, warning = FALSE}
+```{r,eval=T, echo=T, estimation_mdcev_bayes, message = FALSE, warning = FALSE}
 mdcev_bayes <- FitMDCEV(psi_formula = psi_formula,
-                        data = subset(data_rec, id < 501),
-                        model = "hybrid0",
-                        algorithm = "Bayes",
-                        n_iterations = 100,
-                        n_chains = 1,
-                        print_iterations = FALSE)
-```
-
-The output of the function can be accessed by calling SummaryMDCEV.
-
-```{r,eval=F, echo=T, summary_mdcev_bayes}
-	SummaryMDCEV(mdcev_bayes)
-```
-
-```r
-Model run using rmdcev for R, version 0.9.0 
-Estimation method                : Bayes
-Model type                       : hybrid0 specification
-Number of classes                : 1
-Number of individuals            : 499
-Number of non-numeraire alts     : 17
-Estimated parameters             : 35
-LL                               : -12233.85
-Number of chains                 : 1
-Number of warmup draws per chain : 50
-Total post-warmup sample         : 50
-Time taken (hh:mm:ss)            : 00:00:29.67
-
-Average consumption of non-numeraire alternatives:
-    1     2     3     4     5     6     7     8     9    10    11    12    13    14    15    16 
- 6.48 12.29  2.34  9.05  3.85 22.02  4.45 39.60  0.64  1.14  0.84  0.27  4.49  3.04  9.22  2.37 
-   17 
- 1.49 
-
-
-Psi specification:
-~
-beach + birding + camping + cycling + fish + garden + golf + hiking + hunt_birds + hunt_large + hunt_trap + hunt_waterfowl + motor_land + motor_water + photo + ski_cross + ski_down - 1
-Parameter estimates --------------------------------  
-                   Estimate Std.err  z.stat n_eff Rhat
-psi_beach            -7.279   0.060 -122.11    46 1.01
-psi_birding          -8.284   0.092  -90.29    50 1.01
-psi_camping          -7.951   0.079 -101.18    53 0.99
-psi_cycling          -7.873   0.092  -85.21   147 0.98
-psi_fish             -7.596   0.087  -87.74    87 1.00
-psi_garden           -7.333   0.073 -100.84    37 1.08
-psi_golf             -6.978   0.077  -90.50    49 0.98
-psi_hiking           -7.084   0.074  -95.34    32 0.98
-psi_hunt_birds       -8.458   0.136  -62.02    32 1.10
-psi_hunt_large       -7.824   0.121  -64.73    41 1.04
-psi_hunt_trap        -9.097   0.164  -55.46    42 0.98
-psi_hunt_waterfowl   -8.552   0.147  -58.30    24 1.08
-psi_motor_land       -7.265   0.065 -111.39    53 0.99
-psi_motor_water      -7.026   0.086  -81.63    90 0.98
-psi_photo            -7.373   0.084  -88.10    39 1.00
-psi_ski_cross        -8.658   0.081 -106.36    31 0.98
-psi_ski_down         -7.268   0.089  -81.56    56 1.00
-gamma1                6.481   0.735    8.82    48 1.03
-gamma2               17.651   2.821    6.26    51 1.00
-gamma3                6.122   0.981    6.24    80 0.99
-gamma4               14.833   2.023    7.33    78 0.98
-gamma5                9.453   1.683    5.62    25 1.05
-gamma6               13.478   1.684    8.01    67 0.99
-gamma7                9.520   1.354    7.03    62 0.98
-gamma8               11.805   1.211    9.75    37 0.98
-gamma9                6.923   1.635    4.24    24 1.19
-gamma10              10.619   2.679    3.96    35 0.98
-gamma11              11.942   4.098    2.91    45 1.00
-gamma12               7.255   2.424    2.99    14 1.07
-gamma13              11.179   1.963    5.70    42 0.98
-gamma14               7.099   1.102    6.44    46 0.99
-gamma15              10.071   1.165    8.64    76 0.98
-gamma16               7.753   1.222    6.35    50 0.99
-gamma17               6.107   0.860    7.10    46 1.02
-scale                 0.754   0.020   37.12    27 0.99
-Note: All alpha parameters fixed to 1e-3. 
-Note: For each parameter, n_eff is a crude measure of effective sample size, and Rhat is the potential scale reduction factor on split chains (at convergence, Rhat=1)  
-```
-
-While the results are similar to the MLE estimation, we can note that the effective sample size for most parameters is quite low. The effective sample size reports the estimated number of independent draws from the posterior distribution for each parameter [@stan2019]. We can increase the number of iterations as well as increase the number of independent chains to 4.
-
-```{r,eval=F, echo=T, estimation_mdcev_bayes2, message = FALSE, warning = FALSE}
-mdcev_bayes <- FitMDCEV(psi_formula = psi_formula,
-                        data = subset(data_rec, id < 501),
+                        data = subset(data_rec, id < 201),
                         model = "hybrid0",
                         algorithm = "Bayes",
                         n_iterations = 200,
@@ -466,80 +384,18 @@ mdcev_bayes <- FitMDCEV(psi_formula = psi_formula,
                         print_iterations = FALSE)
 ```
 
-```{r,eval=F, echo=T, summary_mdcev_bayes2}
+The output of the function can be accessed by calling SummaryMDCEV.
+
+```{r,eval=T, echo=T, summary_mdcev_bayes}
 	SummaryMDCEV(mdcev_bayes)
 ```
 
-```r
-Model run using rmdcev for R, version 0.9.0 
-Estimation method                : Bayes
-Model type                       : hybrid0 specification
-Number of classes                : 1
-Number of individuals            : 499
-Number of non-numeraire alts     : 17
-Estimated parameters             : 35
-LL                               : -12232.8
-Number of chains                 : 4
-Number of warmup draws per chain : 100
-Total post-warmup sample         : 400
-Time taken (hh:mm:ss)            : 00:01:46.97
 
-Average consumption of non-numeraire alternatives:
-    1     2     3     4     5     6     7     8     9    10    11    12    13    14    15    16 
- 6.48 12.29  2.34  9.05  3.85 22.02  4.45 39.60  0.64  1.14  0.84  0.27  4.49  3.04  9.22  2.37 
-   17 
- 1.49 
-
-
-Psi specification:
-~
-beach + birding + camping + cycling + fish + garden + golf + hiking + hunt_birds + hunt_large + hunt_trap + hunt_waterfowl + motor_land + motor_water + photo + ski_cross + ski_down - 1
-Parameter estimates --------------------------------  
-                   Estimate Std.err  z.stat n_eff Rhat
-psi_beach            -7.274   0.062 -117.65   287 1.01
-psi_birding          -8.286   0.079 -104.83   343 1.00
-psi_camping          -7.941   0.077 -102.54   366 1.01
-psi_cycling          -7.883   0.078 -100.69   339 1.01
-psi_fish             -7.584   0.090  -84.19   466 1.00
-psi_garden           -7.333   0.058 -125.95   382 1.00
-psi_golf             -6.985   0.090  -77.47   525 1.00
-psi_hiking           -7.082   0.070 -101.45   406 0.99
-psi_hunt_birds       -8.465   0.135  -62.88   599 1.00
-psi_hunt_large       -7.827   0.124  -63.37   522 1.00
-psi_hunt_trap        -9.107   0.168  -54.35   260 1.00
-psi_hunt_waterfowl   -8.552   0.194  -44.17   261 1.01
-psi_motor_land       -7.271   0.098  -74.25   568 0.99
-psi_motor_water      -7.015   0.076  -91.72   302 1.00
-psi_photo            -7.367   0.074  -99.30   408 1.00
-psi_ski_cross        -8.667   0.098  -88.10   591 1.00
-psi_ski_down         -7.274   0.095  -76.69   483 1.00
-gamma1                6.458   0.659    9.80   540 1.00
-gamma2               16.918   2.613    6.47   523 0.99
-gamma3                5.881   0.839    7.01   815 0.99
-gamma4               14.472   1.823    7.94   950 0.99
-gamma5                9.125   1.289    7.08   533 1.00
-gamma6               13.650   1.390    9.82  1214 0.99
-gamma7                9.361   1.294    7.23   588 1.00
-gamma8               11.642   1.206    9.66   674 0.99
-gamma9                6.606   1.614    4.09   247 1.00
-gamma10              10.664   2.024    5.27   407 0.99
-gamma11              11.826   3.405    3.47   153 1.01
-gamma12               7.546   2.541    2.97   168 1.02
-gamma13              11.016   1.791    6.15   528 1.00
-gamma14               7.022   1.016    6.91   704 1.00
-gamma15               9.970   1.315    7.58   719 1.00
-gamma16               7.873   1.240    6.35   517 0.99
-gamma17               6.229   0.976    6.38   375 0.99
-scale                 0.757   0.020   38.08   311 1.00
-Note: All alpha parameters fixed to 1e-3. 
-Note: For each parameter, n_eff is a crude measure of effective sample size, and Rhat is the potential scale reduction factor on split chains (at convergence, Rhat=1) 
-```
-
-One benefit of using the Bayesian approach is that we can take advantage of the postestimation commands, interactive diagnostics, and posterior analysis in **rstan**, [**bayesplot**](https://mc-stan.org/bayesplot/) [@gabrybayesplot2019], and [**shinystan**](http://mc-stan.org/shinystan/) [@muthuser2018]. The interested reader is refered to these packages for additional details.
+One benefit of using the Bayesian approach is that we can take advantage of the postestimation commands, interactive diagnostics, and posterior analysis in **rstan**, [**bayesplot**](https://mc-stan.org/bayesplot/) [@gabrybayesplot2019], and [**shinystan**](http://mc-stan.org/shinystan/) [@muthuser2018]. For example, the effective sample size reports the estimated number of independent draws from the posterior distribution for each parameter [@stan2019]. The interested reader is refered to these packages for additional details.
 
 ### Estimating LC-MDCEV models
 
-In this example, we estimate a LC-MDCEV model using the **Recreation** data. We set the number of classes equal to 2. We would like to include the *university*, *ageindex*, and *urban* in the membership equation and we include them in the **lc_formula** interface. Note that we need to include at least a constant in the formula. The LC model is automatically estimated as long as the prespecified number of classes (**n_classes**) is set greater than 1.
+In this example, we estimate a LC-MDCEV model using the **Recreation** data. We set the number of classes equal to 2 and we use data on 500 individuals. We would like to include the **university**, **ageindex**, and **urban** in the membership equation and we include them in the **lc_formula** interface. Note that we need to include at least a constant in the formula. The LC model is automatically estimated as long as the prespecified number of classes (**n_classes**) is set greater than 1.
 
 ```{r, estimation_mdcev_lc, message = FALSE, warning = FALSE}
 mdcev_lc <- FitMDCEV(psi_formula = psi_formula,
@@ -555,37 +411,38 @@ mdcev_lc <- FitMDCEV(psi_formula = psi_formula,
 	SummaryMDCEV(mdcev_lc)
 ```
 
-In this LC example, we assume that there are two types of people that have different preferences for recreation. The probability of class assignment depends on unobserved factors and the three sociodemographic factors included in the membership equation. The summary output reports the average class probabiliies as being 32% for class 1 and 68% for class 2. The $\psi$ parameters across classes are similar although there are some noticable differences. The $\gamma$ parameters, on the other hand, show that satiation between classes is quite different between the classes. To assist speed and convergence issues, **rmdcev** uses the results of the MDCEV model as starting values when estimating the LC-MDCEV model. The MDCEV model output can be accessed from *mdcev_lc[['mdcev_fit']]* object for comparison.
+In this LC example, we assume that there are two types of people that have different preferences for recreation. The probability of class assignment depends on unobserved factors and the three sociodemographic factors included in the membership equation. The summary output reports the average class probabiliies as being 32% for class 1 and 68% for class 2. The $\psi$ parameters across classes are similar although there are some noticable differences. The $\gamma$ parameters, on the other hand, show that satiation between classes is quite different between the classes. To assist speed and convergence issues, **rmdcev** uses the results of the MDCEV model as starting values when estimating the LC-MDCEV model. The MDCEV model output can be accessed from **mdcev_lc[['mdcev_fit']]** object for comparison.
 
 ### Estimating RP-MDCEV models
 
 Random parameter models require defining and parameterizing the variance covariance matrix. For uncorrelated random parameters, the diagonal elements of the variance covariance matrix are estimated and the off-diagonal elements are assumed to be zero. For correlated random parameters, the variance covariance matrix is fully estimated and can be parameterized in many ways. The **rmdcev** package defines the variance covariance matrix in terms of Cholesky factors of the correlation matrix and a vector of standard deviations for numerical stability. Thus the variance covariance matrix is specified as
 
 \begin{equation}
-\sum_{\theta}= diag(\tau) x LL^T x diag(\tau)
+\sum = diag(\tau) \; x \; LL^T \; x \; diag(\tau)
 \end{equation}
 
 where $\tau$ is a vector of standard deviations, and $L$ is the cholesky factors of the correlation matrix.
 
-In this example, we estimate an uncorrelated random parameters MDCEV model using **rmdcev**. We set the argument \code{random_parameters = "uncorr"} to indicate that uncorrelated random parameters will be estimated. All random parameters follow a normal distribution. We set the number of chains to 4 and the number of iterations per chain to 200.
+In this example, we estimate an uncorrelated random parameters MDCEV model using **rmdcev**. We set the argument **random_parameters = "uncorr"** to indicate that uncorrelated random parameters will be estimated. All random parameters follow a normal distribution. We change the **psi_formula** specification to only include a single constant term and fix the scale parameter at 1 using **fixed_scale1 = 1**.
 
-```{r,eval=F, echo=T, estimation_mdcev_rp, message = FALSE, warning = FALSE}
-mdcev_rp <- FitMDCEV(psi_formula = psi_formula,
-                    data = subset(data_rec, id < 201),
-                    model = "hybrid0",
-                    algorithm = "Bayes",
-                    n_chains = 4,
-                    n_iterations = 200,
-                    random_parameters = "uncorr",
-                    print_iterations = FALSE)
+```{r,eval=T, echo=T, estimation_mdcev_rp, message = FALSE, warning = FALSE}
+mdcev_rp <- FitMDCEV(psi_formula = ~ 1,
+					data = subset(data_rec, id < 201),
+					model = "hybrid0",
+					algorithm = "Bayes",
+					n_chains = 4,
+					fixed_scale1 = 1,
+					n_iterations = 200,
+					random_parameters = "uncorr",
+					print_iterations = FALSE)
 ```
 
 
-```{r,eval=F, summary_mdcev_rp}
+```{r, eval=T, summary_mdcev_rp}
 	SummaryMDCEV(mdcev_rp)
 ```
 
-The results show the means of the random parameters followed by the estimated standard deviations. The standard deviations that are estimated to be different from zero suggest there is substantial heterogeneity in preferences. The correlated random parameters specification can be estimated by setting \code{random_parameters = "corr"}. 
+The results show the means of the random parameters followed by the estimated standard deviations. The standard deviations that are estimated to be different from zero suggest there is heterogeneity in preference parameters. The correlated random parameters specification can be estimated by setting **random_parameters = "corr"**. 
 
 ## Simulating MDCEV demand and welfare scenarios
 
@@ -595,7 +452,7 @@ The **rmdcev** package includes simulation functions for calculating welfare mea
 
 Once the model parameters are estimated, there are two steps to simulation in MDCEV models. In the first step we draw simulated values for the unobserved heterogeneity term ($\varepsilon$) using Monte Carlo techniques. The second step uses these error draws, the previously estimated model parameters, and the underlying data to calculate Marshallian demands for forecasting or Hicksian demands for welfare analysis. These two steps are described below.
 
-#### Step 1: simulating unobervered heterogeneity
+**Step 1: simulating unobervered heterogeneity**
 
 Monte Carlo simulation techniques can be employed to draw simulated values of the unobserved heterogeneity ($\varepsilon$) using either unconditional or conditional draws.
 
@@ -620,7 +477,7 @@ In the conditional error draw approach, we normalize $\varepsilon_1=0$.
 
 The main differences between these two error draw approaches is that in the conditional approach, we draw errors such that the model perfectly predicts the observed consumption patterns in the baseline state [@vonhaefenkuhn-tucker2005]. Thus the conditional approach uses observed behaviour by individuals to characterize unobserved heterogeneity. If the model correctly specifies the data generating process, the sample means of the conditional and unconditional approaches should converge in expectation. Another difference between the two approaches is that the unconditional approach uses more computation time. The reason for the relative slowness of the unconditional approach is the need to calculate consumption patterns in the baseline state as well as simulate the entire distribution of unobserved heterogeneity.
 
-#### Step 2: Calculating welfare measures and demand forecasts
+**Step 2: Calculating welfare measures and demand forecasts**
 
 With the error draws in hand, the second step is to simulate demand or welfare changes. Compared to welfare measures in discrete choice models, welfare calculation in MDCEV models is more challenging because of the two Kuhn-Tucker conditions in Equation (\ref{eq:kt_conditions}). For a given policy scenario, a priori, we do not know which alternatives have a positive or zero consumption level. **rmdcev** implements the @pinjaricomputationally2011 efficient demand forecasting routine for simulating demand behaviour which relies on calculting Marshallian demands. For welfare calculations, we need to calculate the expenditure function in \ref{eq:welfare} which relies on Hicksian demands. These are calculated using the approach described by @lloydsmithnew2018. The demand and welfare simulation approaches share a lot of commonalities and thus I only fully describe the approach for welfare calculations below. The specific steps for demand simulation is explained in-depth in @pinjaricomputationally2011 and the interested reader is encouraged to read Section 4 of the paper for the exact details.
 
@@ -628,7 +485,7 @@ With the error draws in hand, the second step is to simulate demand or welfare c
 
 For the welfare analysis, I first fully describe the specific steps of the algorithm and then demonstrate its use in an example. There are two alogrithms that differ depending on the MDCEV model specification. If a single $\alpha$ parameter is estimated (i.e. model = "hybrid" or "hybrid0"), then we can use the hybrid approach to welfare simulation. If there are heterogenous $\alpha$ parameters, then we can use the general approach to welfare simulation. The hybrid approach is less computationally intensive and provides an exact analytical solution but the general approach can be used with all utility specifications. The specific steps for both algorithms are described below. 
 
-#### Steps in algorithm for hybrid-profile utility specifications
+**Steps in algorithm for hybrid-profile utility specifications**
 
 **Step 0**: Assume that only the numeraire alternative is chosen and let the number of chosen alternatives equal one (M=1).
 
@@ -654,7 +511,7 @@ x_m &=   \left[ \left( \frac{p_m}{\lambda^E \psi_m} \right)^\frac{1}{\alpha_m-1}
 
 Set the remaining alternative consumption levels to zero and stop.
 
-#### Steps in algorithm for general utility specifications
+**Steps in algorithm for general utility specifications**
 
 In this context, there is no closed-form expressions for $\lambda^E$ and we need to conduct a numerical bisection routine. Let $\hat{\lambda^E}$ and $\hat{U}$ be estimates of $\lambda^E$ and $U$ and let $tol_{\lambda}$ and $tol_{U}$ be the tolerance levels for estimating $\lambda^E$ and $U$ that can be arbitrarily small. The algorithm works as follows:
 
@@ -685,21 +542,21 @@ In **rmdcev**, the functions for welfare and demand simulation have been divided
 
 ##### 1. Define policy scenarios 
 
-In the first step, we define the number of alternative policy scenarios to use in simulation and then specify changes to the $\psi$ variables and prices of alternatives. The CreateBlankPolicies function has been created to easily set-up the required lists for the simulation. These policies can then be manually edited according to the specific policy scenario. For prices, **rmdcev** is set up to accept additive changes in prices that impact all individuals the same. For the $\psi$ variable changes, the package is set up to accept any new values for these variables. Depending on the number of individuals and number of policies, the generated policies list can be quite large. If the user is only interested in assessing price changes, then I recommend setting price_change_only to TRUE which ensures duplicate $\psi$ data is not created.
+In the first step, we define the number of alternative policy scenarios to use in simulation and then specify changes to the $\psi$ variables and prices of alternatives. The CreateBlankPolicies function has been created to easily set-up the required lists for the simulation. These policies can then be manually edited according to the specific policy scenario. For prices, **rmdcev** is set up to accept additive changes in prices that impact all individuals the same. For the $\psi$ variable changes, the package is set up to accept any new values for these variables. Depending on the number of individuals and number of policies, the generated policies list can be quite large. If the user is only interested in assessing price changes, then I recommend setting **price_change_only = TRUE** which ensures duplicate $\psi$ data is not created.
 
 In this example, we are interested in two separate policies. The first policy increases the costs of all recreation activities by \$1 and the second policy increases the cost of all hunting activities by \$10. The policy set-up for these two scenarios is demonstrated below.
 
 ```{r, sim_mdcev_welfare_policy}
 ngoods <- mdcev_mle$stan_data[["J"]]
-npols <- 2 # Choose number of policies
+npols <- 2
 
 policies<-  CreateBlankPolicies(npols = npols, 
 								ngoods = ngoods, 
 								mdcev_est$stan_data[["dat_psi"]], 
 								price_change_only = TRUE)
 
-policies$price_p[[1]] <- c(0, rep(1, ngoods)) # First term is 0 for the numeraire
-policies$price_p[[2]] <- c(rep(0, 9), rep(10, 4), rep(0, 5)) # Hunting activities good number 10-13
+policies$price_p[[1]] <- c(0, rep(1, ngoods))
+policies$price_p[[2]][10:13] <- rep(10, 4)
 ```
 
 ##### 2. Prepare simulation data
@@ -715,7 +572,7 @@ df_sim <- PrepareSimulationData(mdcev_mle, policies)
 The third step is to simulate the policy scenario using the formatted data. The user chooses the type of error draws (unconditional or conditional as described above), the number of error draws, and whether to simulate the demand or welfare changes. Note that the first time SimulateMDCEV is run in each session, the C++ simulation code is compiled and this can take approximately 30 seconds. Subsequent function calls do not require the code to be recompiled.
 
 
-```{r, eval=T, echo=T, sim_mdcev_welfare}
+```{r, eval=T, sim_mdcev_welfare}
 welfare <- SimulateMDCEV(df_sim$df_indiv,
 					 df_common = df_sim$df_common,
 					 sim_options = df_sim$sim_options,
@@ -727,22 +584,22 @@ SummaryWelfare(welfare)
 
 The output of the SimulateMDCEV for welfare analysis is a list of matrices where each element of the list is for an individual and the matrix consists of rows for each policy scenario and columns for each parameter simulation. Note that if a LC-MDCEV model is estimated, there will be one list of matrices for each class.
 
-The SummaryWelfare function computes summary statistics across all individuals. For example, the average welfare change for a \$1 increase in recreation costs per day is -\$120.
+The SummaryWelfare function computes summary statistics across all individuals. For example, the average welfare change for a \$1 daily increase in all recreation costs is -\$129.
 
-The reason these last two steps are separate is to allow users to parallelize the simulation step as the last step can be computationally intensive. The number of simulations is a multiplicative function of the number of individuals, number of policies, number of parameter estimate simulations, and the number of error draws ($I$ x $npols$ x $nsims$ x $nerrs$). Even for modestly sized data, the total number of simulations can easily reach well into the millions or billions. All simulations are conducted at the individual level which allows the user to easily parallelize the SimulateMDCEV function using the **parallel** package or related packages.
+The reason these last two steps are separate is to allow users to parallelize the simulation step as the last step can be computationally intensive. The number of simulations is a multiplicative function of the number of individuals, number of policies, number of parameter estimate simulations, and the number of error draws ($I$ x $npols$ x $nsims$ x $nerrs$). Even for modestly sized data, the total number of simulations can easily reach well into the millions or billions. All simulations are conducted at the individual level which allows the user to easily parallelize the SimulateMDCEV function using the **parallel** package or similar packages.
 
 ### Demand forecasting
 
 This section demonstrates the demand forecasting capabilities of **rmdcev**. Please refer to the previous section for an overview of the three steps to simulation. 
 
-```{r, eval=F, echo=T, sim_mdcev_demand}
+```{r, eval=T, sim_mdcev_demand}
 policies <-	CreateBlankPolicies(npols = 2, 
 								ngoods = mdcev_mle$stan_data[["J"]], 
 								mdcev_mle$stan_data[["dat_psi"]], 
 								price_change_only = TRUE)
 
 policies$price_p[[1]] <- c(0, rep(1, ngoods))
-policies$price_p[[2]] <- c(0, rep(5, ngoods))
+policies$price_p[[2]][10:13] <- rep(10, 4)
 df_sim <- PrepareSimulationData(mdcev_mle, policies)
 
 demand <- SimulateMDCEV(df_sim$df_indiv, 
@@ -766,18 +623,18 @@ model <- "hybrid"
 nobs <- 1000
 ngoods <- 10
 sim.data <- GenerateMDCEVData(model = model, 
-							  nobs = nobs, 
-							  ngoods = ngoods,
-  							  alpha_parms = 0.5, 
-							  scale_parms = 1,
-							  gamma_parms = stats::runif(ngoods, 1, 2), 
-							  psi_i_parms = c(-1.5, 3, -2, 1, 2), 
-							  psi_j_parms = c(-5, 0.5, 2))
+								nobs = nobs, 
+								ngoods = ngoods,
+								alpha_parms = 0.5, 
+								scale_parms = 1,
+								gamma_parms = stats::runif(ngoods, 1, 2), 
+								psi_i_parms = c(-1.5, 3, -2, 1, 2), 
+								psi_j_parms = c(-5, 0.5, 2))
 ```
 
 Next, we estimate the MDCEV model using maximum likelihood to recover the parameter estimates.
 
-```{r, eval=T, fake_estimate}
+```{r, fake_estimate, message = FALSE, warning = FALSE}
 mdcev_est <- FitMDCEV(psi_formula = ~ b1 + b2 + b3 + b4 + b5 + b6 + b7 + b8 - 1,
 				   data = sim.data$data,
 				   model = model,
