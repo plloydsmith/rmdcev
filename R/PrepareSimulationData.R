@@ -66,12 +66,12 @@ PrepareSimulationData <- function(stan_est,
 		est_sim_lc <- purrr::map(est_sim_lc, function(x){ x %>%
 				select(-class)})
 
-		sim_welfare <- purrr::map(est_sim_lc, ~rmdcev:::ProcessSimulationData(est_sim = .x, stan_est, policies, nsims))
+		sim_welfare <- purrr::map(est_sim_lc, ~ProcessSimulationData(est_sim = .x, stan_est, policies, nsims))
 
 		df_common <- purrr::map(sim_welfare, `[`, c("price_p_list", "gamma_sim_fixed", "alpha_sim_fixed", "scale_sim"))
 #		names(df_common) <- rep("df_common", stan_est$n_classes)
 		df_indiv <- purrr::map(sim_welfare, `[`, c("df_indiv"))
-		df_indiv <- purrr::map(df_indiv, flatten)
+		df_indiv <- purrr::map(df_indiv, purrr::flatten)
 	#	names(df_indiv) <- rep("df_indiv", stan_est$n_classes)
 	}
 
