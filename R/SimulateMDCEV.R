@@ -75,20 +75,10 @@ SimulateMDCEV <- function(df_indiv, df_common, sim_options,
 	sim_options[["tol"]] <- tol
 	sim_options[["max_loop"]] <- max_loop
 
-	if(sim_options$n_classes == 1){
-		if(sim_type == "welfare"){
-			out <- StanWelfare(df_indiv, df_common, sim_options)
-		} else if(sim_type == "demand"){
-			out <- StanDemand(df_indiv, df_common, sim_options)
-		}
-
-	} else if(sim_options$n_classes > 1){
-		if(sim_type == "welfare"){
-			out <- purrr::map2(df_indiv, df_common, StanWelfare, sim_options)
-		} else if(sim_type == "demand"){
-			out <- purrr::map2(df_indiv, df_common, StanDemand, sim_options)
-		}
-		names(out) <- paste0("class", c(1:sim_options$n_classes))
+	if(sim_type == "welfare"){
+		out <- StanWelfare(df_indiv, df_common, sim_options)
+	} else if(sim_type == "demand"){
+		out <- StanDemand(df_indiv, df_common, sim_options)
 	}
 
 	time <- proc.time() - start.time
