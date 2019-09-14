@@ -57,22 +57,22 @@ PrepareSimulationData <- function(stan_est,
 	} else if(stan_est$n_classes > 1){
 
 		est_sim_lc <- suppressWarnings(est_sim %>% # suppress warnings about scale not having a class parameter
-									   	dplyr::filter(!stringr::str_detect(.data$parms, "delta")) %>%
-									   	tidyr::separate(.data$parms, into = c("class","parms"), sep = 7) %>%
+									   	dplyr::filter(stringr::str_detect(.data$parms,
+									   		paste(c("psi", "gamma", "alpha", "scale"),collapse = '|'))) %>%									   	tidyr::separate(.data$parms, into = c("class","parms"), sep = 7) %>%
 									   	dplyr::mutate(class = gsub("[^[:alnum:]]", "", class)))
 
 		est_sim_lc <- split( est_sim_lc , f = est_sim_lc$class )
-		names(est_sim_lc) <- rep("est_sim", stan_est$n_classes)
 
 		est_sim_lc <- purrr::map(est_sim_lc, function(x){ x %>%
 				select(-class)})
 
-		sim_welfare <- purrr::map(est_sim_lc, ProcessSimulationData, stan_est, policies, nsims)
+		sim_welfare <- purrr::map(est_sim_lc, ~rmdcev:::ProcessSimulationData(est_sim = .x, stan_est, policies, nsims))
 
 		df_common <- purrr::map(sim_welfare, `[`, c("price_p_list", "gamma_sim_fixed", "alpha_sim_fixed", "scale_sim"))
-		names(df_common) <- rep("df_common", stan_est$n_classes)
-
-		df_indiv <- purrr::flatten(purrr::map(sim_welfare, `[`, c("df_indiv")))
+#		names(df_common) <- rep("df_common", stan_est$n_classes)
+		df_indiv <- purrr::map(sim_welfare, `[`, c("df_indiv"))
+		df_indiv <- purrr::map(df_indiv, flatten)
+	#	names(df_indiv) <- rep("df_indiv", stan_est$n_classes)
 	}
 
 	sim_options <- list(n_classes = stan_est$n_classes,

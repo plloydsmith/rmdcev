@@ -64,7 +64,7 @@
 #' model = "hybrid0",
 #' algorithm = "MLE")
 #'}
-FitMDCEV <- function(data,
+FitMDCEV <- function(data, #formula, data, subset,, na.action,
 					 psi_formula = NULL,
 					 lc_formula = NULL,
 					 weights = NULL,
