@@ -1,16 +1,16 @@
-#' @title CheckMdcevData
+#' @title mdcev.datacheck
 #' @description Check MDCEV data
 #' @inheritParams FitMDCEV
 #' @keywords internal
-CheckMdcevData <- function(data_input){
+mdcev.datacheck <- function(data_input){
 
 	message("Checking data...")
 
 	if(!"id" %in% colnames(data_input))
 		stop("Data must have id column for individual")
 
-	if(!"good" %in% colnames(data_input))
-		stop("Data must have good column for non-numeraire alternatives")
+#	if(!"good" %in% colnames(data_input))
+#		stop("Data must have good column for non-numeraire alternatives")
 
 	if(!"quant" %in% colnames(data_input))
 		stop("Data must have quant column for consumption")

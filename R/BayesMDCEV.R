@@ -2,7 +2,7 @@
 #' @description Fit a MDCEV model using Bayesian estimation and Stan
 #' @param bayes_options list of Bayes options
 #' @param stan_data data for model
-#' @inheritParams FitMDCEV
+#' @inheritParams mdcev
 #' @param keep.samples default is FALSE,
 #' @param include.stanfit default isTRUE,
 #' @import dplyr

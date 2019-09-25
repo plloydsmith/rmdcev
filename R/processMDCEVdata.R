@@ -1,11 +1,14 @@
 #' @title processMDCEVdata
 #' @description Process MDCEV data
-#' @inheritParams FitMDCEV
+#' @inheritParams mdcev
 #' @param model_options list of model options
 #' @keywords internal
-processMDCEVdata <- function(data, psi_formula, lc_formula, model_options){
+processMDCEVdata <- function(formula, data, model_options){
 
-	dat_psi <- stats::model.matrix(psi_formula, data)
+	formula <- Formula::Formula(formula)
+	psi.vars <- stats::formula(formula, rhs = 1, lhs = 0)
+
+	dat_psi <- stats::model.matrix(psi.vars, data_rec)
 
 	NPsi <- ncol(dat_psi)
 
@@ -49,9 +52,11 @@ processMDCEVdata <- function(data, psi_formula, lc_formula, model_options){
 			 alpha_fixed = model_options$alpha_fixed)
 
 	if (model_options$n_classes > 1){
+		lc.vars <- formula(formula, rhs = 2, lhs = 0)
+
 		data_class <- tbl_df(data) %>%
 			dplyr::distinct(id, .keep_all = T) %>%
-			stats::model.matrix(lc_formula, .)
+			stats::model.matrix(lc.vars, .)
 		stan_data$data_class <- as.matrix(data_class)
 		stan_data$L <- ncol(data_class) # number of membership variables
 	}

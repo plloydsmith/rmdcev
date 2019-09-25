@@ -1,7 +1,7 @@
 #' @title CreateParmInfo
 #' @description Create parameter names and number of parameters
 #' @param stan_data data for model
-#' @inheritParams FitMDCEV
+#' @inheritParams mdcev
 #' @return A list of parameter names and numbers
 #' @keywords internal
 CreateParmInfo <- function(stan_data, algorithm, random_parameters){

@@ -4,6 +4,10 @@ tol <- 0.01
 data(data_rec, package = "rmdcev")
 data_rec
 
+test_that("Data ok", {
+	expect_equal(data_rec$id[18], 2)
+})
+
 
 test_that("Data ok", {
 	expect_equal(data_rec$id[18], 2)

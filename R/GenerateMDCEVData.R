@@ -1,6 +1,6 @@
 #' @title GenerateMDCEVData
 #' @description Simulate data for MDCEV model
-#' @inheritParams FitMDCEV
+#' @inheritParams mdcev
 #' @param nobs Number of individuals
 #' @param ngoods Number of non-numeraire goods
 #' @param inc_lo Low bound of income for uniform draw

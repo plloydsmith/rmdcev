@@ -1,4 +1,4 @@
-#' @title FitMDCEV
+#' @title mdcev
 #' @description Fit a MDCEV model using MLE or Bayes
 #' @param psi_formula Formula for psi
 #' @param lc_formula Formula for latent class
@@ -59,14 +59,12 @@
 #' \donttest{
 #' data(data_rec, package = "rmdcev")
 #'
-#' mdcev_est <- FitMDCEV(psi_formula = ~ 1,
+#' mdcev_est <- mdcev(psi_formula = ~ 1,
 #' data = subset(data_rec, id < 500),
 #' model = "hybrid0",
 #' algorithm = "MLE")
 #'}
-FitMDCEV <- function(data, #formula, data, subset,, na.action,
-					 psi_formula = NULL,
-					 lc_formula = NULL,
+mdcev <- function(formula = NULL, data, subset, na.action,
 					 weights = NULL,
 					 model = c("alpha", "gamma", "hybrid", "hybrid0"),
 					 n_classes = 1,
@@ -99,13 +97,18 @@ FitMDCEV <- function(data, #formula, data, subset,, na.action,
 					 adapt_delta = 0.8,
 					 lkj_shape_prior = 4)
 {
-	CheckMdcevData(data)
+#	CheckMdcevData(data)
 
+	start.time <- proc.time()
+
+	# Check models
 	if (algorithm == "Bayes" && n_classes > 1)
 		stop("Bayesian estimation can only be used with one class. Switch algorithm to MLE or choose n_classes = 1", "\n")
 
 	if (algorithm == "MLE" && random_parameters != "fixed")
 		stop("MLE can only be used with fixed parameters. Switch random_parameters to 'fixed' or change algorithm to Bayes", "\n")
+
+	if (!inherits(data, "mdcev.data")) stop("Data must be of class mdcev.data")
 
 	if (algorithm == "MLE" && is.null(flat_priors)){
 		flat_priors <- 1
@@ -117,6 +120,7 @@ FitMDCEV <- function(data, #formula, data, subset,, na.action,
 		alpha_fixed <- 1
 	}
 
+	# Put model options in a list
 	mle_options <- list(fixed_scale1 = fixed_scale1,
 						model = model,
 						n_classes = n_classes,
@@ -147,9 +151,7 @@ FitMDCEV <- function(data, #formula, data, subset,, na.action,
 						show_stan_warnings = show_stan_warnings,
 						lkj_shape_prior = lkj_shape_prior)
 
-	start.time <- proc.time()
-
-	stan_data <- processMDCEVdata(data, psi_formula, lc_formula, mle_options)
+	stan_data <- processMDCEVdata(formula, data, mle_options)
 
 	parms_info <- CreateParmInfo(stan_data, algorithm, random_parameters)
 
@@ -216,7 +218,8 @@ FitMDCEV <- function(data, #formula, data, subset,, na.action,
 		tibble::rowid_to_column("sim_id") %>%
 		tidyr::gather(parms, value, -sim_id)
 
-#	class(result) <- "mdcev"
+result <- structure(result,
+					class = "mdcev")
 
 return(result)
 }
