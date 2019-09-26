@@ -8,11 +8,11 @@ processMDCEVdata <- function(formula, data, model_options){
 	formula <- Formula::Formula(formula)
 	psi.vars <- stats::formula(formula, rhs = 1, lhs = 0)
 
-	dat_psi <- stats::model.matrix(psi.vars, data_rec)
+	dat_psi <- stats::model.matrix(psi.vars, data)
 
 	NPsi <- ncol(dat_psi)
 
-	J <- length(unique(data$good))
+	J <- length(unique(data$alt))
 	I <- length(unique(data$id))
 
 	if (model_options$model == "gamma"){

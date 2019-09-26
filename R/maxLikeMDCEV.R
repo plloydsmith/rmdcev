@@ -93,5 +93,5 @@ return(result)
 ReduceStanFitSize <- function(stan_fit) {
 	stan_fit[["par"]][["log_like"]] <- NULL
 	stan_fit[["theta_tilde"]] <- stan_fit[["theta_tilde"]][,1:ncol(stan_fit[["hessian"]])]
-	stan_fit
+	return(stan_fit)
 }

@@ -4,16 +4,18 @@
 \alias{processMDCEVdata}
 \title{processMDCEVdata}
 \usage{
-processMDCEVdata(data, psi_formula, lc_formula, model_options)
+processMDCEVdata(formula, data, model_options)
 }
 \arguments{
-\item{data}{The (IxJ) data to be passed to Stan including 1) id, 2) good, 3) quant,
-4) price, 5) income, and columns for psi variables. Arrange data by id then good.
-Notes I is number of individuals and J is number of non-numeraire goods.}
+\item{formula}{Formula for the model to be estimated.The formula is divided in
+two parts, separated by the symbol \code{|}. The first part is reserved for
+variables in the psi parameter. These can include alternative-specific and
+individual-specific variables. The second part corresponds for individual-specific
+variables that enter in the probability assignment in models with latent classes.}
 
-\item{psi_formula}{Formula for psi}
-
-\item{lc_formula}{Formula for latent class}
+\item{data}{The (IxJ) data to be passed to Stan including 1) id, 2) alt, 3) quant,
+4) price, 5) income, and columns for psi variables. Arrange data by id then alt.
+Notes I is number of individuals and J is number of non-numeraire alternatives.}
 
 \item{model_options}{list of model options}
 }

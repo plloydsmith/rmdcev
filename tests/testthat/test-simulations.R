@@ -3,8 +3,13 @@ context("Test Simulations")
 tol <- 0.001
 data(data_rec, package = "rmdcev")
 data_rec
-result <- FitMDCEV(psi_formula = ~ factor(good_name) -1,
-				   data = subset(data_rec, id < 100),
+
+
+data_rec <- mdcev.data(data_rec, subset = id < 100,
+					   alt.var = "alt", choice = "quant")
+
+result <- mdcev( ~ alt -1,
+				   data = data_rec,
 				   model = "hybrid0",
 				   algorithm = "MLE",
 				   print_iterations = FALSE)

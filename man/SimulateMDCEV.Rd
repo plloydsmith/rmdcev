@@ -43,7 +43,7 @@ Simulate welfare or demand for MDCEV model
 \examples{
 \donttest{
 data(data_rec, package = "rmdcev")
-mdcev_est <- FitMDCEV(psi_formula = ~ 1,
+mdcev_est <- mdcev( ~ 1,
 data = subset(data_rec, id < 500),
 model = "hybrid0",
 algorithm = "MLE")

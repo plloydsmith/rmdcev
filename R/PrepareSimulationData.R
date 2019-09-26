@@ -1,6 +1,6 @@
 #' @title PrepareSimulationData
 #' @description Prepare Data for WTP simulation
-#' @param stan_est Stan fit model from FitMDCEV
+#' @param stan_est Stan fit model from mdcev
 #' @param policies list containing
 #' price_p with additive price increases, and
 #' dat_psi_p with new psi data
@@ -12,7 +12,7 @@
 #' @examples
 #' \donttest{
 #' data(data_rec, package = "rmdcev")
-#' mdcev_est <- FitMDCEV(psi_formula = ~ 1,
+#' mdcev_est <- mdcev( ~ 1,
 #' data = subset(data_rec, id < 500),
 #' model = "hybrid0",
 #' algorithm = "MLE")
@@ -28,6 +28,33 @@ PrepareSimulationData <- function(stan_est,
 								  policies,
 								  nsims = 30,
 								  class = "class1"){
+
+
+	if (stan_est$algorithm == "Bayes") {
+
+		# Get parameter estimates in matrix form
+		est_pars <- rstan::extract(stan_est$stan_fit, permuted = TRUE, inc_warmup = FALSE) %>%
+			as.data.frame() %>%
+			dplyr::select(-tidyselect::starts_with("log_like"), -tidyselect::starts_with("sum_log_lik"),
+						  -tidyselect::starts_with("tau_unif"), -.data$lp__)
+
+	} else if (stan_est$algorithm == "MLE") {
+
+		# Get parameter estimates in matrix form
+		est_pars <- tbl_df(stan_est[["stan_fit"]][["theta_tilde"]]) %>%
+			dplyr::select(-tidyselect::starts_with("log_like"), -tidyselect::starts_with("sum_log_lik"))
+
+	}
+
+	# Rename variables
+	if (stan_est$random_parameters == "fixed"){
+		names(est_pars)[1:stan_est$parms_info$n_vars$n_parms_total] <- stan_est$parms_info$parm_names$all_names
+	}
+
+	est_pars <- est_pars %>%
+		tibble::rowid_to_column("sim_id") %>%
+		tidyr::gather(parms, value, -sim_id)
+
 #stan_est <- mdcev_corr
 #	if (stan_est$random_parameters == "corr")
 #		stop("Demand and welfare simulation not set up for correlated RP-MDCEV models yet.", "\n")
@@ -38,16 +65,16 @@ PrepareSimulationData <- function(stan_est,
 	if (stan_est$algorithm == "MLE" && nsims > stan_est$n_draws){
 		nsims <- stan_est$n_draws
 		warning("Number of simulations > Number of mvn draws from stan_est. nsims has been set to: ", nsims)
-	} else if (stan_est$algorithm == "Bayes" && nsims > max(stan_est$est_pars$sim_id)) {
-		nsims <- max(stan_est$est_pars$sim_id)
+	} else if (stan_est$algorithm == "Bayes" && nsims > max(est_pars$sim_id)) {
+		nsims <- max(est_pars$sim_id)
 		warning("Number of simulations > Number of posterior draws from stan_est. nsims has been set to: ", nsims)
 	}
 
 	# Sample from parameter estimate draws
-	est_sim <- stan_est$est_pars %>%
+	est_sim <- est_pars %>%
 		dplyr::distinct(sim_id) %>%
 		dplyr::sample_n(., nsims) %>%
-		dplyr::left_join(stan_est$est_pars, by = "sim_id")
+		dplyr::left_join(est_pars, by = "sim_id")
 
 	if(stan_est$n_classes > 1){
 		est_sim <- est_sim %>%

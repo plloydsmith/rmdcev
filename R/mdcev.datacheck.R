@@ -1,6 +1,6 @@
 #' @title mdcev.datacheck
-#' @description Check MDCEV data
-#' @inheritParams FitMDCEV
+#' @description Check mdcev data
+#' @inheritParams mdcev
 #' @keywords internal
 mdcev.datacheck <- function(data_input){
 
@@ -8,9 +8,6 @@ mdcev.datacheck <- function(data_input){
 
 	if(!"id" %in% colnames(data_input))
 		stop("Data must have id column for individual")
-
-#	if(!"good" %in% colnames(data_input))
-#		stop("Data must have good column for non-numeraire alternatives")
 
 	if(!"quant" %in% colnames(data_input))
 		stop("Data must have quant column for consumption")
@@ -31,13 +28,6 @@ mdcev.datacheck <- function(data_input){
 		print(paste0("Numeraire is less than 0 for individuals in rows: ",
 					 toString(as.character(which(check$numeraire < 0)))))
 		stop()
-	}
-
-	check <- tbl_df(data_input) %>%
-		arrange(.data$id, .data$good)
-
-	if (identical(identical(check$id, data_input$id), FALSE) || identical(identical(check$good, data_input$good), FALSE) ){
-		stop("Data must be arranged by id then good. Can use dplyr command arrange(id, good).")
 	}
 
 	if (sum(data_input$price <= 0) > 0){

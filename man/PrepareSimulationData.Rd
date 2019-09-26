@@ -4,16 +4,18 @@
 \alias{PrepareSimulationData}
 \title{PrepareSimulationData}
 \usage{
-PrepareSimulationData(stan_est, policies, nsims = 30)
+PrepareSimulationData(stan_est, policies, nsims = 30, class = "class1")
 }
 \arguments{
-\item{stan_est}{Stan fit model from FitMDCEV}
+\item{stan_est}{Stan fit model from mdcev}
 
 \item{policies}{list containing
 price_p with additive price increases, and
 dat_psi_p with new psi data}
 
 \item{nsims}{Number of simulation draws to use for parameter uncertainty}
+
+\item{class}{The class number for Latent Class models.}
 }
 \value{
 A list with individual-specific data (df_indiv) and common data (df_common)
@@ -25,7 +27,7 @@ Prepare Data for WTP simulation
 \examples{
 \donttest{
 data(data_rec, package = "rmdcev")
-mdcev_est <- FitMDCEV(psi_formula = ~ 1,
+mdcev_est <- mdcev( ~ 1,
 data = subset(data_rec, id < 500),
 model = "hybrid0",
 algorithm = "MLE")

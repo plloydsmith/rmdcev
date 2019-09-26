@@ -5,7 +5,6 @@ tol <- 0.1
 data(data_rec, package = "rmdcev")
 data_rec
 
-
 test_that("Data ok", {
 	expect_equal(data_rec$id[18], 2)
 })
@@ -19,32 +18,35 @@ test_that("Data ok", {
 
 #skip_on_cran(
 #
+data_rec <- mdcev.data(data_rec, subset = id < 100,
+					   alt.var = "alt", choice = "quant")
 
 test_that("MLE names", {
-	expect_error(FitMDCEV(psi_formula = ~ factor(good_name) -1,
-									 data = data_rec,
-									 model = "gamma77",
-									 algorithm = "MLE",
-									 print_iterations = FALSE))
+	expect_error(mdcev( ~ alt -1,
+						 data = data_rec,
+						 model = "gamma77",
+						 algorithm = "MLE",
+						 print_iterations = FALSE))
 })
 
 context("MLE hybrid0 specification")
 
 test_that("MLE hybrid0", {
-	output <- FitMDCEV(psi_formula = ~ 1,
-					   data = subset(data_rec, id < 100),
-					   model = "hybrid0",
-					   algorithm = "MLE",
-					   std_error = "deltamethod",
-					   print_iterations = FALSE)
 
-	output.sum <- SummaryMDCEV(output)
-	expect_equal(length(output.sum$Std.err), 19)
+	output <- mdcev( ~ 1,
+				   data = data_rec,
+				   model = "hybrid0",
+				   algorithm = "MLE",
+				   std_error = "deltamethod",
+				   print_iterations = FALSE)
+
+	output.sum <- summary(output)
+	expect_equal(length(output.sum[["CoefTable"]]$Std.err), 19)
 	expect_equal(output$model, "hybrid0")
 	print(output$log.likelihood, digits =10)
 
-	expect_true(abs(output$log.likelihood - (-2684.757401)) < tol)
-	expect_true(abs(output$bic - 5456.822) < tol)
+	expect_true(abs(output$log.likelihood - (-2684.767401)) < tol)
+	expect_true(abs(output$bic - 5456.841) < tol)
 	expect_true(abs(output[["stan_fit"]][["par"]][["scale"]] - 0.8592168) < tol)
 	expect_true(abs(output[["stan_fit"]][["par"]][["psi"]][[1]] - -7.635813) < tol)
 	expect_equal(length(output[["stan_fit"]][["par"]][["alpha"]]), 0)
@@ -54,13 +56,13 @@ test_that("MLE hybrid0", {
 context("MLE hybrid specification")
 
 test_that("MLE hybrid", {
-	output <- FitMDCEV(psi_formula = ~ 1,
-					   data = subset(data_rec, id < 100),
-					   model = "hybrid",
-					   algorithm = "MLE",
-					   std_error = "deltamethod",
-					   print_iterations = FALSE)
+	output <- mdcev( ~ 1,
+					data = data_rec,
+					model = "hybrid",
+				    algorithm = "MLE",
+				    std_error = "deltamethod",
+				    print_iterations = FALSE)
 
-	output.sum <- SummaryMDCEV(output)
-	expect_equal(length(output.sum$Std.err), 20)
+	output.sum <- summary(output)
+	expect_equal(length(output.sum[["CoefTable"]]$Std.err), 20)
 })

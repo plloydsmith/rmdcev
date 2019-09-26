@@ -1,10 +1,13 @@
 #' @title mdcev
 #' @description Fit a MDCEV model using MLE or Bayes
-#' @param psi_formula Formula for psi
-#' @param lc_formula Formula for latent class
-#' @param data The (IxJ) data to be passed to Stan including 1) id, 2) good, 3) quant,
-#' 4) price, 5) income, and columns for psi variables. Arrange data by id then good.
-#' Notes I is number of individuals and J is number of non-numeraire goods.
+#' @param formula Formula for the model to be estimated.The formula is divided in
+#' two parts, separated by the symbol \code{|}. The first part is reserved for
+#' variables in the psi parameter. These can include alternative-specific and
+#' individual-specific variables. The second part corresponds for individual-specific
+#' variables that enter in the probability assignment in models with latent classes.
+#' @param data The (IxJ) data to be passed to Stan including 1) id, 2) alt, 3) quant,
+#' 4) price, 5) income, and columns for psi variables. Arrange data by id then alt.
+#' Notes I is number of individuals and J is number of non-numeraire alternatives.
 #' @param weights An optional vector of sampling or frequency weights.
 #' @param model A string indicating which model specification is estimated.
 #' The options are "alpha", "gamma", "hybrid" and "hybrid0".
@@ -28,10 +31,10 @@
 #' Initial parameter values should be included in a named list. For the "hybrid" specification,
 #' initial parameters can be specified as:
 #' init = list(psi = array(0, dim = c(1, num_psi)),
-#'             gamma = array(1, dim = c(1, num_goods)),
+#'             gamma = array(1, dim = c(1, num_alt)),
 #'             alpha = array(0.5, dim = c(1, 0)),
 #'             scale = array(1, dim = c(1)))
-#' where num_psi is number of psi parameters and num_goods is number of non-numeraire goods
+#' where num_psi is number of psi parameters and num_alt is number of non-numeraire alternatives
 #' @param prior_psi_sd standard deviation for normal prior with mean 0.
 #' @param prior_gamma_sd standard deviation for normal prior with mean 0.
 #' @param prior_alpha_sd standard deviation for normal prior with mean 0.5.
@@ -59,7 +62,7 @@
 #' \donttest{
 #' data(data_rec, package = "rmdcev")
 #'
-#' mdcev_est <- mdcev(psi_formula = ~ 1,
+#' mdcev_est <- mdcev( ~ 1,
 #' data = subset(data_rec, id < 500),
 #' model = "hybrid0",
 #' algorithm = "MLE")
@@ -97,7 +100,6 @@ mdcev <- function(formula = NULL, data, subset, na.action,
 					 adapt_delta = 0.8,
 					 lkj_shape_prior = 4)
 {
-#	CheckMdcevData(data)
 
 	start.time <- proc.time()
 
@@ -167,23 +169,13 @@ mdcev <- function(formula = NULL, data, subset, na.action,
 										keep.samples = FALSE,
 										include.stanfit = TRUE)
 
-		# Get parameter estimates in matrix form
-		result$est_pars <- rstan::extract(result$stan_fit, permuted = TRUE, inc_warmup = FALSE) %>%
-				as.data.frame() %>%
-				dplyr::select(-tidyselect::starts_with("log_like"), -tidyselect::starts_with("sum_log_lik"),
-					   -tidyselect::starts_with("tau_unif"), -.data$lp__)
-
 	} else if (algorithm == "MLE") {
 		result <- maxlikeMDCEV(stan_data, initial.parameters, mle_options)
 
-		# Get parameter estimates in matrix form
-		result$est_pars <- tbl_df(result[["stan_fit"]][["theta_tilde"]]) %>%
-			dplyr::select(-tidyselect::starts_with("log_like"), -tidyselect::starts_with("sum_log_lik"))
+#		result[["stan_fit"]][["theta_tilde"]] <- NULL
 
-		result[["stan_fit"]][["theta_tilde"]] <- NULL
-
-		if(length(names(result$est_pars)) == 0)
-			stop("Hessian matrix is not positive definite")
+#		if(length(names(result$est_pars)) == 0)
+#			stop("Hessian matrix is not positive definite")
 
 	}
 	end.time <- proc.time()
@@ -195,8 +187,7 @@ mdcev <- function(formula = NULL, data, subset, na.action,
 	result$stan_data <- stan_data
 	result$algorithm <- algorithm
 	result$random_parameters <- random_parameters
-	result$psi_formula <- psi_formula
-	result$lc_formula <- lc_formula
+	result$formula <- formula
 	result$n_classes <- n_classes
 	result$model <- model
 	result$algorithm <- algorithm
@@ -209,14 +200,11 @@ mdcev <- function(formula = NULL, data, subset, na.action,
 
 	# Rename variables
 	if (random_parameters == "fixed"){
-		names(result$est_pars)[1:parms_info$n_vars$n_parms_total] <- parms_info$parm_names$all_names
 		result$aic <- -2 * result$log.likelihood + 2 * parms_info$n_vars$n_parms_total
 		result$bic <- -2 * result$log.likelihood + log(result$effective.sample.size) * parms_info$n_vars$n_parms_total
 	}
 
-	result$est_pars <- result$est_pars %>%
-		tibble::rowid_to_column("sim_id") %>%
-		tidyr::gather(parms, value, -sim_id)
+
 
 result <- structure(result,
 					class = "mdcev")

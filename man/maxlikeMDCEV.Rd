@@ -13,10 +13,10 @@ maxlikeMDCEV(stan_data, initial.parameters, mle_options)
 Initial parameter values should be included in a named list. For the "hybrid" specification,
 initial parameters can be specified as:
 init = list(psi = array(0, dim = c(1, num_psi)),
-            gamma = array(1, dim = c(1, num_goods)),
+            gamma = array(1, dim = c(1, num_alt)),
             alpha = array(0.5, dim = c(1, 0)),
             scale = array(1, dim = c(1)))
-where num_psi is number of psi parameters and num_goods is number of non-numeraire goods}
+where num_psi is number of psi parameters and num_alt is number of non-numeraire alternatives}
 
 \item{mle_options}{modeling options for MLE}
 }

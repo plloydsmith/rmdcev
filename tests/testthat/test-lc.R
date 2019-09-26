@@ -4,16 +4,16 @@ tol <- 0.01
 data(data_rec, package = "rmdcev")
 data_rec
 
-result <- FitMDCEV(psi_formula = ~ 1,
-				   lc_formula = ~ university + ageindex,
-				   data = subset(data_rec, id < 500),
+data_rec <- mdcev.data(data_rec, subset = id < 500,
+					   alt.var = "alt", choice = "quant")
+
+result <- mdcev( ~ 1 | university + ageindex,
+				   data = data_rec,
 				   model = "hybrid0",
 				   algorithm = "MLE",
 				   std_error = "deltamethod",
 				   n_classes = 2,
 				   print_iterations = FALSE)
-
-output.sum <- SummaryMDCEV(result)
 
 test_that("LC 2-classes", {
 #	expect_true(abs(result$log.likelihood - (-12612.51)) < tol)

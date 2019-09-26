@@ -9,7 +9,7 @@ ProcessSimulationData(est_sim, stan_est, policies, nsims)
 \arguments{
 \item{est_sim}{Cleaned up parameter simulations from PrepareSimulationData}
 
-\item{stan_est}{Stan fit model from FitMDCEV}
+\item{stan_est}{Stan fit model from mdcev}
 
 \item{policies}{list containing
 price_p with additive price increases, and
