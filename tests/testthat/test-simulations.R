@@ -116,7 +116,7 @@ test_that("Test full simulation function", {
 	wtp <- mdcev.sim(df_sim$df_indiv, df_common = df_sim$df_common, sim_options = df_sim$sim_options,
 						 cond_err =1, nerrs = 3, sim_type = "welfare")
 	sum_wtp <- summary(wtp)
-	expect_true(sum(abs(sum_wtp$mean)) < .01)
+	expect_true(sum(abs(sum_wtp$CoefTable$mean)) < .01)
 
 	# Test unconditional errors (currently returns -Inf for gamam0)
 #	wtp <- mdcev.sim(df_sim$df_indiv, df_common = df_sim$df_common, sim_options = df_sim$sim_options,
