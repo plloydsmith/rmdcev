@@ -2,13 +2,6 @@
 % Please edit documentation in R/mdcev.data.R
 \name{mdcev.data}
 \alias{mdcev.data}
-\alias{[[<-.mdcev.data}
-\alias{$<-.mdcev.data}
-\alias{print.pseries}
-\alias{index}
-\alias{mean.mdcev.data}
-\alias{formula.mdcev.data}
-\alias{print.mdcev.data}
 \title{data.frame for mdcev model}
 \usage{
 mdcev.data(data, choice = NULL, alt.var = NULL, chid.var = NULL,
@@ -25,6 +18,9 @@ a numerical vector}
 alternative index or the name under which the alternative index
 will be stored (the default  name is `alt`),}
 
+\item{chid.var}{the name of the variable that contains the choice
+index or the name under which the choice index will be stored}
+
 \item{alt.levels}{the name of the alternatives: if null,
 they are guessed from the `alt.var` argument,}
 
@@ -34,13 +30,16 @@ index if any,}
 \item{group.var}{the name of the variable that contains the group
 index if any,}
 
+\item{drop.index}{should the index variables be dropped from the
+`data.frame`,}
+
 \item{subset}{a logical expression which defines the subset of
 observations to be selected,}
 
-\item{x, object}{a `mdcev.data` or a `pseries` object,}
+\item{...}{further arguments.}
 }
 \value{
-A `mdcev.data` object, which is a `data.frame` in `long`
+A `mdcev.data` object, which is a `data.frame` in long
     format, *i.e.* one line for each alternative.  It has a `index`
     attribute, which is a `data.frame` that contains the index of
     the choice made (`chid`), the index of the alternative (`alt`)

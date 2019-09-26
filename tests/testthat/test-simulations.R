@@ -96,13 +96,13 @@ mdemand <- MarshallianDemand(income, price, MUzero_b, gamma, alpha,
 test_that("Test demand simulation", {
 
 	# Test conditional errors
-	demand <- SimulateMDCEV(df_sim$df_indiv, df_common = df_sim$df_common, sim_options = df_sim$sim_options,
+	demand <- mdcev.sim(df_sim$df_indiv, df_common = df_sim$df_common, sim_options = df_sim$sim_options,
 						 cond_err =1, nerrs = 3, sim_type = "demand")
 	expect_true(abs(demand[[1]][[1]][1,1] - 62499.5) < .01)
 	expect_true(abs(demand[[1]][[1]][1,2] - 0) < .01)
 
 	# Test unconditional errors (currently returns -Inf for gamam0)
-	#	wtp <- SimulateMDCEV(df_sim$df_indiv, df_common = df_sim$df_common, sim_options = df_sim$sim_options,
+	#	wtp <- mdcev.sim(df_sim$df_indiv, df_common = df_sim$df_common, sim_options = df_sim$sim_options,
 	#						 cond_err = 0, nerrs = 3, sim_type = "welfare")
 	#	sum_wtp <- SummaryWelfare(wtp)
 	#	expect_true(sum(abs(sum_wtp$Mean)) < .01)
@@ -113,13 +113,13 @@ test_that("Test demand simulation", {
 test_that("Test full simulation function", {
 
 	# Test conditional errors
-	wtp <- SimulateMDCEV(df_sim$df_indiv, df_common = df_sim$df_common, sim_options = df_sim$sim_options,
+	wtp <- mdcev.sim(df_sim$df_indiv, df_common = df_sim$df_common, sim_options = df_sim$sim_options,
 						 cond_err =1, nerrs = 3, sim_type = "welfare")
-	sum_wtp <- SummaryWelfare(wtp)
-	expect_true(sum(abs(sum_wtp$Mean)) < .01)
+	sum_wtp <- summary(wtp)
+	expect_true(sum(abs(sum_wtp$mean)) < .01)
 
 	# Test unconditional errors (currently returns -Inf for gamam0)
-#	wtp <- SimulateMDCEV(df_sim$df_indiv, df_common = df_sim$df_common, sim_options = df_sim$sim_options,
+#	wtp <- mdcev.sim(df_sim$df_indiv, df_common = df_sim$df_common, sim_options = df_sim$sim_options,
 #						 cond_err = 0, nerrs = 3, sim_type = "welfare")
 #	sum_wtp <- SummaryWelfare(wtp)
 #	expect_true(sum(abs(sum_wtp$Mean)) < .01)

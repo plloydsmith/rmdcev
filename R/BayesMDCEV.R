@@ -11,7 +11,7 @@
 BayesMDCEV <- function(stan_data, bayes_options,
 								 initial.parameters,
 								 keep.samples = FALSE,
-								 include.stanfit = TRUE) {
+								 include.stanfit = TRUE, ...) {
 
 	if (bayes_options$n_iterations <= 0)
 		stop("The specified number of iterations must be greater than 0.")
@@ -55,7 +55,7 @@ BayesMDCEV <- function(stan_data, bayes_options,
 	if (bayes_options$show_stan_warnings == FALSE)
 		suppressWarnings(stan_fit <- RunStanSampling(stan_data, stan.model, bayes_options))
 	else if(bayes_options$show_stan_warnings == TRUE)
-		stan_fit <- RunStanSampling(stan_data, stan.model, bayes_options)
+		stan_fit <- RunStanSampling(stan_data, stan.model, bayes_options, ...)
 
 	if(bayes_options$n_chains == 1)
 		chain_index <- 1
@@ -75,6 +75,7 @@ return(result)
 #' @description Wrapper function for \code{rstan:stan} and
 #' \code{rstan:sampling} to run Stan Bayes analysis.
 #' @inheritParams BayesMDCEV
+#' @inheritParams mdcev
 #' @param stan.model Complied Stan model
 #' @param ... Additional parameters to pass on to \code{rstan::stan} and
 #' \code{rstan::sampling}.
@@ -82,7 +83,7 @@ return(result)
 #' @import Rcpp
 #' @return A stanfit object.
 #' @keywords internal
-RunStanSampling <- function(stan_data, stan.model, bayes_options)
+RunStanSampling <- function(stan_data, stan.model, bayes_options, ...)
 {
 
 #	if (bayes_options$random_parameters == "fixed"){
@@ -98,7 +99,7 @@ RunStanSampling <- function(stan_data, stan.model, bayes_options)
 #			 pars = pars,
 			 iter = bayes_options$n_iterations, seed = bayes_options$seed,
 			 control = list(max_treedepth = bayes_options$max_tree_depth,
-			 			   adapt_delta = bayes_options$adapt_delta))
+			 			   adapt_delta = bayes_options$adapt_delta), ...)
 #			 init = init,
 }
 

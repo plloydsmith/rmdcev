@@ -1,15 +1,18 @@
 ############################
-# S3 method for gmnl package
+# S3 method for rmdcev package
 #############################
 
 #' @rdname mdcev
 #' @method print mdcev
+#' @param x,object an object of class `mdcev`
+#' @param digits the number of digits,
+#' @param width the width of the printing,
 #' @export
 print.mdcev <- function(x, digits = max(3, getOption("digits") - 3),
-						 width = getOption("width"), ...){
+						width = getOption("width"), ...){
 
 	cat("\nCoefficients:\n")
-	print.default(format(coef(x), digits = digits), print.gap = 2,
+	print.default(format(stats::coef(x), digits = digits), print.gap = 2,
 				  quote = FALSE)
 	cat("\n")
 	invisible(x)
@@ -18,6 +21,7 @@ print.mdcev <- function(x, digits = max(3, getOption("digits") - 3),
 
 #' @rdname mdcev
 #' @method summary mdcev
+#' @param printCI set to TRUE to print 95\% confidence intervals
 #' @export
 summary.mdcev <- function(object, printCI=FALSE, ...){
 
@@ -164,100 +168,100 @@ summary.mdcev <- function(object, printCI=FALSE, ...){
 #' @rdname mdcev
 #' @method print summary.mdcev
 #' @export
-print.summary.mdcev <- function(object,...){
-	#	object <- output
+print.summary.mdcev <- function(x,...){
+	#	x <- output
 
 	rmdcevVersion <- tryCatch(utils::packageDescription("rmdcev", fields = "Version"),
 							  warning=function(w) return("rmdcev"),
 							  error=function(e) return("rmdcev"))
 
 	cat("Model run using rmdcev for R, version", rmdcevVersion,"\n")
-	cat("Estimation method                : ", object$algorithm, "\n", sep="")
-	cat("Model type                       : ", object$model," specification", "\n", sep="")
-	cat("Number of classes                : ", object$n_classes, "\n", sep="")
-	cat("Number of individuals            : ", object$n_individuals,"\n", sep="")
-	cat("Number of non-numeraire alts     : ", object$stan_data$J,"\n", sep="")
-	cat("Estimated parameters             : ", object$parms_info$n_vars$n_parms_total,"\n", sep="")
-	cat("LL                               : ", round(object$log.likelihood,2),"\n", sep="")
+	cat("Estimation method                : ", x$algorithm, "\n", sep="")
+	cat("Model type                       : ", x$model," specification", "\n", sep="")
+	cat("Number of classes                : ", x$n_classes, "\n", sep="")
+	cat("Number of individuals            : ", x$n_individuals,"\n", sep="")
+	cat("Number of non-numeraire alts     : ", x$stan_data$J,"\n", sep="")
+	cat("Estimated parameters             : ", x$parms_info$n_vars$n_parms_total,"\n", sep="")
+	cat("LL                               : ", round(x$log.likelihood,2),"\n", sep="")
 
-	if(object$algorithm == "MLE"){
-		cat("AIC                              : ", round(object$aic,2),"\n", sep="")
-		cat("BIC                              : ", round(object$bic,2),"\n", sep="")
-		if(object$std_errors == "deltamethod"){
+	if(x$algorithm == "MLE"){
+		cat("AIC                              : ", round(x$aic,2),"\n", sep="")
+		cat("BIC                              : ", round(x$bic,2),"\n", sep="")
+		if(x$std_errors == "deltamethod"){
 			cat("Standard errors calculated using : ", "Delta method","\n", sep="")
 
-		} else if(object$std_errors == "mvn"){
-			cat("Standard errors calculated using : ", object$n_draws," MVN draws", "\n", sep="")
+		} else if(x$std_errors == "mvn"){
+			cat("Standard errors calculated using : ", x$n_draws," MVN draws", "\n", sep="")
 		}
 
-		if(object$stan_fit$return_code==0){
+		if(x$stan_fit$return_code==0){
 			converge <- "successful convergence"
-		} else if(object$stan_fit$return_code==1){
+		} else if(x$stan_fit$return_code==1){
 			converge <- "unsuccessful convergence"
 		}
 		cat("Exit of MLE                      : ", converge,"\n", sep="")
 
-	} else if(object$algorithm == "Bayes"){
-		if(object$random_parameters != "fixed"){
-			cat("Random parameters                : ", object$random_parameters,"elated random parameters","\n", sep="")
+	} else if(x$algorithm == "Bayes"){
+		if(x$random_parameters != "fixed"){
+			cat("Random parameters                : ", x$random_parameters,"elated random parameters","\n", sep="")
 		}
-		cat("Number of chains                 : ", object[["stan_fit"]]@sim[["chains"]],"\n", sep="")
-		cat("Number of warmup draws per chain : ", object[["stan_fit"]]@sim[["warmup"]],"\n", sep="")
-		cat("Total post-warmup sample         : ", object[["stan_fit"]]@sim[["chains"]]*(object[["stan_fit"]]@sim[["iter"]]-object[["stan_fit"]]@sim[["warmup"]]),"\n", sep="")
+		cat("Number of chains                 : ", x[["stan_fit"]]@sim[["chains"]],"\n", sep="")
+		cat("Number of warmup draws per chain : ", x[["stan_fit"]]@sim[["warmup"]],"\n", sep="")
+		cat("Total post-warmup sample         : ", x[["stan_fit"]]@sim[["chains"]]*(x[["stan_fit"]]@sim[["iter"]]-x[["stan_fit"]]@sim[["warmup"]]),"\n", sep="")
 	}
-	tmpH <- floor(object$time.taken/60^2)
-	tmpM <- floor((object$time.taken-tmpH*60^2)/60)
-	tmpS <- round(object$time.taken-tmpH*60^2-tmpM*60,2)
+	tmpH <- floor(x$time.taken/60^2)
+	tmpM <- floor((x$time.taken-tmpH*60^2)/60)
+	tmpS <- round(x$time.taken-tmpH*60^2-tmpM*60,2)
 	timeTaken <- paste(formatC(tmpH,width=2,format='d',flag=0),
 					   formatC(tmpM,width=2,format='d',flag=0),
 					   tmpS,sep=':')
 	cat("Time taken (hh:mm:ss)            : ",timeTaken,"\n", sep="")
 
 	cat("\nAverage consumption of non-numeraire alternatives:\n")
-	mean_consumption <-  round(colMeans(object$stan_data$quant_j),2)
-	names(mean_consumption) <-c(1:object$stan_data$J)
+	mean_consumption <-  round(colMeans(x$stan_data$quant_j),2)
+	names(mean_consumption) <-c(1:x$stan_data$J)
 	print(mean_consumption )
 	cat("\n")
 
 	#	cat("\nPsi specification:\n")
-	#	cat(paste(object$psi_formula, sep = "\n", collapse = "\n"), "\n", sep = "")
+	#	cat(paste(x$psi_formula, sep = "\n", collapse = "\n"), "\n", sep = "")
 
-	if (object$n_classes > 1){
+	if (x$n_classes > 1){
 		cat("\nClass average probabilities:\n")
-		print(round(colMeans(object[["class_probabilities"]]),2))
+		print(round(colMeans(x[["class_probabilities"]]),2))
 	}
 
 	cat("Parameter estimates -------------------------------- ","\n")
-	if(nrow(object$CoefTable)>options("max.print")) options(max.print=nrow(object$CoefTable)+100)
-	print(object$CoefTable)
-	if(object$stan_data$fixed_scale1 == 1)
+	if(nrow(x$CoefTable)>options("max.print")) options(max.print=nrow(x$CoefTable)+100)
+	print(x$CoefTable)
+	if(x$stan_data$fixed_scale1 == 1)
 		cat("Note: Scale parameter fixed to 1.",'\n')
 
-	if(object$model == "gamma"){
+	if(x$model == "gamma"){
 		cat("Note: All non-numeraire alpha's fixed to 0.",'\n')
-	}else if (object$model == "alpha"){
+	}else if (x$model == "alpha"){
 		cat("Note: All non-numeraire gamma's fixed to 1.",'\n')
-	}else if (object$model == "hybrid"){
+	}else if (x$model == "hybrid"){
 		cat("Note: Alpha parameter is equal for all alternatives.",'\n')
-	}else if (object$model == "hybrid0")
+	}else if (x$model == "hybrid0")
 		cat("Note: All alpha parameters fixed to 1e-3.",'\n')
 
-	if(object$stan_data$trunc_data == 1)
+	if(x$stan_data$trunc_data == 1)
 		cat("Note: Estimation accounts for truncated form of data.",'\n')
 
-	if(object$random_parameters == "corr"){
+	if(x$random_parameters == "corr"){
 		cat("Note: Full covariance matrix can be accessed using the print(model_est, pars = 'Sigma') command", '\n')
 	}
 
-	if(object$algorithm == "Bayes"){
+	if(x$algorithm == "Bayes"){
 		cat("Note from Rstan: 'For each parameter, n_eff is a crude measure of effective sample size, and Rhat is the potential scale reduction factor on split chains (at convergence, Rhat=1)'", '\n')
 	}
-	if(object$n_classes > 1)
+	if(x$n_classes > 1)
 		cat("Note: The membership equation parameters for class 1 are normalized to 0.",'\n')
 
 	cat("\n")
 
-	invisible(object)
+	invisible(x)
 }
 
 #' @export
@@ -274,4 +278,68 @@ coef.mdcev <- function(object, ...){
 	ncoefs <- names(result)
 	selcoef <- 1:length(result)
 	result[selcoef]
+}
+
+#' @rdname mdcev.sim
+#' @method summary mdcev.sim
+#' @export
+summary.mdcev.sim <- function(object, ci = 0.95, ...){
+#object <- wtp
+	# check if list then demand
+	if(is.list(object[[1]])){
+		nobs <- length(object)
+		nsims <- length(object[[1]])
+		ngoods <- ncol(object[[1]][[1]])
+		npols <- nrow(object[[1]][[1]])
+
+		out <- tibble::tibble(demand = unlist(object),
+							  id = rep(1:nobs, each = nsims*ngoods*npols),
+							  alt = rep(0:(ngoods-1), each = npols, times = nsims*nobs),
+							  policy = rep(paste0(rep("policy",npols), 1:npols), times =nobs*nsims*ngoods ),
+							  sim_id = rep(1:nsims, each = ngoods*npols, times = nobs)) %>%
+			dplyr::group_by(.data$alt, .data$policy, .data$sim_id) %>%
+			dplyr::summarise(demand = mean(demand)) %>%
+			dplyr::group_by(.data$policy, .data$alt) %>%
+			dplyr::summarise(mean = round(mean(demand),2),
+							 std_dev = round(stats::sd(demand),2),
+							 ci_lo = round(stats::quantile(demand, (1-ci)/2),2),
+							 ci_hi = round(stats::quantile(demand, ci+(1-ci)/2),2))
+
+		colnames(out) <- c("policy", "alt", "mean", "std.dev",
+						   paste0("ci_lo",(1-ci)/2*100, "%"),
+						   paste0("ci_hi",(ci+(1-ci)/2)*100, "%"))
+	}
+	else{
+		out <- apply(simplify2array(object),1:2, mean)
+		colnames(out)<- paste0(rep("policy",ncol(out)), 1:ncol(out))
+
+		out <- tbl_df(out) %>%
+			tidyr::gather(policy, wtp) %>%
+			dplyr::group_by(.data$policy) %>%
+			dplyr::summarise(mean = mean(wtp),
+							 std_dev = stats::sd(wtp),
+							 ci_lo = stats::quantile(wtp, (1-ci)/2),
+							 ci_hi = stats::quantile(wtp, ci+(1-ci)/2))
+
+		colnames(out) <- c("policy", "mean", "std.dev",
+						   paste0("ci_lo",(1-ci)/2*100, "%"),
+						   paste0("ci_hi",(ci+(1-ci)/2)*100, "%"))
+
+	}
+
+
+	object$CoefTable    <- out
+	class(object)       <- c("summary.mdcev.sim", "mdcev.sim")
+	return(object)
+}
+
+#' @rdname mdcev.sim
+#' @method print summary.mdcev.sim
+#' @export
+print.summary.mdcev.sim <- function(x, digits = max(3, getOption("digits") - 2),
+									width = getOption("width"),
+									...){
+	print(x$CoefTable, digits = digits)
+
+	invisible(x)
 }

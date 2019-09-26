@@ -4,7 +4,7 @@
 \alias{RunStanSampling}
 \title{RunStanSampling}
 \usage{
-RunStanSampling(stan_data, stan.model, bayes_options)
+RunStanSampling(stan_data, stan.model, bayes_options, ...)
 }
 \arguments{
 \item{stan_data}{data for model}

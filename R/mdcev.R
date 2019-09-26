@@ -8,7 +8,10 @@
 #' @param data The (IxJ) data to be passed to Stan including 1) id, 2) alt, 3) quant,
 #' 4) price, 5) income, and columns for psi variables. Arrange data by id then alt.
 #' Notes I is number of individuals and J is number of non-numeraire alternatives.
-#' @param weights An optional vector of sampling or frequency weights.
+#' @param subset an optional vector specifying a subset of observations.
+#' @param weights an optional vector of weights. Default to 1.
+#' @param na.action a function wich indicated what should happen when the data
+#' contains \code{NA}'s.
 #' @param model A string indicating which model specification is estimated.
 #' The options are "alpha", "gamma", "hybrid" and "hybrid0".
 #' @param n_classes The number of latent classes.
@@ -62,8 +65,11 @@
 #' \donttest{
 #' data(data_rec, package = "rmdcev")
 #'
+#' data_rec <- mdcev.data(data_rec, subset = id < 500,
+#'                 alt.var = "alt", choice = "quant")
+#'
 #' mdcev_est <- mdcev( ~ 1,
-#' data = subset(data_rec, id < 500),
+#' data = data_rec,
 #' model = "hybrid0",
 #' algorithm = "MLE")
 #'}
@@ -98,7 +104,8 @@ mdcev <- function(formula = NULL, data, subset, na.action,
 					 n_cores = 4,
 					 max_tree_depth = 10,
 					 adapt_delta = 0.8,
-					 lkj_shape_prior = 4)
+					 lkj_shape_prior = 4,
+				     ...)
 {
 
 	start.time <- proc.time()
@@ -164,13 +171,18 @@ mdcev <- function(formula = NULL, data, subset, na.action,
 	stan_data$weights <- as.vector(weights)
 
 	if (algorithm == "Bayes") {
-		result <- BayesMDCEV(stan_data, bayes_options,
-										initial.parameters,
-										keep.samples = FALSE,
-										include.stanfit = TRUE)
+		result <- BayesMDCEV(stan_data,
+							 bayes_options,
+							 initial.parameters,
+							 keep.samples = FALSE,
+							 include.stanfit = TRUE,
+				 			 ...)
 
 	} else if (algorithm == "MLE") {
-		result <- maxlikeMDCEV(stan_data, initial.parameters, mle_options)
+		result <- maxlikeMDCEV(stan_data,
+							   initial.parameters,
+							   mle_options,
+							   ...)
 
 #		result[["stan_fit"]][["theta_tilde"]] <- NULL
 

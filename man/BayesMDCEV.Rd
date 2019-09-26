@@ -5,7 +5,7 @@
 \title{BayesMDCEV}
 \usage{
 BayesMDCEV(stan_data, bayes_options, initial.parameters,
-  keep.samples = FALSE, include.stanfit = TRUE)
+  keep.samples = FALSE, include.stanfit = TRUE, ...)
 }
 \arguments{
 \item{stan_data}{data for model}
@@ -24,6 +24,9 @@ where num_psi is number of psi parameters and num_alt is number of non-numeraire
 \item{keep.samples}{default is FALSE,}
 
 \item{include.stanfit}{default isTRUE,}
+
+\item{...}{Additional parameters to pass on to \code{rstan::stan}
+and \code{rstan::sampling}.}
 }
 \description{
 Fit a MDCEV model using Bayesian estimation and Stan

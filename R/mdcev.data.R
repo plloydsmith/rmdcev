@@ -4,10 +4,7 @@
 #' `mdcev` function and complete some data checks
 #'
 #' @name mdcev.data
-#' @aliases mdcev.data [[<-.mdcev.data $<-.mdcev.data print.pseries
-#'     index mean.mdcev.data formula.mdcev.data print.mdcev.data
 #' @param data a `data.frame`,
-#' @param x,object a `mdcev.data` or a `pseries` object,
 #' @param choice the variable indicating the choice made: it has to be
 #'     a numerical vector
 #' @param alt.var the name of the variable that contains the
@@ -17,11 +14,16 @@
 #'     they are guessed from the `alt.var` argument,
 #' @param id.var the name of the variable that contains the individual
 #'     index if any,
+#' @param chid.var the name of the variable that contains the choice
+#'     index or the name under which the choice index will be stored
+#' @param drop.index should the index variables be dropped from the
+#'     `data.frame`,
 #' @param group.var the name of the variable that contains the group
 #'     index if any,
 #' @param subset a logical expression which defines the subset of
 #'     observations to be selected,
-#' @return A `mdcev.data` object, which is a `data.frame` in `long`
+#' @param ... further arguments.
+#' @return A `mdcev.data` object, which is a `data.frame` in long
 #'     format, *i.e.* one line for each alternative.  It has a `index`
 #'     attribute, which is a `data.frame` that contains the index of
 #'     the choice made (`chid`), the index of the alternative (`alt`)

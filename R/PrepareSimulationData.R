@@ -1,6 +1,6 @@
 #' @title PrepareSimulationData
 #' @description Prepare Data for WTP simulation
-#' @param stan_est Stan fit model from mdcev
+#' @param x,object an object of class `mdcev`
 #' @param policies list containing
 #' price_p with additive price increases, and
 #' dat_psi_p with new psi data
@@ -12,8 +12,12 @@
 #' @examples
 #' \donttest{
 #' data(data_rec, package = "rmdcev")
+#'
+#' data_rec <- mdcev.data(data_rec, subset = id < 500,
+#'                 alt.var = "alt", choice = "quant")
+#'
 #' mdcev_est <- mdcev( ~ 1,
-#' data = subset(data_rec, id < 500),
+#' data = data_rec,
 #' model = "hybrid0",
 #' algorithm = "MLE")
 #'
@@ -24,50 +28,50 @@
 #'
 #' df_sim <- PrepareSimulationData(mdcev_est, policies)
 #'}
-PrepareSimulationData <- function(stan_est,
+PrepareSimulationData <- function(object,
 								  policies,
 								  nsims = 30,
 								  class = "class1"){
 
 
-	if (stan_est$algorithm == "Bayes") {
+	if (object$algorithm == "Bayes") {
 
 		# Get parameter estimates in matrix form
-		est_pars <- rstan::extract(stan_est$stan_fit, permuted = TRUE, inc_warmup = FALSE) %>%
+		est_pars <- rstan::extract(object$stan_fit, permuted = TRUE, inc_warmup = FALSE) %>%
 			as.data.frame() %>%
 			dplyr::select(-tidyselect::starts_with("log_like"), -tidyselect::starts_with("sum_log_lik"),
 						  -tidyselect::starts_with("tau_unif"), -.data$lp__)
 
-	} else if (stan_est$algorithm == "MLE") {
+	} else if (object$algorithm == "MLE") {
 
 		# Get parameter estimates in matrix form
-		est_pars <- tbl_df(stan_est[["stan_fit"]][["theta_tilde"]]) %>%
+		est_pars <- tbl_df(object[["stan_fit"]][["theta_tilde"]]) %>%
 			dplyr::select(-tidyselect::starts_with("log_like"), -tidyselect::starts_with("sum_log_lik"))
 
 	}
 
 	# Rename variables
-	if (stan_est$random_parameters == "fixed"){
-		names(est_pars)[1:stan_est$parms_info$n_vars$n_parms_total] <- stan_est$parms_info$parm_names$all_names
+	if (object$random_parameters == "fixed"){
+		names(est_pars)[1:object$parms_info$n_vars$n_parms_total] <- object$parms_info$parm_names$all_names
 	}
 
 	est_pars <- est_pars %>%
 		tibble::rowid_to_column("sim_id") %>%
 		tidyr::gather(parms, value, -sim_id)
 
-#stan_est <- mdcev_corr
-#	if (stan_est$random_parameters == "corr")
+#object <- mdcev_corr
+#	if (object$random_parameters == "corr")
 #		stop("Demand and welfare simulation not set up for correlated RP-MDCEV models yet.", "\n")
 
-	model_num <- stan_est$stan_data$model_num
+	model_num <- object$stan_data$model_num
 
 	# Checks on simulation options
-	if (stan_est$algorithm == "MLE" && nsims > stan_est$n_draws){
-		nsims <- stan_est$n_draws
-		warning("Number of simulations > Number of mvn draws from stan_est. nsims has been set to: ", nsims)
-	} else if (stan_est$algorithm == "Bayes" && nsims > max(est_pars$sim_id)) {
+	if (object$algorithm == "MLE" && nsims > object$n_draws){
+		nsims <- object$n_draws
+		warning("Number of simulations > Number of mvn draws from mdcev object. nsims has been set to: ", nsims)
+	} else if (object$algorithm == "Bayes" && nsims > max(est_pars$sim_id)) {
 		nsims <- max(est_pars$sim_id)
-		warning("Number of simulations > Number of posterior draws from stan_est. nsims has been set to: ", nsims)
+		warning("Number of simulations > Number of posterior draws from mdcev object. nsims has been set to: ", nsims)
 	}
 
 	# Sample from parameter estimate draws
@@ -76,27 +80,28 @@ PrepareSimulationData <- function(stan_est,
 		dplyr::sample_n(., nsims) %>%
 		dplyr::left_join(est_pars, by = "sim_id")
 
-	if(stan_est$n_classes > 1){
+	if(object$n_classes > 1){
 		est_sim <- est_sim %>%
 			filter(stringr::str_detect(.data$parms,
 									   paste(class)))
 	}
 
-	sim_welfare <- ProcessSimulationData(est_sim, stan_est, policies, nsims)
+	sim_welfare <- ProcessSimulationData(est_sim, object, policies, nsims)
 	df_common <- sim_welfare
 	df_common$df_indiv <- NULL
 
 	df_indiv <- sim_welfare$df_indiv
 
-	sim_options <- list(n_classes = stan_est$n_classes,
+	sim_options <- list(n_classes = object$n_classes,
 					model_num = model_num,
 					price_change_only = policies$price_change_only)
 
-	df_wtp <- list(df_indiv = df_indiv,
-			   df_common = df_common,
-			   sim_options = sim_options)
 
-return(df_wtp)
+	output <- list(df_indiv = df_indiv,
+				   df_common = df_common,
+				   sim_options = sim_options)
+
+return(output)
 }
 
 #' @title ProcessSimulationData
@@ -104,23 +109,23 @@ return(df_wtp)
 #' @inheritParams PrepareSimulationData
 #' @param est_sim Cleaned up parameter simulations from PrepareSimulationData
 #' @keywords internal
-ProcessSimulationData <- function(est_sim, stan_est, policies, nsims){
+ProcessSimulationData <- function(est_sim, object, policies, nsims){
 
-#	stan_est <- mdcev_corr2
+#	object <- mdcev_corr2
 
-	J <- stan_est$stan_data$J
-	I <- stan_est$stan_data$I
-	model_num <- stan_est$stan_data$model_num
-	random_parameters <- stan_est$random_parameters
-	gamma_fixed <- stan_est$stan_data$gamma_fixed
-	alpha_fixed <- stan_est$stan_data$alpha_fixed
+	J <- object$stan_data$J
+	I <- object$stan_data$I
+	model_num <- object$stan_data$model_num
+	random_parameters <- object$random_parameters
+	gamma_fixed <- object$stan_data$gamma_fixed
+	alpha_fixed <- object$stan_data$alpha_fixed
 	npols <- length(policies$price_p)
 
 
 	# scales (always fixed parameter)
-	if (stan_est$stan_data$fixed_scale1 == 0){
+	if (object$stan_data$fixed_scale1 == 0){
 		scale_sim <- t(GrabParms(est_sim, "scale"))
-	} else if (stan_est$stan_data$fixed_scale1 == 1){
+	} else if (object$stan_data$fixed_scale1 == 1){
 		scale_sim = matrix(1, nsims, 1)
 	}
 
@@ -162,7 +167,7 @@ if(random_parameters != "fixed"){
 
 	if(random_parameters == "corr"){
 
-		num_rand <- stan_est[["stan_fit"]]@par_dims[["mu"]]
+		num_rand <- object[["stan_fit"]]@par_dims[["mu"]]
 
 		est_sim_tau <- est_sim_mu_tau %>%
 			dplyr::select(sim_id, .data$parm_id, .data$tau) %>%
@@ -215,16 +220,16 @@ if(random_parameters != "fixed"){
 		dplyr::left_join(est_sim_mu_tau, by = c("sim_id", "parm_id")) %>%
 		dplyr::arrange(id, sim_id, .data$parm_id)	%>%
 		dplyr::mutate(beta = .data$mu + .data$z *.data$tau,
-			   parms = rep(stan_est[["parms_info"]][["parm_names"]][["sd_names"]],
-			   			nsims*stan_est[["n_individuals"]] )) %>%
+			   parms = rep(object[["parms_info"]][["parm_names"]][["sd_names"]],
+			   			nsims*object[["n_individuals"]] )) %>%
 		dplyr::select(-.data$tau, -.data$mu, -.data$z)
 
 	# Transform gamma and alpha estimates
-	if(stan_est[["stan_data"]][["gamma_fixed"]]==0){
+	if(object[["stan_data"]][["gamma_fixed"]]==0){
 		est_sim <- est_sim %>%
 			dplyr::mutate(beta = ifelse(grepl(c("gamma"), parms), exp(beta), beta))
 	}
-	if(stan_est[["stan_data"]][["alpha_fixed"]]==0){
+	if(object[["stan_data"]][["alpha_fixed"]]==0){
 		est_sim <- est_sim %>%
 			dplyr::mutate(beta = ifelse(grepl(c("alpha"), parms), 1 / (1 + exp(-beta)), beta))
 	}
@@ -271,7 +276,7 @@ if (random_parameters == "fixed"){
 
 
 	psi_temp <- CreateListsCol(psi_temp)
-	psi_sim <- purrr::map(psi_temp, MultiplyMatrix, mat_temp = stan_est$stan_data$dat_psi, n_rows = I)
+	psi_sim <- purrr::map(psi_temp, MultiplyMatrix, mat_temp = object$stan_data$dat_psi, n_rows = I)
 
 	psi_sim <- DoCbind(psi_sim)
 	psi_sim <- CreateListsRow(psi_sim)
@@ -300,9 +305,9 @@ if (random_parameters == "fixed"){
 
 } else if (random_parameters != "fixed"){
 
-	dat_id <- tibble(id = rep(1:stan_est$n_individuals, each = stan_est$stan_data$J))
+	dat_id <- tibble(id = rep(1:object$n_individuals, each = object$stan_data$J))
 
-	dat_psi <- bind_cols(dat_id, tbl_df(stan_est$stan_data$dat_psi)) %>%
+	dat_psi <- bind_cols(dat_id, tbl_df(object$stan_data$dat_psi)) %>%
 		group_split(id, keep = F)
 
 	psi_sim <- purrr::map2(psi_sim_rand, dat_psi, function(x, y){
@@ -334,13 +339,13 @@ if (!is.null(gamma_sim_fixed)){
 
 
 # Set baseline individual data into lists
-income <- list(as.list(stan_est$stan_data$income))
+income <- list(as.list(object$stan_data$income))
 names(income) <- "income"
 
-quant_j <- list(CreateListsRow(stan_est$stan_data$quant_j))
+quant_j <- list(CreateListsRow(object$stan_data$quant_j))
 names(quant_j) <- "quant_j"
 
-price <- cbind(1, stan_est$stan_data$price_j) #add numeraire price to price matrix (<-1)
+price <- cbind(1, object$stan_data$price_j) #add numeraire price to price matrix (<-1)
 price <- list(CreateListsRow(price))
 names(price) <- "price"
 

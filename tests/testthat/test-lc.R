@@ -33,14 +33,15 @@ test_that("Test LC simulations", {
 	df_sim <- PrepareSimulationData(result, policies, nsims = 3, class = "class1")
 
 	# Test welfare
-	wtp <- SimulateMDCEV(df_sim$df_indiv, df_common = df_sim$df_common, sim_options = df_sim$sim_options,
+	wtp <- mdcev.sim(df_sim$df_indiv, df_common = df_sim$df_common, sim_options = df_sim$sim_options,
 						 cond_err = 1, nerrs = 3, sim_type = "welfare")
-	sum_wtp <- SummaryWelfare(wtp)
+	sum_wtp <- summary(wtp)
 
-	expect_true(sum(abs(sum_wtp$Mean)) < tol)
+	expect_true(sum(abs(sum_wtp$CoefTable$mean)) < tol)
 
-	demand <- SimulateMDCEV(df_sim$df_indiv, df_common = df_sim$df_common, sim_options = df_sim$sim_options,
+	demand <- mdcev.sim(df_sim$df_indiv, df_common = df_sim$df_common, sim_options = df_sim$sim_options,
 						 cond_err = 1, nerrs = 3, sim_type = "demand")
+
 #	print(demand[["class2"]][[5]][[2]][1,-1], digits =10)
 	expect_equal(sum(demand[[5]][[2]][1,-1]), sum(result$stan_data$quant_j[5,]))
 })

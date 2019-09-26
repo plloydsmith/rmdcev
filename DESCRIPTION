@@ -29,7 +29,8 @@ Imports:
     rlang,
     utils,
     stats,
-    tmvtnorm
+    tmvtnorm,
+    Formula
 LinkingTo:
     BH (>= 1.66.0),
     Rcpp (>= 0.12.0),

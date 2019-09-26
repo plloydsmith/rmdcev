@@ -18,14 +18,14 @@ mdcev(formula = NULL, data, subset, na.action, weights = NULL,
   std_errors = "mvn", n_draws = 50, keep_loglik = 0,
   random_parameters = "fixed", show_stan_warnings = TRUE,
   n_iterations = 200, n_chains = 4, n_cores = 4,
-  max_tree_depth = 10, adapt_delta = 0.8, lkj_shape_prior = 4)
+  max_tree_depth = 10, adapt_delta = 0.8, lkj_shape_prior = 4, ...)
 
 \method{print}{mdcev}(x, digits = max(3, getOption("digits") - 3),
   width = getOption("width"), ...)
 
 \method{summary}{mdcev}(object, printCI = FALSE, ...)
 
-\method{print}{summary.mdcev}(object, ...)
+\method{print}{summary.mdcev}(x, ...)
 }
 \arguments{
 \item{formula}{Formula for the model to be estimated.The formula is divided in
@@ -38,7 +38,12 @@ variables that enter in the probability assignment in models with latent classes
 4) price, 5) income, and columns for psi variables. Arrange data by id then alt.
 Notes I is number of individuals and J is number of non-numeraire alternatives.}
 
-\item{weights}{An optional vector of sampling or frequency weights.}
+\item{subset}{an optional vector specifying a subset of observations.}
+
+\item{na.action}{a function wich indicated what should happen when the data
+contains \code{NA}'s.}
+
+\item{weights}{an optional vector of weights. Default to 1.}
 
 \item{model}{A string indicating which model specification is estimated.
 The options are "alpha", "gamma", "hybrid" and "hybrid0".}
@@ -114,6 +119,14 @@ Can set using options(mc.cores = parallel::detectCores()).}
 
 \item{...}{Additional parameters to pass on to \code{rstan::stan}
 and \code{rstan::sampling}.}
+
+\item{x, object}{an object of class `mdcev`}
+
+\item{digits}{the number of digits,}
+
+\item{width}{the width of the printing,}
+
+\item{printCI}{set to TRUE to print 95\% confidence intervals}
 }
 \value{
 A stanfit object
@@ -125,8 +138,11 @@ Fit a MDCEV model using MLE or Bayes
 \donttest{
 data(data_rec, package = "rmdcev")
 
+data_rec <- mdcev.data(data_rec, subset = id < 500,
+                alt.var = "alt", choice = "quant")
+
 mdcev_est <- mdcev( ~ 1,
-data = subset(data_rec, id < 500),
+data = data_rec,
 model = "hybrid0",
 algorithm = "MLE")
 }
