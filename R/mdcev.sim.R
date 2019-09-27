@@ -1,7 +1,3 @@
-
-#' mdcev.sim method for mdcev objects
-#'
-#'
 #' @title mdcev.sim
 #' @description Simulate welfare or demand for MDCEV model
 #' @inheritParams GenerateMDCEVData
@@ -18,6 +14,7 @@
 #' (i.e. heterogeneous alpha's, all models)
 #' @param sim_type Either "welfare" or "demand"
 #' @param suppressTime Supress simulation time calculation
+#' @param ... Additional parameters to pass to mdcev.sim
 #' @return a object of class mdcev.sim which contains a list for each
 #' individual holding either 1) nsims x npols matrix of welfare changes if
 #' welfare is being simulated or 2) nsims number of lists of npols x # alternatives
@@ -41,7 +38,7 @@
 #'
 #' df_sim <- PrepareSimulationData(mdcev_est, policies)
 #'
-#' wtp <- SimulateMDCEV(df_sim$df_indiv,
+#' wtp <- mdcev.sim(df_sim$df_indiv,
 #' df_common = df_sim$df_common,
 #' sim_options = df_sim$sim_options,
 #' cond_err = 1, nerrs = 5, sim_type = "welfare")
@@ -54,7 +51,8 @@ mdcev.sim <- function(df_indiv, df_common, sim_options,
 					  algo_gen = NULL,
 					  tol = 1e-20,
 					  max_loop = 999,
-					  suppressTime = FALSE){
+					  suppressTime = FALSE,
+					  ...){
 
 	start.time <- proc.time()
 

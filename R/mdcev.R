@@ -59,7 +59,7 @@
 #' @param show_stan_warnings Whether to show warnings from Stan.
 #' @param ... Additional parameters to pass on to \code{rstan::stan}
 #'     and \code{rstan::sampling}.
-#' @return A stanfit object
+#' @return A object of class mdcev
 #' @export
 #' @examples
 #' \donttest{
@@ -215,8 +215,6 @@ mdcev <- function(formula = NULL, data, subset, na.action,
 		result$aic <- -2 * result$log.likelihood + 2 * parms_info$n_vars$n_parms_total
 		result$bic <- -2 * result$log.likelihood + log(result$effective.sample.size) * parms_info$n_vars$n_parms_total
 	}
-
-
 
 result <- structure(result,
 					class = "mdcev")

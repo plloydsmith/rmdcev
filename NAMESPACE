@@ -3,6 +3,7 @@
 S3method(coef,mdcev)
 S3method(logLik,mdcev)
 S3method(print,mdcev)
+S3method(print,mdcev.sim)
 S3method(print,summary.mdcev)
 S3method(print,summary.mdcev.sim)
 S3method(summary,mdcev)

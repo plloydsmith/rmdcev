@@ -129,7 +129,7 @@ and \code{rstan::sampling}.}
 \item{printCI}{set to TRUE to print 95\% confidence intervals}
 }
 \value{
-A stanfit object
+A object of class mdcev
 }
 \description{
 Fit a MDCEV model using MLE or Bayes

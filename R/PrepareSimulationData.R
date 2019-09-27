@@ -1,6 +1,6 @@
 #' @title PrepareSimulationData
 #' @description Prepare Data for WTP simulation
-#' @param x,object an object of class `mdcev`
+#' @param object an object of class `mdcev`
 #' @param policies list containing
 #' price_p with additive price increases, and
 #' dat_psi_p with new psi data

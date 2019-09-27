@@ -7,6 +7,8 @@
 PrepareSimulationData(object, policies, nsims = 30, class = "class1")
 }
 \arguments{
+\item{object}{an object of class `mdcev`}
+
 \item{policies}{list containing
 price_p with additive price increases, and
 dat_psi_p with new psi data}
@@ -14,8 +16,6 @@ dat_psi_p with new psi data}
 \item{nsims}{Number of simulation draws to use for parameter uncertainty}
 
 \item{class}{The class number for Latent Class models.}
-
-\item{x, object}{an object of class `mdcev`}
 }
 \value{
 A list with individual-specific data (df_indiv) and common data (df_common)
