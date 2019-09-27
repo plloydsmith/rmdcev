@@ -17,7 +17,7 @@ test_that("Data ok", {
 # sprintf("%.10f",output[["stan_fit"]][["par"]][["gamma"]] )
 
 #skip_on_cran(
-#
+
 data_rec <- mdcev.data(data_rec, subset = id < 100,
 					   alt.var = "alt", choice = "quant")
 

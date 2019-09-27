@@ -21,7 +21,7 @@ print.mdcev.sim <- function(x, digits = max(3, getOption("digits") - 3),
 #' @method summary mdcev.sim
 #' @param ci choose confidence interval for simulations. Default is 95 percent.
 #' @export
-summary.mdcev.sim <- function(object, ci = 0.95){
+summary.mdcev.sim <- function(object, ci = 0.95, ...){
 
 	# check if list then demand
 	if(is.list(object[[1]])){

@@ -1,3 +1,16 @@
+rmdcev v1.1.0 (Release date: 2019-10-15)
+==============
+
+Changes:
+
+** Major change to function names and data input **
+
+* Changed function name FitMDCEV to mdcev
+* Changed function name SimulateMDCEV to mdcev.sim
+* All summary functions can now be called with summary(.)
+* Created new data object mdcev.data
+
+
 rmdcev v1.0.0 (Release date: 2019-07-15)
 ==============
 

@@ -15,7 +15,7 @@ mdcev.sim(df_indiv, df_common, sim_options, sim_type = c("welfare",
 \method{print}{mdcev.sim}(x, digits = max(3, getOption("digits") - 3),
   width = getOption("width"), ...)
 
-\method{summary}{mdcev.sim}(object, ci = 0.95)
+\method{summary}{mdcev.sim}(object, ci = 0.95, ...)
 
 \method{print}{summary.mdcev.sim}(x, digits = max(3, getOption("digits")
   - 2), width = getOption("width"), ...)
