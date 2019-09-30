@@ -4,31 +4,31 @@
 \alias{mdcev.data}
 \title{data.frame for mdcev model}
 \usage{
-mdcev.data(data, choice = NULL, alt.var = NULL, chid.var = NULL,
-  alt.levels = NULL, id.var = NULL, group.var = NULL,
+mdcev.data(data, id.var = NULL, alt.var = NULL, choice = NULL,
+  price = "price", income = "income", alt.levels = NULL,
   drop.index = FALSE, subset = NULL, ...)
 }
 \arguments{
 \item{data}{a `data.frame`,}
 
-\item{choice}{the variable indicating the choice made: it has to be
-a numerical vector}
+\item{id.var}{the name of the variable that contains the individual
+index.}
 
 \item{alt.var}{the name of the variable that contains the
 alternative index or the name under which the alternative index
 will be stored (the default  name is `alt`),}
 
-\item{chid.var}{the name of the variable that contains the choice
-index or the name under which the choice index will be stored}
+\item{choice}{the variable indicating the consumption of non-numeraire
+alternatives that is made: it has to be a numerical vector}
+
+\item{price}{the variable indicating the price of the non-numeraire
+alternatives. Default is "price"}
+
+\item{income}{the variable indicating the income of the individual.
+Default is "income".}
 
 \item{alt.levels}{the name of the alternatives: if null,
 they are guessed from the `alt.var` argument,}
-
-\item{id.var}{the name of the variable that contains the individual
-index if any,}
-
-\item{group.var}{the name of the variable that contains the group
-index if any,}
 
 \item{drop.index}{should the index variables be dropped from the
 `data.frame`,}
@@ -41,10 +41,9 @@ observations to be selected,}
 \value{
 A `mdcev.data` object, which is a `data.frame` in long
     format, *i.e.* one line for each alternative.  It has a `index`
-    attribute, which is a `data.frame` that contains the index of
-    the choice made (`chid`), the index of the alternative (`alt`)
-    and, if any, the index of the individual (`id`) and of the
-    alternative groups (`group`).
+    attribute, which is a `data.frame` that contains the
+    index of the individual (`id`) and the index of the alternative
+    (`alt`).
 }
 \description{
 shape a `data.frame` in a suitable form for the use of the

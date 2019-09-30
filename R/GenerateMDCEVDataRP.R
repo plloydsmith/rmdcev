@@ -2,7 +2,8 @@
 #' @description Simulate random parameter data for MDCEV model
 #' @inheritParams GenerateMDCEVData
 #' @param corr Whether to draw correlated random parameters (=1) or uncorrelated (=0)
-#' @return list with data for stan model and parms_true with parameter values
+#' @return A `mdcev.data` object, which is a `data.frame` in long
+#'     format. Also includes parms_true with parameter values
 #' @export
 #' @examples
 #' \donttest{
@@ -146,6 +147,11 @@ GenerateMDCEVDataRP <- function(model,
 	income <- rep(income, each = nalts)
 
 	data <- as.data.frame(cbind(id, alt, quant, price, psi_j, income))
+
+	data <- mdcev.data(data, subset = id < 500,
+					   id.var = "id",
+					   alt.var = "alt",
+					   choice = "quant")
 
 	parms_true <- df_indiv
 	parms_true$income <- parms_true$price <-  NULL

@@ -5,7 +5,9 @@ data(data_rec, package = "rmdcev")
 data_rec
 
 data_rec <- mdcev.data(data_rec, subset = id < 500,
-					   alt.var = "alt", choice = "quant")
+					   id.var = "id",
+					   alt.var = "alt",
+					   choice = "quant")
 
 result <- mdcev( ~ 1 | university + ageindex,
 				   data = data_rec,

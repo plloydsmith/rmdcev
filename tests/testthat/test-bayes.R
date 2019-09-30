@@ -7,7 +7,9 @@ tol <- 0.01
 data(data_rec, package = "rmdcev")
 
 data_rec <- mdcev.data(data_rec, subset = id < 500,
-					   alt.var = "alt", choice = "quant")
+					   id.var = "id",
+					   alt.var = "alt",
+					   choice = "quant")
 
 output <- mdcev(~ alt -1,
 				data = data_rec,

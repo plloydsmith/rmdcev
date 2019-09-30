@@ -9,13 +9,13 @@ mdcev.datacheck <- function(data_input){
 	if(!"id" %in% colnames(data_input))
 		stop("Data must have id column for individual")
 
-	if(!"quant" %in% colnames(data_input))
+	if(!attr(data_input, "choice") %in% colnames(data_input))
 		stop("Data must have quant column for consumption")
 
-	if(!"price" %in% colnames(data_input))
+	if(!attr(data_input, "price") %in% colnames(data_input))
 		stop("Data must have price column for non-numeraire alternatives")
 
-	if(!"income" %in% colnames(data_input))
+	if(!attr(data_input, "income") %in% colnames(data_input))
 		stop("Data must have income column for individual's income")
 
 	check <- tbl_df(data_input) %>%

@@ -15,7 +15,8 @@
 #' @param nerrs Number of error draws for demand simulation
 #' @param tol Tolerance level for simulations if using general approach
 #' @param max_loop maximum number of loops for simulations if using general approach
-#' @return list with data for stan model and parms_true with parameter values
+#' @return A `mdcev.data` object, which is a `data.frame` in long
+#'     format. Also includes parms_true with parameter values
 #' @export
 #' @examples
 #' \donttest{
@@ -132,7 +133,9 @@ GenerateMDCEVData <- function(model, nobs = 1000, nalts = 10,
 	data <- as.data.frame(cbind(id, alt, quant, price, dat_psi, income))
 
 	data <- mdcev.data(data, subset = id < 500,
-					alt.var = "alt", choice = "quant")
+					   id.var = "id",
+					   alt.var = "alt",
+					   choice = "quant")
 
 	out <- list(data = data,
 				parms_true = parms_true)

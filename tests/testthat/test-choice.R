@@ -19,7 +19,9 @@ test_that("Data ok", {
 #skip_on_cran(
 
 data_rec <- mdcev.data(data_rec, subset = id < 100,
-					   alt.var = "alt", choice = "quant")
+					   id.var = "id",
+					   alt.var = "alt",
+					   choice = "quant")
 
 test_that("MLE names", {
 	expect_error(mdcev( ~ alt -1,

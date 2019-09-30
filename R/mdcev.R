@@ -5,9 +5,9 @@
 #' variables in the psi parameter. These can include alternative-specific and
 #' individual-specific variables. The second part corresponds for individual-specific
 #' variables that enter in the probability assignment in models with latent classes.
-#' @param data The (IxJ) data to be passed to Stan of class \code{\link[mdcev]{mdcev.data}}
+#' @param data The (IxJ) data to be passed to Stan of class \code{\link[rmdcev]{mdcev.data}}
 #'  including 1) id, 2) alt, 3) quant, 4) price, 5) income, and columns for psi variables.
-#'  Arrange data by id then alt. Notes I is number of individuals and J is number of
+#'  Arrange data by id then alt. Note: I is number of individuals and J is number of
 #'  non-numeraire alternatives.
 #' @param subset an optional vector specifying a subset of observations.
 #' @param weights an optional vector of weights. Default to 1.
@@ -86,7 +86,6 @@ mdcev <- function(formula = NULL, data, subset = NULL, na.action = NULL,
 					 algorithm = c("MLE", "Bayes"),
 					 flat_priors = NULL,
 					 print_iterations = TRUE,
-					 #mle_tol = 0.0001,
 					 hessian = TRUE,
 					 prior_psi_sd = 10,
 					 prior_gamma_sd = 10,

@@ -6,7 +6,9 @@ data_rec
 
 
 data_rec <- mdcev.data(data_rec, subset = id < 100,
-					   alt.var = "alt", choice = "quant")
+					   id.var = "id",
+					   alt.var = "alt",
+					   choice = "quant")
 
 result <- mdcev( ~ alt -1,
 				   data = data_rec,

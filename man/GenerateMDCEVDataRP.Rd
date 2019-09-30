@@ -4,10 +4,10 @@
 \alias{GenerateMDCEVDataRP}
 \title{GenerateMDCEVDataRP}
 \usage{
-GenerateMDCEVDataRP(model, nobs = 1000, ngoods = 10, inc_lo = 1e+05,
+GenerateMDCEVDataRP(model, nobs = 1000, nalts = 10, inc_lo = 1e+05,
   inc_hi = 150000, price_lo = 100, price_hi = 500,
   alpha_parms = 0.5, scale_parms = 1,
-  gamma_parms = stats::runif(ngoods, 1, 10), psi_j_parms = c(-5, 0.5,
+  gamma_parms = stats::runif(nalts, 1, 10), psi_j_parms = c(-5, 0.5,
   2), nerrs = 1, tol = 1e-20, max_loop = 999, corr = 0)
 }
 \arguments{
@@ -16,7 +16,7 @@ The options are "alpha", "gamma", "hybrid" and "hybrid0".}
 
 \item{nobs}{Number of individuals}
 
-\item{ngoods}{Number of non-numeraire goods}
+\item{nalts}{Number of non-numeraire alts}
 
 \item{inc_lo}{Low bound of income for uniform draw}
 
@@ -32,7 +32,7 @@ The options are "alpha", "gamma", "hybrid" and "hybrid0".}
 
 \item{gamma_parms}{Parameter value for gamma terms}
 
-\item{psi_j_parms}{Parameter value for psi terms that vary by good}
+\item{psi_j_parms}{Parameter value for psi terms that vary by alt}
 
 \item{nerrs}{Number of error draws for demand simulation}
 
@@ -43,7 +43,8 @@ The options are "alpha", "gamma", "hybrid" and "hybrid0".}
 \item{corr}{Whether to draw correlated random parameters (=1) or uncorrelated (=0)}
 }
 \value{
-list with data for stan model and parms_true with parameter values
+A `mdcev.data` object, which is a `data.frame` in long
+    format. Also includes parms_true with parameter values
 }
 \description{
 Simulate random parameter data for MDCEV model

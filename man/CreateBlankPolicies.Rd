@@ -4,12 +4,12 @@
 \alias{CreateBlankPolicies}
 \title{CreateBlankPolicies}
 \usage{
-CreateBlankPolicies(npols, ngoods, dat_psi, price_change_only)
+CreateBlankPolicies(npols, nalts, dat_psi, price_change_only)
 }
 \arguments{
 \item{npols}{Number of policies to simulate}
 
-\item{ngoods}{Number of non-numeraire goods}
+\item{nalts}{Number of non-numeraire alts}
 
 \item{dat_psi}{Psi data matrix used in estimation}
 
@@ -21,6 +21,6 @@ Create 'zero effect' policies that can be modified
 }
 \examples{
 \donttest{
-CreateBlankPolicies(npols = 2, ngoods = 10, dat_psi = NULL, price_change_only = TRUE)
+CreateBlankPolicies(npols = 2, nalts = 10, dat_psi = NULL, price_change_only = TRUE)
 }
 }

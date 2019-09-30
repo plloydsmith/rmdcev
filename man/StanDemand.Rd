@@ -14,7 +14,7 @@ StanDemand(df_indiv, df_common, sim_options)
 \item{sim_options}{list of simualtion options}
 }
 \value{
-demand with nsim lists of npolsXngoods+1 matrices
+demand with nsim lists of npolsXnalts+1 matrices
 }
 \description{
 Use Stan functions to simulate Marshallian demand

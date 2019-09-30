@@ -7,7 +7,7 @@
 CreatePsiMatrix(psi_j = NULL, psi_i = NULL)
 }
 \arguments{
-\item{psi_j}{matrix (JXn_psi_j) of good-specific attributes}
+\item{psi_j}{matrix (JXn_psi_j) of alt-specific attributes}
 
 \item{psi_i}{matrix (IXn_psi_i) of people-specific attributes}
 }

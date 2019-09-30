@@ -12,8 +12,8 @@ processMDCEVdata <- function(formula, data, model_options){
 
 	NPsi <- ncol(dat_psi)
 
-	J <- length(unique(data$alt))
-	I <- length(unique(data$id))
+	J <- nrow(unique(attr(data, "index")["alt"]))
+	I <- nrow(unique(attr(data, "index")["id"]))
 
 	if (model_options$model == "gamma"){
 		model_num <- 1
@@ -26,10 +26,14 @@ processMDCEVdata <- function(formula, data, model_options){
 	} else
 		stop("No model specificied. Choose a model specification")
 
-	# convert quant/price to matrices
-	price <- matrix(data$price, ncol = J, byrow = TRUE)
-	quant <- matrix(data$quant, ncol = J, byrow = TRUE)
-	income <- matrix(data$income, ncol = J, byrow = TRUE)[,1]
+	# convert quant/price to matrices and income to vector
+	price.name <- attr(data, "price")
+	quant.name <- attr(data, "choice")
+	income.name <- attr(data, "income")
+
+	price <- matrix(data[[price.name]], ncol = J, byrow = TRUE)
+	quant <- matrix(data[[quant.name]], ncol = J, byrow = TRUE)
+	income <- as.vector(matrix(data[[income.name]], ncol = J, byrow = TRUE)[,1])
 
 	# Put data into one list for rstan
 	stan_data =
@@ -38,7 +42,7 @@ processMDCEVdata <- function(formula, data, model_options){
 			 dat_psi = as.matrix(dat_psi),
 			 price_j = price,
 			 quant_j = quant,
-			 income = as.vector(income),
+			 income = income,
 			 flat_priors = model_options$flat_priors,
 			 prior_psi_sd = model_options$prior_psi_sd,
 			 prior_gamma_sd = model_options$prior_gamma_sd,

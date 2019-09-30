@@ -73,6 +73,12 @@ mle_options <- list(fixed_scale1 = fixed_scale1,
 					gamma_fixed = gamma_fixed,
 					alpha_fixed = alpha_fixed)
 
+
+data_rec <- mdcev.data(data_rec,
+					   id.var = "id",
+					   alt.var = "alt",
+					   choice = "quant")
+
 stan_data <- processMDCEVdata(formula, data_rec, mle_options)
 parms_info <- CreateParmInfo(stan_data, algorithm, random_parameters)
 
