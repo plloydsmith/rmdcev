@@ -68,7 +68,7 @@ Lloyd-Smith, P (2018). ["A New Approach to Calculating Welfare Measures in Kuhn-
 
 ## Estimation
 
-As an example, we can simulate some data using the Hybrid specification. In this example, we are simulating data for 1000 invdividuals and 10 non-numeraire alternatives.
+As an example, we can simulate some data using the Hybrid specification. In this example, we are simulating data for 1000 invdividuals and 10 non-numeraire alternatives. 
 
 ```{r}
 library(pacman)
