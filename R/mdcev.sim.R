@@ -32,7 +32,7 @@
 #'                model = "hybrid0", algorithm = "MLE")
 #'
 #' policies <- CreateBlankPolicies(npols = 2,
-#' ngoods = mdcev_est[["stan_data"]][["J"]],
+#' nalts = mdcev_est[["stan_data"]][["J"]],
 #' dat_psi = mdcev_est[["stan_data"]][["dat_psi"]],
 #' price_change_only = TRUE)
 #'

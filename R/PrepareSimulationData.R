@@ -22,7 +22,7 @@
 #' algorithm = "MLE")
 #'
 #' policies <- CreateBlankPolicies(npols = 2,
-#' ngoods = mdcev_est[["stan_data"]][["J"]],
+#' nalts = mdcev_est[["stan_data"]][["J"]],
 #' dat_psi = mdcev_est[["stan_data"]][["dat_psi"]],
 #' price_change_only = TRUE)
 #'
@@ -293,7 +293,7 @@ if (random_parameters == "fixed"){
 	psi_p_sim <- CreateListsRow(psi_p_sim)
 	psi_p_sim <- purrr::map(psi_p_sim, function(x){aperm(array(x, dim = c(J, npols, nsims)), perm=c(2,1,3))})
 
-	# Ensure psi_p_sim is a list of J lists each with nsims lists of npol X ngood matrices
+	# Ensure psi_p_sim is a list of J lists each with nsims lists of npol X nalt matrices
 	psi_p_sim <- purrr::map(psi_p_sim, function(x){lapply(seq_len(nsims), function(i) x[,,i])})
 
 	psi_p_sim <- list(psi_p_sim)

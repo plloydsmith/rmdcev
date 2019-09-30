@@ -2,7 +2,7 @@
 #' @description Simulate data for MDCEV model
 #' @inheritParams mdcev
 #' @param nobs Number of individuals
-#' @param ngoods Number of non-numeraire goods
+#' @param nalts Number of non-numeraire alts
 #' @param inc_lo Low bound of income for uniform draw
 #' @param inc_hi High bound of income for uniform draw
 #' @param price_lo Low bound of price for uniform draw
@@ -11,7 +11,7 @@
 #' @param scale_parms Parameter value for scale term
 #' @param gamma_parms Parameter value for gamma terms
 #' @param psi_i_parms Parameter value for psi terms that vary by individual
-#' @param psi_j_parms Parameter value for psi terms that vary by good
+#' @param psi_j_parms Parameter value for psi terms that vary by alt
 #' @param nerrs Number of error draws for demand simulation
 #' @param tol Tolerance level for simulations if using general approach
 #' @param max_loop maximum number of loops for simulations if using general approach
@@ -21,12 +21,12 @@
 #' \donttest{
 #' data <- GenerateMDCEVData(model = "hybrid0")
 #'}
-GenerateMDCEVData <- function(model, nobs = 1000, ngoods = 10,
+GenerateMDCEVData <- function(model, nobs = 1000, nalts = 10,
 							  inc_lo = 100000, inc_hi = 150000,
 							  price_lo = 100, price_hi = 500,
 							  alpha_parms = 0.5,
 							  scale_parms = 1,
-							  gamma_parms = stats::runif(ngoods, 1, 2),
+							  gamma_parms = stats::runif(nalts, 1, 2),
 							  psi_i_parms = c(-1.5, 3, -2, 1, 2),
 							  psi_j_parms = c(-5, 0.5, 2),
 							  nerrs = 1,
@@ -34,10 +34,10 @@ GenerateMDCEVData <- function(model, nobs = 1000, ngoods = 10,
 							  max_loop = 999){
 
 	income <-  stats::runif(nobs, inc_lo, inc_hi)
-	price <- matrix(stats::runif(nobs*ngoods, price_lo, price_hi), nobs, ngoods)
+	price <- matrix(stats::runif(nobs*nalts, price_lo, price_hi), nobs, nalts)
 
 	true <- gamma_parms
-	parms <- c(paste(rep('gamma', ngoods), 1:ngoods, sep=""))
+	parms <- c(paste(rep('gamma', nalts), 1:nalts, sep=""))
 	gamma_true <- cbind(parms, true)
 
 	true <- scale_parms
@@ -45,12 +45,12 @@ GenerateMDCEVData <- function(model, nobs = 1000, ngoods = 10,
 	scale_true <- cbind(parms, true)
 
 	# Create psi variables that vary over alternatives
-	psi_j <- cbind(rep(1,ngoods), # add constant term
-				   matrix(stats::runif(ngoods*(length(psi_j_parms)-1), 0 , 1), nrow = ngoods))
+	psi_j <- cbind(rep(1,nalts), # add constant term
+				   matrix(stats::runif(nalts*(length(psi_j_parms)-1), 0 , 1), nrow = nalts))
 	psi_j <-  rep(1, nobs) %x% psi_j
 
 	psi_i <- matrix(2 * stats::runif(nobs * length(psi_i_parms)), nobs,length(psi_i_parms))
-	psi_i <- psi_i %x% rep(1, ngoods)
+	psi_i <- psi_i %x% rep(1, nalts)
 
 	dat_psi <- cbind(psi_j, psi_i)
 	colnames(dat_psi) <- c(paste(rep('b', ncol(dat_psi)), 1:ncol(dat_psi), sep=""))
@@ -63,7 +63,7 @@ GenerateMDCEVData <- function(model, nobs = 1000, ngoods = 10,
 
 	if (model == "gamma"){
 		model_num <- 1
-		alpha_parms <- c(alpha_parms, rep(0, ngoods))
+		alpha_parms <- c(alpha_parms, rep(0, nalts))
 		true <- alpha_parms[1]
 		parms <- 'alpha1'
 		alpha_true <- cbind(parms, true)
@@ -71,16 +71,16 @@ GenerateMDCEVData <- function(model, nobs = 1000, ngoods = 10,
 		algo_gen <- 1
 	} else if (model == "alpha"){
 		model_num <- 2
-		alpha_parms <- 0 + stats::runif(ngoods+1, 0.01, .98)
-		gamma_parms <- rep(1, ngoods)
+		alpha_parms <- 0 + stats::runif(nalts+1, 0.01, .98)
+		gamma_parms <- rep(1, nalts)
 		true <- alpha_parms
-		parms  <- c(paste(rep('alpha',ngoods),1:(ngoods+1),sep=""))
+		parms  <- c(paste(rep('alpha',nalts),1:(nalts+1),sep=""))
 		alpha_true <- cbind(parms, true)
 		parms_true <- rbind(parms_true, alpha_true, scale_true)
 		algo_gen <- 1
 	} else if (model == "hybrid"){
 		model_num <- 3
-		alpha_parms <- rep(alpha_parms, ngoods+1)
+		alpha_parms <- rep(alpha_parms, nalts+1)
 		true <- alpha_parms[1]
 		parms <- 'alpha1'
 		alpha_true <- cbind(parms, true)
@@ -88,7 +88,7 @@ GenerateMDCEVData <- function(model, nobs = 1000, ngoods = 10,
 		algo_gen <- 0
 	} else if (model == "hybrid0"){
 		model_num <- 4
-		alpha_parms <- rep(1e-3, ngoods+1)
+		alpha_parms <- rep(1e-3, nalts+1)
 		parms_true <- rbind(parms_true, gamma_true, scale_true)
 		algo_gen <- 0
 	} else
@@ -96,7 +96,7 @@ GenerateMDCEVData <- function(model, nobs = 1000, ngoods = 10,
 
 	psi_parms <- c(psi_j_parms, psi_i_parms)
 
-	psi_sims <- matrix(dat_psi %*% psi_parms, ncol = ngoods, byrow = TRUE)
+	psi_sims <- matrix(dat_psi %*% psi_parms, ncol = nalts, byrow = TRUE)
 	psi_sims <- CreateListsRow(psi_sims)
 	psi_sims <- list(psi_sims )
 	names(psi_sims) <- "psi_sims"
@@ -125,11 +125,14 @@ GenerateMDCEVData <- function(model, nobs = 1000, ngoods = 10,
 	quant <- as.vector(t(quant))
 	price <- as.vector(t(price))
 
-	id <- rep(1:nobs, each = ngoods)
-	good <- rep(1:ngoods, times = nobs)
-	income <- rep(income, each = ngoods)
+	id <- rep(1:nobs, each = nalts)
+	alt <- rep(1:nalts, times = nobs)
+	income <- rep(income, each = nalts)
 
-	data <- as.data.frame(cbind(id, good, quant, price, dat_psi, income))
+	data <- as.data.frame(cbind(id, alt, quant, price, dat_psi, income))
+
+	data <- mdcev.data(data, subset = id < 500,
+					alt.var = "alt", choice = "quant")
 
 	out <- list(data = data,
 				parms_true = parms_true)

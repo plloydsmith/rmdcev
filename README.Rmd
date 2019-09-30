@@ -75,13 +75,13 @@ library(pacman)
 p_load(tidyverse, rmdcev)
 model <- "hybrid"
 nobs <- 1000
-ngoods <- 10
-sim.data <- GenerateMDCEVData(model = model, nobs = nobs, ngoods = ngoods)
+nalts <- 10
+sim.data <- GenerateMDCEVData(model = model, nobs = nobs, nalts = nalts)
 ```
 
 Estimate model using MLE
 ``` {r}
-mdcev_est <- FitMDCEV(psi_formula = ~ b1 + b2 + b3 + b4 + b5 + b6 + b7 + b8-1,
+mdcev_est <- mdcev(~ b1 + b2 + b3 + b4 + b5 + b6 + b7 + b8-1,
 				   data = sim.data$data,
 				   model = model,
 				   algorithm = "MLE")
@@ -89,7 +89,7 @@ mdcev_est <- FitMDCEV(psi_formula = ~ b1 + b2 + b3 + b4 + b5 + b6 + b7 + b8-1,
 
 Summarize results
 ``` {r}
-SummaryMDCEV(mdcev_est)
+summary(mdcev_est)
 ```
 
 
@@ -98,7 +98,17 @@ Compare estimates to true values
 parms_true <- tbl_df(sim.data$parms_true) %>%
 	mutate(true = as.numeric(true))
 
-coefs <- mdcev_est$est_pars %>%
+output <- tbl_df(mdcev_est[["stan_fit"]][["theta_tilde"]]) %>%
+				dplyr::select(-tidyselect::starts_with("log_like"),         
+							  -tidyselect::starts_with("sum_log_lik"))
+
+names(output)[1:mdcev_est$parms_info$n_vars$n_parms_total] <- mdcev_est$parms_info$parm_names$all_names
+
+output<- output %>%
+		tibble::rowid_to_column("sim_id") %>%
+		tidyr::gather(parms, value, -sim_id)
+
+coefs <- output %>%
 	mutate(parms = gsub("\\[|\\]", "", parms)) %>%
 	group_by(parms) %>%
 	summarise(mean = mean(value),
@@ -127,14 +137,18 @@ Create policy simulations (these are 'no change' policies with no effects)
 ```{r}
 npols <- 2 # Choose number of policies
 
-policies<-	CreateBlankPolicies(npols, ngoods, mdcev_est$stan_data[["dat_psi"]], price_change_only = TRUE)
+policies<-	CreateBlankPolicies(npols, nalts, mdcev_est$stan_data[["dat_psi"]], price_change_only = TRUE)
 
 df_sim <- PrepareSimulationData(mdcev_est, policies)
 ```
 
 Simulate welfare changes
 ```{r}
-wtp <- SimulateMDCEV(df_sim$df_indiv, df_common = df_sim$df_common, sim_options = df_sim$sim_options,
-					 cond_err = 1, nerrs = 5, sim_type = "welfare")
-SummaryWelfare(wtp)
+wtp <- mdcev.sim(df_sim$df_indiv, 
+				 df_common = df_sim$df_common, 
+				 sim_options = df_sim$sim_options,
+				 cond_err = 1, 
+				 nerrs = 5, 
+				 sim_type = "welfare")
+summary(wtp)
 ```

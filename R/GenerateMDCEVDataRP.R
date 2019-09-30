@@ -10,14 +10,14 @@
 #'}
 GenerateMDCEVDataRP <- function(model,
 								nobs = 1000,
-								ngoods = 10,
+								nalts = 10,
 								inc_lo = 100000,
 								inc_hi = 150000,
 								price_lo = 100,
 								price_hi = 500,
 								alpha_parms = 0.5,
 								scale_parms = 1,
-								gamma_parms = stats::runif(ngoods, 1, 10),
+								gamma_parms = stats::runif(nalts, 1, 10),
 								psi_j_parms = c(-5, 0.5, 2),
 								nerrs = 1,
 								tol = 1e-20,
@@ -25,10 +25,10 @@ GenerateMDCEVDataRP <- function(model,
 								corr = 0){
 
 	income <-  stats::runif(nobs, inc_lo, inc_hi)
-	price <- matrix(stats::runif(nobs*ngoods, price_lo, price_hi), nobs, ngoods)
+	price <- matrix(stats::runif(nobs*nalts, price_lo, price_hi), nobs, nalts)
 
 	num_psi <- length(psi_j_parms)
-	RP <- num_psi + ngoods + 1
+	RP <- num_psi + nalts + 1
 
 	if (model == "gamma"){
 		model_num <- 1
@@ -37,7 +37,7 @@ GenerateMDCEVDataRP <- function(model,
 		b <- c(rep(Inf, num_psi), rep(Inf, RP-num_psi-1), .99)
 	} else if (model == "alpha"){
 		model_num <- 2
-		alpha_parms <- 0 + stats::runif(ngoods+1, 0.01, .98)
+		alpha_parms <- 0 + stats::runif(nalts+1, 0.01, .98)
 		algo_gen <- 1
 		a <- c(rep(-Inf, num_psi), rep(0.01, RP-num_psi))
 		b <- c(rep(Inf, num_psi), rep(.99, RP-num_psi))
@@ -69,42 +69,42 @@ GenerateMDCEVDataRP <- function(model,
 
 	beta_individual <- tmvtnorm::rtmvnorm(n=nobs, mean=beta, sigma=Sigma, lower=a, upper=b)
 
-	indexes <- tibble(individual = rep(1:nobs, each = ngoods),
-					  task = rep(1:nobs, each = ngoods),
-					  row = 1:(nobs*ngoods)) %>%
+	indexes <- tibble(individual = rep(1:nobs, each = nalts),
+					  task = rep(1:nobs, each = nalts),
+					  row = 1:(nobs*nalts)) %>%
 		group_by(task) %>%
 		summarise(task_individual = first(individual),
 				  start = first(row),
 				  end = last(row))
 
 	# Create psi variables that vary over alternatives
-	psi_j <- cbind(rep(1,ngoods), # add constant term
-				   matrix(stats::runif(ngoods*(num_psi-1), 0 , 1), nrow = ngoods))
+	psi_j <- cbind(rep(1,nalts), # add constant term
+				   matrix(stats::runif(nalts*(num_psi-1), 0 , 1), nrow = nalts))
 	psi_j <-  rep(1, nobs) %x% psi_j
 
-	psi_beta <- beta_individual[,1:num_psi] %x% rep(1, ngoods)
+	psi_beta <- beta_individual[,1:num_psi] %x% rep(1, nalts)
 
-	psi_sims <- matrix(rowSums(psi_j * psi_beta), ncol = ngoods, byrow = TRUE)
+	psi_sims <- matrix(rowSums(psi_j * psi_beta), ncol = nalts, byrow = TRUE)
 	psi_sims <- CreateListsRow(psi_sims)
 	psi_sims <- list(psi_sims )
 	names(psi_sims) <- "psi_sims"
 
 
 	# Create gamma variables that vary over alternatives
-	#	dat_gamma <- rep(1, nobs) %x% diag(ngoods)
-	#	gamma_sims <- matrix(rowSums(dat_gamma * gamma_beta), ncol = ngoods, byrow = TRUE)
+	#	dat_gamma <- rep(1, nobs) %x% diag(nalts)
+	#	gamma_sims <- matrix(rowSums(dat_gamma * gamma_beta), ncol = nalts, byrow = TRUE)
 
-	gamma_sims <- beta_individual[,(num_psi+1):(num_psi+ngoods)] #%x% rep(1, ngoods)
+	gamma_sims <- beta_individual[,(num_psi+1):(num_psi+nalts)] #%x% rep(1, nalts)
 
 	if (model == "gamma"){
-		alpha_sims <- cbind(beta_individual[,RP], matrix(0, nobs, ngoods))
+		alpha_sims <- cbind(beta_individual[,RP], matrix(0, nobs, nalts))
 	} else if (model == "alpha"){
-		alpha_sims <- beta_individual[,(num_psi+ngoods+1):RP]
-		gamma_sims <- matrix(1, nobs, ngoods)
+		alpha_sims <- beta_individual[,(num_psi+nalts+1):RP]
+		gamma_sims <- matrix(1, nobs, nalts)
 	} else if (model == "hybrid"){
-		alpha_sims <- matrix(rep(beta_individual[,(num_psi+ngoods+1):RP],ngoods+1), nrow = nobs, ncol = ngoods+1, byrow = F)
+		alpha_sims <- matrix(rep(beta_individual[,(num_psi+nalts+1):RP],nalts+1), nrow = nobs, ncol = nalts+1, byrow = F)
 	} else if (model == "hybrid0"){
-		alpha_sims <- matrix(1e-6, nobs, ngoods+1)
+		alpha_sims <- matrix(1e-6, nobs, nalts+1)
 	} else
 		stop("No model specificied. Choose a model")
 
@@ -141,11 +141,11 @@ GenerateMDCEVDataRP <- function(model,
 	quant <- as.vector(t(quant))
 	price <- as.vector(t(price))
 
-	id <- rep(1:nobs, each = ngoods)
-	good <- rep(1:ngoods, times = nobs)
-	income <- rep(income, each = ngoods)
+	id <- rep(1:nobs, each = nalts)
+	alt <- rep(1:nalts, times = nobs)
+	income <- rep(income, each = nalts)
 
-	data <- as.data.frame(cbind(id, good, quant, price, psi_j, income))
+	data <- as.data.frame(cbind(id, alt, quant, price, psi_j, income))
 
 	parms_true <- df_indiv
 	parms_true$income <- parms_true$price <-  NULL

@@ -27,14 +27,14 @@ summary.mdcev.sim <- function(object, ci = 0.95, ...){
 	if(is.list(object[[1]])){
 		nobs <- length(object)
 		nsims <- length(object[[1]])
-		ngoods <- ncol(object[[1]][[1]])
+		nalts <- ncol(object[[1]][[1]])
 		npols <- nrow(object[[1]][[1]])
 
 		out <- tibble::tibble(demand = unlist(object),
-							  id = rep(1:nobs, each = nsims*ngoods*npols),
-							  alt = rep(0:(ngoods-1), each = npols, times = nsims*nobs),
-							  policy = rep(paste0(rep("policy",npols), 1:npols), times =nobs*nsims*ngoods ),
-							  sim_id = rep(1:nsims, each = ngoods*npols, times = nobs)) %>%
+							  id = rep(1:nobs, each = nsims*nalts*npols),
+							  alt = rep(0:(nalts-1), each = npols, times = nsims*nobs),
+							  policy = rep(paste0(rep("policy",npols), 1:npols), times =nobs*nsims*nalts ),
+							  sim_id = rep(1:nsims, each = nalts*npols, times = nobs)) %>%
 			dplyr::group_by(.data$alt, .data$policy, .data$sim_id) %>%
 			dplyr::summarise(demand = mean(demand)) %>%
 			dplyr::group_by(.data$policy, .data$alt) %>%

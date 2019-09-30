@@ -5,7 +5,7 @@ int Gamma;
 vector[I] log_inc = log(income);
 vector[I] log_num;
 matrix[I, J] nonzero;
-vector[I] M;	//  Number of consumed goods (including numeraire)
+vector[I] M;	//  Number of consumed alts (including numeraire)
 vector[I] log_M_fact;
 
 for(i in 1:I){

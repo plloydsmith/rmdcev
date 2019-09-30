@@ -31,7 +31,7 @@ mdcev.datacheck <- function(data_input){
 	}
 
 	if (sum(data_input$price <= 0) > 0){
-		print(paste0("Price is less than or equal to 0 for at least one individual good in rows: ",
+		print(paste0("Price is less than or equal to 0 for at least one individual alt in rows: ",
 					 toString(as.character(which(data_input$price <= 0)))))
 		stop()
 	}

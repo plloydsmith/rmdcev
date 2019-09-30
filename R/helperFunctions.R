@@ -53,16 +53,16 @@ DoCbind <- function(x){
 #' @param price_change_only Logical value for whether to include policy changes to dat_psi.
 #' TRUE implies that only price changes are used in simulation.
 #' @param npols Number of policies to simulate
-#' @param ngoods Number of non-numeraire goods
+#' @param nalts Number of non-numeraire alts
 #' @param dat_psi Psi data matrix used in estimation
 #' @export
 #' @examples
 #' \donttest{
-#' CreateBlankPolicies(npols = 2, ngoods = 10, dat_psi = NULL, price_change_only = TRUE)
+#' CreateBlankPolicies(npols = 2, nalts = 10, dat_psi = NULL, price_change_only = TRUE)
 #'}
-CreateBlankPolicies <- function(npols, ngoods, dat_psi, price_change_only){
+CreateBlankPolicies <- function(npols, nalts, dat_psi, price_change_only){
 
-	price_p <- CreateListsRow(matrix(0, nrow = npols, ncol = ngoods + 1))
+	price_p <- CreateListsRow(matrix(0, nrow = npols, ncol = nalts + 1))
 
 	if (price_change_only == FALSE)
 		dat_psi_p <- lapply(seq_len(npols), function(X) dat_psi)
@@ -75,7 +75,7 @@ CreateBlankPolicies <- function(npols, ngoods, dat_psi, price_change_only){
 }
 
 #' @title CreatePsiMatrix
-#' @param psi_j matrix (JXn_psi_j) of good-specific attributes
+#' @param psi_j matrix (JXn_psi_j) of alt-specific attributes
 #' @param psi_i matrix (IXn_psi_i) of people-specific attributes
 #' @description Creates the Psi data matrix for use in mdcev model
 #' @keywords internal

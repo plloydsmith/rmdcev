@@ -187,7 +187,7 @@ DrawError_rng(const T0__& quant_num,
                   const Eigen::Matrix<T4__, Eigen::Dynamic, 1>& gamma_j,
                   const Eigen::Matrix<T5__, Eigen::Dynamic, 1>& alpha,
                   const T6__& scale,
-                  const int& ngoods,
+                  const int& nalts,
                   const int& nerrs,
                   const int& cond_error,
                   const int& draw_mlhs, RNG& base_rng__, std::ostream* pstream__) {
@@ -202,23 +202,23 @@ DrawError_rng(const T0__& quant_num,
     try {
         {
         current_statement_begin__ = 42;
-        validate_non_negative_index("out", "(ngoods + 1)", (ngoods + 1));
+        validate_non_negative_index("out", "(nalts + 1)", (nalts + 1));
         validate_non_negative_index("out", "nerrs", nerrs);
-        std::vector<Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1>  > out(nerrs, Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1>((ngoods + 1)));
+        std::vector<Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1>  > out(nerrs, Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1>((nalts + 1)));
         stan::math::initialize(out, DUMMY_VAR__);
         stan::math::fill(out, DUMMY_VAR__);
 
         current_statement_begin__ = 43;
-        validate_non_negative_index("error", "(ngoods + 1)", (ngoods + 1));
+        validate_non_negative_index("error", "(nalts + 1)", (nalts + 1));
         validate_non_negative_index("error", "nerrs", nerrs);
-        Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, Eigen::Dynamic> error((ngoods + 1), nerrs);
+        Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, Eigen::Dynamic> error((nalts + 1), nerrs);
         stan::math::initialize(error, DUMMY_VAR__);
         stan::math::fill(error, DUMMY_VAR__);
 
         current_statement_begin__ = 44;
         validate_non_negative_index("error_t", "nerrs", nerrs);
-        validate_non_negative_index("error_t", "(ngoods + 1)", (ngoods + 1));
-        Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, Eigen::Dynamic> error_t(nerrs, (ngoods + 1));
+        validate_non_negative_index("error_t", "(nalts + 1)", (nalts + 1));
+        Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, Eigen::Dynamic> error_t(nerrs, (nalts + 1));
         stan::math::initialize(error_t, DUMMY_VAR__);
         stan::math::fill(error_t, DUMMY_VAR__);
 
@@ -234,7 +234,7 @@ DrawError_rng(const T0__& quant_num,
         if (as_bool(logical_eq(cond_error, 0))) {
 
             current_statement_begin__ = 49;
-            for (int j = 1; j <= (ngoods + 1); ++j) {
+            for (int j = 1; j <= (nalts + 1); ++j) {
                 current_statement_begin__ = 50;
                 stan::model::assign(error, 
                             stan::model::cons_list(stan::model::index_uni(j), stan::model::nil_index_list()), 
@@ -244,8 +244,8 @@ DrawError_rng(const T0__& quant_num,
         } else if (as_bool(logical_eq(cond_error, 1))) {
             {
             current_statement_begin__ = 54;
-            validate_non_negative_index("cond_demand", "(ngoods + 1)", (ngoods + 1));
-            Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> cond_demand((ngoods + 1));
+            validate_non_negative_index("cond_demand", "(nalts + 1)", (nalts + 1));
+            Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> cond_demand((nalts + 1));
             stan::math::initialize(cond_demand, DUMMY_VAR__);
             stan::math::fill(cond_demand, DUMMY_VAR__);
             stan::math::assign(cond_demand,append_row(quant_num, quant_j));
@@ -258,22 +258,22 @@ DrawError_rng(const T0__& quant_num,
             stan::math::assign(v1,((get_base1(alpha, 1, "alpha", 1) - 1) * stan::math::log(quant_num)));
 
             current_statement_begin__ = 57;
-            validate_non_negative_index("vk", "ngoods", ngoods);
-            Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> vk(ngoods);
+            validate_non_negative_index("vk", "nalts", nalts);
+            Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> vk(nalts);
             stan::math::initialize(vk, DUMMY_VAR__);
             stan::math::fill(vk, DUMMY_VAR__);
-            stan::math::assign(vk,subtract(add(psi_j, elt_multiply(subtract(stan::model::rvalue(alpha, stan::model::cons_list(stan::model::index_min_max(2, (ngoods + 1)), stan::model::nil_index_list()), "alpha"), 1), stan::math::log(add(elt_divide(quant_j, gamma_j), 1)))), stan::math::log(price_j)));
+            stan::math::assign(vk,subtract(add(psi_j, elt_multiply(subtract(stan::model::rvalue(alpha, stan::model::cons_list(stan::model::index_min_max(2, (nalts + 1)), stan::model::nil_index_list()), "alpha"), 1), stan::math::log(add(elt_divide(quant_j, gamma_j), 1)))), stan::math::log(price_j)));
 
             current_statement_begin__ = 59;
-            validate_non_negative_index("ek", "(ngoods + 1)", (ngoods + 1));
-            Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> ek((ngoods + 1));
+            validate_non_negative_index("ek", "(nalts + 1)", (nalts + 1));
+            Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> ek((nalts + 1));
             stan::math::initialize(ek, DUMMY_VAR__);
             stan::math::fill(ek, DUMMY_VAR__);
             stan::math::assign(ek,append_row(0, divide(subtract(v1, vk), scale)));
 
 
             current_statement_begin__ = 63;
-            for (int j = 1; j <= (ngoods + 1); ++j) {
+            for (int j = 1; j <= (nalts + 1); ++j) {
                 current_statement_begin__ = 64;
                 stan::model::assign(error, 
                             stan::model::cons_list(stan::model::index_uni(j), stan::model::nil_index_list()), 
@@ -313,18 +313,18 @@ struct DrawError_rng_functor__ {
                   const Eigen::Matrix<T4__, Eigen::Dynamic, 1>& gamma_j,
                   const Eigen::Matrix<T5__, Eigen::Dynamic, 1>& alpha,
                   const T6__& scale,
-                  const int& ngoods,
+                  const int& nalts,
                   const int& nerrs,
                   const int& cond_error,
                   const int& draw_mlhs, RNG& base_rng__, std::ostream* pstream__) const {
-        return DrawError_rng(quant_num, quant_j, price_j, psi_j, gamma_j, alpha, scale, ngoods, nerrs, cond_error, draw_mlhs, base_rng__, pstream__);
+        return DrawError_rng(quant_num, quant_j, price_j, psi_j, gamma_j, alpha, scale, nalts, nerrs, cond_error, draw_mlhs, base_rng__, pstream__);
     }
 };
 
 template <typename T0__>
 std::vector<int>
-CalcGoodOrder(const Eigen::Matrix<T0__, Eigen::Dynamic, 1>& MUzero,
-                  const int& ngoods, std::ostream* pstream__) {
+CalcAltOrder(const Eigen::Matrix<T0__, Eigen::Dynamic, 1>& MUzero,
+                 const int& nalts, std::ostream* pstream__) {
     typedef typename boost::math::tools::promote_args<T0__>::type local_scalar_t__;
     typedef int fun_return_scalar_t__;
     const static bool propto__ = true;
@@ -336,33 +336,33 @@ CalcGoodOrder(const Eigen::Matrix<T0__, Eigen::Dynamic, 1>& MUzero,
     try {
         {
         current_statement_begin__ = 80;
-        validate_non_negative_index("order_x", "(ngoods + 1)", (ngoods + 1));
-        std::vector<int  > order_x((ngoods + 1), int(0));
+        validate_non_negative_index("order_x", "(nalts + 1)", (nalts + 1));
+        std::vector<int  > order_x((nalts + 1), int(0));
         stan::math::fill(order_x, std::numeric_limits<int>::min());
 
         current_statement_begin__ = 81;
-        validate_non_negative_index("ord_goods", "ngoods", ngoods);
-        Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> ord_goods(ngoods);
-        stan::math::initialize(ord_goods, DUMMY_VAR__);
-        stan::math::fill(ord_goods, DUMMY_VAR__);
+        validate_non_negative_index("ord_alts", "nalts", nalts);
+        Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> ord_alts(nalts);
+        stan::math::initialize(ord_alts, DUMMY_VAR__);
+        stan::math::fill(ord_alts, DUMMY_VAR__);
 
         current_statement_begin__ = 82;
-        validate_non_negative_index("order_MU", "ngoods", ngoods);
-        std::vector<int  > order_MU(ngoods, int(0));
+        validate_non_negative_index("order_MU", "nalts", nalts);
+        std::vector<int  > order_MU(nalts, int(0));
         stan::math::fill(order_MU, std::numeric_limits<int>::min());
-        stan::math::assign(order_MU,sort_indices_desc(stan::model::rvalue(MUzero, stan::model::cons_list(stan::model::index_min_max(2, (ngoods + 1)), stan::model::nil_index_list()), "MUzero")));
+        stan::math::assign(order_MU,sort_indices_desc(stan::model::rvalue(MUzero, stan::model::cons_list(stan::model::index_min_max(2, (nalts + 1)), stan::model::nil_index_list()), "MUzero")));
 
 
         current_statement_begin__ = 84;
-        for (int j = 1; j <= ngoods; ++j) {
+        for (int j = 1; j <= nalts; ++j) {
             current_statement_begin__ = 85;
-            stan::model::assign(ord_goods, 
+            stan::model::assign(ord_alts, 
                         stan::model::cons_list(stan::model::index_uni(j), stan::model::nil_index_list()), 
                         j, 
-                        "assigning variable ord_goods");
+                        "assigning variable ord_alts");
         }
         current_statement_begin__ = 87;
-        stan::math::assign(order_x, sort_indices_asc(append_row(1.0, to_vector(add(stan::model::rvalue(ord_goods, stan::model::cons_list(stan::model::index_multi(order_MU), stan::model::nil_index_list()), "ord_goods"), 1)))));
+        stan::math::assign(order_x, sort_indices_asc(append_row(1.0, to_vector(add(stan::model::rvalue(ord_alts, stan::model::cons_list(stan::model::index_multi(order_MU), stan::model::nil_index_list()), "ord_alts"), 1)))));
         current_statement_begin__ = 88;
         return stan::math::promote_scalar<fun_return_scalar_t__>(order_x);
         }
@@ -374,12 +374,12 @@ CalcGoodOrder(const Eigen::Matrix<T0__, Eigen::Dynamic, 1>& MUzero,
 }
 
 
-struct CalcGoodOrder_functor__ {
+struct CalcAltOrder_functor__ {
     template <typename T0__>
         std::vector<int>
     operator()(const Eigen::Matrix<T0__, Eigen::Dynamic, 1>& MUzero,
-                  const int& ngoods, std::ostream* pstream__) const {
-        return CalcGoodOrder(MUzero, ngoods, pstream__);
+                 const int& nalts, std::ostream* pstream__) const {
+        return CalcAltOrder(MUzero, nalts, pstream__);
     }
 };
 
@@ -389,7 +389,7 @@ SortParmMatrix(const Eigen::Matrix<T0__, Eigen::Dynamic, 1>& MUzero,
                    const Eigen::Matrix<T1__, Eigen::Dynamic, 1>& price,
                    const Eigen::Matrix<T2__, Eigen::Dynamic, 1>& gamma,
                    const Eigen::Matrix<T3__, Eigen::Dynamic, 1>& alpha,
-                   const int& ngoods, std::ostream* pstream__) {
+                   const int& nalts, std::ostream* pstream__) {
     typedef typename boost::math::tools::promote_args<T0__, T1__, T2__, T3__>::type local_scalar_t__;
     typedef local_scalar_t__ fun_return_scalar_t__;
     const static bool propto__ = true;
@@ -401,43 +401,43 @@ SortParmMatrix(const Eigen::Matrix<T0__, Eigen::Dynamic, 1>& MUzero,
     try {
         {
         current_statement_begin__ = 96;
-        validate_non_negative_index("parm_matrix", "(ngoods + 1)", (ngoods + 1));
+        validate_non_negative_index("parm_matrix", "(nalts + 1)", (nalts + 1));
         validate_non_negative_index("parm_matrix", "4", 4);
-        Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, Eigen::Dynamic> parm_matrix((ngoods + 1), 4);
+        Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, Eigen::Dynamic> parm_matrix((nalts + 1), 4);
         stan::math::initialize(parm_matrix, DUMMY_VAR__);
         stan::math::fill(parm_matrix, DUMMY_VAR__);
 
         current_statement_begin__ = 97;
-        validate_non_negative_index("MU_j", "ngoods", ngoods);
-        Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> MU_j(ngoods);
+        validate_non_negative_index("MU_j", "nalts", nalts);
+        Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> MU_j(nalts);
         stan::math::initialize(MU_j, DUMMY_VAR__);
         stan::math::fill(MU_j, DUMMY_VAR__);
-        stan::math::assign(MU_j,stan::model::rvalue(MUzero, stan::model::cons_list(stan::model::index_min_max(2, (ngoods + 1)), stan::model::nil_index_list()), "MUzero"));
+        stan::math::assign(MU_j,stan::model::rvalue(MUzero, stan::model::cons_list(stan::model::index_min_max(2, (nalts + 1)), stan::model::nil_index_list()), "MUzero"));
 
         current_statement_begin__ = 98;
-        validate_non_negative_index("price_j", "ngoods", ngoods);
-        Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> price_j(ngoods);
+        validate_non_negative_index("price_j", "nalts", nalts);
+        Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> price_j(nalts);
         stan::math::initialize(price_j, DUMMY_VAR__);
         stan::math::fill(price_j, DUMMY_VAR__);
-        stan::math::assign(price_j,stan::model::rvalue(price, stan::model::cons_list(stan::model::index_min_max(2, (ngoods + 1)), stan::model::nil_index_list()), "price"));
+        stan::math::assign(price_j,stan::model::rvalue(price, stan::model::cons_list(stan::model::index_min_max(2, (nalts + 1)), stan::model::nil_index_list()), "price"));
 
         current_statement_begin__ = 99;
-        validate_non_negative_index("gamma_j", "ngoods", ngoods);
-        Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> gamma_j(ngoods);
+        validate_non_negative_index("gamma_j", "nalts", nalts);
+        Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> gamma_j(nalts);
         stan::math::initialize(gamma_j, DUMMY_VAR__);
         stan::math::fill(gamma_j, DUMMY_VAR__);
-        stan::math::assign(gamma_j,stan::model::rvalue(gamma, stan::model::cons_list(stan::model::index_min_max(2, (ngoods + 1)), stan::model::nil_index_list()), "gamma"));
+        stan::math::assign(gamma_j,stan::model::rvalue(gamma, stan::model::cons_list(stan::model::index_min_max(2, (nalts + 1)), stan::model::nil_index_list()), "gamma"));
 
         current_statement_begin__ = 100;
-        validate_non_negative_index("alpha_j", "ngoods", ngoods);
-        Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> alpha_j(ngoods);
+        validate_non_negative_index("alpha_j", "nalts", nalts);
+        Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> alpha_j(nalts);
         stan::math::initialize(alpha_j, DUMMY_VAR__);
         stan::math::fill(alpha_j, DUMMY_VAR__);
-        stan::math::assign(alpha_j,stan::model::rvalue(alpha, stan::model::cons_list(stan::model::index_min_max(2, (ngoods + 1)), stan::model::nil_index_list()), "alpha"));
+        stan::math::assign(alpha_j,stan::model::rvalue(alpha, stan::model::cons_list(stan::model::index_min_max(2, (nalts + 1)), stan::model::nil_index_list()), "alpha"));
 
         current_statement_begin__ = 101;
-        validate_non_negative_index("order_MU", "ngoods", ngoods);
-        std::vector<int  > order_MU(ngoods, int(0));
+        validate_non_negative_index("order_MU", "nalts", nalts);
+        std::vector<int  > order_MU(nalts, int(0));
         stan::math::fill(order_MU, std::numeric_limits<int>::min());
         stan::math::assign(order_MU,sort_indices_desc(MU_j));
 
@@ -462,8 +462,8 @@ struct SortParmMatrix_functor__ {
                    const Eigen::Matrix<T1__, Eigen::Dynamic, 1>& price,
                    const Eigen::Matrix<T2__, Eigen::Dynamic, 1>& gamma,
                    const Eigen::Matrix<T3__, Eigen::Dynamic, 1>& alpha,
-                   const int& ngoods, std::ostream* pstream__) const {
-        return SortParmMatrix(MUzero, price, gamma, alpha, ngoods, pstream__);
+                   const int& nalts, std::ostream* pstream__) const {
+        return SortParmMatrix(MUzero, price, gamma, alpha, nalts, pstream__);
     }
 };
 
@@ -539,7 +539,7 @@ MarshallianDemand(const T0__& income,
                       const Eigen::Matrix<T2__, Eigen::Dynamic, 1>& MUzero,
                       const Eigen::Matrix<T3__, Eigen::Dynamic, 1>& gamma,
                       const Eigen::Matrix<T4__, Eigen::Dynamic, 1>& alpha,
-                      const int& ngoods,
+                      const int& nalts,
                       const int& algo_gen,
                       const T7__& tol_e,
                       const int& max_loop, std::ostream* pstream__) {
@@ -554,8 +554,8 @@ MarshallianDemand(const T0__& income,
     try {
         {
         current_statement_begin__ = 124;
-        validate_non_negative_index("mdemand", "(ngoods + 1)", (ngoods + 1));
-        Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> mdemand((ngoods + 1));
+        validate_non_negative_index("mdemand", "(nalts + 1)", (nalts + 1));
+        Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> mdemand((nalts + 1));
         stan::math::initialize(mdemand, DUMMY_VAR__);
         stan::math::fill(mdemand, DUMMY_VAR__);
 
@@ -584,50 +584,50 @@ MarshallianDemand(const T0__& income,
         stan::math::fill(E, DUMMY_VAR__);
 
         current_statement_begin__ = 129;
-        validate_non_negative_index("order_x", "(ngoods + 1)", (ngoods + 1));
-        std::vector<int  > order_x((ngoods + 1), int(0));
+        validate_non_negative_index("order_x", "(nalts + 1)", (nalts + 1));
+        std::vector<int  > order_x((nalts + 1), int(0));
         stan::math::fill(order_x, std::numeric_limits<int>::min());
-        stan::math::assign(order_x,CalcGoodOrder(MUzero, ngoods, pstream__));
+        stan::math::assign(order_x,CalcAltOrder(MUzero, nalts, pstream__));
 
         current_statement_begin__ = 130;
-        validate_non_negative_index("X", "(ngoods + 1)", (ngoods + 1));
-        Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> X((ngoods + 1));
+        validate_non_negative_index("X", "(nalts + 1)", (nalts + 1));
+        Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> X((nalts + 1));
         stan::math::initialize(X, DUMMY_VAR__);
         stan::math::fill(X, DUMMY_VAR__);
-        stan::math::assign(X,rep_vector(0, (ngoods + 1)));
+        stan::math::assign(X,rep_vector(0, (nalts + 1)));
 
         current_statement_begin__ = 131;
-        validate_non_negative_index("d", "(ngoods + 1)", (ngoods + 1));
-        Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> d((ngoods + 1));
+        validate_non_negative_index("d", "(nalts + 1)", (nalts + 1));
+        Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> d((nalts + 1));
         stan::math::initialize(d, DUMMY_VAR__);
         stan::math::fill(d, DUMMY_VAR__);
-        stan::math::assign(d,append_row(0, rep_vector(1, ngoods)));
+        stan::math::assign(d,append_row(0, rep_vector(1, nalts)));
 
         current_statement_begin__ = 132;
-        validate_non_negative_index("parm_matrix", "(ngoods + 1)", (ngoods + 1));
+        validate_non_negative_index("parm_matrix", "(nalts + 1)", (nalts + 1));
         validate_non_negative_index("parm_matrix", "4", 4);
-        Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, Eigen::Dynamic> parm_matrix((ngoods + 1), 4);
+        Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, Eigen::Dynamic> parm_matrix((nalts + 1), 4);
         stan::math::initialize(parm_matrix, DUMMY_VAR__);
         stan::math::fill(parm_matrix, DUMMY_VAR__);
-        stan::math::assign(parm_matrix,SortParmMatrix(MUzero, price, gamma, alpha, ngoods, pstream__));
+        stan::math::assign(parm_matrix,SortParmMatrix(MUzero, price, gamma, alpha, nalts, pstream__));
 
         current_statement_begin__ = 133;
-        validate_non_negative_index("mu", "(ngoods + 1)", (ngoods + 1));
-        Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> mu((ngoods + 1));
+        validate_non_negative_index("mu", "(nalts + 1)", (nalts + 1));
+        Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> mu((nalts + 1));
         stan::math::initialize(mu, DUMMY_VAR__);
         stan::math::fill(mu, DUMMY_VAR__);
         stan::math::assign(mu,col(parm_matrix, 1));
 
         current_statement_begin__ = 134;
-        validate_non_negative_index("g", "(ngoods + 1)", (ngoods + 1));
-        Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> g((ngoods + 1));
+        validate_non_negative_index("g", "(nalts + 1)", (nalts + 1));
+        Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> g((nalts + 1));
         stan::math::initialize(g, DUMMY_VAR__);
         stan::math::fill(g, DUMMY_VAR__);
         stan::math::assign(g,col(parm_matrix, 3));
 
         current_statement_begin__ = 135;
-        validate_non_negative_index("g_price", "(ngoods + 1)", (ngoods + 1));
-        Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> g_price((ngoods + 1));
+        validate_non_negative_index("g_price", "(nalts + 1)", (nalts + 1));
+        Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> g_price((nalts + 1));
         stan::math::initialize(g_price, DUMMY_VAR__);
         stan::math::fill(g_price, DUMMY_VAR__);
         stan::math::assign(g_price,elt_multiply(g, col(parm_matrix, 2)));
@@ -656,20 +656,20 @@ MarshallianDemand(const T0__& income,
             stan::math::assign(alpha_1,get_base1(alpha, 1, "alpha", 1));
 
             current_statement_begin__ = 141;
-            validate_non_negative_index("b", "(ngoods + 1)", (ngoods + 1));
-            Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> b((ngoods + 1));
+            validate_non_negative_index("b", "(nalts + 1)", (nalts + 1));
+            Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> b((nalts + 1));
             stan::math::initialize(b, DUMMY_VAR__);
             stan::math::fill(b, DUMMY_VAR__);
 
             current_statement_begin__ = 142;
-            validate_non_negative_index("c", "(ngoods + 1)", (ngoods + 1));
-            Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> c((ngoods + 1));
+            validate_non_negative_index("c", "(nalts + 1)", (nalts + 1));
+            Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> c((nalts + 1));
             stan::math::initialize(c, DUMMY_VAR__);
             stan::math::fill(c, DUMMY_VAR__);
 
 
             current_statement_begin__ = 144;
-            for (int j = 1; j <= (ngoods + 1); ++j) {
+            for (int j = 1; j <= (nalts + 1); ++j) {
                 current_statement_begin__ = 145;
                 stan::model::assign(b, 
                             stan::model::cons_list(stan::model::index_uni(j), stan::model::nil_index_list()), 
@@ -688,7 +688,7 @@ MarshallianDemand(const T0__& income,
                 current_statement_begin__ = 153;
                 stan::math::assign(lambda, pow((lambda_num / lambda_den), (alpha_1 - 1)));
                 current_statement_begin__ = 159;
-                if (as_bool((primitive_value(logical_gt(lambda, get_base1(mu, std::min((M + 1), (ngoods + 1)), "mu", 1))) || primitive_value(logical_eq(M, (ngoods + 1)))))) {
+                if (as_bool((primitive_value(logical_gt(lambda, get_base1(mu, std::min((M + 1), (nalts + 1)), "mu", 1))) || primitive_value(logical_eq(M, (nalts + 1)))))) {
 
                     current_statement_begin__ = 161;
                     for (int m = 1; m <= M; ++m) {
@@ -700,7 +700,7 @@ MarshallianDemand(const T0__& income,
                     }
                     current_statement_begin__ = 163;
                     stan::math::assign(exit, 1);
-                } else if (as_bool(logical_lt(M, (ngoods + 1)))) {
+                } else if (as_bool(logical_lt(M, (nalts + 1)))) {
                     current_statement_begin__ = 166;
                     stan::math::assign(M, (M + 1));
                 }
@@ -721,28 +721,28 @@ MarshallianDemand(const T0__& income,
             stan::math::fill(lambda_u, DUMMY_VAR__);
 
             current_statement_begin__ = 172;
-            validate_non_negative_index("c", "(ngoods + 1)", (ngoods + 1));
-            Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> c((ngoods + 1));
+            validate_non_negative_index("c", "(nalts + 1)", (nalts + 1));
+            Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> c((nalts + 1));
             stan::math::initialize(c, DUMMY_VAR__);
             stan::math::fill(c, DUMMY_VAR__);
 
             current_statement_begin__ = 173;
-            validate_non_negative_index("b_temp", "(ngoods + 1)", (ngoods + 1));
-            Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> b_temp((ngoods + 1));
+            validate_non_negative_index("b_temp", "(nalts + 1)", (nalts + 1));
+            Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> b_temp((nalts + 1));
             stan::math::initialize(b_temp, DUMMY_VAR__);
             stan::math::fill(b_temp, DUMMY_VAR__);
             stan::math::assign(b_temp,col(parm_matrix, 4));
 
             current_statement_begin__ = 174;
-            validate_non_negative_index("b", "(ngoods + 1)", (ngoods + 1));
-            Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> b((ngoods + 1));
+            validate_non_negative_index("b", "(nalts + 1)", (nalts + 1));
+            Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> b((nalts + 1));
             stan::math::initialize(b, DUMMY_VAR__);
             stan::math::fill(b, DUMMY_VAR__);
-            stan::math::assign(b,inv(subtract(append_row(get_base1(b_temp, 1, "b_temp", 1), stan::model::rvalue(b_temp, stan::model::cons_list(stan::model::index_min_max(2, (ngoods + 1)), stan::model::nil_index_list()), "b_temp")), 1)));
+            stan::math::assign(b,inv(subtract(append_row(get_base1(b_temp, 1, "b_temp", 1), stan::model::rvalue(b_temp, stan::model::cons_list(stan::model::index_min_max(2, (nalts + 1)), stan::model::nil_index_list()), "b_temp")), 1)));
 
 
             current_statement_begin__ = 176;
-            for (int j = 1; j <= (ngoods + 1); ++j) {
+            for (int j = 1; j <= (nalts + 1); ++j) {
                 current_statement_begin__ = 177;
                 stan::model::assign(c, 
                             stan::model::cons_list(stan::model::index_uni(j), stan::model::nil_index_list()), 
@@ -757,7 +757,7 @@ MarshallianDemand(const T0__& income,
                 current_statement_begin__ = 182;
                 stan::math::assign(E, ComputeE(M, lambda, g_price, b, c, d, pstream__));
                 current_statement_begin__ = 184;
-                if (as_bool((primitive_value(logical_gte(E, income)) || primitive_value(logical_eq((M + 1), (ngoods + 1)))))) {
+                if (as_bool((primitive_value(logical_gte(E, income)) || primitive_value(logical_eq((M + 1), (nalts + 1)))))) {
 
                     current_statement_begin__ = 185;
                     if (as_bool(logical_lt(E, income))) {
@@ -810,7 +810,7 @@ MarshallianDemand(const T0__& income,
                     }
                     current_statement_begin__ = 211;
                     stan::math::assign(exit, 1);
-                } else if (as_bool((primitive_value(logical_lt(E, income)) && primitive_value(logical_lt((M + 1), (ngoods + 1)))))) {
+                } else if (as_bool((primitive_value(logical_lt(E, income)) && primitive_value(logical_lt((M + 1), (nalts + 1)))))) {
                     current_statement_begin__ = 214;
                     stan::math::assign(M, (M + 1));
                 }
@@ -838,11 +838,11 @@ struct MarshallianDemand_functor__ {
                       const Eigen::Matrix<T2__, Eigen::Dynamic, 1>& MUzero,
                       const Eigen::Matrix<T3__, Eigen::Dynamic, 1>& gamma,
                       const Eigen::Matrix<T4__, Eigen::Dynamic, 1>& alpha,
-                      const int& ngoods,
+                      const int& nalts,
                       const int& algo_gen,
                       const T7__& tol_e,
                       const int& max_loop, std::ostream* pstream__) const {
-        return MarshallianDemand(income, price, MUzero, gamma, alpha, ngoods, algo_gen, tol_e, max_loop, pstream__);
+        return MarshallianDemand(income, price, MUzero, gamma, alpha, nalts, algo_gen, tol_e, max_loop, pstream__);
     }
 };
 
@@ -854,7 +854,7 @@ ComputeUtilJ(const T0__& income,
                  const Eigen::Matrix<T3__, Eigen::Dynamic, 1>& psi_j,
                  const Eigen::Matrix<T4__, Eigen::Dynamic, 1>& gamma_j,
                  const Eigen::Matrix<T5__, Eigen::Dynamic, 1>& alpha,
-                 const int& ngoods,
+                 const int& nalts,
                  const int& model_num, std::ostream* pstream__) {
     typedef typename boost::math::tools::promote_args<T0__, T1__, T2__, T3__, typename boost::math::tools::promote_args<T4__, T5__>::type>::type local_scalar_t__;
     typedef local_scalar_t__ fun_return_scalar_t__;
@@ -879,8 +879,8 @@ ComputeUtilJ(const T0__& income,
         stan::math::fill(util_num, DUMMY_VAR__);
 
         current_statement_begin__ = 231;
-        validate_non_negative_index("util_j", "ngoods", ngoods);
-        Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> util_j(ngoods);
+        validate_non_negative_index("util_j", "nalts", nalts);
+        Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> util_j(nalts);
         stan::math::initialize(util_j, DUMMY_VAR__);
         stan::math::fill(util_j, DUMMY_VAR__);
 
@@ -895,7 +895,7 @@ ComputeUtilJ(const T0__& income,
         } else if (as_bool(logical_neq(model_num, 1))) {
 
             current_statement_begin__ = 238;
-            for (int n = 1; n <= ngoods; ++n) {
+            for (int n = 1; n <= nalts; ++n) {
                 current_statement_begin__ = 239;
                 stan::model::assign(util_j, 
                             stan::model::cons_list(stan::model::index_uni(n), stan::model::nil_index_list()), 
@@ -925,9 +925,9 @@ struct ComputeUtilJ_functor__ {
                  const Eigen::Matrix<T3__, Eigen::Dynamic, 1>& psi_j,
                  const Eigen::Matrix<T4__, Eigen::Dynamic, 1>& gamma_j,
                  const Eigen::Matrix<T5__, Eigen::Dynamic, 1>& alpha,
-                 const int& ngoods,
+                 const int& nalts,
                  const int& model_num, std::ostream* pstream__) const {
-        return ComputeUtilJ(income, quant_j, price_j, psi_j, gamma_j, alpha, ngoods, model_num, pstream__);
+        return ComputeUtilJ(income, quant_j, price_j, psi_j, gamma_j, alpha, nalts, model_num, pstream__);
     }
 };
 
@@ -1030,7 +1030,7 @@ HicksianDemand(const T0__& util,
                    const Eigen::Matrix<T2__, Eigen::Dynamic, 1>& MUzero,
                    const Eigen::Matrix<T3__, Eigen::Dynamic, 1>& gamma,
                    const Eigen::Matrix<T4__, Eigen::Dynamic, 1>& alpha,
-                   const int& ngoods,
+                   const int& nalts,
                    const int& algo_gen,
                    const int& model_num,
                    const T8__& tol_l,
@@ -1046,8 +1046,8 @@ HicksianDemand(const T0__& util,
     try {
         {
         current_statement_begin__ = 274;
-        validate_non_negative_index("hdemand", "(ngoods + 1)", (ngoods + 1));
-        Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> hdemand((ngoods + 1));
+        validate_non_negative_index("hdemand", "(nalts + 1)", (nalts + 1));
+        Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> hdemand((nalts + 1));
         stan::math::initialize(hdemand, DUMMY_VAR__);
         stan::math::fill(hdemand, DUMMY_VAR__);
 
@@ -1076,43 +1076,43 @@ HicksianDemand(const T0__& util,
         stan::math::fill(util_new, DUMMY_VAR__);
 
         current_statement_begin__ = 279;
-        validate_non_negative_index("order_x", "(ngoods + 1)", (ngoods + 1));
-        std::vector<int  > order_x((ngoods + 1), int(0));
+        validate_non_negative_index("order_x", "(nalts + 1)", (nalts + 1));
+        std::vector<int  > order_x((nalts + 1), int(0));
         stan::math::fill(order_x, std::numeric_limits<int>::min());
-        stan::math::assign(order_x,CalcGoodOrder(MUzero, ngoods, pstream__));
+        stan::math::assign(order_x,CalcAltOrder(MUzero, nalts, pstream__));
 
         current_statement_begin__ = 280;
-        validate_non_negative_index("X", "(ngoods + 1)", (ngoods + 1));
-        Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> X((ngoods + 1));
+        validate_non_negative_index("X", "(nalts + 1)", (nalts + 1));
+        Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> X((nalts + 1));
         stan::math::initialize(X, DUMMY_VAR__);
         stan::math::fill(X, DUMMY_VAR__);
-        stan::math::assign(X,rep_vector(0, (ngoods + 1)));
+        stan::math::assign(X,rep_vector(0, (nalts + 1)));
 
         current_statement_begin__ = 281;
-        validate_non_negative_index("d", "(ngoods + 1)", (ngoods + 1));
-        Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> d((ngoods + 1));
+        validate_non_negative_index("d", "(nalts + 1)", (nalts + 1));
+        Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> d((nalts + 1));
         stan::math::initialize(d, DUMMY_VAR__);
         stan::math::fill(d, DUMMY_VAR__);
-        stan::math::assign(d,append_row(0, rep_vector(1, ngoods)));
+        stan::math::assign(d,append_row(0, rep_vector(1, nalts)));
 
         current_statement_begin__ = 282;
-        validate_non_negative_index("parm_matrix", "(ngoods + 1)", (ngoods + 1));
+        validate_non_negative_index("parm_matrix", "(nalts + 1)", (nalts + 1));
         validate_non_negative_index("parm_matrix", "4", 4);
-        Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, Eigen::Dynamic> parm_matrix((ngoods + 1), 4);
+        Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, Eigen::Dynamic> parm_matrix((nalts + 1), 4);
         stan::math::initialize(parm_matrix, DUMMY_VAR__);
         stan::math::fill(parm_matrix, DUMMY_VAR__);
-        stan::math::assign(parm_matrix,SortParmMatrix(MUzero, price, gamma, alpha, ngoods, pstream__));
+        stan::math::assign(parm_matrix,SortParmMatrix(MUzero, price, gamma, alpha, nalts, pstream__));
 
         current_statement_begin__ = 283;
-        validate_non_negative_index("mu", "(ngoods + 1)", (ngoods + 1));
-        Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> mu((ngoods + 1));
+        validate_non_negative_index("mu", "(nalts + 1)", (nalts + 1));
+        Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> mu((nalts + 1));
         stan::math::initialize(mu, DUMMY_VAR__);
         stan::math::fill(mu, DUMMY_VAR__);
         stan::math::assign(mu,col(parm_matrix, 1));
 
         current_statement_begin__ = 284;
-        validate_non_negative_index("g", "(ngoods + 1)", (ngoods + 1));
-        Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> g((ngoods + 1));
+        validate_non_negative_index("g", "(nalts + 1)", (nalts + 1));
+        Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> g((nalts + 1));
         stan::math::initialize(g, DUMMY_VAR__);
         stan::math::fill(g, DUMMY_VAR__);
         stan::math::assign(g,col(parm_matrix, 3));
@@ -1141,27 +1141,27 @@ HicksianDemand(const T0__& util,
             stan::math::assign(alpha_1,get_base1(alpha, 1, "alpha", 1));
 
             current_statement_begin__ = 290;
-            validate_non_negative_index("g_psi", "(ngoods + 1)", (ngoods + 1));
-            Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> g_psi((ngoods + 1));
+            validate_non_negative_index("g_psi", "(nalts + 1)", (nalts + 1));
+            Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> g_psi((nalts + 1));
             stan::math::initialize(g_psi, DUMMY_VAR__);
             stan::math::fill(g_psi, DUMMY_VAR__);
             stan::math::assign(g_psi,elt_multiply(elt_multiply(g, mu), col(parm_matrix, 2)));
 
             current_statement_begin__ = 291;
-            validate_non_negative_index("b", "(ngoods + 1)", (ngoods + 1));
-            Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> b((ngoods + 1));
+            validate_non_negative_index("b", "(nalts + 1)", (nalts + 1));
+            Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> b((nalts + 1));
             stan::math::initialize(b, DUMMY_VAR__);
             stan::math::fill(b, DUMMY_VAR__);
 
             current_statement_begin__ = 292;
-            validate_non_negative_index("c", "(ngoods + 1)", (ngoods + 1));
-            Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> c((ngoods + 1));
+            validate_non_negative_index("c", "(nalts + 1)", (nalts + 1));
+            Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> c((nalts + 1));
             stan::math::initialize(c, DUMMY_VAR__);
             stan::math::fill(c, DUMMY_VAR__);
 
 
             current_statement_begin__ = 294;
-            for (int j = 1; j <= (ngoods + 1); ++j) {
+            for (int j = 1; j <= (nalts + 1); ++j) {
                 current_statement_begin__ = 295;
                 stan::model::assign(b, 
                             stan::model::cons_list(stan::model::index_uni(j), stan::model::nil_index_list()), 
@@ -1180,7 +1180,7 @@ HicksianDemand(const T0__& util,
                 current_statement_begin__ = 303;
                 stan::math::assign(lambda1, pow((lambda_num / lambda_den), ((alpha_1 - 1) / alpha_1)));
                 current_statement_begin__ = 308;
-                if (as_bool((primitive_value(logical_gt(lambda1, get_base1(mu, std::min((M + 1), (ngoods + 1)), "mu", 1))) || primitive_value(logical_eq(M, (ngoods + 1)))))) {
+                if (as_bool((primitive_value(logical_gt(lambda1, get_base1(mu, std::min((M + 1), (nalts + 1)), "mu", 1))) || primitive_value(logical_eq(M, (nalts + 1)))))) {
 
                     current_statement_begin__ = 311;
                     for (int m = 1; m <= M; ++m) {
@@ -1192,7 +1192,7 @@ HicksianDemand(const T0__& util,
                     }
                     current_statement_begin__ = 313;
                     stan::math::assign(exit, 1);
-                } else if (as_bool(logical_lt(M, (ngoods + 1)))) {
+                } else if (as_bool(logical_lt(M, (nalts + 1)))) {
                     current_statement_begin__ = 316;
                     stan::math::assign(M, (M + 1));
                 }
@@ -1213,49 +1213,49 @@ HicksianDemand(const T0__& util,
             stan::math::fill(lambda_u, DUMMY_VAR__);
 
             current_statement_begin__ = 321;
-            validate_non_negative_index("price_ord", "(ngoods + 1)", (ngoods + 1));
-            Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> price_ord((ngoods + 1));
+            validate_non_negative_index("price_ord", "(nalts + 1)", (nalts + 1));
+            Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> price_ord((nalts + 1));
             stan::math::initialize(price_ord, DUMMY_VAR__);
             stan::math::fill(price_ord, DUMMY_VAR__);
             stan::math::assign(price_ord,col(parm_matrix, 2));
 
             current_statement_begin__ = 322;
-            validate_non_negative_index("a", "(ngoods + 1)", (ngoods + 1));
-            Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> a((ngoods + 1));
+            validate_non_negative_index("a", "(nalts + 1)", (nalts + 1));
+            Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> a((nalts + 1));
             stan::math::initialize(a, DUMMY_VAR__);
             stan::math::fill(a, DUMMY_VAR__);
             stan::math::assign(a,col(parm_matrix, 4));
 
             current_statement_begin__ = 323;
-            validate_non_negative_index("psi", "(ngoods + 1)", (ngoods + 1));
-            Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> psi((ngoods + 1));
+            validate_non_negative_index("psi", "(nalts + 1)", (nalts + 1));
+            Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> psi((nalts + 1));
             stan::math::initialize(psi, DUMMY_VAR__);
             stan::math::fill(psi, DUMMY_VAR__);
             stan::math::assign(psi,elt_multiply(mu, price_ord));
 
             current_statement_begin__ = 324;
-            validate_non_negative_index("g_psi_a", "(ngoods + 1)", (ngoods + 1));
-            Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> g_psi_a((ngoods + 1));
+            validate_non_negative_index("g_psi_a", "(nalts + 1)", (nalts + 1));
+            Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> g_psi_a((nalts + 1));
             stan::math::initialize(g_psi_a, DUMMY_VAR__);
             stan::math::fill(g_psi_a, DUMMY_VAR__);
             stan::math::assign(g_psi_a,elt_divide(elt_multiply(g, psi), a));
 
             current_statement_begin__ = 325;
-            validate_non_negative_index("a_a_1", "(ngoods + 1)", (ngoods + 1));
-            Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> a_a_1((ngoods + 1));
+            validate_non_negative_index("a_a_1", "(nalts + 1)", (nalts + 1));
+            Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> a_a_1((nalts + 1));
             stan::math::initialize(a_a_1, DUMMY_VAR__);
             stan::math::fill(a_a_1, DUMMY_VAR__);
             stan::math::assign(a_a_1,elt_divide(a, subtract(a, 1)));
 
             current_statement_begin__ = 326;
-            validate_non_negative_index("mu_a_a_1", "(ngoods + 1)", (ngoods + 1));
-            Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> mu_a_a_1((ngoods + 1));
+            validate_non_negative_index("mu_a_a_1", "(nalts + 1)", (nalts + 1));
+            Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> mu_a_a_1((nalts + 1));
             stan::math::initialize(mu_a_a_1, DUMMY_VAR__);
             stan::math::fill(mu_a_a_1, DUMMY_VAR__);
 
 
             current_statement_begin__ = 328;
-            for (int j = 1; j <= (ngoods + 1); ++j) {
+            for (int j = 1; j <= (nalts + 1); ++j) {
                 current_statement_begin__ = 329;
                 stan::model::assign(mu_a_a_1, 
                             stan::model::cons_list(stan::model::index_uni(j), stan::model::nil_index_list()), 
@@ -1270,7 +1270,7 @@ HicksianDemand(const T0__& util,
                 current_statement_begin__ = 335;
                 stan::math::assign(util_new, ComputeUtilM(M, lambda1, g_psi_a, a_a_1, mu_a_a_1, psi, g, price_ord, d, model_num, pstream__));
                 current_statement_begin__ = 337;
-                if (as_bool((primitive_value(logical_gte(util_new, util)) || primitive_value(logical_eq((M + 1), (ngoods + 1)))))) {
+                if (as_bool((primitive_value(logical_gte(util_new, util)) || primitive_value(logical_eq((M + 1), (nalts + 1)))))) {
 
                     current_statement_begin__ = 338;
                     if (as_bool(logical_lt(util_new, util))) {
@@ -1323,7 +1323,7 @@ HicksianDemand(const T0__& util,
                     }
                     current_statement_begin__ = 363;
                     stan::math::assign(exit, 1);
-                } else if (as_bool((primitive_value(logical_lt(util_new, util)) && primitive_value(logical_lt((M + 1), (ngoods + 1)))))) {
+                } else if (as_bool((primitive_value(logical_lt(util_new, util)) && primitive_value(logical_lt((M + 1), (nalts + 1)))))) {
                     current_statement_begin__ = 366;
                     stan::math::assign(M, (M + 1));
                 }
@@ -1351,12 +1351,12 @@ struct HicksianDemand_functor__ {
                    const Eigen::Matrix<T2__, Eigen::Dynamic, 1>& MUzero,
                    const Eigen::Matrix<T3__, Eigen::Dynamic, 1>& gamma,
                    const Eigen::Matrix<T4__, Eigen::Dynamic, 1>& alpha,
-                   const int& ngoods,
+                   const int& nalts,
                    const int& algo_gen,
                    const int& model_num,
                    const T8__& tol_l,
                    const int& max_loop, std::ostream* pstream__) const {
-        return HicksianDemand(util, price, MUzero, gamma, alpha, ngoods, algo_gen, model_num, tol_l, max_loop, pstream__);
+        return HicksianDemand(util, price, MUzero, gamma, alpha, nalts, algo_gen, model_num, tol_l, max_loop, pstream__);
     }
 };
 
@@ -1383,10 +1383,10 @@ CalcmdemandOne_rng(const T0__& income,
     try {
         {
         current_statement_begin__ = 379;
-        int ngoods(0);
-        (void) ngoods;  // dummy to suppress unused var warning
-        stan::math::fill(ngoods, std::numeric_limits<int>::min());
-        stan::math::assign(ngoods,num_elements(gamma_sims));
+        int nalts(0);
+        (void) nalts;  // dummy to suppress unused var warning
+        stan::math::fill(nalts, std::numeric_limits<int>::min());
+        stan::math::assign(nalts,num_elements(gamma_sims));
 
         current_statement_begin__ = 380;
         int nsims(0);
@@ -1396,8 +1396,8 @@ CalcmdemandOne_rng(const T0__& income,
 
         current_statement_begin__ = 381;
         validate_non_negative_index("mdemand_out", "nsims", nsims);
-        validate_non_negative_index("mdemand_out", "(ngoods + 1)", (ngoods + 1));
-        Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, Eigen::Dynamic> mdemand_out(nsims, (ngoods + 1));
+        validate_non_negative_index("mdemand_out", "(nalts + 1)", (nalts + 1));
+        Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, Eigen::Dynamic> mdemand_out(nsims, (nalts + 1));
         stan::math::initialize(mdemand_out, DUMMY_VAR__);
         stan::math::fill(mdemand_out, DUMMY_VAR__);
 
@@ -1406,22 +1406,22 @@ CalcmdemandOne_rng(const T0__& income,
         for (int sim = 1; sim <= nsims; ++sim) {
             {
             current_statement_begin__ = 384;
-            validate_non_negative_index("psi_j", "ngoods", ngoods);
-            Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> psi_j(ngoods);
+            validate_non_negative_index("psi_j", "nalts", nalts);
+            Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> psi_j(nalts);
             stan::math::initialize(psi_j, DUMMY_VAR__);
             stan::math::fill(psi_j, DUMMY_VAR__);
             stan::math::assign(psi_j,psi_sims);
 
             current_statement_begin__ = 385;
-            validate_non_negative_index("gamma", "(ngoods + 1)", (ngoods + 1));
-            Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> gamma((ngoods + 1));
+            validate_non_negative_index("gamma", "(nalts + 1)", (nalts + 1));
+            Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> gamma((nalts + 1));
             stan::math::initialize(gamma, DUMMY_VAR__);
             stan::math::fill(gamma, DUMMY_VAR__);
             stan::math::assign(gamma,append_row(1, gamma_sims));
 
             current_statement_begin__ = 386;
-            validate_non_negative_index("alpha", "(ngoods + 1)", (ngoods + 1));
-            Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> alpha((ngoods + 1));
+            validate_non_negative_index("alpha", "(nalts + 1)", (nalts + 1));
+            Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> alpha((nalts + 1));
             stan::math::initialize(alpha, DUMMY_VAR__);
             stan::math::fill(alpha, DUMMY_VAR__);
             stan::math::assign(alpha,alpha_sims);
@@ -1434,29 +1434,29 @@ CalcmdemandOne_rng(const T0__& income,
             stan::math::assign(scale,scale_sims);
 
             current_statement_begin__ = 388;
-            validate_non_negative_index("error", "(ngoods + 1)", (ngoods + 1));
+            validate_non_negative_index("error", "(nalts + 1)", (nalts + 1));
             validate_non_negative_index("error", "nerrs", nerrs);
-            std::vector<Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1>  > error(nerrs, Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1>((ngoods + 1)));
+            std::vector<Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1>  > error(nerrs, Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1>((nalts + 1)));
             stan::math::initialize(error, DUMMY_VAR__);
             stan::math::fill(error, DUMMY_VAR__);
 
             current_statement_begin__ = 389;
             validate_non_negative_index("mdemand", "nerrs", nerrs);
-            validate_non_negative_index("mdemand", "(ngoods + 1)", (ngoods + 1));
-            Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, Eigen::Dynamic> mdemand(nerrs, (ngoods + 1));
+            validate_non_negative_index("mdemand", "(nalts + 1)", (nalts + 1));
+            Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, Eigen::Dynamic> mdemand(nerrs, (nalts + 1));
             stan::math::initialize(mdemand, DUMMY_VAR__);
             stan::math::fill(mdemand, DUMMY_VAR__);
 
             current_statement_begin__ = 390;
-            validate_non_negative_index("mdemand_sims", "(ngoods + 1)", (ngoods + 1));
-            Eigen::Matrix<local_scalar_t__, 1, Eigen::Dynamic> mdemand_sims((ngoods + 1));
+            validate_non_negative_index("mdemand_sims", "(nalts + 1)", (nalts + 1));
+            Eigen::Matrix<local_scalar_t__, 1, Eigen::Dynamic> mdemand_sims((nalts + 1));
             stan::math::initialize(mdemand_sims, DUMMY_VAR__);
             stan::math::fill(mdemand_sims, DUMMY_VAR__);
 
             current_statement_begin__ = 391;
-            validate_non_negative_index("mdemand_trans", "(ngoods + 1)", (ngoods + 1));
+            validate_non_negative_index("mdemand_trans", "(nalts + 1)", (nalts + 1));
             validate_non_negative_index("mdemand_trans", "nerrs", nerrs);
-            Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, Eigen::Dynamic> mdemand_trans((ngoods + 1), nerrs);
+            Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, Eigen::Dynamic> mdemand_trans((nalts + 1), nerrs);
             stan::math::initialize(mdemand_trans, DUMMY_VAR__);
             stan::math::fill(mdemand_trans, DUMMY_VAR__);
 
@@ -1464,7 +1464,7 @@ CalcmdemandOne_rng(const T0__& income,
             current_statement_begin__ = 393;
             for (int err = 1; err <= nerrs; ++err) {
                 current_statement_begin__ = 394;
-                for (int j = 1; j <= (ngoods + 1); ++j) {
+                for (int j = 1; j <= (nalts + 1); ++j) {
                     current_statement_begin__ = 395;
                     stan::model::assign(error, 
                                 stan::model::cons_list(stan::model::index_uni(err), stan::model::cons_list(stan::model::index_uni(j), stan::model::nil_index_list())), 
@@ -1476,14 +1476,14 @@ CalcmdemandOne_rng(const T0__& income,
             for (int err = 1; err <= nerrs; ++err) {
                 {
                 current_statement_begin__ = 399;
-                validate_non_negative_index("MUzero_b", "(ngoods + 1)", (ngoods + 1));
-                Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> MUzero_b((ngoods + 1));
+                validate_non_negative_index("MUzero_b", "(nalts + 1)", (nalts + 1));
+                Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> MUzero_b((nalts + 1));
                 stan::math::initialize(MUzero_b, DUMMY_VAR__);
                 stan::math::fill(MUzero_b, DUMMY_VAR__);
 
                 current_statement_begin__ = 400;
-                validate_non_negative_index("psi_b_err", "(ngoods + 1)", (ngoods + 1));
-                Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> psi_b_err((ngoods + 1));
+                validate_non_negative_index("psi_b_err", "(nalts + 1)", (nalts + 1));
+                Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> psi_b_err((nalts + 1));
                 stan::math::initialize(psi_b_err, DUMMY_VAR__);
                 stan::math::fill(psi_b_err, DUMMY_VAR__);
 
@@ -1495,14 +1495,14 @@ CalcmdemandOne_rng(const T0__& income,
                 current_statement_begin__ = 404;
                 stan::model::assign(mdemand, 
                             stan::model::cons_list(stan::model::index_uni(err), stan::model::nil_index_list()), 
-                            transpose(MarshallianDemand(income, price, MUzero_b, gamma, alpha, ngoods, algo_gen, tol, max_loop, pstream__)), 
+                            transpose(MarshallianDemand(income, price, MUzero_b, gamma, alpha, nalts, algo_gen, tol, max_loop, pstream__)), 
                             "assigning variable mdemand");
                 }
             }
             current_statement_begin__ = 407;
             stan::math::assign(mdemand_trans, transpose(mdemand));
             current_statement_begin__ = 409;
-            for (int g = 1; g <= (ngoods + 1); ++g) {
+            for (int g = 1; g <= (nalts + 1); ++g) {
                 current_statement_begin__ = 410;
                 stan::model::assign(mdemand_sims, 
                             stan::model::cons_list(stan::model::index_uni(g), stan::model::nil_index_list()), 
@@ -1573,10 +1573,10 @@ CalcWTP_rng(const T0__& income,
     try {
         {
         current_statement_begin__ = 438;
-        int ngoods(0);
-        (void) ngoods;  // dummy to suppress unused var warning
-        stan::math::fill(ngoods, std::numeric_limits<int>::min());
-        stan::math::assign(ngoods,num_elements(quant_j));
+        int nalts(0);
+        (void) nalts;  // dummy to suppress unused var warning
+        stan::math::fill(nalts, std::numeric_limits<int>::min());
+        stan::math::assign(nalts,num_elements(quant_j));
 
         current_statement_begin__ = 439;
         int nsims(0);
@@ -1602,37 +1602,37 @@ CalcWTP_rng(const T0__& income,
         (void) quant_num;  // dummy to suppress unused var warning
         stan::math::initialize(quant_num, DUMMY_VAR__);
         stan::math::fill(quant_num, DUMMY_VAR__);
-        stan::math::assign(quant_num,(income - multiply(transpose(quant_j), stan::model::rvalue(price, stan::model::cons_list(stan::model::index_min_max(2, (ngoods + 1)), stan::model::nil_index_list()), "price"))));
+        stan::math::assign(quant_num,(income - multiply(transpose(quant_j), stan::model::rvalue(price, stan::model::cons_list(stan::model::index_min_max(2, (nalts + 1)), stan::model::nil_index_list()), "price"))));
 
 
         current_statement_begin__ = 444;
         for (int sim = 1; sim <= nsims; ++sim) {
             {
             current_statement_begin__ = 445;
-            validate_non_negative_index("psi_j", "ngoods", ngoods);
-            Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> psi_j(ngoods);
+            validate_non_negative_index("psi_j", "nalts", nalts);
+            Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> psi_j(nalts);
             stan::math::initialize(psi_j, DUMMY_VAR__);
             stan::math::fill(psi_j, DUMMY_VAR__);
             stan::math::assign(psi_j,transpose(get_base1(psi_sims, sim, "psi_sims", 1)));
 
             current_statement_begin__ = 446;
             validate_non_negative_index("psi_p_policy", "npols", npols);
-            validate_non_negative_index("psi_p_policy", "ngoods", ngoods);
-            Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, Eigen::Dynamic> psi_p_policy(npols, ngoods);
+            validate_non_negative_index("psi_p_policy", "nalts", nalts);
+            Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, Eigen::Dynamic> psi_p_policy(npols, nalts);
             stan::math::initialize(psi_p_policy, DUMMY_VAR__);
             stan::math::fill(psi_p_policy, DUMMY_VAR__);
             stan::math::assign(psi_p_policy,get_base1(psi_p_sims, sim, "psi_p_sims", 1));
 
             current_statement_begin__ = 448;
-            validate_non_negative_index("gamma", "(ngoods + 1)", (ngoods + 1));
-            Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> gamma((ngoods + 1));
+            validate_non_negative_index("gamma", "(nalts + 1)", (nalts + 1));
+            Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> gamma((nalts + 1));
             stan::math::initialize(gamma, DUMMY_VAR__);
             stan::math::fill(gamma, DUMMY_VAR__);
             stan::math::assign(gamma,append_row(1, transpose(get_base1(gamma_sims, sim, "gamma_sims", 1))));
 
             current_statement_begin__ = 449;
-            validate_non_negative_index("alpha", "(ngoods + 1)", (ngoods + 1));
-            Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> alpha((ngoods + 1));
+            validate_non_negative_index("alpha", "(nalts + 1)", (nalts + 1));
+            Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> alpha((nalts + 1));
             stan::math::initialize(alpha, DUMMY_VAR__);
             stan::math::fill(alpha, DUMMY_VAR__);
             stan::math::assign(alpha,transpose(get_base1(alpha_sims, sim, "alpha_sims", 1)));
@@ -1645,9 +1645,9 @@ CalcWTP_rng(const T0__& income,
             stan::math::assign(scale,get_base1(scale_sims, sim, "scale_sims", 1));
 
             current_statement_begin__ = 451;
-            validate_non_negative_index("error", "(ngoods + 1)", (ngoods + 1));
+            validate_non_negative_index("error", "(nalts + 1)", (nalts + 1));
             validate_non_negative_index("error", "nerrs", nerrs);
-            std::vector<Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1>  > error(nerrs, Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1>((ngoods + 1)));
+            std::vector<Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1>  > error(nerrs, Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1>((nalts + 1)));
             stan::math::initialize(error, DUMMY_VAR__);
             stan::math::fill(error, DUMMY_VAR__);
 
@@ -1665,25 +1665,25 @@ CalcWTP_rng(const T0__& income,
 
 
             current_statement_begin__ = 455;
-            stan::math::assign(error, DrawError_rng(quant_num, quant_j, stan::model::rvalue(price, stan::model::cons_list(stan::model::index_min_max(2, (ngoods + 1)), stan::model::nil_index_list()), "price"), psi_j, stan::model::rvalue(gamma, stan::model::cons_list(stan::model::index_min_max(2, (ngoods + 1)), stan::model::nil_index_list()), "gamma"), alpha, scale, ngoods, nerrs, cond_error, draw_mlhs, base_rng__, pstream__));
+            stan::math::assign(error, DrawError_rng(quant_num, quant_j, stan::model::rvalue(price, stan::model::cons_list(stan::model::index_min_max(2, (nalts + 1)), stan::model::nil_index_list()), "price"), psi_j, stan::model::rvalue(gamma, stan::model::cons_list(stan::model::index_min_max(2, (nalts + 1)), stan::model::nil_index_list()), "gamma"), alpha, scale, nalts, nerrs, cond_error, draw_mlhs, base_rng__, pstream__));
             current_statement_begin__ = 460;
             for (int err = 1; err <= nerrs; ++err) {
                 {
                 current_statement_begin__ = 461;
-                validate_non_negative_index("mdemand", "(ngoods + 1)", (ngoods + 1));
-                Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> mdemand((ngoods + 1));
+                validate_non_negative_index("mdemand", "(nalts + 1)", (nalts + 1));
+                Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> mdemand((nalts + 1));
                 stan::math::initialize(mdemand, DUMMY_VAR__);
                 stan::math::fill(mdemand, DUMMY_VAR__);
 
                 current_statement_begin__ = 462;
-                validate_non_negative_index("MUzero_b", "(ngoods + 1)", (ngoods + 1));
-                Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> MUzero_b((ngoods + 1));
+                validate_non_negative_index("MUzero_b", "(nalts + 1)", (nalts + 1));
+                Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> MUzero_b((nalts + 1));
                 stan::math::initialize(MUzero_b, DUMMY_VAR__);
                 stan::math::fill(MUzero_b, DUMMY_VAR__);
 
                 current_statement_begin__ = 465;
-                validate_non_negative_index("psi_b_err", "(ngoods + 1)", (ngoods + 1));
-                Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> psi_b_err((ngoods + 1));
+                validate_non_negative_index("psi_b_err", "(nalts + 1)", (nalts + 1));
+                Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> psi_b_err((nalts + 1));
                 stan::math::initialize(psi_b_err, DUMMY_VAR__);
                 stan::math::fill(psi_b_err, DUMMY_VAR__);
 
@@ -1699,12 +1699,12 @@ CalcWTP_rng(const T0__& income,
                     stan::math::assign(mdemand, append_row(quant_num, quant_j));
                 } else if (as_bool(logical_eq(cond_error, 0))) {
                     current_statement_begin__ = 472;
-                    stan::math::assign(mdemand, MarshallianDemand(income, price, MUzero_b, gamma, alpha, ngoods, algo_gen, tol, max_loop, pstream__));
+                    stan::math::assign(mdemand, MarshallianDemand(income, price, MUzero_b, gamma, alpha, nalts, algo_gen, tol, max_loop, pstream__));
                 }
                 current_statement_begin__ = 475;
                 stan::model::assign(util, 
                             stan::model::cons_list(stan::model::index_uni(err), stan::model::nil_index_list()), 
-                            ComputeUtilJ(income, stan::model::rvalue(mdemand, stan::model::cons_list(stan::model::index_min_max(2, (ngoods + 1)), stan::model::nil_index_list()), "mdemand"), stan::model::rvalue(price, stan::model::cons_list(stan::model::index_min_max(2, (ngoods + 1)), stan::model::nil_index_list()), "price"), stan::model::rvalue(psi_b_err, stan::model::cons_list(stan::model::index_min_max(2, (ngoods + 1)), stan::model::nil_index_list()), "psi_b_err"), stan::model::rvalue(gamma, stan::model::cons_list(stan::model::index_min_max(2, (ngoods + 1)), stan::model::nil_index_list()), "gamma"), alpha, ngoods, model_num, pstream__), 
+                            ComputeUtilJ(income, stan::model::rvalue(mdemand, stan::model::cons_list(stan::model::index_min_max(2, (nalts + 1)), stan::model::nil_index_list()), "mdemand"), stan::model::rvalue(price, stan::model::cons_list(stan::model::index_min_max(2, (nalts + 1)), stan::model::nil_index_list()), "price"), stan::model::rvalue(psi_b_err, stan::model::cons_list(stan::model::index_min_max(2, (nalts + 1)), stan::model::nil_index_list()), "psi_b_err"), stan::model::rvalue(gamma, stan::model::cons_list(stan::model::index_min_max(2, (nalts + 1)), stan::model::nil_index_list()), "gamma"), alpha, nalts, model_num, pstream__), 
                             "assigning variable util");
                 }
             }
@@ -1712,15 +1712,15 @@ CalcWTP_rng(const T0__& income,
             for (int policy = 1; policy <= npols; ++policy) {
                 {
                 current_statement_begin__ = 481;
-                validate_non_negative_index("price_p", "(ngoods + 1)", (ngoods + 1));
-                Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> price_p((ngoods + 1));
+                validate_non_negative_index("price_p", "(nalts + 1)", (nalts + 1));
+                Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> price_p((nalts + 1));
                 stan::math::initialize(price_p, DUMMY_VAR__);
                 stan::math::fill(price_p, DUMMY_VAR__);
                 stan::math::assign(price_p,add(price, get_base1(price_p_policy, policy, "price_p_policy", 1)));
 
                 current_statement_begin__ = 482;
-                validate_non_negative_index("psi_p", "ngoods", ngoods);
-                Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> psi_p(ngoods);
+                validate_non_negative_index("psi_p", "nalts", nalts);
+                Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> psi_p(nalts);
                 stan::math::initialize(psi_p, DUMMY_VAR__);
                 stan::math::fill(psi_p, DUMMY_VAR__);
                 stan::math::assign(psi_p,transpose(get_base1(psi_p_policy, policy, "psi_p_policy", 1)));
@@ -1736,21 +1736,21 @@ CalcWTP_rng(const T0__& income,
                 for (int err = 1; err <= nerrs; ++err) {
                     {
                     current_statement_begin__ = 487;
-                    validate_non_negative_index("MUzero_p", "(ngoods + 1)", (ngoods + 1));
-                    Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> MUzero_p((ngoods + 1));
+                    validate_non_negative_index("MUzero_p", "(nalts + 1)", (nalts + 1));
+                    Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> MUzero_p((nalts + 1));
                     stan::math::initialize(MUzero_p, DUMMY_VAR__);
                     stan::math::fill(MUzero_p, DUMMY_VAR__);
                     stan::math::assign(MUzero_p,elt_divide(stan::math::exp(add(append_row(0, psi_p), get_base1(error, err, "error", 1))), price_p));
 
                     current_statement_begin__ = 488;
-                    validate_non_negative_index("hdemand", "(ngoods + 1)", (ngoods + 1));
-                    Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> hdemand((ngoods + 1));
+                    validate_non_negative_index("hdemand", "(nalts + 1)", (nalts + 1));
+                    Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> hdemand((nalts + 1));
                     stan::math::initialize(hdemand, DUMMY_VAR__);
                     stan::math::fill(hdemand, DUMMY_VAR__);
 
 
                     current_statement_begin__ = 490;
-                    stan::math::assign(hdemand, HicksianDemand(get_base1(util, err, "util", 1), price_p, MUzero_p, gamma, alpha, ngoods, algo_gen, model_num, tol, max_loop, pstream__));
+                    stan::math::assign(hdemand, HicksianDemand(get_base1(util, err, "util", 1), price_p, MUzero_p, gamma, alpha, nalts, algo_gen, model_num, tol, max_loop, pstream__));
                     current_statement_begin__ = 493;
                     stan::model::assign(wtp_err, 
                                 stan::model::cons_list(stan::model::index_uni(err), stan::model::nil_index_list()), 
@@ -1834,10 +1834,10 @@ CalcWTPPriceOnly_rng(const T0__& income,
     try {
         {
         current_statement_begin__ = 520;
-        int ngoods(0);
-        (void) ngoods;  // dummy to suppress unused var warning
-        stan::math::fill(ngoods, std::numeric_limits<int>::min());
-        stan::math::assign(ngoods,num_elements(quant_j));
+        int nalts(0);
+        (void) nalts;  // dummy to suppress unused var warning
+        stan::math::fill(nalts, std::numeric_limits<int>::min());
+        stan::math::assign(nalts,num_elements(quant_j));
 
         current_statement_begin__ = 521;
         int nsims(0);
@@ -1863,36 +1863,36 @@ CalcWTPPriceOnly_rng(const T0__& income,
         (void) quant_num;  // dummy to suppress unused var warning
         stan::math::initialize(quant_num, DUMMY_VAR__);
         stan::math::fill(quant_num, DUMMY_VAR__);
-        stan::math::assign(quant_num,(income - multiply(transpose(quant_j), stan::model::rvalue(price, stan::model::cons_list(stan::model::index_min_max(2, (ngoods + 1)), stan::model::nil_index_list()), "price"))));
+        stan::math::assign(quant_num,(income - multiply(transpose(quant_j), stan::model::rvalue(price, stan::model::cons_list(stan::model::index_min_max(2, (nalts + 1)), stan::model::nil_index_list()), "price"))));
 
 
         current_statement_begin__ = 526;
         for (int sim = 1; sim <= nsims; ++sim) {
             {
             current_statement_begin__ = 527;
-            validate_non_negative_index("psi_j", "ngoods", ngoods);
-            Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> psi_j(ngoods);
+            validate_non_negative_index("psi_j", "nalts", nalts);
+            Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> psi_j(nalts);
             stan::math::initialize(psi_j, DUMMY_VAR__);
             stan::math::fill(psi_j, DUMMY_VAR__);
             stan::math::assign(psi_j,transpose(get_base1(psi_sims, sim, "psi_sims", 1)));
 
             current_statement_begin__ = 528;
-            validate_non_negative_index("psi_b_err", "(ngoods + 1)", (ngoods + 1));
+            validate_non_negative_index("psi_b_err", "(nalts + 1)", (nalts + 1));
             validate_non_negative_index("psi_b_err", "nerrs", nerrs);
-            std::vector<Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1>  > psi_b_err(nerrs, Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1>((ngoods + 1)));
+            std::vector<Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1>  > psi_b_err(nerrs, Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1>((nalts + 1)));
             stan::math::initialize(psi_b_err, DUMMY_VAR__);
             stan::math::fill(psi_b_err, DUMMY_VAR__);
 
             current_statement_begin__ = 529;
-            validate_non_negative_index("gamma", "(ngoods + 1)", (ngoods + 1));
-            Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> gamma((ngoods + 1));
+            validate_non_negative_index("gamma", "(nalts + 1)", (nalts + 1));
+            Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> gamma((nalts + 1));
             stan::math::initialize(gamma, DUMMY_VAR__);
             stan::math::fill(gamma, DUMMY_VAR__);
             stan::math::assign(gamma,append_row(1, transpose(get_base1(gamma_sims, sim, "gamma_sims", 1))));
 
             current_statement_begin__ = 530;
-            validate_non_negative_index("alpha", "(ngoods + 1)", (ngoods + 1));
-            Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> alpha((ngoods + 1));
+            validate_non_negative_index("alpha", "(nalts + 1)", (nalts + 1));
+            Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> alpha((nalts + 1));
             stan::math::initialize(alpha, DUMMY_VAR__);
             stan::math::fill(alpha, DUMMY_VAR__);
             stan::math::assign(alpha,transpose(get_base1(alpha_sims, sim, "alpha_sims", 1)));
@@ -1905,9 +1905,9 @@ CalcWTPPriceOnly_rng(const T0__& income,
             stan::math::assign(scale,get_base1(scale_sims, sim, "scale_sims", 1));
 
             current_statement_begin__ = 532;
-            validate_non_negative_index("error", "(ngoods + 1)", (ngoods + 1));
+            validate_non_negative_index("error", "(nalts + 1)", (nalts + 1));
             validate_non_negative_index("error", "nerrs", nerrs);
-            std::vector<Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1>  > error(nerrs, Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1>((ngoods + 1)));
+            std::vector<Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1>  > error(nerrs, Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1>((nalts + 1)));
             stan::math::initialize(error, DUMMY_VAR__);
             stan::math::fill(error, DUMMY_VAR__);
 
@@ -1925,19 +1925,19 @@ CalcWTPPriceOnly_rng(const T0__& income,
 
 
             current_statement_begin__ = 536;
-            stan::math::assign(error, DrawError_rng(quant_num, quant_j, stan::model::rvalue(price, stan::model::cons_list(stan::model::index_min_max(2, (ngoods + 1)), stan::model::nil_index_list()), "price"), psi_j, stan::model::rvalue(gamma, stan::model::cons_list(stan::model::index_min_max(2, (ngoods + 1)), stan::model::nil_index_list()), "gamma"), alpha, scale, ngoods, nerrs, cond_error, draw_mlhs, base_rng__, pstream__));
+            stan::math::assign(error, DrawError_rng(quant_num, quant_j, stan::model::rvalue(price, stan::model::cons_list(stan::model::index_min_max(2, (nalts + 1)), stan::model::nil_index_list()), "price"), psi_j, stan::model::rvalue(gamma, stan::model::cons_list(stan::model::index_min_max(2, (nalts + 1)), stan::model::nil_index_list()), "gamma"), alpha, scale, nalts, nerrs, cond_error, draw_mlhs, base_rng__, pstream__));
             current_statement_begin__ = 541;
             for (int err = 1; err <= nerrs; ++err) {
                 {
                 current_statement_begin__ = 542;
-                validate_non_negative_index("mdemand", "(ngoods + 1)", (ngoods + 1));
-                Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> mdemand((ngoods + 1));
+                validate_non_negative_index("mdemand", "(nalts + 1)", (nalts + 1));
+                Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> mdemand((nalts + 1));
                 stan::math::initialize(mdemand, DUMMY_VAR__);
                 stan::math::fill(mdemand, DUMMY_VAR__);
 
                 current_statement_begin__ = 543;
-                validate_non_negative_index("MUzero_b", "(ngoods + 1)", (ngoods + 1));
-                Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> MUzero_b((ngoods + 1));
+                validate_non_negative_index("MUzero_b", "(nalts + 1)", (nalts + 1));
+                Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> MUzero_b((nalts + 1));
                 stan::math::initialize(MUzero_b, DUMMY_VAR__);
                 stan::math::fill(MUzero_b, DUMMY_VAR__);
 
@@ -1956,12 +1956,12 @@ CalcWTPPriceOnly_rng(const T0__& income,
                     stan::math::assign(mdemand, append_row(quant_num, quant_j));
                 } else if (as_bool(logical_eq(cond_error, 0))) {
                     current_statement_begin__ = 550;
-                    stan::math::assign(mdemand, MarshallianDemand(income, price, MUzero_b, gamma, alpha, ngoods, algo_gen, tol, max_loop, pstream__));
+                    stan::math::assign(mdemand, MarshallianDemand(income, price, MUzero_b, gamma, alpha, nalts, algo_gen, tol, max_loop, pstream__));
                 }
                 current_statement_begin__ = 553;
                 stan::model::assign(util, 
                             stan::model::cons_list(stan::model::index_uni(err), stan::model::nil_index_list()), 
-                            ComputeUtilJ(income, stan::model::rvalue(mdemand, stan::model::cons_list(stan::model::index_min_max(2, (ngoods + 1)), stan::model::nil_index_list()), "mdemand"), stan::model::rvalue(price, stan::model::cons_list(stan::model::index_min_max(2, (ngoods + 1)), stan::model::nil_index_list()), "price"), stan::model::rvalue(psi_b_err, stan::model::cons_list(stan::model::index_uni(err), stan::model::cons_list(stan::model::index_min_max(2, (ngoods + 1)), stan::model::nil_index_list())), "psi_b_err"), stan::model::rvalue(gamma, stan::model::cons_list(stan::model::index_min_max(2, (ngoods + 1)), stan::model::nil_index_list()), "gamma"), alpha, ngoods, model_num, pstream__), 
+                            ComputeUtilJ(income, stan::model::rvalue(mdemand, stan::model::cons_list(stan::model::index_min_max(2, (nalts + 1)), stan::model::nil_index_list()), "mdemand"), stan::model::rvalue(price, stan::model::cons_list(stan::model::index_min_max(2, (nalts + 1)), stan::model::nil_index_list()), "price"), stan::model::rvalue(psi_b_err, stan::model::cons_list(stan::model::index_uni(err), stan::model::cons_list(stan::model::index_min_max(2, (nalts + 1)), stan::model::nil_index_list())), "psi_b_err"), stan::model::rvalue(gamma, stan::model::cons_list(stan::model::index_min_max(2, (nalts + 1)), stan::model::nil_index_list()), "gamma"), alpha, nalts, model_num, pstream__), 
                             "assigning variable util");
                 }
             }
@@ -1969,8 +1969,8 @@ CalcWTPPriceOnly_rng(const T0__& income,
             for (int policy = 1; policy <= npols; ++policy) {
                 {
                 current_statement_begin__ = 559;
-                validate_non_negative_index("price_p", "(ngoods + 1)", (ngoods + 1));
-                Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> price_p((ngoods + 1));
+                validate_non_negative_index("price_p", "(nalts + 1)", (nalts + 1));
+                Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> price_p((nalts + 1));
                 stan::math::initialize(price_p, DUMMY_VAR__);
                 stan::math::fill(price_p, DUMMY_VAR__);
                 stan::math::assign(price_p,add(price, get_base1(price_p_policy, policy, "price_p_policy", 1)));
@@ -1986,21 +1986,21 @@ CalcWTPPriceOnly_rng(const T0__& income,
                 for (int err = 1; err <= nerrs; ++err) {
                     {
                     current_statement_begin__ = 563;
-                    validate_non_negative_index("MUzero_p", "(ngoods + 1)", (ngoods + 1));
-                    Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> MUzero_p((ngoods + 1));
+                    validate_non_negative_index("MUzero_p", "(nalts + 1)", (nalts + 1));
+                    Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> MUzero_p((nalts + 1));
                     stan::math::initialize(MUzero_p, DUMMY_VAR__);
                     stan::math::fill(MUzero_p, DUMMY_VAR__);
                     stan::math::assign(MUzero_p,elt_divide(get_base1(psi_b_err, err, "psi_b_err", 1), price_p));
 
                     current_statement_begin__ = 564;
-                    validate_non_negative_index("hdemand", "(ngoods + 1)", (ngoods + 1));
-                    Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> hdemand((ngoods + 1));
+                    validate_non_negative_index("hdemand", "(nalts + 1)", (nalts + 1));
+                    Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> hdemand((nalts + 1));
                     stan::math::initialize(hdemand, DUMMY_VAR__);
                     stan::math::fill(hdemand, DUMMY_VAR__);
 
 
                     current_statement_begin__ = 566;
-                    stan::math::assign(hdemand, HicksianDemand(get_base1(util, err, "util", 1), price_p, MUzero_p, gamma, alpha, ngoods, algo_gen, model_num, tol, max_loop, pstream__));
+                    stan::math::assign(hdemand, HicksianDemand(get_base1(util, err, "util", 1), price_p, MUzero_p, gamma, alpha, nalts, algo_gen, model_num, tol, max_loop, pstream__));
                     current_statement_begin__ = 569;
                     stan::model::assign(wtp_err, 
                                 stan::model::cons_list(stan::model::index_uni(err), stan::model::nil_index_list()), 
@@ -2084,10 +2084,10 @@ CalcMarshallianDemand_rng(const T0__& income,
     try {
         {
         current_statement_begin__ = 584;
-        int ngoods(0);
-        (void) ngoods;  // dummy to suppress unused var warning
-        stan::math::fill(ngoods, std::numeric_limits<int>::min());
-        stan::math::assign(ngoods,num_elements(quant_j));
+        int nalts(0);
+        (void) nalts;  // dummy to suppress unused var warning
+        stan::math::fill(nalts, std::numeric_limits<int>::min());
+        stan::math::assign(nalts,num_elements(quant_j));
 
         current_statement_begin__ = 585;
         int nsims(0);
@@ -2103,9 +2103,9 @@ CalcMarshallianDemand_rng(const T0__& income,
 
         current_statement_begin__ = 587;
         validate_non_negative_index("mdemand_out", "npols", npols);
-        validate_non_negative_index("mdemand_out", "(ngoods + 1)", (ngoods + 1));
+        validate_non_negative_index("mdemand_out", "(nalts + 1)", (nalts + 1));
         validate_non_negative_index("mdemand_out", "nsims", nsims);
-        std::vector<Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, Eigen::Dynamic>  > mdemand_out(nsims, Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, Eigen::Dynamic>(npols, (ngoods + 1)));
+        std::vector<Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, Eigen::Dynamic>  > mdemand_out(nsims, Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, Eigen::Dynamic>(npols, (nalts + 1)));
         stan::math::initialize(mdemand_out, DUMMY_VAR__);
         stan::math::fill(mdemand_out, DUMMY_VAR__);
 
@@ -2114,37 +2114,37 @@ CalcMarshallianDemand_rng(const T0__& income,
         (void) quant_num;  // dummy to suppress unused var warning
         stan::math::initialize(quant_num, DUMMY_VAR__);
         stan::math::fill(quant_num, DUMMY_VAR__);
-        stan::math::assign(quant_num,(income - multiply(transpose(quant_j), stan::model::rvalue(price, stan::model::cons_list(stan::model::index_min_max(2, (ngoods + 1)), stan::model::nil_index_list()), "price"))));
+        stan::math::assign(quant_num,(income - multiply(transpose(quant_j), stan::model::rvalue(price, stan::model::cons_list(stan::model::index_min_max(2, (nalts + 1)), stan::model::nil_index_list()), "price"))));
 
 
         current_statement_begin__ = 590;
         for (int sim = 1; sim <= nsims; ++sim) {
             {
             current_statement_begin__ = 591;
-            validate_non_negative_index("psi_j", "ngoods", ngoods);
-            Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> psi_j(ngoods);
+            validate_non_negative_index("psi_j", "nalts", nalts);
+            Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> psi_j(nalts);
             stan::math::initialize(psi_j, DUMMY_VAR__);
             stan::math::fill(psi_j, DUMMY_VAR__);
             stan::math::assign(psi_j,transpose(get_base1(psi_sims, sim, "psi_sims", 1)));
 
             current_statement_begin__ = 592;
             validate_non_negative_index("psi_p_policy", "npols", npols);
-            validate_non_negative_index("psi_p_policy", "ngoods", ngoods);
-            Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, Eigen::Dynamic> psi_p_policy(npols, ngoods);
+            validate_non_negative_index("psi_p_policy", "nalts", nalts);
+            Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, Eigen::Dynamic> psi_p_policy(npols, nalts);
             stan::math::initialize(psi_p_policy, DUMMY_VAR__);
             stan::math::fill(psi_p_policy, DUMMY_VAR__);
             stan::math::assign(psi_p_policy,get_base1(psi_p_sims, sim, "psi_p_sims", 1));
 
             current_statement_begin__ = 594;
-            validate_non_negative_index("gamma", "(ngoods + 1)", (ngoods + 1));
-            Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> gamma((ngoods + 1));
+            validate_non_negative_index("gamma", "(nalts + 1)", (nalts + 1));
+            Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> gamma((nalts + 1));
             stan::math::initialize(gamma, DUMMY_VAR__);
             stan::math::fill(gamma, DUMMY_VAR__);
             stan::math::assign(gamma,append_row(1, transpose(get_base1(gamma_sims, sim, "gamma_sims", 1))));
 
             current_statement_begin__ = 595;
-            validate_non_negative_index("alpha", "(ngoods + 1)", (ngoods + 1));
-            Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> alpha((ngoods + 1));
+            validate_non_negative_index("alpha", "(nalts + 1)", (nalts + 1));
+            Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> alpha((nalts + 1));
             stan::math::initialize(alpha, DUMMY_VAR__);
             stan::math::fill(alpha, DUMMY_VAR__);
             stan::math::assign(alpha,transpose(get_base1(alpha_sims, sim, "alpha_sims", 1)));
@@ -2157,16 +2157,16 @@ CalcMarshallianDemand_rng(const T0__& income,
             stan::math::assign(scale,get_base1(scale_sims, sim, "scale_sims", 1));
 
             current_statement_begin__ = 597;
-            validate_non_negative_index("error", "(ngoods + 1)", (ngoods + 1));
+            validate_non_negative_index("error", "(nalts + 1)", (nalts + 1));
             validate_non_negative_index("error", "nerrs", nerrs);
-            std::vector<Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1>  > error(nerrs, Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1>((ngoods + 1)));
+            std::vector<Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1>  > error(nerrs, Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1>((nalts + 1)));
             stan::math::initialize(error, DUMMY_VAR__);
             stan::math::fill(error, DUMMY_VAR__);
 
             current_statement_begin__ = 598;
             validate_non_negative_index("mdemand_pols", "npols", npols);
-            validate_non_negative_index("mdemand_pols", "(ngoods + 1)", (ngoods + 1));
-            Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, Eigen::Dynamic> mdemand_pols(npols, (ngoods + 1));
+            validate_non_negative_index("mdemand_pols", "(nalts + 1)", (nalts + 1));
+            Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, Eigen::Dynamic> mdemand_pols(npols, (nalts + 1));
             stan::math::initialize(mdemand_pols, DUMMY_VAR__);
             stan::math::fill(mdemand_pols, DUMMY_VAR__);
 
@@ -2178,25 +2178,25 @@ CalcMarshallianDemand_rng(const T0__& income,
 
 
             current_statement_begin__ = 601;
-            stan::math::assign(error, DrawError_rng(quant_num, quant_j, stan::model::rvalue(price, stan::model::cons_list(stan::model::index_min_max(2, (ngoods + 1)), stan::model::nil_index_list()), "price"), psi_j, stan::model::rvalue(gamma, stan::model::cons_list(stan::model::index_min_max(2, (ngoods + 1)), stan::model::nil_index_list()), "gamma"), alpha, scale, ngoods, nerrs, cond_error, draw_mlhs, base_rng__, pstream__));
+            stan::math::assign(error, DrawError_rng(quant_num, quant_j, stan::model::rvalue(price, stan::model::cons_list(stan::model::index_min_max(2, (nalts + 1)), stan::model::nil_index_list()), "price"), psi_j, stan::model::rvalue(gamma, stan::model::cons_list(stan::model::index_min_max(2, (nalts + 1)), stan::model::nil_index_list()), "gamma"), alpha, scale, nalts, nerrs, cond_error, draw_mlhs, base_rng__, pstream__));
             current_statement_begin__ = 606;
             for (int err = 1; err <= nerrs; ++err) {
                 {
                 current_statement_begin__ = 607;
-                validate_non_negative_index("mdemand_util", "(ngoods + 1)", (ngoods + 1));
-                Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> mdemand_util((ngoods + 1));
+                validate_non_negative_index("mdemand_util", "(nalts + 1)", (nalts + 1));
+                Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> mdemand_util((nalts + 1));
                 stan::math::initialize(mdemand_util, DUMMY_VAR__);
                 stan::math::fill(mdemand_util, DUMMY_VAR__);
 
                 current_statement_begin__ = 608;
-                validate_non_negative_index("MUzero_b", "(ngoods + 1)", (ngoods + 1));
-                Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> MUzero_b((ngoods + 1));
+                validate_non_negative_index("MUzero_b", "(nalts + 1)", (nalts + 1));
+                Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> MUzero_b((nalts + 1));
                 stan::math::initialize(MUzero_b, DUMMY_VAR__);
                 stan::math::fill(MUzero_b, DUMMY_VAR__);
 
                 current_statement_begin__ = 611;
-                validate_non_negative_index("psi_b_err", "(ngoods + 1)", (ngoods + 1));
-                Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> psi_b_err((ngoods + 1));
+                validate_non_negative_index("psi_b_err", "(nalts + 1)", (nalts + 1));
+                Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> psi_b_err((nalts + 1));
                 stan::math::initialize(psi_b_err, DUMMY_VAR__);
                 stan::math::fill(psi_b_err, DUMMY_VAR__);
 
@@ -2212,12 +2212,12 @@ CalcMarshallianDemand_rng(const T0__& income,
                     stan::math::assign(mdemand_util, append_row(quant_num, quant_j));
                 } else if (as_bool(logical_eq(cond_error, 0))) {
                     current_statement_begin__ = 618;
-                    stan::math::assign(mdemand_util, MarshallianDemand(income, price, MUzero_b, gamma, alpha, ngoods, algo_gen, tol, max_loop, pstream__));
+                    stan::math::assign(mdemand_util, MarshallianDemand(income, price, MUzero_b, gamma, alpha, nalts, algo_gen, tol, max_loop, pstream__));
                 }
                 current_statement_begin__ = 621;
                 stan::model::assign(util, 
                             stan::model::cons_list(stan::model::index_uni(err), stan::model::nil_index_list()), 
-                            ComputeUtilJ(income, stan::model::rvalue(mdemand_util, stan::model::cons_list(stan::model::index_min_max(2, (ngoods + 1)), stan::model::nil_index_list()), "mdemand_util"), stan::model::rvalue(price, stan::model::cons_list(stan::model::index_min_max(2, (ngoods + 1)), stan::model::nil_index_list()), "price"), stan::model::rvalue(psi_b_err, stan::model::cons_list(stan::model::index_min_max(2, (ngoods + 1)), stan::model::nil_index_list()), "psi_b_err"), stan::model::rvalue(gamma, stan::model::cons_list(stan::model::index_min_max(2, (ngoods + 1)), stan::model::nil_index_list()), "gamma"), alpha, ngoods, model_num, pstream__), 
+                            ComputeUtilJ(income, stan::model::rvalue(mdemand_util, stan::model::cons_list(stan::model::index_min_max(2, (nalts + 1)), stan::model::nil_index_list()), "mdemand_util"), stan::model::rvalue(price, stan::model::cons_list(stan::model::index_min_max(2, (nalts + 1)), stan::model::nil_index_list()), "price"), stan::model::rvalue(psi_b_err, stan::model::cons_list(stan::model::index_min_max(2, (nalts + 1)), stan::model::nil_index_list()), "psi_b_err"), stan::model::rvalue(gamma, stan::model::cons_list(stan::model::index_min_max(2, (nalts + 1)), stan::model::nil_index_list()), "gamma"), alpha, nalts, model_num, pstream__), 
                             "assigning variable util");
                 }
             }
@@ -2225,36 +2225,36 @@ CalcMarshallianDemand_rng(const T0__& income,
             for (int policy = 1; policy <= npols; ++policy) {
                 {
                 current_statement_begin__ = 627;
-                validate_non_negative_index("price_p", "(ngoods + 1)", (ngoods + 1));
-                Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> price_p((ngoods + 1));
+                validate_non_negative_index("price_p", "(nalts + 1)", (nalts + 1));
+                Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> price_p((nalts + 1));
                 stan::math::initialize(price_p, DUMMY_VAR__);
                 stan::math::fill(price_p, DUMMY_VAR__);
                 stan::math::assign(price_p,add(price, get_base1(price_p_policy, policy, "price_p_policy", 1)));
 
                 current_statement_begin__ = 628;
-                validate_non_negative_index("psi_p", "ngoods", ngoods);
-                Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> psi_p(ngoods);
+                validate_non_negative_index("psi_p", "nalts", nalts);
+                Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> psi_p(nalts);
                 stan::math::initialize(psi_p, DUMMY_VAR__);
                 stan::math::fill(psi_p, DUMMY_VAR__);
                 stan::math::assign(psi_p,transpose(get_base1(psi_p_policy, policy, "psi_p_policy", 1)));
 
                 current_statement_begin__ = 629;
-                validate_non_negative_index("mdemand_g", "(ngoods + 1)", (ngoods + 1));
-                Eigen::Matrix<local_scalar_t__, 1, Eigen::Dynamic> mdemand_g((ngoods + 1));
+                validate_non_negative_index("mdemand_g", "(nalts + 1)", (nalts + 1));
+                Eigen::Matrix<local_scalar_t__, 1, Eigen::Dynamic> mdemand_g((nalts + 1));
                 stan::math::initialize(mdemand_g, DUMMY_VAR__);
                 stan::math::fill(mdemand_g, DUMMY_VAR__);
 
                 current_statement_begin__ = 630;
                 validate_non_negative_index("mdemand_p", "nerrs", nerrs);
-                validate_non_negative_index("mdemand_p", "(ngoods + 1)", (ngoods + 1));
-                Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, Eigen::Dynamic> mdemand_p(nerrs, (ngoods + 1));
+                validate_non_negative_index("mdemand_p", "(nalts + 1)", (nalts + 1));
+                Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, Eigen::Dynamic> mdemand_p(nerrs, (nalts + 1));
                 stan::math::initialize(mdemand_p, DUMMY_VAR__);
                 stan::math::fill(mdemand_p, DUMMY_VAR__);
 
                 current_statement_begin__ = 631;
-                validate_non_negative_index("mdemand_trans", "(ngoods + 1)", (ngoods + 1));
+                validate_non_negative_index("mdemand_trans", "(nalts + 1)", (nalts + 1));
                 validate_non_negative_index("mdemand_trans", "nerrs", nerrs);
-                Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, Eigen::Dynamic> mdemand_trans((ngoods + 1), nerrs);
+                Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, Eigen::Dynamic> mdemand_trans((nalts + 1), nerrs);
                 stan::math::initialize(mdemand_trans, DUMMY_VAR__);
                 stan::math::fill(mdemand_trans, DUMMY_VAR__);
 
@@ -2263,8 +2263,8 @@ CalcMarshallianDemand_rng(const T0__& income,
                 for (int err = 1; err <= nerrs; ++err) {
                     {
                     current_statement_begin__ = 634;
-                    validate_non_negative_index("MUzero_p", "(ngoods + 1)", (ngoods + 1));
-                    Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> MUzero_p((ngoods + 1));
+                    validate_non_negative_index("MUzero_p", "(nalts + 1)", (nalts + 1));
+                    Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> MUzero_p((nalts + 1));
                     stan::math::initialize(MUzero_p, DUMMY_VAR__);
                     stan::math::fill(MUzero_p, DUMMY_VAR__);
                     stan::math::assign(MUzero_p,elt_divide(stan::math::exp(add(append_row(0, psi_p), get_base1(error, err, "error", 1))), price_p));
@@ -2273,14 +2273,14 @@ CalcMarshallianDemand_rng(const T0__& income,
                     current_statement_begin__ = 636;
                     stan::model::assign(mdemand_p, 
                                 stan::model::cons_list(stan::model::index_uni(err), stan::model::nil_index_list()), 
-                                transpose(MarshallianDemand(income, price, MUzero_p, gamma, alpha, ngoods, algo_gen, tol, max_loop, pstream__)), 
+                                transpose(MarshallianDemand(income, price, MUzero_p, gamma, alpha, nalts, algo_gen, tol, max_loop, pstream__)), 
                                 "assigning variable mdemand_p");
                     }
                 }
                 current_statement_begin__ = 639;
                 stan::math::assign(mdemand_trans, transpose(mdemand_p));
                 current_statement_begin__ = 641;
-                for (int g = 1; g <= (ngoods + 1); ++g) {
+                for (int g = 1; g <= (nalts + 1); ++g) {
                     current_statement_begin__ = 642;
                     stan::model::assign(mdemand_g, 
                                 stan::model::cons_list(stan::model::index_uni(g), stan::model::nil_index_list()), 
@@ -2363,10 +2363,10 @@ CalcMarshallianDemandPriceOnly_rng(const T0__& income,
     try {
         {
         current_statement_begin__ = 658;
-        int ngoods(0);
-        (void) ngoods;  // dummy to suppress unused var warning
-        stan::math::fill(ngoods, std::numeric_limits<int>::min());
-        stan::math::assign(ngoods,num_elements(quant_j));
+        int nalts(0);
+        (void) nalts;  // dummy to suppress unused var warning
+        stan::math::fill(nalts, std::numeric_limits<int>::min());
+        stan::math::assign(nalts,num_elements(quant_j));
 
         current_statement_begin__ = 659;
         int nsims(0);
@@ -2382,9 +2382,9 @@ CalcMarshallianDemandPriceOnly_rng(const T0__& income,
 
         current_statement_begin__ = 661;
         validate_non_negative_index("mdemand_out", "npols", npols);
-        validate_non_negative_index("mdemand_out", "(ngoods + 1)", (ngoods + 1));
+        validate_non_negative_index("mdemand_out", "(nalts + 1)", (nalts + 1));
         validate_non_negative_index("mdemand_out", "nsims", nsims);
-        std::vector<Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, Eigen::Dynamic>  > mdemand_out(nsims, Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, Eigen::Dynamic>(npols, (ngoods + 1)));
+        std::vector<Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, Eigen::Dynamic>  > mdemand_out(nsims, Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, Eigen::Dynamic>(npols, (nalts + 1)));
         stan::math::initialize(mdemand_out, DUMMY_VAR__);
         stan::math::fill(mdemand_out, DUMMY_VAR__);
 
@@ -2393,36 +2393,36 @@ CalcMarshallianDemandPriceOnly_rng(const T0__& income,
         (void) quant_num;  // dummy to suppress unused var warning
         stan::math::initialize(quant_num, DUMMY_VAR__);
         stan::math::fill(quant_num, DUMMY_VAR__);
-        stan::math::assign(quant_num,(income - multiply(transpose(quant_j), stan::model::rvalue(price, stan::model::cons_list(stan::model::index_min_max(2, (ngoods + 1)), stan::model::nil_index_list()), "price"))));
+        stan::math::assign(quant_num,(income - multiply(transpose(quant_j), stan::model::rvalue(price, stan::model::cons_list(stan::model::index_min_max(2, (nalts + 1)), stan::model::nil_index_list()), "price"))));
 
 
         current_statement_begin__ = 664;
         for (int sim = 1; sim <= nsims; ++sim) {
             {
             current_statement_begin__ = 665;
-            validate_non_negative_index("psi_j", "ngoods", ngoods);
-            Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> psi_j(ngoods);
+            validate_non_negative_index("psi_j", "nalts", nalts);
+            Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> psi_j(nalts);
             stan::math::initialize(psi_j, DUMMY_VAR__);
             stan::math::fill(psi_j, DUMMY_VAR__);
             stan::math::assign(psi_j,transpose(get_base1(psi_sims, sim, "psi_sims", 1)));
 
             current_statement_begin__ = 666;
-            validate_non_negative_index("psi_b_err", "(ngoods + 1)", (ngoods + 1));
+            validate_non_negative_index("psi_b_err", "(nalts + 1)", (nalts + 1));
             validate_non_negative_index("psi_b_err", "nerrs", nerrs);
-            std::vector<Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1>  > psi_b_err(nerrs, Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1>((ngoods + 1)));
+            std::vector<Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1>  > psi_b_err(nerrs, Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1>((nalts + 1)));
             stan::math::initialize(psi_b_err, DUMMY_VAR__);
             stan::math::fill(psi_b_err, DUMMY_VAR__);
 
             current_statement_begin__ = 667;
-            validate_non_negative_index("gamma", "(ngoods + 1)", (ngoods + 1));
-            Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> gamma((ngoods + 1));
+            validate_non_negative_index("gamma", "(nalts + 1)", (nalts + 1));
+            Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> gamma((nalts + 1));
             stan::math::initialize(gamma, DUMMY_VAR__);
             stan::math::fill(gamma, DUMMY_VAR__);
             stan::math::assign(gamma,append_row(1, transpose(get_base1(gamma_sims, sim, "gamma_sims", 1))));
 
             current_statement_begin__ = 668;
-            validate_non_negative_index("alpha", "(ngoods + 1)", (ngoods + 1));
-            Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> alpha((ngoods + 1));
+            validate_non_negative_index("alpha", "(nalts + 1)", (nalts + 1));
+            Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> alpha((nalts + 1));
             stan::math::initialize(alpha, DUMMY_VAR__);
             stan::math::fill(alpha, DUMMY_VAR__);
             stan::math::assign(alpha,transpose(get_base1(alpha_sims, sim, "alpha_sims", 1)));
@@ -2435,16 +2435,16 @@ CalcMarshallianDemandPriceOnly_rng(const T0__& income,
             stan::math::assign(scale,get_base1(scale_sims, sim, "scale_sims", 1));
 
             current_statement_begin__ = 670;
-            validate_non_negative_index("error", "(ngoods + 1)", (ngoods + 1));
+            validate_non_negative_index("error", "(nalts + 1)", (nalts + 1));
             validate_non_negative_index("error", "nerrs", nerrs);
-            std::vector<Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1>  > error(nerrs, Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1>((ngoods + 1)));
+            std::vector<Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1>  > error(nerrs, Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1>((nalts + 1)));
             stan::math::initialize(error, DUMMY_VAR__);
             stan::math::fill(error, DUMMY_VAR__);
 
             current_statement_begin__ = 671;
             validate_non_negative_index("mdemand_pols", "npols", npols);
-            validate_non_negative_index("mdemand_pols", "(ngoods + 1)", (ngoods + 1));
-            Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, Eigen::Dynamic> mdemand_pols(npols, (ngoods + 1));
+            validate_non_negative_index("mdemand_pols", "(nalts + 1)", (nalts + 1));
+            Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, Eigen::Dynamic> mdemand_pols(npols, (nalts + 1));
             stan::math::initialize(mdemand_pols, DUMMY_VAR__);
             stan::math::fill(mdemand_pols, DUMMY_VAR__);
 
@@ -2456,19 +2456,19 @@ CalcMarshallianDemandPriceOnly_rng(const T0__& income,
 
 
             current_statement_begin__ = 674;
-            stan::math::assign(error, DrawError_rng(quant_num, quant_j, stan::model::rvalue(price, stan::model::cons_list(stan::model::index_min_max(2, (ngoods + 1)), stan::model::nil_index_list()), "price"), psi_j, stan::model::rvalue(gamma, stan::model::cons_list(stan::model::index_min_max(2, (ngoods + 1)), stan::model::nil_index_list()), "gamma"), alpha, scale, ngoods, nerrs, cond_error, draw_mlhs, base_rng__, pstream__));
+            stan::math::assign(error, DrawError_rng(quant_num, quant_j, stan::model::rvalue(price, stan::model::cons_list(stan::model::index_min_max(2, (nalts + 1)), stan::model::nil_index_list()), "price"), psi_j, stan::model::rvalue(gamma, stan::model::cons_list(stan::model::index_min_max(2, (nalts + 1)), stan::model::nil_index_list()), "gamma"), alpha, scale, nalts, nerrs, cond_error, draw_mlhs, base_rng__, pstream__));
             current_statement_begin__ = 679;
             for (int err = 1; err <= nerrs; ++err) {
                 {
                 current_statement_begin__ = 680;
-                validate_non_negative_index("mdemand_util", "(ngoods + 1)", (ngoods + 1));
-                Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> mdemand_util((ngoods + 1));
+                validate_non_negative_index("mdemand_util", "(nalts + 1)", (nalts + 1));
+                Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> mdemand_util((nalts + 1));
                 stan::math::initialize(mdemand_util, DUMMY_VAR__);
                 stan::math::fill(mdemand_util, DUMMY_VAR__);
 
                 current_statement_begin__ = 681;
-                validate_non_negative_index("MUzero_b", "(ngoods + 1)", (ngoods + 1));
-                Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> MUzero_b((ngoods + 1));
+                validate_non_negative_index("MUzero_b", "(nalts + 1)", (nalts + 1));
+                Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> MUzero_b((nalts + 1));
                 stan::math::initialize(MUzero_b, DUMMY_VAR__);
                 stan::math::fill(MUzero_b, DUMMY_VAR__);
 
@@ -2487,12 +2487,12 @@ CalcMarshallianDemandPriceOnly_rng(const T0__& income,
                     stan::math::assign(mdemand_util, append_row(quant_num, quant_j));
                 } else if (as_bool(logical_eq(cond_error, 0))) {
                     current_statement_begin__ = 688;
-                    stan::math::assign(mdemand_util, MarshallianDemand(income, price, MUzero_b, gamma, alpha, ngoods, algo_gen, tol, max_loop, pstream__));
+                    stan::math::assign(mdemand_util, MarshallianDemand(income, price, MUzero_b, gamma, alpha, nalts, algo_gen, tol, max_loop, pstream__));
                 }
                 current_statement_begin__ = 691;
                 stan::model::assign(util, 
                             stan::model::cons_list(stan::model::index_uni(err), stan::model::nil_index_list()), 
-                            ComputeUtilJ(income, stan::model::rvalue(mdemand_util, stan::model::cons_list(stan::model::index_min_max(2, (ngoods + 1)), stan::model::nil_index_list()), "mdemand_util"), stan::model::rvalue(price, stan::model::cons_list(stan::model::index_min_max(2, (ngoods + 1)), stan::model::nil_index_list()), "price"), stan::model::rvalue(psi_b_err, stan::model::cons_list(stan::model::index_uni(err), stan::model::cons_list(stan::model::index_min_max(2, (ngoods + 1)), stan::model::nil_index_list())), "psi_b_err"), stan::model::rvalue(gamma, stan::model::cons_list(stan::model::index_min_max(2, (ngoods + 1)), stan::model::nil_index_list()), "gamma"), alpha, ngoods, model_num, pstream__), 
+                            ComputeUtilJ(income, stan::model::rvalue(mdemand_util, stan::model::cons_list(stan::model::index_min_max(2, (nalts + 1)), stan::model::nil_index_list()), "mdemand_util"), stan::model::rvalue(price, stan::model::cons_list(stan::model::index_min_max(2, (nalts + 1)), stan::model::nil_index_list()), "price"), stan::model::rvalue(psi_b_err, stan::model::cons_list(stan::model::index_uni(err), stan::model::cons_list(stan::model::index_min_max(2, (nalts + 1)), stan::model::nil_index_list())), "psi_b_err"), stan::model::rvalue(gamma, stan::model::cons_list(stan::model::index_min_max(2, (nalts + 1)), stan::model::nil_index_list()), "gamma"), alpha, nalts, model_num, pstream__), 
                             "assigning variable util");
                 }
             }
@@ -2500,29 +2500,29 @@ CalcMarshallianDemandPriceOnly_rng(const T0__& income,
             for (int policy = 1; policy <= npols; ++policy) {
                 {
                 current_statement_begin__ = 697;
-                validate_non_negative_index("price_p", "(ngoods + 1)", (ngoods + 1));
-                Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> price_p((ngoods + 1));
+                validate_non_negative_index("price_p", "(nalts + 1)", (nalts + 1));
+                Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> price_p((nalts + 1));
                 stan::math::initialize(price_p, DUMMY_VAR__);
                 stan::math::fill(price_p, DUMMY_VAR__);
                 stan::math::assign(price_p,add(price, get_base1(price_p_policy, policy, "price_p_policy", 1)));
 
                 current_statement_begin__ = 698;
-                validate_non_negative_index("mdemand_g", "(ngoods + 1)", (ngoods + 1));
-                Eigen::Matrix<local_scalar_t__, 1, Eigen::Dynamic> mdemand_g((ngoods + 1));
+                validate_non_negative_index("mdemand_g", "(nalts + 1)", (nalts + 1));
+                Eigen::Matrix<local_scalar_t__, 1, Eigen::Dynamic> mdemand_g((nalts + 1));
                 stan::math::initialize(mdemand_g, DUMMY_VAR__);
                 stan::math::fill(mdemand_g, DUMMY_VAR__);
 
                 current_statement_begin__ = 699;
                 validate_non_negative_index("mdemand_p", "nerrs", nerrs);
-                validate_non_negative_index("mdemand_p", "(ngoods + 1)", (ngoods + 1));
-                Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, Eigen::Dynamic> mdemand_p(nerrs, (ngoods + 1));
+                validate_non_negative_index("mdemand_p", "(nalts + 1)", (nalts + 1));
+                Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, Eigen::Dynamic> mdemand_p(nerrs, (nalts + 1));
                 stan::math::initialize(mdemand_p, DUMMY_VAR__);
                 stan::math::fill(mdemand_p, DUMMY_VAR__);
 
                 current_statement_begin__ = 700;
-                validate_non_negative_index("mdemand_trans", "(ngoods + 1)", (ngoods + 1));
+                validate_non_negative_index("mdemand_trans", "(nalts + 1)", (nalts + 1));
                 validate_non_negative_index("mdemand_trans", "nerrs", nerrs);
-                Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, Eigen::Dynamic> mdemand_trans((ngoods + 1), nerrs);
+                Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, Eigen::Dynamic> mdemand_trans((nalts + 1), nerrs);
                 stan::math::initialize(mdemand_trans, DUMMY_VAR__);
                 stan::math::fill(mdemand_trans, DUMMY_VAR__);
 
@@ -2531,8 +2531,8 @@ CalcMarshallianDemandPriceOnly_rng(const T0__& income,
                 for (int err = 1; err <= nerrs; ++err) {
                     {
                     current_statement_begin__ = 703;
-                    validate_non_negative_index("MUzero_p", "(ngoods + 1)", (ngoods + 1));
-                    Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> MUzero_p((ngoods + 1));
+                    validate_non_negative_index("MUzero_p", "(nalts + 1)", (nalts + 1));
+                    Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> MUzero_p((nalts + 1));
                     stan::math::initialize(MUzero_p, DUMMY_VAR__);
                     stan::math::fill(MUzero_p, DUMMY_VAR__);
                     stan::math::assign(MUzero_p,elt_divide(get_base1(psi_b_err, err, "psi_b_err", 1), price_p));
@@ -2541,14 +2541,14 @@ CalcMarshallianDemandPriceOnly_rng(const T0__& income,
                     current_statement_begin__ = 705;
                     stan::model::assign(mdemand_p, 
                                 stan::model::cons_list(stan::model::index_uni(err), stan::model::nil_index_list()), 
-                                transpose(MarshallianDemand(income, price, MUzero_p, gamma, alpha, ngoods, algo_gen, tol, max_loop, pstream__)), 
+                                transpose(MarshallianDemand(income, price, MUzero_p, gamma, alpha, nalts, algo_gen, tol, max_loop, pstream__)), 
                                 "assigning variable mdemand_p");
                     }
                 }
                 current_statement_begin__ = 708;
                 stan::math::assign(mdemand_trans, transpose(mdemand_p));
                 current_statement_begin__ = 710;
-                for (int g = 1; g <= (ngoods + 1); ++g) {
+                for (int g = 1; g <= (nalts + 1); ++g) {
                     current_statement_begin__ = 711;
                     stan::model::assign(mdemand_g, 
                                 stan::model::cons_list(stan::model::index_uni(g), stan::model::nil_index_list()), 

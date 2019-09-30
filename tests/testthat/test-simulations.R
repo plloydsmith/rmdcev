@@ -14,10 +14,10 @@ result <- mdcev( ~ alt -1,
 				   algorithm = "MLE",
 				   print_iterations = FALSE)
 
-ngoods <- result$stan_data[["J"]]
+nalts <- result$stan_data[["J"]]
 model_num <- 1
 npols <- 2
-policies<-	CreateBlankPolicies(npols, ngoods, result$stan_data[["dat_psi"]], price_change_only = TRUE)
+policies<-	CreateBlankPolicies(npols, nalts, result$stan_data[["dat_psi"]], price_change_only = TRUE)
 
 df_sim <- PrepareSimulationData(result, policies, nsims = 3)
 income <- df_sim[["df_indiv"]][["income"]][[1]]
@@ -34,12 +34,12 @@ price_j <- price[-1]
 
 quant_num <- income - quant_j  %*% price[-1]
 quant <- c(quant_num, quant_j)
-psi_j <- result[["stan_data"]][["dat_psi"]][1:ngoods,] %*% t(result[["stan_fit"]][["par"]][["psi"]])
+psi_j <- result[["stan_data"]][["dat_psi"]][1:nalts,] %*% t(result[["stan_fit"]][["par"]][["psi"]])
 gamma_j <- result[["stan_fit"]][["par"]][["gamma"]]
 gamma <- c(1, gamma_j)
-alpha <- rep(1e-03, ngoods+1)
-#alpha <- rep(result[["stan_fit"]][["par"]][["alpha"]], ngoods+1)
-#alpha <- c(result[["stan_fit"]][["par"]][["alpha"]], rep(0,ngoods))
+alpha <- rep(1e-03, nalts+1)
+#alpha <- rep(result[["stan_fit"]][["par"]][["alpha"]], nalts+1)
+#alpha <- c(result[["stan_fit"]][["par"]][["alpha"]], rep(0,nalts))
 scale <- result[["stan_fit"]][["par"]][["scale"]]
 
 test_that("Conditional error draw", {
@@ -50,17 +50,17 @@ max_loop = 999
 
 error <- DrawError_rng(quant_num, quant_j, price[-1],
 				  psi_j, gamma_j, alpha, scale,
-				  ngoods = ngoods, nerrs = 2, cond_error = 1, draw_mlhs = 1)
+				  nalts = nalts, nerrs = 2, cond_error = 1, draw_mlhs = 1)
 
 	psi_b_err <- exp(c(0, psi_j) + error[[1]])
 	MUzero_b <- psi_b_err / price
 #	 Test hybrid algo
 	mdemand <- MarshallianDemand(income, price, MUzero_b, gamma, alpha,
-								 ngoods, algo_gen = 0, tol_e = tol_e, max_loop = max_loop)
+								 nalts, algo_gen = 0, tol_e = tol_e, max_loop = max_loop)
 	expect_true(sum(abs(mdemand - quant)) < tol)
 	# Test general algo
 	mdemand <- MarshallianDemand(income, price, MUzero_b, gamma, alpha,
-								 ngoods, algo_gen = 1, tol_e = tol_e, max_loop = max_loop)
+								 nalts, algo_gen = 1, tol_e = tol_e, max_loop = max_loop)
 	expect_true(sum(abs(mdemand - quant)) < tol)
 
 error <- c(0.0000000000, -0.77612399, -0.55169780, -0.02143232, -0.81241994, -0.19768961,
@@ -70,24 +70,24 @@ error <- c(0.0000000000, -0.77612399, -0.55169780, -0.02143232, -0.81241994, -0.
 psi_b_err <- exp(c(0, psi_j) + error)
 MUzero_b <- psi_b_err / price
 mdemand <- MarshallianDemand(income, price, MUzero_b, gamma, alpha,
-							 ngoods, algo_gen = 0, tol_e = tol_e, max_loop = max_loop);
+							 nalts, algo_gen = 0, tol_e = tol_e, max_loop = max_loop);
 
 	util <- ComputeUtilJ(income, mdemand[-1], price[-1],
 							 psi_b_err[-1], gamma[-1], alpha,
-							 ngoods, model_num)
+							 nalts, model_num)
 
 	expect_true(abs(util - 1011.104111) < tol)
 
-	price_p <- price + c(.001,rep(1,ngoods))
+	price_p <- price + c(.001,rep(1,nalts))
  	MUzero_p <- psi_b_err / price_p
 
 	hdemand <- HicksianDemand(util, price_p, MUzero_p,  gamma, alpha,
-			ngoods, algo_gen = 0, model_num, tol_l = tol_l, max_loop = max_loop)
+			nalts, algo_gen = 0, model_num, tol_l = tol_l, max_loop = max_loop)
 	wtp_err <- income - t(price_p) %*% hdemand
 	expect_true(abs(wtp_err - (-62.4995)) < tol)
 
 	hdemand <- HicksianDemand(util, price_p, MUzero_p, gamma, alpha,
-							  ngoods, algo_gen = 1, model_num, tol_l = tol_l, max_loop = max_loop)
+							  nalts, algo_gen = 1, model_num, tol_l = tol_l, max_loop = max_loop)
 	wtp_err <- income - t(price_p) %*% hdemand
 	expect_true(abs(wtp_err - (-62.4995)) < tol)
 

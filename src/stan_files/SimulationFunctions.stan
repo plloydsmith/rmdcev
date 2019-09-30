@@ -37,30 +37,30 @@ return(error);
 
 vector[] DrawError_rng(real quant_num, vector quant_j, vector price_j,
 					vector psi_j, vector gamma_j, vector alpha, real scale,
-					int ngoods, int nerrs, int cond_error, int draw_mlhs){
+					int nalts, int nerrs, int cond_error, int draw_mlhs){
 
-	vector[ngoods+1] out[nerrs];
-	matrix[ngoods+1, nerrs] error;
-	matrix[nerrs, ngoods+1] error_t;
+	vector[nalts+1] out[nerrs];
+	matrix[nalts+1, nerrs] error;
+	matrix[nerrs, nalts+1] error_t;
 	vector[nerrs] temp0 = rep_vector(0, nerrs);
 
 	if (cond_error == 0){	// Unconditional
 	//	error[1] = rep_row_vector(0, nerrs);
-		for(j in 1:ngoods+1)
+		for(j in 1:nalts+1)
 			error[j] = -log(-log(DrawMlhs_rng(nerrs, draw_mlhs))) * scale;
 
 	} else if (cond_error == 1){	// Conditional
 		// Cacluate the demand function, g
-		vector[ngoods + 1] cond_demand = append_row(quant_num, quant_j);
+		vector[nalts + 1] cond_demand = append_row(quant_num, quant_j);
 		// compute vk and v1
 		real v1 = (alpha[1] - 1) * log(quant_num);
-		vector[ngoods] vk = psi_j + (alpha[2:ngoods+1] - 1) .* log(quant_j ./ gamma_j + 1) - log(price_j);
-		// ek = v1 - vk and assume error term is zero for outside good
-		vector[ngoods + 1] ek = append_row(0, (v1 - vk) / scale);
+		vector[nalts] vk = psi_j + (alpha[2:nalts+1] - 1) .* log(quant_j ./ gamma_j + 1) - log(price_j);
+		// ek = v1 - vk and assume error term is zero for numeraire
+		vector[nalts + 1] ek = append_row(0, (v1 - vk) / scale);
 
 		// Calculate errors
 		// For unvisited alternatives, draw from truncated multivariate logistic distribution
-		for(j in 1:ngoods+1)
+		for(j in 1:nalts+1)
 			error[j] = cond_demand[j] > 0 ? rep_row_vector(ek[j] * scale, nerrs) :
 					-log(-log(DrawMlhs_rng(nerrs, draw_mlhs) * exp(-exp(-ek[j])))) * scale;
 	}
@@ -72,33 +72,33 @@ return(out);
 }
 
 /**
- * Returns an ranking vector of non-numeraire goods by MUzero
- * @return integer vector of ordered goods by MUzero
+ * Returns an ranking vector of non-numeraire alts by MUzero
+ * @return integer vector of ordered alts by MUzero
  */
-int[] CalcGoodOrder(vector MUzero, int ngoods) {
+int[] CalcAltOrder(vector MUzero, int nalts) {
 
-	int order_x[ngoods+1];
-	vector[ngoods] ord_goods;
-	int order_MU[ngoods] = sort_indices_desc(MUzero[2:ngoods+1]);
+	int order_x[nalts+1];
+	vector[nalts] ord_alts;
+	int order_MU[nalts] = sort_indices_desc(MUzero[2:nalts+1]);
 
-	for (j in 1:ngoods)
-		ord_goods[j] = j;
+	for (j in 1:nalts)
+		ord_alts[j] = j;
 
-	order_x = sort_indices_asc(append_row(1.0, to_vector(ord_goods[order_MU] + 1)));
+	order_x = sort_indices_asc(append_row(1.0, to_vector(ord_alts[order_MU] + 1)));
 return(order_x);
 }
 /**
  * Sort matrix of parameters/prices
- * @return Matrix of ngoods x 5
+ * @return Matrix of nalts x 5
  */
-matrix SortParmMatrix(vector MUzero, vector price, vector gamma, vector alpha, int ngoods) {
+matrix SortParmMatrix(vector MUzero, vector price, vector gamma, vector alpha, int nalts) {
 
-	matrix[ngoods+1, 4] parm_matrix;
-	vector[ngoods] MU_j = MUzero[2:ngoods+1];
-	vector[ngoods] price_j = price[2:ngoods+1];
-	vector[ngoods] gamma_j = gamma[2:ngoods+1];
-	vector[ngoods] alpha_j = alpha[2:ngoods+1];
-	int order_MU[ngoods] = sort_indices_desc(MU_j);	// find ranking of non-numeraire goods by MUzero
+	matrix[nalts+1, 4] parm_matrix;
+	vector[nalts] MU_j = MUzero[2:nalts+1];
+	vector[nalts] price_j = price[2:nalts+1];
+	vector[nalts] gamma_j = gamma[2:nalts+1];
+	vector[nalts] alpha_j = alpha[2:nalts+1];
+	int order_MU[nalts] = sort_indices_desc(MU_j);	// find ranking of non-numeraire alts by MUzero
 
 	parm_matrix = append_col(append_row(MUzero[1], MU_j[order_MU]),
 	append_col(append_row(price[1], price_j[order_MU]),
@@ -116,32 +116,32 @@ return(output);
 }
 /**
  * Calculate MarshDemands using general or hybrid approach
- * @return vector of ngood demands
+ * @return vector of nalt demands
  */
 vector MarshallianDemand(real income, vector price, vector MUzero, vector gamma, vector alpha,
-							int ngoods, int algo_gen, real tol_e, int max_loop) {
+							int nalts, int algo_gen, real tol_e, int max_loop) {
 
-	vector[ngoods+1] mdemand;
+	vector[nalts+1] mdemand;
 	real lambda;
 	int M = 1; // Indicator of which ordered alteratives (<=M) are being considered
 	int exit = 0;
 	real E;
-	int order_x[ngoods+1] = CalcGoodOrder(MUzero, ngoods);
-	vector[ngoods+1] X = rep_vector(0, ngoods+1);
-	vector[ngoods+1] d = append_row(0, rep_vector(1, ngoods));
-	matrix[ngoods+1, 4] parm_matrix = SortParmMatrix(MUzero, price, gamma, alpha, ngoods);
-	vector[ngoods+1] mu = col(parm_matrix, 1); // obtain mu
-	vector[ngoods+1] g = col(parm_matrix, 3); // obtain gamma
-	vector[ngoods+1] g_price = g .* col(parm_matrix, 2);
+	int order_x[nalts+1] = CalcAltOrder(MUzero, nalts);
+	vector[nalts+1] X = rep_vector(0, nalts+1);
+	vector[nalts+1] d = append_row(0, rep_vector(1, nalts));
+	matrix[nalts+1, 4] parm_matrix = SortParmMatrix(MUzero, price, gamma, alpha, nalts);
+	vector[nalts+1] mu = col(parm_matrix, 1); // obtain mu
+	vector[nalts+1] g = col(parm_matrix, 3); // obtain gamma
+	vector[nalts+1] g_price = g .* col(parm_matrix, 2);
 
 	if (algo_gen == 0) { //Hybrid
 		real lambda_num;
 		real lambda_den;
 		real alpha_1 = alpha[1];
-		vector[ngoods+1] b;
-		vector[ngoods+1] c;
+		vector[nalts+1] b;
+		vector[nalts+1] c;
 
-		for (j in 1:ngoods+1)
+		for (j in 1:nalts+1)
 			b[j] = pow(mu[j], inv(1 - alpha_1));
 
 		c = g_price .* b;
@@ -156,24 +156,24 @@ vector MarshallianDemand(real income, vector price, vector MUzero, vector gamma,
 			//(M+1). If lambda exceeds this value then all lower-valued
 			//alternatives have zero demand.
 
-			if (lambda > mu[min(M + 1, ngoods + 1)] || M == ngoods+1){
+			if (lambda > mu[min(M + 1, nalts + 1)] || M == nalts+1){
 				// Compute demands (using eq. 12 in Pinjari and Bhat)
 				for (m in 1:M)
 					X[m] = (pow(lambda / mu[m], inv(alpha_1 - 1)) - d[m]) * g[m];
 				exit = 1;
 
-			} else if ( M < ngoods + 1)
+			} else if ( M < nalts + 1)
 				M += 1; // adds one to M
 			}
 
 	} else if (algo_gen == 1) {//	General
 		real lambda_l;
 		real lambda_u;
-		vector[ngoods+1] c;
-		vector[ngoods+1] b_temp = col(parm_matrix, 4);
-		vector[ngoods+1] b = inv(append_row(b_temp[1], b_temp[2:ngoods+1]) - 1);
+		vector[nalts+1] c;
+		vector[nalts+1] b_temp = col(parm_matrix, 4);
+		vector[nalts+1] b = inv(append_row(b_temp[1], b_temp[2:nalts+1]) - 1);
 
-		for (j in 1:ngoods+1)
+		for (j in 1:nalts+1)
 			c[j] = mu[j] ^ b[j];
 
 		while (exit == 0){
@@ -181,7 +181,7 @@ vector MarshallianDemand(real income, vector price, vector MUzero, vector gamma,
 
 			E = ComputeE(M, lambda, g_price, b, c, d);			// Calculate E
 
-			if (E >= income || M+1 == ngoods+1){
+			if (E >= income || M+1 == nalts+1){
 				if(E < income)
 					M += 1;
 //				M = E < income ? M + 1 : M;
@@ -210,7 +210,7 @@ vector MarshallianDemand(real income, vector price, vector MUzero, vector gamma,
 					X[m] = ((lambda / mu[m]) ^ b[m] -d[m]) * g[m];
 				exit = 1;
 
-			} else if (E < income && M + 1 < ngoods + 1)
+			} else if (E < income && M + 1 < nalts + 1)
 				M += 1; // adds one to M
 		}
 	}
@@ -219,23 +219,23 @@ vector MarshallianDemand(real income, vector price, vector MUzero, vector gamma,
 return(mdemand);
 }
 /**
- * Calculate utility for all J goods
+ * Calculate utility for all J alts
  * @return utility value
  */
 real ComputeUtilJ(real income, vector quant_j, vector price_j,
 					vector psi_j, vector gamma_j, vector alpha,
-					int ngoods, int model_num) {
+					int nalts, int model_num) {
 
 	real output;
 	real util_num; // numeraire
-	vector[ngoods] util_j;
+	vector[nalts] util_j;
 
 	util_num = 1 / alpha[1] * pow(income -  price_j' * quant_j, alpha[1]);
 
 	if (model_num == 1){
 		util_j = psi_j .* gamma_j .* log(quant_j ./ gamma_j + 1);
 	} else if (model_num != 1){
-		for (n in 1:ngoods)
+		for (n in 1:nalts)
 			util_j[n] = (psi_j[n] * gamma_j[n]) / alpha[n+1] *
 			(pow(quant_j[n] / gamma_j[n] + 1, alpha[n+1]) - 1);
 	}
@@ -244,7 +244,7 @@ real ComputeUtilJ(real income, vector quant_j, vector price_j,
 return(output);
 }
 /**
- * Calculate utility for all M consumed goods
+ * Calculate utility for all M consumed alts
  * @return utility value
  */
 real ComputeUtilM(int M, real lambda1, vector g_psi_a, vector a_a_1, vector mu_a_a_1,
@@ -265,33 +265,33 @@ return(output);
 }
 /**
  * Calculate HicksDemands using general or hybrid approach
- * @return vector of ngood demands
+ * @return vector of nalt demands
  */
 vector HicksianDemand(real util, vector price,
 				vector MUzero, vector gamma, vector alpha,
-				int ngoods, int algo_gen, int model_num, real tol_l, int max_loop) {
+				int nalts, int algo_gen, int model_num, real tol_l, int max_loop) {
 
-	vector[ngoods+1] hdemand;
+	vector[nalts+1] hdemand;
 	int M = 1; // Indicator of which ordered alteratives (<=M) are being considered
 	int exit = 0;
 	real lambda1;
 	real util_new;
-	int order_x[ngoods+1] = CalcGoodOrder(MUzero, ngoods);
-	vector[ngoods+1] X = rep_vector(0, ngoods+1); // vector to hold zero demands
-	vector[ngoods+1] d = append_row(0, rep_vector(1, ngoods));
-	matrix[ngoods+1, 4] parm_matrix = SortParmMatrix(MUzero, price, gamma, alpha, ngoods);
-	vector[ngoods+1] mu = col(parm_matrix, 1); // obtain mu
-	vector[ngoods+1] g = col(parm_matrix, 3); // obtain gamma
+	int order_x[nalts+1] = CalcAltOrder(MUzero, nalts);
+	vector[nalts+1] X = rep_vector(0, nalts+1); // vector to hold zero demands
+	vector[nalts+1] d = append_row(0, rep_vector(1, nalts));
+	matrix[nalts+1, 4] parm_matrix = SortParmMatrix(MUzero, price, gamma, alpha, nalts);
+	vector[nalts+1] mu = col(parm_matrix, 1); // obtain mu
+	vector[nalts+1] g = col(parm_matrix, 3); // obtain gamma
 
 	if (algo_gen == 0) { //Hybrid approach to demand simulation (constant alpha's)
 		real lambda_num;
 		real lambda_den;
 		real alpha_1 = alpha[1]; // all alpha's are equal
-		vector[ngoods+1] g_psi = g .* mu .* col(parm_matrix, 2); // obtain gamma_psi
-		vector[ngoods+1] b;
-		vector[ngoods+1] c;
+		vector[nalts+1] g_psi = g .* mu .* col(parm_matrix, 2); // obtain gamma_psi
+		vector[nalts+1] b;
+		vector[nalts+1] c;
 
-		for (j in 1:ngoods+1)
+		for (j in 1:nalts+1)
 			b[j] = pow(mu[j], -alpha_1 / (alpha_1 - 1)); // want price/psi so take negative of exponent
 
 		c = g_psi .* b;
@@ -305,27 +305,27 @@ vector HicksianDemand(real util, vector price,
 			// Compare 1/lambda to baseline utility of the next lowest alternative
 			// (M+1). If lambda exceeds this value then all lower-valued
 			// alternatives have zero demand.
-			if (lambda1 > mu[min(M + 1, ngoods + 1)] || M == ngoods+1){
+			if (lambda1 > mu[min(M + 1, nalts + 1)] || M == nalts+1){
 
 				// Compute demands (using eq. 12 in Pinjari and Bhat)
 				for (m in 1:M)
 					X[m] = (pow(lambda1 / mu[m], inv(alpha_1 - 1)) - d[m]) * g[m];
 				exit = 1;
 
-			} else if (M < ngoods + 1)
+			} else if (M < nalts + 1)
 				M += 1; // adds one to M
 		}
 	} else if (algo_gen == 1) {//General approach to demand simulation (het. alpha's)
 		real lambda_l;
 		real lambda_u;
-		vector[ngoods+1] price_ord = col(parm_matrix, 2); // price
-		vector[ngoods+1] a = col(parm_matrix, 4);//	alpha
-		vector[ngoods+1] psi = mu .* price_ord;
-		vector[ngoods+1] g_psi_a = g .* psi ./ a; // gamma*psi/alpha
-		vector[ngoods+1] a_a_1 = a ./ (a - 1); // (alpha/(alpha-1))
-		vector[ngoods+1] mu_a_a_1; // (1/MUzero)^(alpha/(alpha-1))
+		vector[nalts+1] price_ord = col(parm_matrix, 2); // price
+		vector[nalts+1] a = col(parm_matrix, 4);//	alpha
+		vector[nalts+1] psi = mu .* price_ord;
+		vector[nalts+1] g_psi_a = g .* psi ./ a; // gamma*psi/alpha
+		vector[nalts+1] a_a_1 = a ./ (a - 1); // (alpha/(alpha-1))
+		vector[nalts+1] mu_a_a_1; // (1/MUzero)^(alpha/(alpha-1))
 
-		for (j in 1:ngoods+1)
+		for (j in 1:nalts+1)
 			mu_a_a_1[j] = pow(inv(mu[j]), a_a_1[j]);
 
 		while (exit == 0){
@@ -334,7 +334,7 @@ vector HicksianDemand(real util, vector price,
 			// Calculate new utility
 			util_new = ComputeUtilM(M, lambda1, g_psi_a, a_a_1, mu_a_a_1, psi, g, price_ord, d, model_num);
 
-			if (util_new >= util || M+1 == ngoods+1){
+			if (util_new >= util || M+1 == nalts+1){
 				if(util_new < util)
 					M += 1;
 				lambda_l = util_new < util ? 0 : lambda1;
@@ -362,7 +362,7 @@ vector HicksianDemand(real util, vector price,
 				X[m] = (pow(lambda1 / mu[m], inv(a[m] - 1)) - d[m]) * g[m];
 			exit = 1;
 
-			} else if (util_new < util && M+1 < ngoods+1)
+			} else if (util_new < util && M+1 < nalts+1)
 				M += 1; // adds one to M
 		}
 	}
@@ -376,37 +376,37 @@ matrix CalcmdemandOne_rng(real income, vector price,
 						vector psi_sims, vector gamma_sims, vector alpha_sims, real scale_sims,
 						int nerrs, int algo_gen, real tol, int max_loop){
 
-	int ngoods = num_elements(gamma_sims);
+	int nalts = num_elements(gamma_sims);
 	int nsims = 1;
-	matrix[nsims, ngoods+1] mdemand_out;
+	matrix[nsims, nalts+1] mdemand_out;
 
 	for (sim in 1:nsims){
-		vector[ngoods] psi_j = psi_sims;
-		vector[ngoods + 1] gamma = append_row(1, gamma_sims);
-		vector[ngoods + 1] alpha = alpha_sims;
+		vector[nalts] psi_j = psi_sims;
+		vector[nalts + 1] gamma = append_row(1, gamma_sims);
+		vector[nalts + 1] alpha = alpha_sims;
 		real scale = scale_sims;
-		vector[ngoods + 1] error[nerrs];
-		matrix[nerrs, ngoods + 1] mdemand;
-		row_vector[ngoods + 1] mdemand_sims;
-		matrix[ngoods + 1, nerrs] mdemand_trans;
+		vector[nalts + 1] error[nerrs];
+		matrix[nerrs, nalts + 1] mdemand;
+		row_vector[nalts + 1] mdemand_sims;
+		matrix[nalts + 1, nerrs] mdemand_trans;
 
 		for(err in 1:nerrs)
-			for(j in 1:ngoods+1)
+			for(j in 1:nalts+1)
 				error[err, j] = -log(-log(uniform_rng(0, 1))) * scale; //uniform(0,1) draws
 
 		// Compute Marshallian demands and baseline utility
 		for (err in 1:nerrs){
-			vector[ngoods + 1] MUzero_b;
-			vector[ngoods + 1] psi_b_err;
+			vector[nalts + 1] MUzero_b;
+			vector[nalts + 1] psi_b_err;
 			psi_b_err = exp(append_row(0, psi_j) + error[err]);
 			MUzero_b = psi_b_err ./ price;
 
 			mdemand[err] = MarshallianDemand(income, price, MUzero_b, gamma, alpha,
-			ngoods, algo_gen, tol, max_loop)';
+			nalts, algo_gen, tol, max_loop)';
 		}
 		mdemand_trans = mdemand';
 
-		for(g in 1:ngoods+1)
+		for(g in 1:nalts+1)
   			mdemand_sims[g] = mean(mdemand_trans[g]);
 
 		mdemand_out[sim] = mdemand_sims;
@@ -420,11 +420,11 @@ return(mdemand_out);
  * @param income income
  * @param quant_j non-numeraire consumption amounts
  * @param price full price vector
- * @param price_p_policy list of length npols containing vectors of length ngood
- * @param psi_p_sims list of length sims constaining npols X ngoods matrices of policy psi
- * @param psi_sims matrix of length nsims x ngoods containing baseline psi
- * @param gamma_sims list of length nsims containing vectors of length ngoods
- * @param alpha_sims list of length nsims containing vectors of length ngoods
+ * @param price_p_policy list of length npols containing vectors of length nalt
+ * @param psi_p_sims list of length sims constaining npols X nalts matrices of policy psi
+ * @param psi_sims matrix of length nsims x nalts containing baseline psi
+ * @param gamma_sims list of length nsims containing vectors of length nalts
+ * @param alpha_sims list of length nsims containing vectors of length nalts
  * @param scale_sims vector of length nsims
  * @param rest of model parameter options
  * @return Matrix of nsims x npols wtp
@@ -435,34 +435,34 @@ matrix CalcWTP_rng(real income, vector quant_j, vector price,
 						int nerrs, int cond_error, int draw_mlhs,
 						int algo_gen, int model_num, real tol, int max_loop){
 
-	int ngoods = num_elements(quant_j);
+	int nalts = num_elements(quant_j);
 	int nsims = num_elements(scale_sims);
 	int npols = size(price_p_policy);
 	matrix[nsims, npols] wtp;
-	real quant_num = income - quant_j' * price[2:ngoods+1];
+	real quant_num = income - quant_j' * price[2:nalts+1];
 
 	for (sim in 1:nsims){
-		vector[ngoods] psi_j = psi_sims[sim]';
-		matrix[npols, ngoods] psi_p_policy = psi_p_sims[sim]; //change for no psi_p
-//		vector[ngoods + 1] psi_b_err[nerrs]; // keep psi for use in policies
-		vector[ngoods + 1] gamma = append_row(1, gamma_sims[sim]');
-		vector[ngoods + 1] alpha = alpha_sims[sim]';
+		vector[nalts] psi_j = psi_sims[sim]';
+		matrix[npols, nalts] psi_p_policy = psi_p_sims[sim]; //change for no psi_p
+//		vector[nalts + 1] psi_b_err[nerrs]; // keep psi for use in policies
+		vector[nalts + 1] gamma = append_row(1, gamma_sims[sim]');
+		vector[nalts + 1] alpha = alpha_sims[sim]';
 		real scale = scale_sims[sim];
-		vector[ngoods + 1] error[nerrs];
+		vector[nalts + 1] error[nerrs];
 		vector[npols] wtp_policy;
 		vector[nerrs] util;
 
-		error = DrawError_rng(quant_num, quant_j, price[2:ngoods+1],
-							psi_j, gamma[2:ngoods+1], alpha, scale,
-							ngoods, nerrs, cond_error, draw_mlhs);
+		error = DrawError_rng(quant_num, quant_j, price[2:nalts+1],
+							psi_j, gamma[2:nalts+1], alpha, scale,
+							nalts, nerrs, cond_error, draw_mlhs);
 
 		// Compute Marshallian demands and baseline utility
 		for (err in 1:nerrs){
-			vector[ngoods + 1] mdemand;
-			vector[ngoods + 1] MUzero_b;
+			vector[nalts + 1] mdemand;
+			vector[nalts + 1] MUzero_b;
 //			psi_b_err[err] = exp(append_row(0, psi_j) + error[err]);
 //			MUzero_b = psi_b_err[err] ./ price;
-			vector[ngoods + 1] psi_b_err;
+			vector[nalts + 1] psi_b_err;
 			psi_b_err = exp(append_row(0, psi_j) + error[err]); //change for no psi_p
 			MUzero_b = psi_b_err ./ price; //change for no psi_p
 
@@ -470,25 +470,25 @@ matrix CalcWTP_rng(real income, vector quant_j, vector price,
 				mdemand = append_row(quant_num, quant_j);
 			} else if(cond_error == 0)
 				mdemand = MarshallianDemand(income, price, MUzero_b, gamma, alpha,
-				ngoods, algo_gen, tol, max_loop);
+				nalts, algo_gen, tol, max_loop);
 
-			util[err] = ComputeUtilJ(income, mdemand[2:ngoods+1], price[2:ngoods+1],
-									psi_b_err[2:ngoods+1], gamma[2:ngoods+1], alpha,
-									ngoods, model_num); // add err to psi_b if no psi_p
+			util[err] = ComputeUtilJ(income, mdemand[2:nalts+1], price[2:nalts+1],
+									psi_b_err[2:nalts+1], gamma[2:nalts+1], alpha,
+									nalts, model_num); // add err to psi_b if no psi_p
 		}
 
 		for (policy in 1:npols){
-			vector[ngoods + 1] price_p = price + price_p_policy[policy]; // add price increase
-			vector[ngoods] psi_p = psi_p_policy[policy]'; //change for no psi_p
+			vector[nalts + 1] price_p = price + price_p_policy[policy]; // add price increase
+			vector[nalts] psi_p = psi_p_policy[policy]'; //change for no psi_p
 			vector[nerrs] wtp_err;
 
 			for (err in 1:nerrs){
-//				vector[ngoods + 1] MUzero_p = psi_b_err[err] ./ price_p;	// change to psi_p_err for policy
-				vector[ngoods + 1] MUzero_p = exp(append_row(0, psi_p) + error[err]) ./ price_p; //change for no psi_p
-				vector[ngoods + 1] hdemand;
+//				vector[nalts + 1] MUzero_p = psi_b_err[err] ./ price_p;	// change to psi_p_err for policy
+				vector[nalts + 1] MUzero_p = exp(append_row(0, psi_p) + error[err]) ./ price_p; //change for no psi_p
+				vector[nalts + 1] hdemand;
 
 				hdemand = HicksianDemand(util[err], price_p, MUzero_p, gamma, alpha,
-										ngoods, algo_gen, model_num, tol, max_loop);
+										nalts, algo_gen, model_num, tol, max_loop);
 
 				wtp_err[err] = income - price_p' * hdemand;
 			}
@@ -504,10 +504,10 @@ return(wtp);
  * @param income income
  * @param quant_j non-numeraire consumption amounts
  * @param price full price vector
- * @param psi_p_sims list of length sims constaining npols X ngoods matrices of policy psi
- * @param psi_sims matrix of length nsims x ngoods containing baseline psi
- * @param gamma_sims list of length nsims containing vectors of length ngoods
- * @param alpha_sims list of length nsims containing vectors of length ngoods
+ * @param psi_p_sims list of length sims constaining npols X nalts matrices of policy psi
+ * @param psi_sims matrix of length nsims x nalts containing baseline psi
+ * @param gamma_sims list of length nsims containing vectors of length nalts
+ * @param alpha_sims list of length nsims containing vectors of length nalts
  * @param scale_sims vector of length nsims
  * @param rest of model parameter options
  * @return Matrix of nsims x npols wtp
@@ -517,30 +517,30 @@ matrix CalcWTPPriceOnly_rng(real income, vector quant_j, vector price,
 						matrix psi_sims, matrix gamma_sims, matrix alpha_sims, vector scale_sims,
 						int nerrs, int cond_error, int draw_mlhs, int algo_gen, int model_num, real tol, int max_loop){
 
-	int ngoods = num_elements(quant_j);
+	int nalts = num_elements(quant_j);
 	int nsims = num_elements(scale_sims);
 	int npols = size(price_p_policy);
 	matrix[nsims, npols] wtp;
-	real quant_num = income - quant_j' * price[2:ngoods+1];
+	real quant_num = income - quant_j' * price[2:nalts+1];
 
 	for (sim in 1:nsims){
-		vector[ngoods] psi_j = psi_sims[sim]';
-		vector[ngoods + 1] psi_b_err[nerrs]; // keep psi for use in policies
-		vector[ngoods + 1] gamma = append_row(1, gamma_sims[sim]');
-		vector[ngoods + 1] alpha = alpha_sims[sim]';
+		vector[nalts] psi_j = psi_sims[sim]';
+		vector[nalts + 1] psi_b_err[nerrs]; // keep psi for use in policies
+		vector[nalts + 1] gamma = append_row(1, gamma_sims[sim]');
+		vector[nalts + 1] alpha = alpha_sims[sim]';
 		real scale = scale_sims[sim];
-		vector[ngoods + 1] error[nerrs];
+		vector[nalts + 1] error[nerrs];
 		vector[npols] wtp_policy;
 		vector[nerrs] util;
 
-		error = DrawError_rng(quant_num, quant_j, price[2:ngoods+1],
-							psi_j, gamma[2:ngoods+1], alpha, scale,
-							ngoods, nerrs, cond_error, draw_mlhs);
+		error = DrawError_rng(quant_num, quant_j, price[2:nalts+1],
+							psi_j, gamma[2:nalts+1], alpha, scale,
+							nalts, nerrs, cond_error, draw_mlhs);
 
 		// Compute Marshallian demands and baseline utility
 		for (err in 1:nerrs){
-			vector[ngoods + 1] mdemand;
-			vector[ngoods + 1] MUzero_b;
+			vector[nalts + 1] mdemand;
+			vector[nalts + 1] MUzero_b;
 			psi_b_err[err] = exp(append_row(0, psi_j) + error[err]); //change for no psi_p
 			MUzero_b = psi_b_err[err] ./ price; //change for no psi_p
 
@@ -548,23 +548,23 @@ matrix CalcWTPPriceOnly_rng(real income, vector quant_j, vector price,
 				mdemand = append_row(quant_num, quant_j);
 			} else if(cond_error == 0)
 				mdemand = MarshallianDemand(income, price, MUzero_b, gamma, alpha,
-				ngoods, algo_gen, tol, max_loop);
+				nalts, algo_gen, tol, max_loop);
 
-			util[err] = ComputeUtilJ(income, mdemand[2:ngoods+1], price[2:ngoods+1],
-									psi_b_err[err, 2:ngoods+1], gamma[2:ngoods+1], alpha,
-									ngoods, model_num);
+			util[err] = ComputeUtilJ(income, mdemand[2:nalts+1], price[2:nalts+1],
+									psi_b_err[err, 2:nalts+1], gamma[2:nalts+1], alpha,
+									nalts, model_num);
 		}
 
 		for (policy in 1:npols){
-			vector[ngoods + 1] price_p = price + price_p_policy[policy]; // add price increase
+			vector[nalts + 1] price_p = price + price_p_policy[policy]; // add price increase
 			vector[nerrs] wtp_err;
 
 			for (err in 1:nerrs){
-				vector[ngoods + 1] MUzero_p = psi_b_err[err] ./ price_p;
-				vector[ngoods + 1] hdemand;
+				vector[nalts + 1] MUzero_p = psi_b_err[err] ./ price_p;
+				vector[nalts + 1] hdemand;
 
 				hdemand = HicksianDemand(util[err], price_p, MUzero_p, gamma, alpha,
-										ngoods, algo_gen, model_num, tol, max_loop);
+										nalts, algo_gen, model_num, tol, max_loop);
 
 				wtp_err[err] = income - price_p' * hdemand;
 			}
@@ -581,34 +581,34 @@ matrix[] CalcMarshallianDemand_rng(real income, vector quant_j, vector price,
 						int nerrs, int cond_error, int draw_mlhs,
 						int algo_gen, int model_num, real tol, int max_loop){
 
-	int ngoods = num_elements(quant_j);
+	int nalts = num_elements(quant_j);
 	int nsims = num_elements(scale_sims);
 	int npols = size(price_p_policy);
-	matrix[npols, ngoods+1] mdemand_out[nsims];
-	real quant_num = income - quant_j' * price[2:ngoods+1];
+	matrix[npols, nalts+1] mdemand_out[nsims];
+	real quant_num = income - quant_j' * price[2:nalts+1];
 
 	for (sim in 1:nsims){
-		vector[ngoods] psi_j = psi_sims[sim]';
-		matrix[npols, ngoods] psi_p_policy = psi_p_sims[sim]; //change for no psi_p
-//		vector[ngoods + 1] psi_b_err[nerrs]; // keep psi for use in policies
-		vector[ngoods + 1] gamma = append_row(1, gamma_sims[sim]');
-		vector[ngoods + 1] alpha = alpha_sims[sim]';
+		vector[nalts] psi_j = psi_sims[sim]';
+		matrix[npols, nalts] psi_p_policy = psi_p_sims[sim]; //change for no psi_p
+//		vector[nalts + 1] psi_b_err[nerrs]; // keep psi for use in policies
+		vector[nalts + 1] gamma = append_row(1, gamma_sims[sim]');
+		vector[nalts + 1] alpha = alpha_sims[sim]';
 		real scale = scale_sims[sim];
-		vector[ngoods + 1] error[nerrs];
-		matrix[npols, ngoods + 1] mdemand_pols;
+		vector[nalts + 1] error[nerrs];
+		matrix[npols, nalts + 1] mdemand_pols;
 		vector[nerrs] util;
 
-		error = DrawError_rng(quant_num, quant_j, price[2:ngoods+1],
-							psi_j, gamma[2:ngoods+1], alpha, scale,
-							ngoods, nerrs, cond_error, draw_mlhs);
+		error = DrawError_rng(quant_num, quant_j, price[2:nalts+1],
+							psi_j, gamma[2:nalts+1], alpha, scale,
+							nalts, nerrs, cond_error, draw_mlhs);
 
 		// Compute Marshallian demands and baseline utility
 		for (err in 1:nerrs){
-			vector[ngoods + 1] mdemand_util;
-			vector[ngoods + 1] MUzero_b;
+			vector[nalts + 1] mdemand_util;
+			vector[nalts + 1] MUzero_b;
 //			psi_b_err[err] = exp(append_row(0, psi_j) + error[err]);
 //			MUzero_b = psi_b_err[err] ./ price;
-			vector[ngoods + 1] psi_b_err;
+			vector[nalts + 1] psi_b_err;
 			psi_b_err = exp(append_row(0, psi_j) + error[err]); //change for no psi_p
 			MUzero_b = psi_b_err ./ price; //change for no psi_p
 
@@ -616,29 +616,29 @@ matrix[] CalcMarshallianDemand_rng(real income, vector quant_j, vector price,
 				mdemand_util= append_row(quant_num, quant_j);
 			} else if(cond_error == 0)
 				mdemand_util = MarshallianDemand(income, price, MUzero_b, gamma, alpha,
-				ngoods, algo_gen, tol, max_loop);
+				nalts, algo_gen, tol, max_loop);
 
-			util[err] = ComputeUtilJ(income, mdemand_util[2:ngoods+1], price[2:ngoods+1],
-									psi_b_err[2:ngoods+1], gamma[2:ngoods+1], alpha,
-									ngoods, model_num); // add err to psi_b if no psi_p
+			util[err] = ComputeUtilJ(income, mdemand_util[2:nalts+1], price[2:nalts+1],
+									psi_b_err[2:nalts+1], gamma[2:nalts+1], alpha,
+									nalts, model_num); // add err to psi_b if no psi_p
 		}
 
 		for (policy in 1:npols){
-			vector[ngoods + 1] price_p = price + price_p_policy[policy]; // add price increase
-			vector[ngoods] psi_p = psi_p_policy[policy]'; //change for no psi_p
-			row_vector[ngoods + 1] mdemand_g;
-			matrix[nerrs, ngoods + 1] mdemand_p;
-			matrix[ngoods + 1, nerrs] mdemand_trans;
+			vector[nalts + 1] price_p = price + price_p_policy[policy]; // add price increase
+			vector[nalts] psi_p = psi_p_policy[policy]'; //change for no psi_p
+			row_vector[nalts + 1] mdemand_g;
+			matrix[nerrs, nalts + 1] mdemand_p;
+			matrix[nalts + 1, nerrs] mdemand_trans;
 
 			for (err in 1:nerrs){
-				vector[ngoods + 1] MUzero_p = exp(append_row(0, psi_p) + error[err]) ./ price_p;
+				vector[nalts + 1] MUzero_p = exp(append_row(0, psi_p) + error[err]) ./ price_p;
 
 				mdemand_p[err] = MarshallianDemand(income, price, MUzero_p, gamma, alpha,
-					ngoods, algo_gen, tol, max_loop)';
+					nalts, algo_gen, tol, max_loop)';
 			}
 		mdemand_trans = mdemand_p';
 
-		for(g in 1:ngoods+1)
+		for(g in 1:nalts+1)
   			mdemand_g[g] = mean(mdemand_trans[g]);
 
 		mdemand_pols[policy] = mdemand_g;
@@ -655,30 +655,30 @@ matrix[] CalcMarshallianDemandPriceOnly_rng(real income, vector quant_j, vector 
 						int nerrs, int cond_error, int draw_mlhs,
 						int algo_gen, int model_num, real tol, int max_loop){
 
-	int ngoods = num_elements(quant_j);
+	int nalts = num_elements(quant_j);
 	int nsims = num_elements(scale_sims);
 	int npols = size(price_p_policy);
-	matrix[npols, ngoods+1] mdemand_out[nsims];
-	real quant_num = income - quant_j' * price[2:ngoods+1];
+	matrix[npols, nalts+1] mdemand_out[nsims];
+	real quant_num = income - quant_j' * price[2:nalts+1];
 
 	for (sim in 1:nsims){
-		vector[ngoods] psi_j = psi_sims[sim]';
-		vector[ngoods + 1] psi_b_err[nerrs]; // keep psi for use in policies
-		vector[ngoods + 1] gamma = append_row(1, gamma_sims[sim]');
-		vector[ngoods + 1] alpha = alpha_sims[sim]';
+		vector[nalts] psi_j = psi_sims[sim]';
+		vector[nalts + 1] psi_b_err[nerrs]; // keep psi for use in policies
+		vector[nalts + 1] gamma = append_row(1, gamma_sims[sim]');
+		vector[nalts + 1] alpha = alpha_sims[sim]';
 		real scale = scale_sims[sim];
-		vector[ngoods + 1] error[nerrs];
-		matrix[npols, ngoods + 1] mdemand_pols;
+		vector[nalts + 1] error[nerrs];
+		matrix[npols, nalts + 1] mdemand_pols;
 		vector[nerrs] util;
 
-		error = DrawError_rng(quant_num, quant_j, price[2:ngoods+1],
-							psi_j, gamma[2:ngoods+1], alpha, scale,
-							ngoods, nerrs, cond_error, draw_mlhs);
+		error = DrawError_rng(quant_num, quant_j, price[2:nalts+1],
+							psi_j, gamma[2:nalts+1], alpha, scale,
+							nalts, nerrs, cond_error, draw_mlhs);
 
 		// Compute Marshallian demands and baseline utility
 		for (err in 1:nerrs){
-			vector[ngoods + 1] mdemand_util;
-			vector[ngoods + 1] MUzero_b;
+			vector[nalts + 1] mdemand_util;
+			vector[nalts + 1] MUzero_b;
 			psi_b_err[err] = exp(append_row(0, psi_j) + error[err]); //change for no psi_p
 			MUzero_b = psi_b_err[err] ./ price; //change for no psi_p
 
@@ -686,28 +686,28 @@ matrix[] CalcMarshallianDemandPriceOnly_rng(real income, vector quant_j, vector 
 				mdemand_util= append_row(quant_num, quant_j);
 			} else if(cond_error == 0)
 				mdemand_util = MarshallianDemand(income, price, MUzero_b, gamma, alpha,
-				ngoods, algo_gen, tol, max_loop);
+				nalts, algo_gen, tol, max_loop);
 
-			util[err] = ComputeUtilJ(income, mdemand_util[2:ngoods+1], price[2:ngoods+1],
-									psi_b_err[err, 2:ngoods+1], gamma[2:ngoods+1], alpha,
-									ngoods, model_num); // add err to psi_b if no psi_p
+			util[err] = ComputeUtilJ(income, mdemand_util[2:nalts+1], price[2:nalts+1],
+									psi_b_err[err, 2:nalts+1], gamma[2:nalts+1], alpha,
+									nalts, model_num); // add err to psi_b if no psi_p
 		}
 
 		for (policy in 1:npols){
-			vector[ngoods + 1] price_p = price + price_p_policy[policy]; // add price increase
-			row_vector[ngoods + 1] mdemand_g;
-			matrix[nerrs, ngoods + 1] mdemand_p;
-			matrix[ngoods + 1, nerrs] mdemand_trans;
+			vector[nalts + 1] price_p = price + price_p_policy[policy]; // add price increase
+			row_vector[nalts + 1] mdemand_g;
+			matrix[nerrs, nalts + 1] mdemand_p;
+			matrix[nalts + 1, nerrs] mdemand_trans;
 
 			for (err in 1:nerrs){
-				vector[ngoods + 1] MUzero_p = psi_b_err[err] ./ price_p;
+				vector[nalts + 1] MUzero_p = psi_b_err[err] ./ price_p;
 
 				mdemand_p[err] = MarshallianDemand(income, price, MUzero_p, gamma, alpha,
-					ngoods, algo_gen, tol, max_loop)';
+					nalts, algo_gen, tol, max_loop)';
 			}
 		mdemand_trans = mdemand_p';
 
-		for(g in 1:ngoods+1)
+		for(g in 1:nalts+1)
   			mdemand_g[g] = mean(mdemand_trans[g]);
 
 		mdemand_pols[policy] = mdemand_g;
