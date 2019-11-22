@@ -16,7 +16,7 @@
 #' @import methods
 #' @import Rcpp
 #' @import rstantools
-#' @importFrom rstan sampling
+#' @importFrom rstan sampling get_rng get_stream
 #'
 #' @author Patrick Lloyd-Smith \email{patrick.lloydsmith@usask.ca}
 #'

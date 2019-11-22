@@ -11,9 +11,6 @@ StanWelfare <- function(df_indiv, df_common, sim_options){
 #	df_indiv <- df_wtp$df_indiv
 #	df_common <- df_wtp$df_common
 
-	message("Compiling simulation code")
-	expose_stan_functions(stanmodels$SimulationFunctions)
-
 	message("Simulating welfare...")
 
 	if (sim_options$price_change_only == FALSE){
@@ -103,9 +100,6 @@ StanWelfare <- function(df_indiv, df_common, sim_options){
 #' @return demand with nsim lists of npolsXnalts+1 matrices
 #' @keywords internal
 StanDemand <- function(df_indiv, df_common, sim_options){
-
-	message("Compiling simulation code")
-	expose_stan_functions(stanmodels$SimulationFunctions)
 
 	message("Simulating demand...")
 

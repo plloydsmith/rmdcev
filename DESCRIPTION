@@ -42,8 +42,10 @@ LazyData: true
 NeedsCompilation: yes
 Repository: CRAN
 SystemRequirements: GNU make C++14
-RoxygenNote: 6.1.1
+RoxygenNote: 7.0.0
 Suggests:
     knitr,
     rmarkdown,
 	testthat
+Author: Patrick Lloyd-Smith [aut, cre],
+  Trustees of Columbia University [cph]

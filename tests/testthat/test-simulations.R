@@ -26,11 +26,6 @@ income <- df_sim[["df_indiv"]][["income"]][[1]]
 quant_j <- df_sim[["df_indiv"]][["quant_j"]][[1]]
 price <- df_sim[["df_indiv"]][["price"]][[1]]
 
-#library(rstan)
-#expose_stan_functions("src/stan_files/SimulationFunctions.stan")
-#sim.data <- GenerateMDCEVData(model = "gamma0",  nobs = 5)
-expose_stan_functions(stanmodels$SimulationFunctions)
-
 price_j <- price[-1]
 
 

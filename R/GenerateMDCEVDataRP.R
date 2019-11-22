@@ -127,10 +127,6 @@ GenerateMDCEVDataRP <- function(model,
 
 	df_indiv <- c(income_list, price_list, psi_sims, gamma_sims, alpha_sims)
 
-	rstan::expose_stan_functions(stanmodels$SimulationFunctions)
-	#	model_src <- stanc_builder("src/stan_files/SimulationFunctions.stan")
-	#	expose_stan_functions(model_src)
-
 	quant <- purrr::pmap(df_indiv, CalcmdemandOne_rng,
 				  scale_sim=scale_parms,
 				  nerrs=nerrs, algo_gen = algo_gen,

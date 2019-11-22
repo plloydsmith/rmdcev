@@ -111,8 +111,6 @@ GenerateMDCEVData <- function(model, nobs = 1000, nalts = 10,
 
 	df_indiv <- c(income_list, price_list, psi_sims)
 
-	rstan::expose_stan_functions(stanmodels$SimulationFunctions)
-
 	quant <- purrr::pmap(df_indiv, CalcmdemandOne_rng,
 				  gamma_sim=gamma_parms,
 				  alpha_sim=alpha_parms,
