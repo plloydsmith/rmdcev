@@ -17,6 +17,11 @@ CreateListsRow <- function(x){
 #' @description Convert matrix x to a list with each row as an element
 #' @param x matrix to be converted to list
 #' @export
+#' @examples
+#'
+#' tmp <- matrix(0, nrow = 10, ncol = 5)
+#' tmp_list <- CreateListsCol(tmp)
+#'
 CreateListsCol <- function(x){
 	out <- lapply(seq_len(ncol(x)), function(i) x[,i])
 	return(out)
