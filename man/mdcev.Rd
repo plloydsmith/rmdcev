@@ -7,18 +7,18 @@
 \alias{print.summary.mdcev}
 \title{mdcev}
 \usage{
-mdcev(formula = NULL, data, subset = NULL, na.action = NULL,
-  weights = NULL, model = c("alpha", "gamma", "hybrid", "hybrid0"),
-  n_classes = 1, fixed_scale1 = 0, trunc_data = 0, seed = "123",
-  max_iterations = 2000, initial.parameters = NULL,
-  algorithm = c("MLE", "Bayes"), flat_priors = NULL,
-  print_iterations = TRUE, hessian = TRUE, prior_psi_sd = 10,
-  prior_gamma_sd = 10, prior_alpha_sd = 0.5, prior_scale_sd = 1,
-  prior_delta_sd = 10, gamma_fixed = 0, alpha_fixed = 0,
-  std_errors = "mvn", n_draws = 50, keep_loglik = 0,
-  random_parameters = "fixed", show_stan_warnings = TRUE,
-  n_iterations = 200, n_chains = 4, n_cores = 4,
-  max_tree_depth = 10, adapt_delta = 0.8, lkj_shape_prior = 4, ...)
+mdcev(formula = NULL, data, weights = NULL, model = c("alpha",
+  "gamma", "hybrid", "hybrid0"), n_classes = 1, fixed_scale1 = 0,
+  trunc_data = 0, seed = "123", max_iterations = 2000,
+  initial.parameters = NULL, algorithm = c("MLE", "Bayes"),
+  flat_priors = NULL, print_iterations = TRUE, hessian = TRUE,
+  prior_psi_sd = 10, prior_gamma_sd = 10, prior_alpha_sd = 0.5,
+  prior_scale_sd = 1, prior_delta_sd = 10, gamma_fixed = 0,
+  alpha_fixed = 0, std_errors = "mvn", n_draws = 50,
+  keep_loglik = 0, random_parameters = "fixed",
+  show_stan_warnings = TRUE, n_iterations = 200, n_chains = 4,
+  n_cores = 4, max_tree_depth = 10, adapt_delta = 0.8,
+  lkj_shape_prior = 4, ...)
 
 \method{print}{mdcev}(x, digits = max(3, getOption("digits") - 3),
   width = getOption("width"), ...)
@@ -38,11 +38,6 @@ variables that enter in the probability assignment in models with latent classes
 including 1) id, 2) alt, 3) quant, 4) price, 5) income, and columns for psi variables.
 Arrange data by id then alt. Note: I is number of individuals and J is number of
 non-numeraire alternatives.}
-
-\item{subset}{an optional vector specifying a subset of observations.}
-
-\item{na.action}{a function wich indicated what should happen when the data
-contains \code{NA}'s.}
 
 \item{weights}{an optional vector of weights. Default to 1.}
 
