@@ -3,7 +3,6 @@
 \docType{package}
 \name{rmdcev}
 \alias{rmdcev}
-\alias{rmdcev-package}
 \title{rmdcev: Estimating and simulating multiple discrete-continuous extreme value (MDCEV) demand models}
 \description{
 The rmdcev R package estimates and simulates multiple discrete-continuous extreme value (MDCEV)

@@ -4,8 +4,14 @@
 \alias{BayesMDCEV}
 \title{BayesMDCEV}
 \usage{
-BayesMDCEV(stan_data, bayes_options, initial.parameters,
-  keep.samples = FALSE, include.stanfit = TRUE, ...)
+BayesMDCEV(
+  stan_data,
+  bayes_options,
+  initial.parameters,
+  keep.samples = FALSE,
+  include.stanfit = TRUE,
+  ...
+)
 }
 \arguments{
 \item{stan_data}{data for model}

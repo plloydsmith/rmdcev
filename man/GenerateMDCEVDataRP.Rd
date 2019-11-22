@@ -4,11 +4,23 @@
 \alias{GenerateMDCEVDataRP}
 \title{GenerateMDCEVDataRP}
 \usage{
-GenerateMDCEVDataRP(model, nobs = 1000, nalts = 10, inc_lo = 1e+05,
-  inc_hi = 150000, price_lo = 100, price_hi = 500,
-  alpha_parms = 0.5, scale_parms = 1,
-  gamma_parms = stats::runif(nalts, 1, 10), psi_j_parms = c(-5, 0.5,
-  2), nerrs = 1, tol = 1e-20, max_loop = 999, corr = 0)
+GenerateMDCEVDataRP(
+  model,
+  nobs = 1000,
+  nalts = 10,
+  inc_lo = 1e+05,
+  inc_hi = 150000,
+  price_lo = 100,
+  price_hi = 500,
+  alpha_parms = 0.5,
+  scale_parms = 1,
+  gamma_parms = stats::runif(nalts, 1, 10),
+  psi_j_parms = c(-5, 0.5, 2),
+  nerrs = 1,
+  tol = 1e-20,
+  max_loop = 999,
+  corr = 0
+)
 }
 \arguments{
 \item{model}{A string indicating which model specification is estimated.

@@ -4,9 +4,18 @@
 \alias{mdcev.data}
 \title{data.frame for mdcev model}
 \usage{
-mdcev.data(data, id.var = NULL, alt.var = NULL, choice = NULL,
-  price = "price", income = "income", alt.levels = NULL,
-  drop.index = FALSE, subset = NULL, ...)
+mdcev.data(
+  data,
+  id.var = NULL,
+  alt.var = NULL,
+  choice = NULL,
+  price = "price",
+  income = "income",
+  alt.levels = NULL,
+  drop.index = FALSE,
+  subset = NULL,
+  ...
+)
 }
 \arguments{
 \item{data}{a `data.frame`,}

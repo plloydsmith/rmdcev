@@ -7,18 +7,36 @@
 \alias{print.summary.mdcev.sim}
 \title{mdcev.sim}
 \usage{
-mdcev.sim(df_indiv, df_common, sim_options, sim_type = c("welfare",
-  "demand"), nerrs = 30, cond_error = 1, draw_mlhs = 1,
-  algo_gen = NULL, tol = 1e-20, max_loop = 999,
-  suppressTime = FALSE, ...)
+mdcev.sim(
+  df_indiv,
+  df_common,
+  sim_options,
+  sim_type = c("welfare", "demand"),
+  nerrs = 30,
+  cond_error = 1,
+  draw_mlhs = 1,
+  algo_gen = NULL,
+  tol = 1e-20,
+  max_loop = 999,
+  suppressTime = FALSE,
+  ...
+)
 
-\method{print}{mdcev.sim}(x, digits = max(3, getOption("digits") - 3),
-  width = getOption("width"), ...)
+\method{print}{mdcev.sim}(
+  x,
+  digits = max(3, getOption("digits") - 3),
+  width = getOption("width"),
+  ...
+)
 
 \method{summary}{mdcev.sim}(object, ci = 0.95, ...)
 
-\method{print}{summary.mdcev.sim}(x, digits = max(3, getOption("digits")
-  - 2), width = getOption("width"), ...)
+\method{print}{summary.mdcev.sim}(
+  x,
+  digits = max(3, getOption("digits") - 2),
+  width = getOption("width"),
+  ...
+)
 }
 \arguments{
 \item{df_indiv}{Prepared individual level data from PrepareSimulationData}
