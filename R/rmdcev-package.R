@@ -36,4 +36,10 @@ if(getRversion() >= "2.15.1")
 							"CalcMarshallianDemand_rng", "CalcWTPPriceOnly_rng", "CalcMarshallianDemandPriceOnly_rng",
 							"CalcmdemandOne_rng", "parms", "sim_id","parm_id", "tau", "value", "policy", "std_dev",
 							"names_b", "parm_num", "n_eff", "Rhat", "wtp", "demand",
-							"Estimate", "Std.err", "z.stat", "ci_lo95", "ci_hi95"))
+							"Estimate", "Std.err", "z.stat", "ci_lo95", "ci_hi95",
+							"_rmdcev_CalcGoodOrder", "_rmdcev_CalcMarshallianDemandPriceOnly_rng",
+							"_rmdcev_CalcMarshallianDemand_rng", "_rmdcev_CalcWTPPriceOnly_rng",
+							"_rmdcev_CalcWTP_rng", "_rmdcev_CalcmdemandOne_rng", "_rmdcev_ComputeE",
+							"_rmdcev_ComputeUtilJ", "_rmdcev_ComputeUtilM", "_rmdcev_DrawError_rng",
+							"_rmdcev_DrawMlhs_rng", "_rmdcev_HicksianDemand", "_rmdcev_MarshallianDemand",
+							"_rmdcev_Shuffle_rng", "_rmdcev_SortParmMatrix"))

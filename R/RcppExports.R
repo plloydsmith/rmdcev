@@ -9,36 +9,36 @@ DrawMlhs_rng <- function(nerrs, draw_mlhs, base_rng__, pstream__ = 0L) {
     .Call(`_rmdcev_DrawMlhs_rng`, nerrs, draw_mlhs, base_rng__, pstream__)
 }
 
-DrawError_rng <- function(quant_num, quant_j, price_j, psi_j, gamma_j, alpha, scale, ngoods, nerrs, cond_error, draw_mlhs, base_rng__, pstream__ = 0L) {
-    .Call(`_rmdcev_DrawError_rng`, quant_num, quant_j, price_j, psi_j, gamma_j, alpha, scale, ngoods, nerrs, cond_error, draw_mlhs, base_rng__, pstream__)
+DrawError_rng <- function(quant_num, quant_j, price_j, psi_j, gamma_j, alpha, scale, nalts, nerrs, cond_error, draw_mlhs, base_rng__, pstream__ = 0L) {
+    .Call(`_rmdcev_DrawError_rng`, quant_num, quant_j, price_j, psi_j, gamma_j, alpha, scale, nalts, nerrs, cond_error, draw_mlhs, base_rng__, pstream__)
 }
 
-CalcGoodOrder <- function(MUzero, ngoods, pstream__ = 0L) {
-    .Call(`_rmdcev_CalcGoodOrder`, MUzero, ngoods, pstream__)
+CalcaltOrder <- function(MUzero, nalts, pstream__ = 0L) {
+    .Call(`_rmdcev_CalcaltOrder`, MUzero, nalts, pstream__)
 }
 
-SortParmMatrix <- function(MUzero, price, gamma, alpha, ngoods, pstream__ = 0L) {
-    .Call(`_rmdcev_SortParmMatrix`, MUzero, price, gamma, alpha, ngoods, pstream__)
+SortParmMatrix <- function(MUzero, price, gamma, alpha, nalts, pstream__ = 0L) {
+    .Call(`_rmdcev_SortParmMatrix`, MUzero, price, gamma, alpha, nalts, pstream__)
 }
 
 ComputeE <- function(M, lambda, g_price, b, c, d, pstream__ = 0L) {
     .Call(`_rmdcev_ComputeE`, M, lambda, g_price, b, c, d, pstream__)
 }
 
-MarshallianDemand <- function(income, price, MUzero, gamma, alpha, ngoods, algo_gen, tol_e, max_loop, pstream__ = 0L) {
-    .Call(`_rmdcev_MarshallianDemand`, income, price, MUzero, gamma, alpha, ngoods, algo_gen, tol_e, max_loop, pstream__)
+MarshallianDemand <- function(income, price, MUzero, gamma, alpha, nalts, algo_gen, tol_e, max_loop, pstream__ = 0L) {
+    .Call(`_rmdcev_MarshallianDemand`, income, price, MUzero, gamma, alpha, nalts, algo_gen, tol_e, max_loop, pstream__)
 }
 
-ComputeUtilJ <- function(income, quant_j, price_j, psi_j, gamma_j, alpha, ngoods, model_num, pstream__ = 0L) {
-    .Call(`_rmdcev_ComputeUtilJ`, income, quant_j, price_j, psi_j, gamma_j, alpha, ngoods, model_num, pstream__)
+ComputeUtilJ <- function(income, quant_j, price_j, psi_j, gamma_j, alpha, nalts, model_num, pstream__ = 0L) {
+    .Call(`_rmdcev_ComputeUtilJ`, income, quant_j, price_j, psi_j, gamma_j, alpha, nalts, model_num, pstream__)
 }
 
 ComputeUtilM <- function(M, lambda1, g_psi_a, a_a_1, mu_a_a_1, psi, g, price, d, model_num, pstream__ = 0L) {
     .Call(`_rmdcev_ComputeUtilM`, M, lambda1, g_psi_a, a_a_1, mu_a_a_1, psi, g, price, d, model_num, pstream__)
 }
 
-HicksianDemand <- function(util, price, MUzero, gamma, alpha, ngoods, algo_gen, model_num, tol_l, max_loop, pstream__ = 0L) {
-    .Call(`_rmdcev_HicksianDemand`, util, price, MUzero, gamma, alpha, ngoods, algo_gen, model_num, tol_l, max_loop, pstream__)
+HicksianDemand <- function(util, price, MUzero, gamma, alpha, nalts, algo_gen, model_num, tol_l, max_loop, pstream__ = 0L) {
+    .Call(`_rmdcev_HicksianDemand`, util, price, MUzero, gamma, alpha, nalts, algo_gen, model_num, tol_l, max_loop, pstream__)
 }
 
 CalcmdemandOne_rng <- function(income, price, psi_sims, gamma_sims, alpha_sims, scale_sims, nerrs, algo_gen, tol, max_loop, base_rng__, pstream__ = 0L) {
