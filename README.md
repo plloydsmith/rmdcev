@@ -45,7 +45,7 @@ if (!require(devtools)) {
   install.packages("devtools")
   library(devtools)
 }
-install_github("plloydsmith/rmdcev", build_vignettes = FALSE)
+install_github("plloydsmith/rmdcev", build_vignettes = FALSE, INSTALL_opts="--no-multiarch")
 ```
 
 Depending on your computer set-up, you may need to adjust your Makevars
@@ -103,19 +103,21 @@ mdcev_est <- mdcev(~ b1 + b2 + b3 + b4 + b5 + b6 + b7 + b8-1,
                    model = model,
                    algorithm = "MLE")
 #> Using MLE to estimate MDCEV
-#> Chain 1: Initial log joint probability = -17556.8
+#> Chain 1: Initial log joint probability = -18631.4
 #> Chain 1:     Iter      log prob        ||dx||      ||grad||       alpha      alpha0  # evals  Notes 
-#> Chain 1:       19      -14641.9      0.204815       108.929           1           1       24   
+#> Chain 1:       19      -15626.9      0.185145       107.315           1           1       22   
 #> Chain 1:     Iter      log prob        ||dx||      ||grad||       alpha      alpha0  # evals  Notes 
-#> Chain 1:       39      -14570.9      0.113784       101.523      0.2645      0.2645       45   
+#> Chain 1:       39        -15555       0.14702       84.1025           1           1       43   
 #> Chain 1:     Iter      log prob        ||dx||      ||grad||       alpha      alpha0  # evals  Notes 
-#> Chain 1:       59      -14559.4     0.0131136       26.8481        0.55        0.55       67   
+#> Chain 1:       59      -15542.6     0.0775889        40.987           1           1       65   
 #> Chain 1:     Iter      log prob        ||dx||      ||grad||       alpha      alpha0  # evals  Notes 
-#> Chain 1:       79        -14558     0.0120502       8.84637           1           1       89   
+#> Chain 1:       79      -15541.4     0.0174648       7.09082           1           1       89   
 #> Chain 1:     Iter      log prob        ||dx||      ||grad||       alpha      alpha0  # evals  Notes 
-#> Chain 1:       99      -14557.1    0.00784037       3.07293           1           1      110   
+#> Chain 1:       99      -15540.9     0.0284867       3.21212           1           1      111   
 #> Chain 1:     Iter      log prob        ||dx||      ||grad||       alpha      alpha0  # evals  Notes 
-#> Chain 1:      115      -14557.1   0.000170927      0.247455      0.3223           1      129   
+#> Chain 1:      119      -15540.9     0.0052752       1.16396           1           1      133   
+#> Chain 1:     Iter      log prob        ||dx||      ||grad||       alpha      alpha0  # evals  Notes 
+#> Chain 1:      128      -15540.9     0.0016659      0.312295           1           1      142   
 #> Chain 1: Optimization terminated normally: 
 #> Chain 1:   Convergence detected: relative gradient magnitude is below tolerance
 ```
@@ -131,39 +133,39 @@ summary(mdcev_est)
 #> Number of individuals            : 1000
 #> Number of non-numeraire alts     : 10
 #> Estimated parameters             : 20
-#> LL                               : -14557.05
-#> AIC                              : 29154.1
-#> BIC                              : 29252.26
+#> LL                               : -15540.88
+#> AIC                              : 31121.77
+#> BIC                              : 31219.92
 #> Standard errors calculated using : 50 MVN draws
 #> Exit of MLE                      : successful convergence
-#> Time taken (hh:mm:ss)            : 00:00:1.37
+#> Time taken (hh:mm:ss)            : 00:00:1.54
 #> 
 #> Average consumption of non-numeraire alternatives:
 #>     1     2     3     4     5     6     7     8     9    10 
-#> 22.12  9.23 11.89 13.22 17.99 20.27 12.60 17.36 33.84 27.90 
+#> 25.51 15.15  9.70 23.00 37.43 25.60 12.60 12.74 27.76  9.32 
 #> 
 #> Parameter estimates --------------------------------  
 #>         Estimate Std.err z.stat
-#> psi_b1    -6.173   0.592 -10.42
-#> psi_b2     0.521   0.073   7.13
-#> psi_b3     2.042   0.189  10.79
-#> psi_b4    -1.485   0.126 -11.79
-#> psi_b5     3.325   0.180  18.47
-#> psi_b6    -2.203   0.135 -16.30
-#> psi_b7     1.218   0.098  12.38
-#> psi_b8     2.176   0.142  15.29
-#> gamma1     1.596   0.279   5.72
-#> gamma2     1.587   0.266   5.96
-#> gamma3     1.175   0.199   5.90
-#> gamma4     1.989   0.269   7.38
-#> gamma5     1.207   0.148   8.14
-#> gamma6     1.345   0.186   7.24
-#> gamma7     1.252   0.184   6.80
-#> gamma8     2.135   0.318   6.71
-#> gamma9     1.825   0.247   7.39
-#> gamma10    2.076   0.256   8.12
-#> alpha1     0.454   0.028  16.24
-#> scale      1.077   0.055  19.61
+#> psi_b1    -5.514   0.547 -10.09
+#> psi_b2     0.491   0.076   6.45
+#> psi_b3     1.986   0.107  18.49
+#> psi_b4    -1.433   0.102 -14.10
+#> psi_b5     3.190   0.175  18.28
+#> psi_b6    -2.126   0.122 -17.50
+#> psi_b7     0.988   0.085  11.63
+#> psi_b8     2.053   0.124  16.50
+#> gamma1     1.323   0.209   6.34
+#> gamma2     1.459   0.195   7.50
+#> gamma3     1.136   0.219   5.18
+#> gamma4     1.522   0.312   4.87
+#> gamma5     2.177   0.324   6.71
+#> gamma6     1.692   0.212   8.00
+#> gamma7     1.260   0.205   6.14
+#> gamma8     2.001   0.342   5.85
+#> gamma9     1.331   0.193   6.90
+#> gamma10    1.232   0.249   4.95
+#> alpha1     0.473   0.027  17.73
+#> scale      1.038   0.046  22.73
 #> Note: Alpha parameter is equal for all alternatives.
 ```
 
@@ -196,26 +198,26 @@ coefs <- output %>%
 #> # A tibble: 20 x 7
 #>    parms     mean     sd  zstat  cl_lo  cl_hi  true
 #>    <chr>    <dbl>  <dbl>  <dbl>  <dbl>  <dbl> <dbl>
-#>  1 alpha1   0.454 0.0280  16.2   0.407  0.511  0.5 
-#>  2 gamma1   1.60  0.279    5.72  1.14   2.14   1.48
-#>  3 gamma10  2.08  0.256    8.12  1.68   2.64   1.71
-#>  4 gamma2   1.59  0.266    5.96  1.20   2.15   1.69
-#>  5 gamma3   1.18  0.199    5.90  0.842  1.56   1.77
-#>  6 gamma4   1.99  0.269    7.38  1.50   2.51   1.87
-#>  7 gamma5   1.21  0.148    8.14  0.979  1.49   1.16
-#>  8 gamma6   1.34  0.186    7.24  1.10   1.68   1.39
-#>  9 gamma7   1.25  0.184    6.80  0.936  1.61   1.40
-#> 10 gamma8   2.14  0.318    6.71  1.56   2.76   1.69
-#> 11 gamma9   1.82  0.247    7.39  1.41   2.31   1.55
-#> 12 psi_b1  -6.17  0.592  -10.4  -7.37  -4.99  -5   
-#> 13 psi_b2   0.521 0.0731   7.13  0.371  0.629  0.5 
-#> 14 psi_b3   2.04  0.189   10.8   1.70   2.38   2   
-#> 15 psi_b4  -1.49  0.126  -11.8  -1.70  -1.24  -1.5 
-#> 16 psi_b5   3.32  0.180   18.5   2.95   3.67   3   
-#> 17 psi_b6  -2.20  0.135  -16.3  -2.48  -1.98  -2   
-#> 18 psi_b7   1.22  0.0983  12.4   1.05   1.38   1   
-#> 19 psi_b8   2.18  0.142   15.3   1.89   2.46   2   
-#> 20 scale    1.08  0.0549  19.6   0.980  1.17   1
+#>  1 alpha1   0.473 0.0267  17.7   0.427  0.526  0.5 
+#>  2 gamma1   1.32  0.209    6.34  0.972  1.71   1.33
+#>  3 gamma10  1.23  0.249    4.95  0.880  1.90   1.13
+#>  4 gamma2   1.46  0.195    7.50  1.13   1.93   1.72
+#>  5 gamma3   1.14  0.219    5.18  0.813  1.57   1.69
+#>  6 gamma4   1.52  0.312    4.87  1.09   2.22   1.61
+#>  7 gamma5   2.18  0.324    6.71  1.67   2.72   1.75
+#>  8 gamma6   1.69  0.212    8.00  1.34   2.14   1.51
+#>  9 gamma7   1.26  0.205    6.14  0.911  1.70   1.21
+#> 10 gamma8   2.00  0.342    5.85  1.53   2.76   1.91
+#> 11 gamma9   1.33  0.193    6.90  0.987  1.64   1.48
+#> 12 psi_b1  -5.51  0.547  -10.1  -6.36  -4.39  -5   
+#> 13 psi_b2   0.491 0.0761   6.45  0.364  0.628  0.5 
+#> 14 psi_b3   1.99  0.107   18.5   1.82   2.19   2   
+#> 15 psi_b4  -1.43  0.102  -14.1  -1.62  -1.26  -1.5 
+#> 16 psi_b5   3.19  0.175   18.3   2.87   3.54   3   
+#> 17 psi_b6  -2.13  0.122  -17.5  -2.32  -1.90  -2   
+#> 18 psi_b7   0.988 0.0849  11.6   0.819  1.13   1   
+#> 19 psi_b8   2.05  0.124   16.5   1.80   2.25   2   
+#> 20 scale    1.04  0.0456  22.7   0.949  1.12   1
 ```
 
 Compare outputs using a figure
@@ -256,11 +258,11 @@ wtp <- mdcev.sim(df_sim$df_indiv,
 #> Using hybrid approach to simulation
 #> Simulating welfare...
 #> 
-#> 9.00e+05simulations finished in0.2minutes.(75949per second)
+#> 9.00e+05simulations finished in0.18minutes.(82569per second)
 summary(wtp)
 #> # A tibble: 2 x 5
-#>   policy       mean  std.dev `ci_lo2.5%` `ci_hi97.5%`
-#>   <chr>       <dbl>    <dbl>       <dbl>        <dbl>
-#> 1 policy1 -4.41e-12 6.64e-11   -1.14e-10     1.28e-10
-#> 2 policy2 -4.41e-12 6.64e-11   -1.14e-10     1.28e-10
+#>   policy      mean  std.dev `ci_lo2.5%` `ci_hi97.5%`
+#>   <chr>      <dbl>    <dbl>       <dbl>        <dbl>
+#> 1 policy1 3.84e-12 7.79e-11   -1.16e-10     1.44e-10
+#> 2 policy2 3.84e-12 7.79e-11   -1.16e-10     1.44e-10
 ```
