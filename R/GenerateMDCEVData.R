@@ -111,12 +111,16 @@ GenerateMDCEVData <- function(model, nobs = 1000, nalts = 10,
 
 	df_indiv <- c(income_list, price_list, psi_sims)
 
+	PRNG <-rstan::get_rng(seed = 3)
+	o <- rstan::get_stream()
+
 	quant <- purrr::pmap(df_indiv, CalcmdemandOne_rng,
 				  gamma_sim=gamma_parms,
 				  alpha_sim=alpha_parms,
 				  scale_sim=scale_parms,
 				  nerrs=nerrs, algo_gen = algo_gen,
-				  tol = tol, max_loop = max_loop)
+				  tol = tol, max_loop = max_loop,
+				  PRNG, o)
 
 	# Convert simulated data into data form for estimation
 	quant <- matrix(unlist(quant), nrow = nobs, byrow = TRUE)
@@ -130,7 +134,7 @@ GenerateMDCEVData <- function(model, nobs = 1000, nalts = 10,
 
 	data <- as.data.frame(cbind(id, alt, quant, price, dat_psi, income))
 
-	data <- mdcev.data(data, subset = id < 500,
+	data <- mdcev.data(data,
 					   id.var = "id",
 					   alt.var = "alt",
 					   choice = "quant")

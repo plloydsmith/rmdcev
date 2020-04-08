@@ -19,6 +19,7 @@ mdcev.sim(
   tol = 1e-20,
   max_loop = 999,
   suppressTime = FALSE,
+  stan_seed = 3,
   ...
 )
 
@@ -64,6 +65,8 @@ algorithm (=1) or uniform (=0)}
 \item{max_loop}{maximum number of loops for simulations if using general approach}
 
 \item{suppressTime}{Supress simulation time calculation}
+
+\item{stan_seed}{Seed for pseudo-random number generator get_rng see help(get_rng, package = "rstan")}
 
 \item{...}{Additional parameters to pass to mdcev.sim}
 

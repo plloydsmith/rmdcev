@@ -4,7 +4,9 @@
 \name{data_rec}
 \alias{data_rec}
 \title{Recreation data from Value of Nature to Canadians Survey}
-\format{A tibble with 16949 rows and 9 variables}
+\format{
+A tibble with 16949 rows and 9 variables
+}
 \source{
 \href{http://donnees.ec.gc.ca/data/managementoversight/systems/canadian-nature-survey-2012/}{Canadian Nature Survey 2012}
 }

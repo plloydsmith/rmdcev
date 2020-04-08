@@ -45,19 +45,23 @@ tol_e <- 1e-20
 tol_l <- 1e-20
 max_loop = 999
 
+PRNG <-rstan::get_rng(seed = 3)
+o <- rstan::get_stream()
+
 error <- DrawError_rng(quant_num, quant_j, price[-1],
 				  psi_j, gamma_j, alpha, scale,
-				  nalts = nalts, nerrs = 2, cond_error = 1, draw_mlhs = 1)
+				  nalts = nalts, nerrs = 2, cond_error = 1, draw_mlhs = 1,
+				  PRNG, o)
 
 	psi_b_err <- exp(c(0, psi_j) + error[[1]])
 	MUzero_b <- psi_b_err / price
 #	 Test hybrid algo
 	mdemand <- MarshallianDemand(income, price, MUzero_b, gamma, alpha,
-								 nalts, algo_gen = 0, tol_e = tol_e, max_loop = max_loop)
+								 nalts, algo_gen = 0, tol_e = tol_e, max_loop = max_loop, o)
 	expect_true(sum(abs(mdemand - quant)) < tol)
 	# Test general algo
 	mdemand <- MarshallianDemand(income, price, MUzero_b, gamma, alpha,
-								 nalts, algo_gen = 1, tol_e = tol_e, max_loop = max_loop)
+								 nalts, algo_gen = 1, tol_e = tol_e, max_loop = max_loop, o)
 	expect_true(sum(abs(mdemand - quant)) < tol)
 
 error <- c(0.0000000000, -0.77612399, -0.55169780, -0.02143232, -0.81241994, -0.19768961,
@@ -67,11 +71,11 @@ error <- c(0.0000000000, -0.77612399, -0.55169780, -0.02143232, -0.81241994, -0.
 psi_b_err <- exp(c(0, psi_j) + error)
 MUzero_b <- psi_b_err / price
 mdemand <- MarshallianDemand(income, price, MUzero_b, gamma, alpha,
-							 nalts, algo_gen = 0, tol_e = tol_e, max_loop = max_loop);
+							 nalts, algo_gen = 0, tol_e = tol_e, max_loop = max_loop, o);
 
 	util <- ComputeUtilJ(income, mdemand[-1], price[-1],
 							 psi_b_err[-1], gamma[-1], alpha,
-							 nalts, model_num)
+							 nalts, model_num, o)
 
 	expect_true(abs(util - 1011.104111) < tol)
 
@@ -79,12 +83,12 @@ mdemand <- MarshallianDemand(income, price, MUzero_b, gamma, alpha,
  	MUzero_p <- psi_b_err / price_p
 
 	hdemand <- HicksianDemand(util, price_p, MUzero_p,  gamma, alpha,
-			nalts, algo_gen = 0, model_num, tol_l = tol_l, max_loop = max_loop)
+			nalts, algo_gen = 0, model_num, tol_l = tol_l, max_loop = max_loop, o)
 	wtp_err <- income - t(price_p) %*% hdemand
 	expect_true(abs(wtp_err - (-62.4995)) < tol)
 
 	hdemand <- HicksianDemand(util, price_p, MUzero_p, gamma, alpha,
-							  nalts, algo_gen = 1, model_num, tol_l = tol_l, max_loop = max_loop)
+							  nalts, algo_gen = 1, model_num, tol_l = tol_l, max_loop = max_loop, o)
 	wtp_err <- income - t(price_p) %*% hdemand
 	expect_true(abs(wtp_err - (-62.4995)) < tol)
 

@@ -3,8 +3,10 @@
 #' @param stan_data data for model fromatted from processMDCEVdata
 #' @inheritParams mdcev
 #' @param mle_options modeling options for MLE
+#' @param parms_info information on parameters
 maxlikeMDCEV <- function(stan_data, initial.parameters,
-						 mle_options, ...)
+						 mle_options,
+						 parms_info, ...)
 {
 	stan.model <- stanmodels$mdcev
 
@@ -28,7 +30,7 @@ maxlikeMDCEV <- function(stan_data, initial.parameters,
 	}
 
 	if (mle_options$keep_loglik == 0)
-		stan_fit <- ReduceStanFitSize(stan_fit)
+		stan_fit <- ReduceStanFitSize(stan_fit, parms_info)
 
 	result <- list()
 	result$stan_fit <- stan_fit
@@ -75,7 +77,7 @@ maxlikeMDCEV <- function(stan_data, initial.parameters,
 							   draws = mle_options$n_draws, hessian = mle_options$hessian)
 
 		if (mle_options$keep_loglik == 0)
-			stan_fit <- ReduceStanFitSize(stan_fit)
+			stan_fit <- ReduceStanFitSize(stan_fit, parms_info)
 
 		result$stan_fit <- stan_fit
 		result$log.likelihood <- stan_fit[["par"]][["sum_log_lik"]]
@@ -89,9 +91,10 @@ return(result)
 #' @title ReduceStanFitSize
 #' @description This function reduces the size of the stan.fit object
 #' @param stan_fit A stanfit object.
+#' @param parms_info information on parameters
 #' @return A stanfit object with a reduced size.
-ReduceStanFitSize <- function(stan_fit) {
+ReduceStanFitSize <- function(stan_fit, parms_info) {
 	stan_fit[["par"]][["log_like"]] <- NULL
-	stan_fit[["theta_tilde"]] <- stan_fit[["theta_tilde"]][,1:ncol(stan_fit[["hessian"]])]
+	stan_fit[["theta_tilde"]] <- stan_fit[["theta_tilde"]][,1:parms_info$n_vars$n_parms_total]
 	return(stan_fit)
 }

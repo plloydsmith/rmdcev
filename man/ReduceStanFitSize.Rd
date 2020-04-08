@@ -4,10 +4,12 @@
 \alias{ReduceStanFitSize}
 \title{ReduceStanFitSize}
 \usage{
-ReduceStanFitSize(stan_fit)
+ReduceStanFitSize(stan_fit, parms_info)
 }
 \arguments{
 \item{stan_fit}{A stanfit object.}
+
+\item{parms_info}{information on parameters}
 }
 \value{
 A stanfit object with a reduced size.

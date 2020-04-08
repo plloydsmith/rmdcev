@@ -4,7 +4,7 @@
 \alias{maxlikeMDCEV}
 \title{maxlikeMDCEV}
 \usage{
-maxlikeMDCEV(stan_data, initial.parameters, mle_options, ...)
+maxlikeMDCEV(stan_data, initial.parameters, mle_options, parms_info, ...)
 }
 \arguments{
 \item{stan_data}{data for model fromatted from processMDCEVdata}
@@ -19,6 +19,8 @@ init = list(psi = array(0, dim = c(1, num_psi)),
 where num_psi is number of psi parameters and num_alt is number of non-numeraire alternatives}
 
 \item{mle_options}{modeling options for MLE}
+
+\item{parms_info}{information on parameters}
 
 \item{...}{Additional parameters to pass on to \code{rstan::stan}
 and \code{rstan::sampling}.}

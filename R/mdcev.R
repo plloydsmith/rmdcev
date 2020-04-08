@@ -179,6 +179,7 @@ mdcev <- function(formula = NULL, data,
 		result <- maxlikeMDCEV(stan_data,
 							   initial.parameters,
 							   mle_options,
+							   parms_info,
 							   ...)
 
 #		result[["stan_fit"]][["theta_tilde"]] <- NULL

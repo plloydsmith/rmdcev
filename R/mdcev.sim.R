@@ -13,6 +13,7 @@
 #' (i.e. constant alphas, only model 3/4) alog_gen = 1 for General approach
 #' (i.e. heterogeneous alpha's, all models)
 #' @param sim_type Either "welfare" or "demand"
+#' @param stan_seed Seed for pseudo-random number generator get_rng see help(get_rng, package = "rstan")
 #' @param suppressTime Supress simulation time calculation
 #' @param ... Additional parameters to pass to mdcev.sim
 #' @return a object of class mdcev.sim which contains a list for each
@@ -52,6 +53,7 @@ mdcev.sim <- function(df_indiv, df_common, sim_options,
 					  tol = 1e-20,
 					  max_loop = 999,
 					  suppressTime = FALSE,
+					  stan_seed = 3,
 					  ...){
 
 	start.time <- proc.time()
@@ -85,9 +87,9 @@ mdcev.sim <- function(df_indiv, df_common, sim_options,
 	sim_options[["max_loop"]] <- max_loop
 
 	if(sim_type == "welfare"){
-		out <- StanWelfare(df_indiv, df_common, sim_options)
+		out <- StanWelfare(df_indiv, df_common, sim_options, stan_seed)
 	} else if(sim_type == "demand"){
-		out <- StanDemand(df_indiv, df_common, sim_options)
+		out <- StanDemand(df_indiv, df_common, sim_options, stan_seed)
 	}
 
 	if(suppressTime == FALSE){

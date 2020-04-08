@@ -1,7 +1,7 @@
 Package: rmdcev
 Type: Package
 Title: Multiple Discrete-Continuous Extreme Value (MDCEV) Model
-Version: 1.1.1
+Version: 1.1.2
 Authors@R: c(
     person(given = "Patrick",
            family = "Lloyd-Smith",
@@ -39,10 +39,9 @@ LinkingTo:
     StanHeaders (>= 2.18.0)
 Encoding: UTF-8
 LazyData: true
-NeedsCompilation: yes
 Repository: CRAN
-SystemRequirements: GNU make C++14
-RoxygenNote: 7.0.0
+SystemRequirements: GNU make
+RoxygenNote: 7.1.0
 Suggests:
     knitr,
     rmarkdown,
