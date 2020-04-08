@@ -1,3 +1,20 @@
+rmdcev v1.1.2 (Release date: 2019-11-22)
+==============
+
+Changes:
+
+** reconfigure package to fit with rstantools
+** Fix bug to allow Hessian = FALSE **
+
+
+rmdcev v1.1.1 (Release date: 2019-11-22)
+==============
+
+Changes:
+
+** Minor changes to be compatible with rstan 2.21 **
+
+
 rmdcev v1.1.0 (Release date: 2019-10-15)
 ==============
 
