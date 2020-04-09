@@ -44,11 +44,11 @@ BayesMDCEV <- function(stan_data, bayes_options,
 		stan.model <- stanmodels$mdcev
 	}else if (bayes_options$random_parameters == "uncorr"){
 		message("Using Bayes to estimate uncorrelated RP-MDCEV")
-		stan.model <- stanmodels$mdcev_lc
+		stan.model <- stanmodels$mdcev_rp
 		stan_data$corr <- 0
 	}else if (bayes_options$random_parameters == "corr"){
 		message("Using Bayes to estimate correlated RP-MDCEV")
-		stan.model <- stanmodels$mdcev_lc
+		stan.model <- stanmodels$mdcev_rp
 		stan_data$corr <- 1
 	}
 
