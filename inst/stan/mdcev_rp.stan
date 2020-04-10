@@ -137,6 +137,6 @@ generated quantities{
 //	}
 
 	for(i in 1:I){
-		sum_log_lik = sum_log_lik + log_like[i];
+		sum_log_lik = sum_log_lik + log_like[i] * weights[i];
 	}
 }

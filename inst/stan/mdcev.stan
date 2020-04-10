@@ -92,7 +92,7 @@ generated quantities{
 	vector[K > 1 ? I : 0] theta[K];
 
 	for(i in 1:I){
-		sum_log_lik = sum_log_lik + log_like[i];
+		sum_log_lik = sum_log_lik + log_like[i] * weights[i];
 		if (K > 1){
   			vector[K] theta1 = log_softmax(append_row(0, delta * data_class[i]));
 			for(k in 1:K)
