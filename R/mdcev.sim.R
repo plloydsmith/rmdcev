@@ -85,12 +85,9 @@ mdcev.sim <- function(df_indiv, df_common, sim_options,
 	sim_options[["algo_gen"]] <- algo_gen
 	sim_options[["tol"]] <- tol
 	sim_options[["max_loop"]] <- max_loop
+	sim_options[["sim_type"]] <- sim_type
 
-	if(sim_type == "welfare"){
-		out <- StanWelfare(df_indiv, df_common, sim_options, stan_seed)
-	} else if(sim_type == "demand"){
-		out <- StanDemand(df_indiv, df_common, sim_options, stan_seed)
-	}
+	out <- StanSimulate(df_indiv, df_common, sim_options, stan_seed)
 
 	if(suppressTime == FALSE){
 		time <- proc.time() - start.time

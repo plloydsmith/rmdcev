@@ -1252,7 +1252,7 @@ public:
             current_statement_begin__ = 209;
             for (int i = 1; i <= I; ++i) {
                 current_statement_begin__ = 210;
-                stan::math::assign(sum_log_lik, (sum_log_lik + get_base1(log_like, i, "log_like", 1)));
+                stan::math::assign(sum_log_lik, (sum_log_lik + (get_base1(log_like, i, "log_like", 1) * get_base1(weights, i, "weights", 1))));
                 current_statement_begin__ = 211;
                 if (as_bool(logical_gt(K, 1))) {
                     {

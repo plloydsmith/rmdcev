@@ -1395,7 +1395,7 @@ public:
             current_statement_begin__ = 254;
             for (int i = 1; i <= I; ++i) {
                 current_statement_begin__ = 255;
-                stan::math::assign(sum_log_lik, (sum_log_lik + get_base1(log_like, i, "log_like", 1)));
+                stan::math::assign(sum_log_lik, (sum_log_lik + (get_base1(log_like, i, "log_like", 1) * get_base1(weights, i, "weights", 1))));
             }
             // validate, write generated quantities
             current_statement_begin__ = 242;

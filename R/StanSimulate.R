@@ -1,39 +1,33 @@
 
-#' @title StanWelfare
-#' @description Use Stan functions to simulate Welfare
+#' @title StanSimulate
+#' @description Use Stan functions to simulate Welfare and Demand
 #' @inheritParams mdcev.sim
-#' @return wtp list
+#' @return out list
 #' @keywords internal
-StanWelfare <- function(df_indiv, df_common, sim_options, stan_seed){
+StanSimulate <- function(df_indiv, df_common, sim_options, stan_seed){
 
 	PRNG <-rstan::get_rng(seed = stan_seed)
 	o <- rstan::get_stream()
 
-#	df_indiv <- df_wtp$df_indiv
-#	df_common <- df_wtp$df_common
-
-	message("Simulating welfare...")
-
-	if (sim_options$price_change_only == FALSE){
-		wtp <- purrr::pmap(df_indiv, CalcWTP_rng,
-				price_p_policy=df_common$price_p_fixed,
-				gamma_sim=df_common$gamma_sim_fixed,
-				alpha_sim=df_common$alpha_sim_fixed,
-				scale_sim=df_common$scale_sim,
-				nerrs=sim_options$nerrs,
-				cond_error=sim_options$cond_error,
-				draw_mlhs=sim_options$draw_mlhs,
-				algo_gen=sim_options$algo_gen,
-				model_num=sim_options$model_num,
-				tol = sim_options$tol,
-				max_loop = sim_options$max_loop,
-				PRNG, o)
-	} else if (sim_options$price_change_only == TRUE){
+	if(sim_options$sim_type == "welfare"){
+		message("Simulating welfare...")
+		if (sim_options$price_change_only == FALSE)
+			stan_function <- CalcWTP_rng
+		else if (sim_options$price_change_only == TRUE)
+			stan_function <- CalcWTPPriceOnly_rng
+	} else if(sim_options$sim_type == "demand"){
+		stan_function <- CalcMarshallianDemand_rng
+		message("Simulating demand...")
+		if (sim_options$price_change_only == FALSE)
+			stan_function <- CalcMarshallianDemand_rng
+		else if (sim_options$price_change_only == TRUE)
+			stan_function <- CalcMarshallianDemandPriceOnly_rng
+	}
 
 		if(!is.null(df_common$gamma_sim_fixed) &
 		   !is.null(df_common$alpha_sim_fixed)){
 
-		wtp <- purrr::pmap(df_indiv, CalcWTPPriceOnly_rng,
+		out <- purrr::pmap(df_indiv, stan_function,
 					price_p_policy=df_common$price_p_list,
 					gamma_sim=df_common$gamma_sim_fixed,
 					alpha_sim=df_common$alpha_sim_fixed,
@@ -50,7 +44,7 @@ StanWelfare <- function(df_indiv, df_common, sim_options, stan_seed){
 		} else if(!is.null(df_common$gamma_sim_fixed) &
 				  is.null(df_common$alpha_sim_fixed)){
 
-			wtp <- purrr::pmap(df_indiv, CalcWTPPriceOnly_rng,
+			out <- purrr::pmap(df_indiv, stan_function,
 							   price_p_policy=df_common$price_p_list,
 							   gamma_sim=df_common$gamma_sim_fixed,
 							   scale_sim=df_common$scale_sim,
@@ -66,7 +60,7 @@ StanWelfare <- function(df_indiv, df_common, sim_options, stan_seed){
 		} else if(is.null(df_common$gamma_sim_fixed) &
 				  !is.null(df_common$alpha_sim_fixed)){
 
-			wtp <- purrr::pmap(df_indiv, CalcWTPPriceOnly_rng,
+			out <- purrr::pmap(df_indiv, stan_function,
 							   price_p_policy=df_common$price_p_list,
 							   alpha_sim=df_common$alpha_sim_fixed,
 							   scale_sim=df_common$scale_sim,
@@ -82,7 +76,7 @@ StanWelfare <- function(df_indiv, df_common, sim_options, stan_seed){
 		} else if(is.null(df_common$gamma_sim_fixed) &
 				  is.null(df_common$alpha_sim_fixed)){
 
-			wtp <- purrr::pmap(df_indiv, CalcWTPPriceOnly_rng,
+			out <- purrr::pmap(df_indiv, stan_function,
 							   price_p_policy=df_common$price_p_list,
 							   scale_sim=df_common$scale_sim,
 							   nerrs=sim_options$nerrs,
@@ -94,102 +88,6 @@ StanWelfare <- function(df_indiv, df_common, sim_options, stan_seed){
 							   max_loop = sim_options$max_loop,
 							   PRNG, o)
 		}
-	}
-	return(wtp)
-}
 
-#' @title StanDemand
-#' @description Use Stan functions to simulate Marshallian demand
-#' @inheritParams mdcev.sim
-#' @return demand with nsim lists of npolsXnalts+1 matrices
-#' @keywords internal
-StanDemand <- function(df_indiv, df_common, sim_options, stan_seed){
-
-	PRNG <-rstan::get_rng(seed = stan_seed)
-	o <- rstan::get_stream()
-
-	message("Simulating demand...")
-
-	if (sim_options$price_change_only == FALSE){
-		demand <- purrr::pmap(df_indiv, CalcMarshallianDemand_rng,
-						   price_p_policy=df_common$price_p_list,
-						   gamma_sim=df_common$gamma_sim_fixed,
-						   alpha_sim=df_common$alpha_sim_fixed,
-						   scale_sim=df_common$scale_sim,
-						   nerrs=sim_options$nerrs,
-						   cond_error=sim_options$cond_error,
-						   draw_mlhs=sim_options$draw_mlhs,
-						   algo_gen=sim_options$algo_gen,
-						   model_num=sim_options$model_num,
-						   tol = sim_options$tol,
-						   max_loop = sim_options$max_loop,
-							  PRNG, o)
-	} else if (sim_options$price_change_only == TRUE){
-
-		if(!is.null(df_common$gamma_sim_fixed) &
-		   !is.null(df_common$alpha_sim_fixed)){
-
-			demand <- purrr::pmap(df_indiv, CalcMarshallianDemandPriceOnly_rng,
-								  price_p_policy=df_common$price_p_list,
-								  gamma_sim=df_common$gamma_sim_fixed,
-								  alpha_sim=df_common$alpha_sim_fixed,
-								  scale_sim=df_common$scale_sim,
-								  nerrs=sim_options$nerrs,
-								  cond_error=sim_options$cond_error,
-								  draw_mlhs=sim_options$draw_mlhs,
-								  algo_gen=sim_options$algo_gen,
-								  model_num=sim_options$model_num,
-								  tol = sim_options$tol,
-								  max_loop = sim_options$max_loop,
-								  PRNG, o)
-
-		} else if(!is.null(df_common$gamma_sim_fixed) &
-				  is.null(df_common$alpha_sim_fixed)){
-
-			demand <- purrr::pmap(df_indiv, CalcMarshallianDemandPriceOnly_rng,
-								  price_p_policy=df_common$price_p_list,
-								  gamma_sim=df_common$gamma_sim_fixed,
-								  scale_sim=df_common$scale_sim,
-								  nerrs=sim_options$nerrs,
-								  cond_error=sim_options$cond_error,
-								  draw_mlhs=sim_options$draw_mlhs,
-								  algo_gen=sim_options$algo_gen,
-								  model_num=sim_options$model_num,
-								  tol = sim_options$tol,
-								  max_loop = sim_options$max_loop,
-								  PRNG, o)
-
-		} else if(is.null(df_common$gamma_sim_fixed) &
-				  !is.null(df_common$alpha_sim_fixed)){
-
-			demand <- purrr::pmap(df_indiv, CalcMarshallianDemandPriceOnly_rng,
-								  price_p_policy=df_common$price_p_list,
-								  alpha_sim=df_common$alpha_sim_fixed,
-								  scale_sim=df_common$scale_sim,
-								  nerrs=sim_options$nerrs,
-								  cond_error=sim_options$cond_error,
-								  draw_mlhs=sim_options$draw_mlhs,
-								  algo_gen=sim_options$algo_gen,
-								  model_num=sim_options$model_num,
-								  tol = sim_options$tol,
-								  max_loop = sim_options$max_loop,
-								  PRNG, o)
-
-		} else if(is.null(df_common$gamma_sim_fixed) &
-				  is.null(df_common$alpha_sim_fixed)){
-
-			demand <- purrr::pmap(df_indiv, CalcMarshallianDemandPriceOnly_rng,
-								  price_p_policy=df_common$price_p_list,
-								  scale_sim=df_common$scale_sim,
-								  nerrs=sim_options$nerrs,
-								  cond_error=sim_options$cond_error,
-								  draw_mlhs=sim_options$draw_mlhs,
-								  algo_gen=sim_options$algo_gen,
-								  model_num=sim_options$model_num,
-								  tol = sim_options$tol,
-								  max_loop = sim_options$max_loop,
-								  PRNG, o)
-		}
-	}
-	return(demand)
+	return(out)
 }
