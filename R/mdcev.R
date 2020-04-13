@@ -15,6 +15,7 @@
 #' @param n_classes The number of latent classes.
 #' @param fixed_scale1 Whether to fix scale at 1.
 #' @param trunc_data Whether the estimation should be adjusted for truncation
+#' @param gamma_ascs For kt_les model, whether to include alternative-specific gammas.
 #' @param seed Random seed.
 #' @param algorithm Either "Bayes" for Bayes or "MLE"
 #'     for maximum liklihood estimation.
@@ -37,6 +38,7 @@
 #'             scale = array(1, dim = c(1)))
 #' where num_psi is number of psi parameters and num_alt is number of non-numeraire alternatives
 #' @param prior_psi_sd standard deviation for normal prior with mean 0.
+#' @param prior_phi_sd standard deviation for normal prior with mean 0.
 #' @param prior_gamma_sd standard deviation for normal prior with mean 0.
 #' @param prior_alpha_sd standard deviation for normal prior with mean 0.5.
 #' @param prior_scale_sd standard deviation for normal prior with mean 1.
@@ -73,10 +75,11 @@
 #'}
 mdcev <- function(formula = NULL, data,
 				 weights = NULL,
-				 model = c("alpha", "gamma", "hybrid", "hybrid0"),
+				 model = c("alpha", "gamma", "hybrid", "hybrid0", "kt_les"),
 				 n_classes = 1,
 				 fixed_scale1 = 0,
 				 trunc_data = 0,
+				 gamma_ascs = 0,
 				 seed = "123",
 				 max_iterations = 2000,
 				 initial.parameters = NULL,
@@ -86,6 +89,7 @@ mdcev <- function(formula = NULL, data,
 				 hessian = TRUE,
 				 prior_psi_sd = 10,
 				 prior_gamma_sd = 10,
+				 prior_phi_sd = 10,
 				 prior_alpha_sd = 0.5,
 				 prior_scale_sd = 1,
 				 prior_delta_sd = 10,
@@ -131,6 +135,7 @@ mdcev <- function(formula = NULL, data,
 						model = model,
 						n_classes = n_classes,
 						trunc_data = trunc_data,
+						gamma_ascs = gamma_ascs,
 						seed = seed,
 						max_iterations = max_iterations,
 						print_iterations = print_iterations,

@@ -11,10 +11,11 @@ mdcev(
   formula = NULL,
   data,
   weights = NULL,
-  model = c("alpha", "gamma", "hybrid", "hybrid0"),
+  model = c("alpha", "gamma", "hybrid", "hybrid0", "kt_les"),
   n_classes = 1,
   fixed_scale1 = 0,
   trunc_data = 0,
+  gamma_ascs = 0,
   seed = "123",
   max_iterations = 2000,
   initial.parameters = NULL,
@@ -24,6 +25,7 @@ mdcev(
   hessian = TRUE,
   prior_psi_sd = 10,
   prior_gamma_sd = 10,
+  prior_phi_sd = 10,
   prior_alpha_sd = 0.5,
   prior_scale_sd = 1,
   prior_delta_sd = 10,
@@ -77,6 +79,8 @@ The options are "alpha", "gamma", "hybrid" and "hybrid0".}
 
 \item{trunc_data}{Whether the estimation should be adjusted for truncation}
 
+\item{gamma_ascs}{For kt_les model, whether to include alternative-specific gammas.}
+
 \item{seed}{Random seed.}
 
 \item{max_iterations}{Maximum number of iterations in MLE estimation.}
@@ -103,6 +107,8 @@ optimizing function will then be equal to log-likelihood. Defaults to 1 if MLE u
 \item{prior_psi_sd}{standard deviation for normal prior with mean 0.}
 
 \item{prior_gamma_sd}{standard deviation for normal prior with mean 0.}
+
+\item{prior_phi_sd}{standard deviation for normal prior with mean 0.}
 
 \item{prior_alpha_sd}{standard deviation for normal prior with mean 0.5.}
 

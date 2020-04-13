@@ -46,7 +46,7 @@ maxlikeMDCEV <- function(stan_data, initial.parameters,
 		# Extract the parameters to use as initial values for LC model
 		# Need to ensure to replicate intial values for each class
 		init.par <- stan_fit$par
-
+		K <- stan_data$K
 		# add shift to psi values values
 		init.psi <- init.par$psi
 		init.shift <- seq(-0.02, 0.02, length.out = stan_data$NPsi)
@@ -61,12 +61,20 @@ maxlikeMDCEV <- function(stan_data, initial.parameters,
 			init$scale <- rep(stan_fit$par[["scale"]], stan_data$K)
 
 		if (stan_data$model_num == 1 || stan_data$model_num == 3){
-			init$alpha <- matrix(rep(init.par$alpha, stan_data$K), nrow=stan_data$K, ncol=1)
-			init$gamma <- matrix(rep(init.par$gamma, stan_data$K), nrow=stan_data$K, ncol=stan_data$J)
+			init$alpha <- matrix(rep(init.par$alpha, K), nrow=K, ncol=1)
+			init$gamma <- matrix(rep(init.par$gamma, K), nrow=K, ncol=stan_data$J)
 		} else if (stan_data$model_num == 2){
-			init$alpha <- matrix(rep(init.par$alpha, stan_data$K), nrow=stan_data$K, ncol=stan_data$J+1)
+			init$alpha <- matrix(rep(init.par$alpha, K), nrow=K, ncol=stan_data$J+1)
 		} else if (stan_data$model_num == 4){
-			init$gamma <- matrix(rep(init.par$gamma, stan_data$K), nrow=stan_data$K, ncol=stan_data$J)
+			init$gamma <- matrix(rep(init.par$gamma, K), nrow=K, ncol=stan_data$J)
+		} else if (stan_data$model_num == 5){
+			init$alpha <- matrix(rep(init.par$alpha, K), nrow=K, ncol=1)
+			init$phi <- matrix(rep(init.par$phi, K), nrow=K, ncol=stan_data$NPhi)
+			if (stan_data$gamma_ascs == 1){
+			init$gamma <- matrix(rep(init.par$gamma, K), nrow=K, ncol=stan_data$J)
+			} else if (stan_data$gamma_ascs == 0){
+				init$gamma <- matrix(rep(init.par$gamma, K), nrow=K, ncol=1)
+			}
 		}
 
 		message("Using MLE to estimate LC-MDCEV")

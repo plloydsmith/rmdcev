@@ -40,7 +40,7 @@ summary.mdcev <- function(object, printCI=FALSE, ...){
 					   std_err = as.numeric(std_err),
 					   Estimate = round(coefs, 3),
 					   Std.err = round(ifelse(stringr::str_detect(parms, "alpha"), std_err*exp(-coefs)/((1+exp(-coefs)))^2,
-					   					   ifelse(stringr::str_detect(parms, "gamma|scale"), std_err*coefs, std_err)),3),
+					   					   ifelse(stringr::str_detect(parms, "gamma|scale|phi"), std_err*coefs, std_err)),3),
 					   z.stat = round(coefs / Std.err,2),
 					   ci_lo95 = round(coefs - 1.96 * Std.err,3),
 					   ci_hi95 = round(coefs + 1.96 * Std.err,3)) %>%

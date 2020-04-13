@@ -2,7 +2,6 @@
 int G = J + 1;
 int A;
 int Gamma;
-vector[I] log_inc = log(income);
 vector[I] log_num;
 matrix[I, J] nonzero;
 vector[I] M;	//  Number of consumed alts (including numeraire)
@@ -18,7 +17,7 @@ for(i in 1:I){
 
 log_M_fact = lgamma(M); // lgamma(M) = log((M-1)!)
 
-if (model_num == 1 || model_num == 3){
+if (model_num == 1 || model_num == 3 || model_num == 5){
  	A = 1;
  	Gamma = J;
 } else if (model_num == 2){
@@ -27,4 +26,8 @@ if (model_num == 1 || model_num == 3){
 } else if (model_num == 4){
 	A = 0;
  	Gamma = J;
+}
+
+if (model_num == 5 && gamma_ascs == 0){
+ 	Gamma = 1;
 }

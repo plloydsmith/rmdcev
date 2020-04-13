@@ -18,18 +18,31 @@ for (i in 1:length(psi_names))
 psi_names <- paste0(rep('psi', n_psi), sep="_", psi_names)
 
 
-if (stan_data$model_num == 1){
+if (stan_data$model_num == 1 || stan_data$model_num == 3){
 	n_alpha <- 1
 	n_gamma <- J
 } else if (stan_data$model_num == 2){
 	n_alpha <- J + 1
 	n_gamma <- 0
-} else if (stan_data$model_num == 3){
-	n_alpha <- 1
-	n_gamma <- J
 } else if (stan_data$model_num == 4){
 	n_alpha <- 0
 	n_gamma <- J
+} else if (stan_data$model_num == 5){
+	n_alpha <- 1
+
+	if (stan_data$gamma_ascs == 0)
+		n_gamma <- 1
+	else if (stan_data$gamma_ascs == 1)
+		n_gamma <- J
+
+	n_phi <- stan_data$NPhi
+	phi_names <- colnames(stan_data[["dat_phi"]])
+	phi_names <- paste0(rep('phi', n_phi), sep="_", phi_names)
+}
+
+if (stan_data$model_num != 5 || stan_data$NPhi == 0){
+	phi_names <- NULL
+	n_phi <- 0
 }
 
 if (stan_data$fixed_scale1 == 1){
@@ -55,13 +68,14 @@ if (stan_data$model == 4){
 }
 
 parm_names <- list(psi_names=psi_names,
+				   phi_names=phi_names,
 				   gamma_names=gamma_names,
 				   alpha_names=alpha_names,
 				   scale_names=scale_names,
-				   all_names = c(psi_names, gamma_names, alpha_names, scale_names))
+				   all_names = c(psi_names, phi_names, gamma_names, alpha_names, scale_names))
 
-n_parameters <- n_psi + n_alpha + n_gamma + n_scale
-n_vars = list(n_psi = n_psi, n_alpha = n_alpha, n_gamma = n_gamma, n_scale = n_scale)
+n_parameters <- n_psi + n_phi + n_alpha + n_gamma + n_scale
+n_vars = list(n_psi = n_psi, n_phi = n_phi, n_alpha = n_alpha, n_gamma = n_gamma, n_scale = n_scale)
 
 if (stan_data$K > 1){
 	n_vars <- purrr::map(n_vars, function(x){x* stan_data$K})
@@ -91,8 +105,9 @@ if(random_parameters != "fixed"){
 		n_alpha_rp <- n_alpha
 		alpha_sd_names <- alpha_names
 	}
-	n_vars$n_std_dev <- n_psi + n_gamma_rp + n_alpha_rp
-	parm_names$sd_names <- paste0("sd.", c(psi_names, gamma_sd_names, alpha_sd_names))
+
+	n_vars$n_std_dev <- n_psi + n_phi + n_gamma_rp + n_alpha_rp
+	parm_names$sd_names <- paste0("sd.", c(psi_names, phi_names, gamma_sd_names, alpha_sd_names))
 
 	if (random_parameters == "corr"){
 		n_vars$n_std_corr <- n_vars$n_std_dev * (n_vars$n_std_dev-1) / 2
