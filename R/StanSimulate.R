@@ -29,9 +29,9 @@ StanSimulate <- function(df_indiv, df_common, sim_options, stan_seed){
 
 		out <- purrr::pmap(df_indiv, stan_function,
 					price_p_policy=df_common$price_p_list,
-					gamma_sim=df_common$gamma_sim_fixed,
-					alpha_sim=df_common$alpha_sim_fixed,
-					scale_sim=df_common$scale_sim,
+					gamma_sims=df_common$gamma_sim_fixed,
+					alpha_sims=df_common$alpha_sim_fixed,
+					scale_sims=df_common$scale_sim,
 					nerrs=sim_options$nerrs,
 					cond_error=sim_options$cond_error,
 					draw_mlhs=sim_options$draw_mlhs,
@@ -46,8 +46,8 @@ StanSimulate <- function(df_indiv, df_common, sim_options, stan_seed){
 
 			out <- purrr::pmap(df_indiv, stan_function,
 							   price_p_policy=df_common$price_p_list,
-							   gamma_sim=df_common$gamma_sim_fixed,
-							   scale_sim=df_common$scale_sim,
+							   gamma_sims=df_common$gamma_sim_fixed,
+							   scale_sims=df_common$scale_sim,
 							   nerrs=sim_options$nerrs,
 							   cond_error=sim_options$cond_error,
 							   draw_mlhs=sim_options$draw_mlhs,
@@ -62,8 +62,8 @@ StanSimulate <- function(df_indiv, df_common, sim_options, stan_seed){
 
 			out <- purrr::pmap(df_indiv, stan_function,
 							   price_p_policy=df_common$price_p_list,
-							   alpha_sim=df_common$alpha_sim_fixed,
-							   scale_sim=df_common$scale_sim,
+							   alpha_sims=df_common$alpha_sim_fixed,
+							   scale_sims=df_common$scale_sim,
 							   nerrs=sim_options$nerrs,
 							   cond_error=sim_options$cond_error,
 							   draw_mlhs=sim_options$draw_mlhs,
@@ -78,7 +78,7 @@ StanSimulate <- function(df_indiv, df_common, sim_options, stan_seed){
 
 			out <- purrr::pmap(df_indiv, stan_function,
 							   price_p_policy=df_common$price_p_list,
-							   scale_sim=df_common$scale_sim,
+							   scale_sims=df_common$scale_sim,
 							   nerrs=sim_options$nerrs,
 							   cond_error=sim_options$cond_error,
 							   draw_mlhs=sim_options$draw_mlhs,

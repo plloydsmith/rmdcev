@@ -130,7 +130,7 @@ mdcev <- function(formula = NULL, data,
 		alpha_fixed <- 1
 	}
 
-	# Put model options in a list
+		# Put model options in a list
 	mle_options <- list(fixed_scale1 = fixed_scale1,
 						model = model,
 						n_classes = n_classes,
@@ -165,6 +165,14 @@ mdcev <- function(formula = NULL, data,
 	stan_data <- processMDCEVdata(formula, data, mle_options)
 
 	parms_info <- CreateParmInfo(stan_data, algorithm, random_parameters)
+
+	if(!is.null(initial.parameters)){
+		initial.parameters$psi = array(initial.parameters$psi, dim=c(1,parms_info[["n_vars"]][["n_psi"]]))
+		initial.parameters$phi = array(initial.parameters$phi, dim=c(1,parms_info[["n_vars"]][["n_phi"]]))
+		initial.parameters$scale = array(initial.parameters$scale, dim=c(parms_info[["n_vars"]][["n_scale"]]))
+		initial.parameters$alpha = array(initial.parameters$alpha, dim=c(1,parms_info[["n_vars"]][["n_alpha"]]))
+		initial.parameters$gamma = array(initial.parameters$gamma, dim=c(1,parms_info[["n_vars"]][["n_gamma"]]))
+	}
 
 	# If no user supplied weights, replace weights with vector of ones
 	if (is.null(weights))

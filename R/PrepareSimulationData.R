@@ -86,11 +86,11 @@ PrepareSimulationData <- function(object,
 									   paste(class)))
 	}
 
-	sim_welfare <- ProcessSimulationData(est_sim, object, policies, nsims)
-	df_common <- sim_welfare
+	sim_data <- ProcessSimulationData(est_sim, object, policies, nsims)
+	df_common <- sim_data
 	df_common$df_indiv <- NULL
 
-	df_indiv <- sim_welfare$df_indiv
+	df_indiv <- sim_data$df_indiv
 
 	sim_options <- list(n_classes = object$n_classes,
 					model_num = model_num,
@@ -129,16 +129,19 @@ ProcessSimulationData <- function(est_sim, object, policies, nsims){
 		scale_sim = matrix(1, nsims, 1)
 	}
 
-
 	# Get fixed parameters for gammas
 	if (model_num == 2){
 		gamma_sim_fixed <- matrix(1, nsims, J)
 	} else if (model_num != 2 & gamma_fixed == 1){
 		gamma_sim_fixed <- t(GrabParms(est_sim, "gamma"))
-	} else if (gamma_fixed == 0){
-		gamma_sim_fixed <- NULL
 	}
 
+	if (model_num == 5 && object$stan_data$gamma_ascs == 0){
+		gamma_sim_fixed <- matrix(rep(gamma_sim_fixed, each=J), ncol=J, byrow=TRUE)
+	}
+
+	if (gamma_fixed == 0)
+		gamma_sim_fixed <- NULL
 
 	# alphas
 	if (model_num == 4){
@@ -146,7 +149,7 @@ ProcessSimulationData <- function(est_sim, object, policies, nsims){
 	} else if (model_num != 4 & alpha_fixed == 1){
 		alpha_sim_fixed <- t(GrabParms(est_sim, "alpha"))
 
-		if (model_num == 1) {
+		if (model_num == 1 || model_num == 5) {
 			alpha_sim_fixed <- cbind(alpha_sim_fixed, matrix(0, nsims, J) )
 		} else if (model_num == 3){
 			alpha_sim_fixed <- matrix(rep(alpha_sim_fixed, each=J+1), ncol=J+1, byrow=TRUE)
@@ -235,45 +238,36 @@ if(random_parameters != "fixed"){
 	}
 
 	if (gamma_fixed == 0){
-		gamma_sim_rand <- est_sim %>%
-			dplyr::filter(grepl(c("gamma"), parms)) %>%
-			dplyr::select(id, sim_id, .data$parm_id, beta) %>%
-			tidyr::spread(.data$parm_id, beta) %>%
-			dplyr::select(-sim_id) %>%
-			dplyr::group_split(id, keep = F)
+		gamma_sim_rand <- GrabIndividualParms(est_sim, "gamma")
 
 		gamma_sim_rand <- purrr::map(gamma_sim_rand, ~as.matrix(.))
 
 		gamma_sim_rand <- list(gamma_sim_rand)
-		names(gamma_sim_rand) <- "gamma_sim"
+		names(gamma_sim_rand) <- "gamma_sims"
 	}
 
 	if (alpha_fixed == 0){
-		alpha_sim_rand <- est_sim %>%
-			dplyr::filter(grepl(c("alpha"), parms)) %>%
-			dplyr::select(id, sim_id, .data$parm_id, beta) %>%
-			tidyr::spread(.data$parm_id, beta) %>%
-			dplyr::select(-sim_id) %>%
-			dplyr::group_split(id, keep = F)
+		alpha_sim_rand <- GrabIndividualParms(est_sim, "alpha")
 
 		alpha_sim_rand <- purrr::map(alpha_sim_rand, ~as.matrix(.))
 
 		alpha_sim_rand <- list(alpha_sim_rand)
-		names(alpha_sim_rand) <- "alpha_sim"
+		names(alpha_sim_rand) <- "alpha_sims"
 	}
 
-	psi_sim_rand <- est_sim %>%
-		dplyr::filter(grepl(c("psi"), parms)) %>%
-		dplyr::select(id, sim_id, .data$parm_id, beta) %>%
-		tidyr::spread(.data$parm_id, beta) %>%
-		dplyr::select(-sim_id) %>%
-		dplyr::group_split(id, keep = F)
+	psi_sim_rand <- list(GrabIndividualParms(est_sim, "psi"))
+
+	# Get parameters for phis
+	if (model_num == 5){
+		phi_sim_rand <- list(GrabIndividualParms(est_sim, "phi"))
+	} else if (model_num != 5){
+		phi_sim_rand <- list(array(0, dim = c(0,0)))
+	}
 }
 
 if (random_parameters == "fixed"){
 	# psi
 	psi_temp <- GrabParms(est_sim, "psi") # change back to est_sim
-
 
 	psi_temp <- CreateListsCol(psi_temp)
 	psi_sim <- purrr::map(psi_temp, MultiplyMatrix, mat_temp = object$stan_data$dat_psi, n_rows = I)
@@ -282,8 +276,8 @@ if (random_parameters == "fixed"){
 	psi_sim <- CreateListsRow(psi_sim)
 	psi_sim <- purrr::map(psi_sim, function(x){matrix(x , nrow = nsims, byrow = TRUE)})
 
-	psi_sim <- list(psi_sim)
-	names(psi_sim) <- "psi_sim"
+	psi_sims <- list(psi_sim)
+	names(psi_sims) <- "psi_sims"
 
 	if (policies$price_change_only == FALSE) {
 	# psi_p
@@ -296,37 +290,45 @@ if (random_parameters == "fixed"){
 	# Ensure psi_p_sim is a list of J lists each with nsims lists of npol X nalt matrices
 	psi_p_sim <- purrr::map(psi_p_sim, function(x){lapply(seq_len(nsims), function(i) x[,,i])})
 
-	psi_p_sim <- list(psi_p_sim)
-	names(psi_p_sim) <- "psi_p_sim"
+	psi_p_sims <- list(psi_p_sim)
+	names(psi_p_sims) <- "psi_p_sims"
 
 	} else if (policies$price_change_only == TRUE){
-		psi_p_sim <- NULL
+		psi_p_sims <- NULL
+	}
+
+
+	# phi
+	# Get parameters for phis
+	if (model_num == 5){
+		phi_temp <- GrabParms(est_sim, "phi") # change back to est_sim
+
+		phi_temp <- CreateListsCol(phi_temp)
+		phi_sim <- purrr::map(phi_temp, MultiplyMatrix, mat_temp = object$stan_data$dat_phi, n_rows = I)
+
+		phi_sim <- DoCbind(phi_sim)
+		phi_sim <- CreateListsRow(phi_sim)
+		phi_sim <- purrr::map(phi_sim, function(x){matrix(x , nrow = nsims, byrow = TRUE)})
+
+		phi_sims <- list(phi_sim)
+		names(phi_sims) <- "phi_sims"
+
+	} else if (model_num != 5){
+		phi_sims <- array(0, dim = c(0,0))
 	}
 
 } else if (random_parameters != "fixed"){
 
 	dat_id <- tibble(id = rep(1:object$n_individuals, each = object$stan_data$J))
 
-	dat_psi <- bind_cols(dat_id, tbl_df(object$stan_data$dat_psi)) %>%
-		group_split(id, keep = F)
+	psi_sims <- CombinePsiPhiVariables(dat_id, dat_psi, psi_sim_rand)
+	phi_sims <- CombinePsiPhiVariables(dat_id, dat_phi, phi_sim_rand)
 
-	psi_sim <- purrr::map2(psi_sim_rand, dat_psi, function(x, y){
+	names(psi_sims) <- "psi_sims"
+	names(phi_sims) <- "phi_sims"
 
-		psi_sim <- CreateListsRow(x)
-		dat_psi_1 <- as.matrix(y)
-
-		out <- purrr::map(psi_sim, function(xx){
-			psi <- dat_psi_1 %*% t(as.matrix(xx))} )
-
-		out <- matrix(unlist(out), byrow=TRUE, nrow=length(out) )
-		return(out)
-	})
-
-psi_sim <- list(psi_sim)
-names(psi_sim) <- "psi_sim"
-
-# Can't change psi_p for random parameters yet
-psi_p_sim <- NULL
+	# Can't change psi_p for random parameters yet
+	psi_p_sim <- NULL
 }
 
 if (!is.null(alpha_sim_fixed)){
@@ -350,13 +352,13 @@ price <- list(CreateListsRow(price))
 names(price) <- "price"
 
 # Pull individual level data into one list
-df_indiv <- c(income, quant_j, price, psi_sim, psi_p_sim,
+df_indiv <- c(income, quant_j, price, psi_sims, phi_sims, psi_p_sims,
 			  gamma_sim_rand, alpha_sim_rand)
 
 out <- list(df_indiv = df_indiv,
 			price_p_list = policies$price_p,
 			gamma_sim_fixed = gamma_sim_fixed,
 			alpha_sim_fixed = alpha_sim_fixed,
-			scale_sim = scale_sim)
+			scale_sims = scale_sim)
 return(out)
 }

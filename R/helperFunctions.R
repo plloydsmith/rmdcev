@@ -102,3 +102,46 @@ GrabParms <- function(data, parm_name){
 		as.matrix(.)
 	return(out)
 }
+
+
+#' @title GrabIndividualParms
+#' @param est_sim est_sim from results
+#' @param parm_name name of parameter to get simulations
+#' @description Pulls out specific mdcev parameter simulations
+#' @keywords internal
+GrabIndividualParms <- function(est_sim, parm_name){
+	out <- est_sim %>%
+		dplyr::filter(grepl(c(parm_name), parms)) %>%
+		dplyr::select(id, sim_id, .data$parm_id, beta) %>%
+		tidyr::spread(.data$parm_id, beta) %>%
+		dplyr::select(-sim_id) %>%
+		dplyr::group_split(id, keep = F)
+	return(out)
+}
+
+#' @title GrabIndividualParms
+#' @param est_sim est_sim from results
+#' @param parm_name name of parameter to get simulations
+#' @description Pulls out specific mdcev parameter simulations
+#' @keywords internal
+CombinePsiPhiVariables <- function(dat_id, dat, sim_rand){
+
+	dat_vars <- bind_cols(dat_id, tbl_df(dat)) %>%
+		group_split(id, keep = F)
+
+	var_sim <- purrr::map2(sim_rand, dat_vars, function(x, y){
+
+		vars_sim <- CreateListsRow(x)
+		dat_vars_1 <- as.matrix(y)
+
+		out <- purrr::map(vars_sim, function(xx){
+			vars <- dat_vars_1 %*% t(as.matrix(xx))} )
+
+		out <- matrix(unlist(out), byrow=TRUE, nrow=length(out) )
+
+		if(sim_rand == "phi")
+			out <- exp(out)
+		return(out)
+	})
+return(var_sim)
+}

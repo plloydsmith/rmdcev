@@ -71,13 +71,20 @@ mdcev.sim <- function(df_indiv, df_common, sim_options,
 			algo_gen <- 0
 		else if (model_num == 1 || model_num == 2)
 			algo_gen <- 1
+		else if (model_num == 5)
+			algo_gen <- 2
 	}
+
 
 	if (algo_gen == 1) {
 		message("Using general approach to simulation")
 	} else if (algo_gen == 0){
 		message("Using hybrid approach to simulation")
 	}
+
+	if (model_num == 5)
+		message("Using numerical bisection approach to simulation")
+
 	# Organize options in list
 	sim_options[["nerrs"]] <- nerrs
 	sim_options[["cond_error"]] <- cond_error
