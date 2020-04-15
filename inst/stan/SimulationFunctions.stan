@@ -257,7 +257,7 @@ return(output);
 real ComputeUtilM(int M, real lambda1, vector g_psi_a, vector a_a_1, vector mu_a_a_1,
 					vector psi, vector g, vector price, vector d, int model_num){
 	real output;
-	vector[M] temp;
+	vector[M] temp = rep_vector(0, M);
 	temp[1] = g_psi_a[1] * (pow(lambda1, a_a_1[1]) * mu_a_a_1[1] - d[1]); // compute numeraire util
 	if (M > 1){
 		for (m in 2:M){
@@ -383,7 +383,7 @@ vector CalcKtDemand(vector price_j, real z_a,
 				vector psi_j, vector phi_j, vector gamma_j, real alpha_1,
 				int nalts){
 	// Calculate demand
-	vector[nalts] demand_j = ((psi_j .* phi_j) ./ price_j * pow(z_a, alpha_1 - 1) - gamma_j) ./ phi_j;
+	vector[nalts] demand_j = ((psi_j .* phi_j) ./ (price_j * pow(z_a, alpha_1 - 1)) - gamma_j) ./ phi_j;
 
 	for (j in 1:nalts)
 		demand_j[j] = demand_j[j] < 0 ? 0 : demand_j[j];
@@ -401,32 +401,116 @@ vector HicksianDemandBisection(real util, real quant_num, vector quant_j, vector
 	real util_new;
 	real z_a;
 	real z_l = quant_num * .01;
-	real z_u = quant_num * 3;
+	real z_u = quant_num * 1000000;
 	vector[nalts] demand_j = rep_vector(0, nalts);
 
 	z_a = (z_l + z_u) / 2;
 
 	for (n in 1:max_loop){
+		real z_mid = (z_l + z_u) / 2;
 		// Calculate demand
 		demand_j = CalcKtDemand(price_j, z_a, psi_j, phi_j, gamma_j, alpha_1, nalts);
 
 		// Calculate new utility
 		util_new = 1 / alpha_1  * pow(z_a, alpha_1) +
-					sum(psi_j .* log(phi_j .* quant_j + gamma_j) - psi_j .* log(gamma_j));
+					sum(psi_j .* log(phi_j .* demand_j + gamma_j) - psi_j .* log(gamma_j));
 
 		// Update lambdas's
 		if (util_new < util)
-			z_l = z_a;
+			z_l = z_mid;
 		else if (util_new > util)
-			z_u = z_a;
+			z_u = z_mid;
 
 		z_a = (z_l + z_u) / 2;
 
 		if (fabs((z_l - z_u) / (z_l + z_u) * 0.5) < tol_l) break;
 	}
-
 	demand_j = CalcKtDemand(price_j, z_a, psi_j, phi_j, gamma_j, alpha_1, nalts);
 	hdemand = append_row(z_a, demand_j);
+
+return(hdemand);
+}
+
+real ComputeKtUtilM(int M, real lambda1, vector psi, vector psi_phi__price, vector gamma, real alpha_1){
+	real output;
+	vector[M] temp = rep_vector(0, M);
+	temp[1] = 1 / alpha_1 * pow(lambda1, alpha_1 / (alpha_1 - 1)); // compute numeraire util
+	if (M > 1){
+		for (m in 2:M)
+			temp[m] = psi[m] * log(psi_phi__price[m] / lambda1) - psi[m] * log(gamma[m]);
+	}
+	output =  sum(temp);
+return(output);
+}
+
+/**
+ * Calculate HicksDemands using general or hybrid approach
+ * @return vector of nalt demands
+ */
+vector HicksianKtDemand(real util, vector price,
+				vector MUzero, vector phi, vector gamma, real alpha_1,
+				int nalts, int algo_gen, int model_num, real tol_l, int max_loop) {
+
+	vector[nalts+1] hdemand;
+	int M = 1; // Indicator of which ordered alteratives (<=M) are being considered
+	int exit = 0;
+	real lambda1;
+	real lambda_l;
+	real lambda_u;
+	real util_new;
+	int order_x[nalts+1] = CalcAltOrder(MUzero, nalts);
+	vector[nalts+1] X = rep_vector(0, nalts+1); // vector to hold zero demands
+	matrix[nalts+1, 4] parm_matrix = SortParmMatrix(MUzero, price, gamma, phi, nalts);
+	vector[nalts+1] mu = col(parm_matrix, 1); // obtain mu
+	vector[nalts+1] gamma_ord = col(parm_matrix, 3); // gamma
+	vector[nalts+1] g__phi = gamma_ord ./ col(parm_matrix, 4); // gamma/phi
+	vector[nalts+1] psi_phi__price = mu .* gamma_ord; // (MUzero * gamma = psi*phi/price)
+	vector[nalts+1] psi_ord = mu .* g__phi .* col(parm_matrix, 2);
+
+	while (exit == 0){
+		lambda1 = mu[M + 1];// Calculate lambda1 equal to MUzero(M+1)
+
+		// Calculate new utility
+		util_new = ComputeKtUtilM(M, lambda1, psi_ord, psi_phi__price, gamma_ord, alpha_1);
+
+		if (util_new >= util || M+1 == nalts+1){
+			if(util_new < util)
+				M += 1;
+			lambda_l = util_new < util ? 0 : lambda1;
+			lambda_u = mu[M];
+			lambda1 = (lambda_l + lambda_u) / 2;
+
+			for (n in 1:max_loop){
+				real lambda_mid = (lambda_l + lambda_u) / 2;
+
+				util_new = ComputeKtUtilM(M, lambda1, psi_ord, psi_phi__price, gamma_ord, alpha_1);
+
+				// Update lambdas's
+				if (util_new < util)
+					lambda_u = lambda_mid;
+				else if (util_new > util)
+					lambda_l = lambda_mid;
+
+				lambda1 = (lambda_l + lambda_u) / 2;
+
+				if (fabs((lambda_l - lambda_u) / (lambda_l + lambda_u) * 0.5) < tol_l) break;
+			}
+	//		print("util_new = ", util_new);
+	//		print("lambda1 = ", lambda1);
+	//		print("parm_matrix = ", parm_matrix);
+		// Compute demands (using eq. 12 in Pinjari and Bhat)
+			X[1] = pow(lambda1, inv(alpha_1 - 1));
+			if(M > 1){
+				for (m in 2:M)
+					X[m] = (mu[m] / lambda1 - 1) * g__phi[m];
+			}
+		exit = 1;
+
+		} else if (util_new < util && M+1 < nalts+1)
+			M += 1; // adds one to M
+	}
+	// This code puts the choices back in their original order and exports demands
+	hdemand = X[order_x];
 
 return(hdemand);
 }
@@ -548,16 +632,18 @@ matrix CalcWTP_rng(real income, vector quant_j, vector price,
 
 			for (err in 1:nerrs){
 //				vector[nalts + 1] MUzero_p = psi_b_err[err] ./ price_p;	// change to psi_p_err for policy
-				vector[nalts + 1] MUzero_p = exp(append_row(0, psi_p) + error[err]) ./ price_p; //change for no psi_p
 				vector[nalts + 1] hdemand;
 
 				if (model_num < 5){
-				hdemand = HicksianDemand(util[err], price_p, MUzero_p, gamma, alpha,
-										nalts, algo_gen, model_num, tol, max_loop);
+					vector[nalts + 1] MUzero_p = exp(append_row(0, psi_p) + error[err]) ./ price_p; //change for no psi_p
+					hdemand = HicksianDemand(util[err], price_p, MUzero_p, gamma, alpha,
+											nalts, algo_gen, model_num, tol, max_loop);
 				} else if (model_num == 5){
-				hdemand = HicksianDemandBisection(util[err], quant_num, quant_j, price_p[2:nalts+1],
-						exp(psi_p + error[err, 2:nalts+1]), phi_j, gamma[2:nalts+1], alpha[1],
-						nalts, tol, max_loop);
+					vector[nalts + 1] MUzero_p = exp(append_row(0, psi_p) + error[err]) .*
+												append_row(1, phi_j) ./ (price_p .* gamma); //change for no psi_p
+					hdemand = HicksianKtDemand(util[err], price_p, MUzero_p,
+											append_row(1, phi_j), gamma, alpha[1],
+										nalts, algo_gen, model_num, tol, max_loop);
 				}
 				wtp_err[err] = income - price_p' * hdemand;
 			}
@@ -621,7 +707,7 @@ matrix CalcWTPPriceOnly_rng(real income, vector quant_j, vector price,
 				mdemand = append_row(quant_num, quant_j);
 			} else if(cond_error == 0)
 				mdemand = MarshallianDemand(income, price, MUzero_b, gamma, alpha,
-				nalts, algo_gen, tol, max_loop);
+											nalts, algo_gen, tol, max_loop);
 
 			util[err] = ComputeUtilJ(income, mdemand[2:nalts+1], price[2:nalts+1],
 									psi_b_err[err, 2:nalts+1], phi_j, gamma[2:nalts+1], alpha,
@@ -633,18 +719,24 @@ matrix CalcWTPPriceOnly_rng(real income, vector quant_j, vector price,
 			vector[nerrs] wtp_err;
 
 			for (err in 1:nerrs){
-				vector[nalts + 1] MUzero_p = psi_b_err[err] ./ price_p;
 				vector[nalts + 1] hdemand;
 
 				if (model_num < 5){
-				hdemand = HicksianDemand(util[err], price_p, MUzero_p, gamma, alpha,
-										nalts, algo_gen, model_num, tol, max_loop);
+					vector[nalts + 1] MUzero_p = psi_b_err[err] ./ price_p; //change for no psi_p
+					hdemand = HicksianDemand(util[err], price_p, MUzero_p, gamma, alpha,
+											nalts, algo_gen, model_num, tol, max_loop);
 				} else if (model_num == 5){
-				hdemand = HicksianDemandBisection(util[err], quant_num, quant_j, price_p[2:nalts+1],
-						psi_b_err[err, 2:nalts+1], phi_j, gamma[2:nalts+1], alpha[1],
-						nalts, tol, max_loop);
+					if (algo_gen == 3){
+						hdemand = HicksianDemandBisection(util[err], quant_num, quant_j, price_p[2:nalts+1],
+										psi_b_err[err, 2:nalts+1], phi_j, gamma[2:nalts+1], alpha[1],
+										nalts, tol, max_loop);
+					} else if (algo_gen == 2){
+						vector[nalts + 1] MUzero_p = psi_b_err[err] .* append_row(1, phi_j) ./ (price_p .* gamma); //change for no psi_p
+						hdemand = HicksianKtDemand(util[err], price_p, MUzero_p,
+												append_row(1, phi_j), gamma, alpha[1],
+											nalts, algo_gen, model_num, tol, max_loop);
+						}
 				}
-
 				wtp_err[err] = income - price_p' * hdemand;
 			}
 			wtp_policy[policy] = mean(wtp_err);

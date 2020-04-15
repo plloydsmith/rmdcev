@@ -50,6 +50,11 @@ PrepareSimulationData <- function(object,
 
 	}
 
+	if(object$std_errors == "deltamethod"){
+		est_pars <- tbl_df(t(object[["stan_fit"]][["theta_tilde"]])) %>%
+			dplyr::select(-tidyselect::starts_with("log_like"), -tidyselect::starts_with("sum_log_lik"))
+	}
+
 	# Rename variables
 	if (object$random_parameters == "fixed"){
 		names(est_pars)[1:object$parms_info$n_vars$n_parms_total] <- object$parms_info$parm_names$all_names
@@ -191,17 +196,17 @@ if(random_parameters != "fixed"){
 			return(L)
 		})
 
-	L <- matrix(unlist(L), nrow = nrow(sim_id), byrow = T )
-	colnames(L) <- c(paste0(rep("parm_id", num_rand), 1:num_rand))
+		L <- matrix(unlist(L), nrow = nrow(sim_id), byrow = T )
+		colnames(L) <- c(paste0(rep("parm_id", num_rand), 1:num_rand))
 
-	est_sim_tau <- bind_cols(sim_id, tbl_df(L)) %>%
-		tidyr::gather(parm_id, tau, -sim_id) %>%
-		dplyr::mutate(parm_id = as.numeric(gsub("[^0-9]", "", .data$parm_id))) %>%
-		dplyr::arrange(sim_id)
+		est_sim_tau <- bind_cols(sim_id, tbl_df(L)) %>%
+			tidyr::gather(parm_id, tau, -sim_id) %>%
+			dplyr::mutate(parm_id = as.numeric(gsub("[^0-9]", "", .data$parm_id))) %>%
+			dplyr::arrange(sim_id)
 
-	est_sim_mu_tau <- est_sim_mu_tau %>%
-		dplyr::select(sim_id, .data$parm_id, .data$mu) %>%
-		dplyr::left_join(est_sim_tau, by = c("sim_id", "parm_id"))
+		est_sim_mu_tau <- est_sim_mu_tau %>%
+			dplyr::select(sim_id, .data$parm_id, .data$mu) %>%
+			dplyr::left_join(est_sim_tau, by = c("sim_id", "parm_id"))
 
 	} else if(random_parameters == "uncorr"){
 
@@ -306,7 +311,7 @@ if (random_parameters == "fixed"){
 		phi_temp <- CreateListsCol(phi_temp)
 		phi_sim <- purrr::map(phi_temp, MultiplyMatrix, mat_temp = object$stan_data$dat_phi, n_rows = I)
 
-		phi_sim <- DoCbind(phi_sim)
+		phi_sim <- exp(DoCbind(phi_sim))
 		phi_sim <- CreateListsRow(phi_sim)
 		phi_sim <- purrr::map(phi_sim, function(x){matrix(x , nrow = nsims, byrow = TRUE)})
 

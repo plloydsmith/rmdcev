@@ -130,6 +130,10 @@ mdcev <- function(formula = NULL, data,
 		alpha_fixed <- 1
 	}
 
+
+	if(algorithm == "Bayes" || std_errors == "deltamethod")
+		n_draws <- 1
+
 		# Put model options in a list
 	mle_options <- list(fixed_scale1 = fixed_scale1,
 						model = model,
@@ -166,13 +170,18 @@ mdcev <- function(formula = NULL, data,
 
 	parms_info <- CreateParmInfo(stan_data, algorithm, random_parameters)
 
-	if(!is.null(initial.parameters)){
-		initial.parameters$psi = array(initial.parameters$psi, dim=c(1,parms_info[["n_vars"]][["n_psi"]]))
-		initial.parameters$phi = array(initial.parameters$phi, dim=c(1,parms_info[["n_vars"]][["n_phi"]]))
-		initial.parameters$scale = array(initial.parameters$scale, dim=c(parms_info[["n_vars"]][["n_scale"]]))
-		initial.parameters$alpha = array(initial.parameters$alpha, dim=c(1,parms_info[["n_vars"]][["n_alpha"]]))
-		initial.parameters$gamma = array(initial.parameters$gamma, dim=c(1,parms_info[["n_vars"]][["n_gamma"]]))
+	CleanInit <- function(init_input){
+		# Add dimension to starting values
+		temp <- map(init_input, function(x){
+				x <- matrix(x, nrow = 1, length(x))
+		})
+		if(!is.null(init_input$scale))
+			temp$scale <- array(init_input$scale, dim = 1)
+		return(temp)
 	}
+
+	if(!is.null(initial.parameters))
+		initial.parameters <- CleanInit(init)
 
 	# If no user supplied weights, replace weights with vector of ones
 	if (is.null(weights))
@@ -202,9 +211,6 @@ mdcev <- function(formula = NULL, data,
 
 	}
 	end.time <- proc.time()
-
-	if(algorithm == "Bayes" || std_errors == "deltamethod")
-		result$n_draws <- NULL
 
 	result$parms_info <- parms_info
 	result$stan_data <- stan_data
