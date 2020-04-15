@@ -143,7 +143,7 @@ transformed parameters {
 
 model {
   // priors on the parameters
-  	gamma ~ normal(0, prior_gamma_sd);
+  	gamma ~ normal(1, prior_gamma_sd);
 	alpha ~ normal(.5, prior_alpha_sd);
 	to_vector(z) ~ normal(0, 1);
 	to_vector(mu) ~ normal(0, 10);

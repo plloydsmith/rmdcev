@@ -104,7 +104,7 @@ model {
   	if(K == 1){
 	  psi[1] ~ normal(0, prior_psi_sd);
 	  phi[1] ~ normal(0, prior_phi_sd);
-	  gamma[1] ~ normal(0, prior_gamma_sd);
+	  gamma[1] ~ normal(1, prior_gamma_sd);
 	  alpha[1] ~ normal(.5, prior_alpha_sd);
 	} else if (K > 1){
 		to_vector(delta) ~ normal(0, prior_delta_sd);
