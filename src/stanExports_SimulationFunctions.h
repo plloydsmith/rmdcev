@@ -33,7 +33,7 @@ static int current_statement_begin__;
 stan::io::program_reader prog_reader__() {
     stan::io::program_reader reader;
     reader.add_event(0, 0, "start", "model_SimulationFunctions");
-    reader.add_event(896, 894, "end", "model_SimulationFunctions");
+    reader.add_event(947, 945, "end", "model_SimulationFunctions");
     return reader;
 }
 template <typename T0__, class RNG>
@@ -2843,6 +2843,156 @@ struct CalcMarshallianDemandPriceOnly_rng_functor__ {
                                        const T13__& tol,
                                        const int& max_loop, RNG& base_rng__, std::ostream* pstream__) const {
         return CalcMarshallianDemandPriceOnly_rng(income, quant_j, price, price_p_policy, psi_sims, gamma_sims, alpha_sims, scale_sims, nerrs, cond_error, draw_mlhs, algo_gen, model_num, tol, max_loop, base_rng__, pstream__);
+    }
+};
+template <typename T0__, typename T1__, typename T2__, typename T3__, typename T4__, typename T8__>
+Eigen::Matrix<typename boost::math::tools::promote_args<T0__, T1__, T2__, T3__, typename boost::math::tools::promote_args<T4__, T8__>::type>::type, Eigen::Dynamic, 1>
+HicksianDemand0(const T0__& util,
+                    const Eigen::Matrix<T1__, Eigen::Dynamic, 1>& price,
+                    const Eigen::Matrix<T2__, Eigen::Dynamic, 1>& MUzero,
+                    const Eigen::Matrix<T3__, Eigen::Dynamic, 1>& gamma,
+                    const Eigen::Matrix<T4__, Eigen::Dynamic, 1>& alpha,
+                    const int& nalts,
+                    const int& algo_gen,
+                    const int& model_num,
+                    const T8__& tol_l,
+                    const int& max_loop, std::ostream* pstream__) {
+    typedef typename boost::math::tools::promote_args<T0__, T1__, T2__, T3__, typename boost::math::tools::promote_args<T4__, T8__>::type>::type local_scalar_t__;
+    typedef local_scalar_t__ fun_return_scalar_t__;
+    const static bool propto__ = true;
+    (void) propto__;
+        local_scalar_t__ DUMMY_VAR__(std::numeric_limits<double>::quiet_NaN());
+        (void) DUMMY_VAR__;  // suppress unused var warning
+    int current_statement_begin__ = -1;
+    try {
+        {
+        current_statement_begin__ = 901;
+        validate_non_negative_index("hdemand", "(nalts + 1)", (nalts + 1));
+        Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> hdemand((nalts + 1));
+        stan::math::initialize(hdemand, DUMMY_VAR__);
+        stan::math::fill(hdemand, DUMMY_VAR__);
+        current_statement_begin__ = 902;
+        int M(0);
+        (void) M;  // dummy to suppress unused var warning
+        stan::math::fill(M, std::numeric_limits<int>::min());
+        stan::math::assign(M,1);
+        current_statement_begin__ = 903;
+        int exit(0);
+        (void) exit;  // dummy to suppress unused var warning
+        stan::math::fill(exit, std::numeric_limits<int>::min());
+        stan::math::assign(exit,0);
+        current_statement_begin__ = 904;
+        local_scalar_t__ lambda1(DUMMY_VAR__);
+        (void) lambda1;  // dummy to suppress unused var warning
+        stan::math::initialize(lambda1, DUMMY_VAR__);
+        stan::math::fill(lambda1, DUMMY_VAR__);
+        current_statement_begin__ = 905;
+        local_scalar_t__ util_new(DUMMY_VAR__);
+        (void) util_new;  // dummy to suppress unused var warning
+        stan::math::initialize(util_new, DUMMY_VAR__);
+        stan::math::fill(util_new, DUMMY_VAR__);
+        current_statement_begin__ = 906;
+        validate_non_negative_index("order_x", "(nalts + 1)", (nalts + 1));
+        std::vector<int  > order_x((nalts + 1), int(0));
+        stan::math::fill(order_x, std::numeric_limits<int>::min());
+        stan::math::assign(order_x,CalcAltOrder(MUzero, nalts, pstream__));
+        current_statement_begin__ = 907;
+        validate_non_negative_index("X", "(nalts + 1)", (nalts + 1));
+        Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> X((nalts + 1));
+        stan::math::initialize(X, DUMMY_VAR__);
+        stan::math::fill(X, DUMMY_VAR__);
+        stan::math::assign(X,rep_vector(0, (nalts + 1)));
+        current_statement_begin__ = 908;
+        validate_non_negative_index("d", "(nalts + 1)", (nalts + 1));
+        Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> d((nalts + 1));
+        stan::math::initialize(d, DUMMY_VAR__);
+        stan::math::fill(d, DUMMY_VAR__);
+        stan::math::assign(d,append_row(0, rep_vector(1, nalts)));
+        current_statement_begin__ = 909;
+        validate_non_negative_index("parm_matrix", "(nalts + 1)", (nalts + 1));
+        validate_non_negative_index("parm_matrix", "4", 4);
+        Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, Eigen::Dynamic> parm_matrix((nalts + 1), 4);
+        stan::math::initialize(parm_matrix, DUMMY_VAR__);
+        stan::math::fill(parm_matrix, DUMMY_VAR__);
+        stan::math::assign(parm_matrix,SortParmMatrix(MUzero, price, gamma, alpha, nalts, pstream__));
+        current_statement_begin__ = 910;
+        validate_non_negative_index("mu", "(nalts + 1)", (nalts + 1));
+        Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> mu((nalts + 1));
+        stan::math::initialize(mu, DUMMY_VAR__);
+        stan::math::fill(mu, DUMMY_VAR__);
+        stan::math::assign(mu,col(parm_matrix, 1));
+        current_statement_begin__ = 911;
+        validate_non_negative_index("g", "(nalts + 1)", (nalts + 1));
+        Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> g((nalts + 1));
+        stan::math::initialize(g, DUMMY_VAR__);
+        stan::math::fill(g, DUMMY_VAR__);
+        stan::math::assign(g,col(parm_matrix, 3));
+        current_statement_begin__ = 913;
+        local_scalar_t__ lambda_num(DUMMY_VAR__);
+        (void) lambda_num;  // dummy to suppress unused var warning
+        stan::math::initialize(lambda_num, DUMMY_VAR__);
+        stan::math::fill(lambda_num, DUMMY_VAR__);
+        current_statement_begin__ = 914;
+        local_scalar_t__ lambda_den(DUMMY_VAR__);
+        (void) lambda_den;  // dummy to suppress unused var warning
+        stan::math::initialize(lambda_den, DUMMY_VAR__);
+        stan::math::fill(lambda_den, DUMMY_VAR__);
+        current_statement_begin__ = 915;
+        validate_non_negative_index("g_psi", "(nalts + 1)", (nalts + 1));
+        Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> g_psi((nalts + 1));
+        stan::math::initialize(g_psi, DUMMY_VAR__);
+        stan::math::fill(g_psi, DUMMY_VAR__);
+        stan::math::assign(g_psi,elt_multiply(elt_multiply(g, mu), col(parm_matrix, 2)));
+        current_statement_begin__ = 917;
+        while (as_bool(logical_eq(exit, 0))) {
+            current_statement_begin__ = 919;
+            stan::math::assign(lambda_num, (util - sum(elt_multiply(stan::model::rvalue(g_psi, stan::model::cons_list(stan::model::index_min_max(1, M), stan::model::nil_index_list()), "g_psi"), stan::math::log(stan::model::rvalue(mu, stan::model::cons_list(stan::model::index_min_max(1, M), stan::model::nil_index_list()), "mu"))))));
+            current_statement_begin__ = 920;
+            stan::math::assign(lambda_den, sum(stan::model::rvalue(g_psi, stan::model::cons_list(stan::model::index_min_max(1, M), stan::model::nil_index_list()), "g_psi")));
+            current_statement_begin__ = 921;
+            stan::math::assign(lambda1, inv(stan::math::exp((lambda_num / lambda_den))));
+            current_statement_begin__ = 926;
+            if (as_bool((primitive_value(logical_gt(lambda1, get_base1(mu, std::min((M + 1), (nalts + 1)), "mu", 1))) || primitive_value(logical_eq(M, (nalts + 1)))))) {
+                current_statement_begin__ = 929;
+                for (int m = 1; m <= M; ++m) {
+                    current_statement_begin__ = 930;
+                    stan::model::assign(X, 
+                                stan::model::cons_list(stan::model::index_uni(m), stan::model::nil_index_list()), 
+                                (((get_base1(mu, m, "mu", 1) / lambda1) - get_base1(d, m, "d", 1)) * get_base1(g, m, "g", 1)), 
+                                "assigning variable X");
+                }
+                current_statement_begin__ = 931;
+                stan::math::assign(exit, 1);
+            } else if (as_bool(logical_lt(M, (nalts + 1)))) {
+                current_statement_begin__ = 934;
+                stan::math::assign(M, (M + 1));
+            }
+        }
+        current_statement_begin__ = 939;
+        stan::math::assign(hdemand, stan::model::rvalue(X, stan::model::cons_list(stan::model::index_multi(order_x), stan::model::nil_index_list()), "X"));
+        current_statement_begin__ = 941;
+        return stan::math::promote_scalar<fun_return_scalar_t__>(hdemand);
+        }
+    } catch (const std::exception& e) {
+        stan::lang::rethrow_located(e, current_statement_begin__, prog_reader__());
+        // Next line prevents compiler griping about no return
+        throw std::runtime_error("*** IF YOU SEE THIS, PLEASE REPORT A BUG ***");
+    }
+}
+struct HicksianDemand0_functor__ {
+    template <typename T0__, typename T1__, typename T2__, typename T3__, typename T4__, typename T8__>
+        Eigen::Matrix<typename boost::math::tools::promote_args<T0__, T1__, T2__, T3__, typename boost::math::tools::promote_args<T4__, T8__>::type>::type, Eigen::Dynamic, 1>
+    operator()(const T0__& util,
+                    const Eigen::Matrix<T1__, Eigen::Dynamic, 1>& price,
+                    const Eigen::Matrix<T2__, Eigen::Dynamic, 1>& MUzero,
+                    const Eigen::Matrix<T3__, Eigen::Dynamic, 1>& gamma,
+                    const Eigen::Matrix<T4__, Eigen::Dynamic, 1>& alpha,
+                    const int& nalts,
+                    const int& algo_gen,
+                    const int& model_num,
+                    const T8__& tol_l,
+                    const int& max_loop, std::ostream* pstream__) const {
+        return HicksianDemand0(util, price, MUzero, gamma, alpha, nalts, algo_gen, model_num, tol_l, max_loop, pstream__);
     }
 };
 #include <stan_meta_header.hpp>

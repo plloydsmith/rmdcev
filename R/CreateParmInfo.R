@@ -78,7 +78,7 @@ n_parameters <- n_psi + n_phi + n_alpha + n_gamma + n_scale
 n_vars = list(n_psi = n_psi, n_phi = n_phi, n_alpha = n_alpha, n_gamma = n_gamma, n_scale = n_scale)
 
 if (stan_data$K > 1){
-	n_vars <- purrr::map(n_vars, function(x){x* stan_data$K})
+	n_vars <- lapply(n_vars, function(x){x* stan_data$K})
 	n_vars$n_beta <- stan_data$L * (stan_data$K - 1)
 
 	all_names <- GenClassNames(parm_names$all_names, stan_data$K)

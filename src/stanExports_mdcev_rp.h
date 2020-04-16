@@ -1358,7 +1358,7 @@ public:
             check_greater_or_equal(function__, "tau", tau, 0);
             // model body
             current_statement_begin__ = 329;
-            lp_accum__.add(normal_log<propto__>(gamma, 0, prior_gamma_sd));
+            lp_accum__.add(normal_log<propto__>(gamma, 1, prior_gamma_sd));
             current_statement_begin__ = 330;
             lp_accum__.add(normal_log<propto__>(alpha, .5, prior_alpha_sd));
             current_statement_begin__ = 331;

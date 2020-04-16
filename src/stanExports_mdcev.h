@@ -1265,7 +1265,7 @@ public:
                     current_statement_begin__ = 289;
                     lp_accum__.add(normal_log<propto__>(get_base1(phi, 1, "phi", 1), 0, prior_phi_sd));
                     current_statement_begin__ = 290;
-                    lp_accum__.add(normal_log<propto__>(get_base1(gamma, 1, "gamma", 1), 0, prior_gamma_sd));
+                    lp_accum__.add(normal_log<propto__>(get_base1(gamma, 1, "gamma", 1), 1, prior_gamma_sd));
                     current_statement_begin__ = 291;
                     lp_accum__.add(normal_log<propto__>(get_base1(alpha, 1, "alpha", 1), .5, prior_alpha_sd));
                 } else if (as_bool(logical_gt(K, 1))) {

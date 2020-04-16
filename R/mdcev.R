@@ -98,7 +98,7 @@ mdcev <- function(formula = NULL, data,
 				 std_errors = "mvn",
 				 n_draws = 50,
 				 keep_loglik = 0,
-				 random_parameters = "fixed",
+				 random_parameters = c("fixed", "uncorr", "corr"),
 				 show_stan_warnings = TRUE,
 				 n_iterations = 200,
 				 n_chains = 4,
@@ -172,7 +172,7 @@ mdcev <- function(formula = NULL, data,
 
 	CleanInit <- function(init_input){
 		# Add dimension to starting values
-		temp <- map(init_input, function(x){
+		temp <- lapply(init_input, function(x){
 				x <- matrix(x, nrow = 1, length(x))
 		})
 		if(!is.null(init_input$scale))
@@ -180,8 +180,8 @@ mdcev <- function(formula = NULL, data,
 		return(temp)
 	}
 
-	if(!is.null(initial.parameters))
-		initial.parameters <- CleanInit(init)
+	if(!is.null(initial.parameters) && n_classes == 1)
+		initial.parameters <- CleanInit(initial.parameters)
 
 	# If no user supplied weights, replace weights with vector of ones
 	if (is.null(weights))

@@ -80,9 +80,9 @@ CreateBlankPolicies <- function(npols, nalts, dat_psi, price_change_only){
 #' @keywords internal
 CreatePsiMatrix <- function(psi_j = NULL, psi_i = NULL){
 	if(!is.na(psi_i))
-		psi_i <- purrr::map(psi_i, function(x) {rep(x, each= nrow(psi_j))})
+		psi_i <- lapply(psi_i, function(x) {rep(x, each= nrow(psi_j))})
 	if(!is.na(psi_j))
-		psi_j <- purrr::map(psi_j, function(x) {rep(x, times=nrow(psi_i))})
+		psi_j <- lapply(psi_j, function(x) {rep(x, times=nrow(psi_i))})
 
 	dat_psi <- c(psi_j, psi_i)
 return(dat_psi)
@@ -129,12 +129,12 @@ CombinePsiPhiVariables <- function(dat_id, dat, sim_rand){
 	dat_vars <- bind_cols(dat_id, tbl_df(dat)) %>%
 		group_split(id, keep = F)
 
-	var_sim <- purrr::map2(sim_rand, dat_vars, function(x, y){
+	var_sim <- mapply(function(x, y){
 
 		vars_sim <- CreateListsRow(x)
 		dat_vars_1 <- as.matrix(y)
 
-		out <- purrr::map(vars_sim, function(xx){
+		out <- lapply(vars_sim, function(xx){
 			vars <- dat_vars_1 %*% t(as.matrix(xx))} )
 
 		out <- matrix(unlist(out), byrow=TRUE, nrow=length(out) )
@@ -142,6 +142,6 @@ CombinePsiPhiVariables <- function(dat_id, dat, sim_rand){
 		if(sim_rand == "phi")
 			out <- exp(out)
 		return(out)
-	})
+	}, sim_rand, dat_vars)
 return(var_sim)
 }

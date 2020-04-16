@@ -190,11 +190,12 @@ if(random_parameters != "fixed"){
 			dplyr::arrange(sim_id) %>%
 			dplyr::distinct(sim_id)
 
-		L <- purrr::map2(est_sim_tau, est_sim_lomega, function(x, y){
-			l_omega <- matrix(y$value, nrow = num_rand, byrow=F)
-			L <- as.vector(x$tau %*% l_omega)
-			return(L)
-		})
+		L <- mapply(function(x, y){
+						l_omega <- matrix(y$value, nrow = num_rand, byrow=F)
+						L <- as.vector(x$tau %*% l_omega)
+						return(L)
+					},
+					est_sim_tau, est_sim_lomega)
 
 		L <- matrix(unlist(L), nrow = nrow(sim_id), byrow = T )
 		colnames(L) <- c(paste0(rep("parm_id", num_rand), 1:num_rand))
@@ -245,7 +246,7 @@ if(random_parameters != "fixed"){
 	if (gamma_fixed == 0){
 		gamma_sim_rand <- GrabIndividualParms(est_sim, "gamma")
 
-		gamma_sim_rand <- purrr::map(gamma_sim_rand, ~as.matrix(.))
+		gamma_sim_rand <- lapply(gamma_sim_rand, ~as.matrix(.))
 
 		gamma_sim_rand <- list(gamma_sim_rand)
 		names(gamma_sim_rand) <- "gamma_sims"
@@ -254,7 +255,7 @@ if(random_parameters != "fixed"){
 	if (alpha_fixed == 0){
 		alpha_sim_rand <- GrabIndividualParms(est_sim, "alpha")
 
-		alpha_sim_rand <- purrr::map(alpha_sim_rand, ~as.matrix(.))
+		alpha_sim_rand <- lapply(alpha_sim_rand, ~as.matrix(.))
 
 		alpha_sim_rand <- list(alpha_sim_rand)
 		names(alpha_sim_rand) <- "alpha_sims"
@@ -275,25 +276,25 @@ if (random_parameters == "fixed"){
 	psi_temp <- GrabParms(est_sim, "psi") # change back to est_sim
 
 	psi_temp <- CreateListsCol(psi_temp)
-	psi_sim <- purrr::map(psi_temp, MultiplyMatrix, mat_temp = object$stan_data$dat_psi, n_rows = I)
+	psi_sim <- lapply(psi_temp, MultiplyMatrix, mat_temp = object$stan_data$dat_psi, n_rows = I)
 
 	psi_sim <- DoCbind(psi_sim)
 	psi_sim <- CreateListsRow(psi_sim)
-	psi_sim <- purrr::map(psi_sim, function(x){matrix(x , nrow = nsims, byrow = TRUE)})
+	psi_sim <- lapply(psi_sim, function(x){matrix(x , nrow = nsims, byrow = TRUE)})
 
 	psi_sims <- list(psi_sim)
 	names(psi_sims) <- "psi_sims"
 
 	if (policies$price_change_only == FALSE) {
 	# psi_p
-	psi_p_sim <- purrr::map(psi_temp, function(psi){ purrr::map(policies[["dat_psi_p"]], MultiplyMatrix, x = psi, n_rows = I)})
-	psi_p_sim <- purrr::map(psi_p_sim, DoCbind)
+	psi_p_sim <- lapply(psi_temp, function(psi){ lapply(policies[["dat_psi_p"]], MultiplyMatrix, x = psi, n_rows = I)})
+	psi_p_sim <- lapply(psi_p_sim, DoCbind)
 	psi_p_sim <- DoCbind(psi_p_sim)
 	psi_p_sim <- CreateListsRow(psi_p_sim)
-	psi_p_sim <- purrr::map(psi_p_sim, function(x){aperm(array(x, dim = c(J, npols, nsims)), perm=c(2,1,3))})
+	psi_p_sim <- lapply(psi_p_sim, function(x){aperm(array(x, dim = c(J, npols, nsims)), perm=c(2,1,3))})
 
 	# Ensure psi_p_sim is a list of J lists each with nsims lists of npol X nalt matrices
-	psi_p_sim <- purrr::map(psi_p_sim, function(x){lapply(seq_len(nsims), function(i) x[,,i])})
+	psi_p_sim <- lapply(psi_p_sim, function(x){lapply(seq_len(nsims), function(i) x[,,i])})
 
 	psi_p_sims <- list(psi_p_sim)
 	names(psi_p_sims) <- "psi_p_sims"
@@ -309,11 +310,11 @@ if (random_parameters == "fixed"){
 		phi_temp <- GrabParms(est_sim, "phi") # change back to est_sim
 
 		phi_temp <- CreateListsCol(phi_temp)
-		phi_sim <- purrr::map(phi_temp, MultiplyMatrix, mat_temp = object$stan_data$dat_phi, n_rows = I)
+		phi_sim <- lapply(phi_temp, MultiplyMatrix, mat_temp = object$stan_data$dat_phi, n_rows = I)
 
 		phi_sim <- exp(DoCbind(phi_sim))
 		phi_sim <- CreateListsRow(phi_sim)
-		phi_sim <- purrr::map(phi_sim, function(x){matrix(x , nrow = nsims, byrow = TRUE)})
+		phi_sim <- lapply(phi_sim, function(x){matrix(x , nrow = nsims, byrow = TRUE)})
 
 		phi_sims <- list(phi_sim)
 		names(phi_sims) <- "phi_sims"

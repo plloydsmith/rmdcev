@@ -890,6 +890,56 @@ matrix[] CalcMarshallianDemandPriceOnly_rng(real income, vector quant_j, vector 
 return(mdemand_out);
 }
 
-// end of functions
+/**
+ * Calculate HicksDemands using general or hybrid approach
+ * @return vector of nalt demands
+ */
+vector HicksianDemand0(real util, vector price,
+				vector MUzero, vector gamma, vector alpha,
+				int nalts, int algo_gen, int model_num, real tol_l, int max_loop) {
+
+	vector[nalts+1] hdemand;
+	int M = 1; // Indicator of which ordered alteratives (<=M) are being considered
+	int exit = 0;
+	real lambda1;
+	real util_new;
+	int order_x[nalts+1] = CalcAltOrder(MUzero, nalts);
+	vector[nalts+1] X = rep_vector(0, nalts+1); // vector to hold zero demands
+	vector[nalts+1] d = append_row(0, rep_vector(1, nalts));
+	matrix[nalts+1, 4] parm_matrix = SortParmMatrix(MUzero, price, gamma, alpha, nalts);
+	vector[nalts+1] mu = col(parm_matrix, 1); // obtain mu
+	vector[nalts+1] g = col(parm_matrix, 3); // obtain gamma
+
+	real lambda_num;
+	real lambda_den;
+	vector[nalts+1] g_psi = g .* mu .* col(parm_matrix, 2); // obtain gamma_psi
+
+	while (exit == 0){
+		// Calculate 1/lambda for a given M
+		lambda_num = util - sum(g_psi[1:M] .* log(mu[1:M]));// - g_psi[1]*log(mu[1]) is equal to 0
+		lambda_den = sum(g_psi[1:M]); // -g_psi[1]+1 = 0
+		lambda1 = inv(exp(lambda_num / lambda_den)); // create 1/lambda term
+
+		// Compare 1/lambda to baseline utility of the next lowest alternative
+		// (M+1). If lambda exceeds this value then all lower-valued
+		// alternatives have zero demand.
+		if (lambda1 > mu[min(M + 1, nalts + 1)] || M == nalts+1){
+
+			// Compute demands (using eq. 12 in Pinjari and Bhat)
+			for (m in 1:M)
+				X[m] = ((mu[m] / lambda1) - d[m]) * g[m];
+			exit = 1;
+
+		} else if (M < nalts + 1)
+			M += 1; // adds one to M
+	}
+
+
+	// This code puts the choices back in their original order and exports demands
+	hdemand = X[order_x];
+
+return(hdemand);
 }
 
+// end of functions
+}
