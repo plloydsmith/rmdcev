@@ -112,6 +112,10 @@ mdcev <- function(formula = NULL, data,
 	start.time <- proc.time()
 
 	# Check models
+	if (!is.element(algorithm, c("MLE", "Bayes"))) stop("algorithm must be 'MLE' or 'Bayes'")
+	if (!is.element(random_parameters, c("fixed", "uncorr", "corr"))) stop("random_parameters must be 'fixed', 'uncorr' or 'corr'")
+	if (!is.element(model, c("alpha", "gamma", "hybrid", "hybrid0", "kt_les"))) stop("model must be 'alpha', 'gamma', 'hybrid', 'hybrid0', or 'kt_les'")
+
 	if (algorithm == "Bayes" && n_classes > 1)
 		stop("Bayesian estimation can only be used with one class. Switch algorithm to MLE or choose n_classes = 1", "\n")
 
@@ -129,7 +133,6 @@ mdcev <- function(formula = NULL, data,
 		gamma_fixed <- 1
 		alpha_fixed <- 1
 	}
-
 
 	if(algorithm == "Bayes" || std_errors == "deltamethod")
 		n_draws <- 1

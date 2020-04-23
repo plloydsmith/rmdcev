@@ -103,9 +103,13 @@ transformed parameters {
 		else if (alpha_fixed == 1)
 			alpha_individual_1 = col(alpha_full, 1);
 
-		if (gamma_fixed == 0)
-			gamma_individual = exp(block(beta, 1, RP_g, I, Gamma));
-		 else if (gamma_fixed == 1)
+		if (gamma_fixed == 0){
+			if (gamma_ascs == 1)
+				gamma_individual = exp(block(beta, 1, RP_g, I, Gamma));
+			else if (gamma_ascs == 0)
+				gamma_individual = rep_matrix(exp(col(beta, RP_g)), J);
+
+		 } else if (gamma_fixed == 1)
 			gamma_individual = gamma_ll(gamma, I, J, Gamma);
 
 		phi_individual = block(beta, 1, RP, I, NPhi);
