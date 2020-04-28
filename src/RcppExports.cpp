@@ -321,7 +321,6 @@ END_RCPP
 RcppExport SEXP _rcpp_module_boot_stan_fit4SimulationFunctions_mod();
 RcppExport SEXP _rcpp_module_boot_stan_fit4mdcev_mod();
 RcppExport SEXP _rcpp_module_boot_stan_fit4mdcev_rp_mod();
-RcppExport SEXP _rcpp_module_boot_stan_fit4mdcev_rp2_mod();
 
 static const R_CallMethodDef CallEntries[] = {
     {"_rmdcev_Shuffle_rng", (DL_FUNC) &_rmdcev_Shuffle_rng, 4},
@@ -342,7 +341,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_rcpp_module_boot_stan_fit4SimulationFunctions_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4SimulationFunctions_mod, 0},
     {"_rcpp_module_boot_stan_fit4mdcev_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4mdcev_mod, 0},
     {"_rcpp_module_boot_stan_fit4mdcev_rp_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4mdcev_rp_mod, 0},
-    {"_rcpp_module_boot_stan_fit4mdcev_rp2_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4mdcev_rp2_mod, 0},
     {NULL, NULL, 0}
 };
 

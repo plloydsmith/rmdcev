@@ -28,7 +28,7 @@ Prepare Data for WTP simulation
 \donttest{
 data(data_rec, package = "rmdcev")
 
-data_rec <- mdcev.data(data_rec, subset = id < 500,
+data_rec <- mdcev.data(data_rec, subset = id < 500, id.var = "id",
                 alt.var = "alt", choice = "quant")
 
 mdcev_est <- mdcev( ~ 1,

@@ -1,4 +1,16 @@
 //Code for MDCEV Simulation Functions <- "
+/**
+ * Return a data matrix of specified size with rows
+ * corresponding to items and the first column filled
+ * with the value 1 to represent the intercept and the
+ * remaining columns randomly filled with unit-normal draws.
+ *
+ * @param N Number of rows correspond to data items
+ * @param K Number of predictors, counting the intercept, per
+ *          item.
+ * @return Simulated predictor matrix.
+ */
+
 functions {
 
 row_vector Shuffle_rng(row_vector inv, int nerrs){

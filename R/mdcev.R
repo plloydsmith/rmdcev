@@ -65,7 +65,7 @@
 #' \donttest{
 #' data(data_rec, package = "rmdcev")
 #'
-#' data_rec <- mdcev.data(data_rec, subset = id < 500,
+#' data_rec <- mdcev.data(data_rec, subset = id < 500, id.var = "id",
 #'                 alt.var = "alt", choice = "quant")
 #'
 #' mdcev_est <- mdcev( ~ 1,
@@ -98,7 +98,7 @@ mdcev <- function(formula = NULL, data,
 				 std_errors = "mvn",
 				 n_draws = 50,
 				 keep_loglik = 0,
-				 random_parameters = c("fixed", "uncorr", "corr"),
+				 random_parameters = "fixed",
 				 show_stan_warnings = TRUE,
 				 n_iterations = 200,
 				 n_chains = 4,
