@@ -35,7 +35,7 @@ summary.mdcev <- function(object, printCI=FALSE, ...){
 			cov_mat <- solve(-object$stan_fit$hessian)
 			std_err <- sqrt(diag(cov_mat))
 			parms <- object[["parms_info"]][["parm_names"]][["all_names"]]
-			output <- tbl_df(cbind(parms, coefs, std_err)) %>%
+			output <- as_tibble(cbind(parms, coefs, std_err)) %>%
 				mutate(coefs = as.numeric(coefs),
 					   std_err = as.numeric(std_err),
 					   Estimate = round(coefs, 3),
@@ -49,7 +49,7 @@ summary.mdcev <- function(object, printCI=FALSE, ...){
 		} else if(object$std_errors == "mvn"){
 
 			# Get parameter estimates in matrix form
-			output <- tbl_df(object[["stan_fit"]][["theta_tilde"]]) %>%
+			output <- as_tibble(object[["stan_fit"]][["theta_tilde"]]) %>%
 				dplyr::select(-tidyselect::starts_with("log_like"), -tidyselect::starts_with("sum_log_lik"))
 
 			names(output)[1:object$parms_info$n_vars$n_parms_total] <- object$parms_info$parm_names$all_names
@@ -82,7 +82,7 @@ summary.mdcev <- function(object, printCI=FALSE, ...){
 			tibble::rowid_to_column("sim_id") %>%
 			tidyr::gather(parms, value, -sim_id)
 
-		bayes_extra <- tbl_df(rstan::summary(object$stan_fit)$summary) %>%
+		bayes_extra <- as_tibble(rstan::summary(object$stan_fit)$summary) %>%
 			mutate(parms = row.names(rstan::summary(object$stan_fit)$summary))
 
 		if (object$random_parameters == "fixed"){

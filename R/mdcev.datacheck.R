@@ -18,7 +18,7 @@ mdcev.datacheck <- function(data_input){
 	if(!attr(data_input, "income") %in% colnames(data_input))
 		stop("Data must have income column for individual's income")
 
-	check <- tbl_df(data_input) %>%
+	check <- as_tibble(data_input) %>%
 		mutate(expend = .data$price * .data$quant) %>%
 		group_by(.data$id) %>%
 		summarise(numeraire = mean(.data$income) - sum(.data$expend)) %>%

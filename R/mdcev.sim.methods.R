@@ -51,7 +51,7 @@ summary.mdcev.sim <- function(object, ci = 0.95, ...){
 		out <- apply(simplify2array(object),1:2, mean)
 		colnames(out)<- paste0(rep("policy",ncol(out)), 1:ncol(out))
 
-		out <- tbl_df(out) %>%
+		out <- as_tibble(out) %>%
 			tidyr::gather(policy, wtp) %>%
 			dplyr::group_by(.data$policy) %>%
 			dplyr::summarise(mean = mean(wtp),

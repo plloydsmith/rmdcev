@@ -45,13 +45,13 @@ PrepareSimulationData <- function(object,
 	} else if (object$algorithm == "MLE") {
 
 		# Get parameter estimates in matrix form
-		est_pars <- tbl_df(object[["stan_fit"]][["theta_tilde"]]) %>%
+		est_pars <- as_tibble(object[["stan_fit"]][["theta_tilde"]]) %>%
 			dplyr::select(-tidyselect::starts_with("log_like"), -tidyselect::starts_with("sum_log_lik"))
 
 	}
 
 	if(object$std_errors == "deltamethod"){
-		est_pars <- tbl_df(t(object[["stan_fit"]][["theta_tilde"]])) %>%
+		est_pars <- as_tibble(t(object[["stan_fit"]][["theta_tilde"]])) %>%
 			dplyr::select(-tidyselect::starts_with("log_like"), -tidyselect::starts_with("sum_log_lik"))
 	}
 
@@ -200,7 +200,7 @@ if(random_parameters != "fixed"){
 		L <- matrix(unlist(L), nrow = nrow(sim_id), byrow = T )
 		colnames(L) <- c(paste0(rep("parm_id", num_rand), 1:num_rand))
 
-		est_sim_tau <- bind_cols(sim_id, tbl_df(L)) %>%
+		est_sim_tau <- bind_cols(sim_id, as_tibble(L)) %>%
 			tidyr::gather(parm_id, tau, -sim_id) %>%
 			dplyr::mutate(parm_id = as.numeric(gsub("[^0-9]", "", .data$parm_id))) %>%
 			dplyr::arrange(sim_id)

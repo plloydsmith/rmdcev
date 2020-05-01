@@ -126,7 +126,7 @@ GrabIndividualParms <- function(est_sim, parm_name){
 #' @keywords internal
 CombinePsiPhiVariables <- function(dat_id, dat, sim_rand){
 
-	dat_vars <- bind_cols(dat_id, tbl_df(dat)) %>%
+	dat_vars <- bind_cols(dat_id, as_tibble(dat)) %>%
 		group_split(id, keep = F)
 
 	var_sim <- mapply(function(x, y){

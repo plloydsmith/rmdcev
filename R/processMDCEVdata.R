@@ -70,7 +70,7 @@ processMDCEVdata <- function(formula, data, model_options){
 	if (model_options$n_classes > 1){
 		lc.vars <- formula(formula, rhs = 2, lhs = 0)
 
-		data_class <- tbl_df(data) %>%
+		data_class <- as_tibble(data) %>%
 			dplyr::distinct(id, .keep_all = T) %>%
 			stats::model.matrix(lc.vars, .)
 		stan_data$data_class <- as.matrix(data_class)

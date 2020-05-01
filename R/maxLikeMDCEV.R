@@ -7,9 +7,8 @@
 maxlikeMDCEV <- function(stan_data, initial.parameters,
 						 mle_options,
 						 parms_info, ...) {
-	if (is.null(initial.parameters) || mle_options$n_classes == 1){
 
-		stan.model <- stanmodels$mdcev
+	if (is.null(initial.parameters) || mle_options$n_classes == 1){
 
 		message("Using MLE to estimate MDCEV")
 
@@ -20,11 +19,11 @@ maxlikeMDCEV <- function(stan_data, initial.parameters,
 		stan_data_temp$data_class <- matrix(0, stan_data$I, 0)
 
 		if (is.null(initial.parameters)){
-			stan_fit <- rstan::optimizing(stan.model, data = stan_data_temp, as_vector = FALSE, seed = mle_options$seed,
+			stan_fit <- rstan::optimizing(stanmodels$mdcev, data = stan_data_temp, as_vector = FALSE, seed = mle_options$seed,
 										  verbose = mle_options$print_iterations, iter = mle_options$max_iterations,
 								   			draws = mle_options$n_draws, hessian = mle_options$hessian, ...)
 		} else {
-			stan_fit <- rstan::optimizing(stan.model, data = stan_data_temp, as_vector = FALSE, seed = mle_options$seed,
+			stan_fit <- rstan::optimizing(stanmodels$mdcev, data = stan_data_temp, as_vector = FALSE, seed = mle_options$seed,
 										  verbose = mle_options$print_iterations, iter = mle_options$max_iterations,
 										  init = initial.parameters,
 							   				draws = mle_options$n_draws, hessian = mle_options$hessian, ...)
@@ -85,7 +84,7 @@ maxlikeMDCEV <- function(stan_data, initial.parameters,
 		}
 		message("Using MLE to estimate LC-MDCEV")
 
-		stan_fit <- rstan::optimizing(stan.model, data = stan_data, as_vector = FALSE,
+		stan_fit <- rstan::optimizing(stanmodels$mdcev, data = stan_data, as_vector = FALSE,
 							   seed = mle_options$seed, init = init,
 							   verbose = mle_options$print_iterations, iter = mle_options$max_iterations,
 							   draws = mle_options$n_draws, hessian = mle_options$hessian)
