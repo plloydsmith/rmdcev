@@ -27,7 +27,7 @@ GenerateMDCEVData <- function(model, nobs = 1000, nalts = 10,
 							  price_lo = 100, price_hi = 500,
 							  alpha_parms = 0.5,
 							  scale_parms = 1,
-							  gamma_parms = stats::runif(nalts, 1, 2),
+							  gamma_parms = stats::runif(nalts, 1, 10),
 							  psi_i_parms = c(-1.5, 3, -2, 1, 2),
 							  psi_j_parms = c(-5, 0.5, 2),
 							  nerrs = 1,
@@ -46,8 +46,7 @@ GenerateMDCEVData <- function(model, nobs = 1000, nalts = 10,
 	scale_true <- cbind(parms, true)
 
 	# Create psi variables that vary over alternatives
-	psi_j <- cbind(rep(1,nalts), # add constant term
-				   matrix(stats::runif(nalts*(length(psi_j_parms)-1), 0 , 1), nrow = nalts))
+	psi_j <- cbind(matrix(stats::runif(nalts*(length(psi_j_parms)), 0 , 1), nrow = nalts))
 	psi_j <-  rep(1, nobs) %x% psi_j
 
 	psi_i <- matrix(2 * stats::runif(nobs * length(psi_i_parms)), nobs,length(psi_i_parms))

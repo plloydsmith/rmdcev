@@ -49,7 +49,7 @@ DoCbind <- function(x){
 
 #' @title CreateBlankPolicies
 #' @description Create 'zero effect' policies that can be modified
-#' @param price_change_only Logical value for whether to include policy changes to dat_psi.
+#' @param price_change_only Logical value for whether to include policy changes to dat_psi. Defaults to TRUE.
 #' TRUE implies that only price changes are used in simulation.
 #' @param npols Number of policies to simulate
 #' @param nalts Number of non-numeraire alts
@@ -59,7 +59,7 @@ DoCbind <- function(x){
 #' \donttest{
 #' CreateBlankPolicies(npols = 2, nalts = 10, dat_psi = NULL, price_change_only = TRUE)
 #'}
-CreateBlankPolicies <- function(npols, nalts, dat_psi, price_change_only){
+CreateBlankPolicies <- function(npols, nalts, dat_psi, price_change_only = TRUE){
 
 	price_p <- CreateListsRow(matrix(0, nrow = npols, ncol = nalts + 1))
 

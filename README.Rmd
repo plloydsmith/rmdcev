@@ -23,13 +23,15 @@ The _rmdcev_ R package estimates and simulates multiple discrete-continuous extr
 
 Development is in progress. Currently users can estimate the following models:
 
+1. Bhat (2008) MDCEV model specifications
+2. Kuhn-Tucker model specification (von Haefen and Phaneuf, 2005)
+
+Models can be estimated using
+
 1. Fixed parameter models (maximum likelihood or Bayesian estimation)
 2. Latent class models (maximum likelihood estimation)
-3. Random parameters models (Bayesian estimation)
+3. Random parameters models (Bayesian estimation, except KT model specifications)
 
-Under development
-
-2. Phaneuf/von Haefen Kuhn Tucker model
 
 ## Installation
 
@@ -47,20 +49,15 @@ if (!require(devtools)) {
 install_github("plloydsmith/rmdcev", build_vignettes = FALSE, INSTALL_opts="--no-multiarch")
 ```
 
-Depending on your computer set-up, you may need to adjust your Makevars file of the .R folder (usually in your computer user folder) to ensure the first two lines are
-
-``` r
-CXX14 = $(BINPREF)g++ -m$(WIN) -std=c++1y
-CXX14FLAGS=-O3 -mtune=native -march=native
-```
-
 You can switch build_vignettes to TRUE but it will take a lot longer to install. If installation fails, please let me know by [filing an issue](https://github.com/plloydsmith/rmdcev/issues).
 
 ## References
 
 For more details on the model specification and estimation:
 
-Bhat, C.R. (2008) ["The Multiple Discrete-Continuous Extreme Value (MDCEV) Model: Role of Utility Function Parameters, Identification Considerations, and Model Extensions."](https://www.sciencedirect.com/science/article/pii/S0191261507000677) Transportation Research Part B, 42(3): 274-303.
+Bhat, C.R. (2008) ["The Multiple Discrete-Continuous Extreme Value (MDCEV) Model: Role of Utility Function Parameters, Identification Considerations, and Model Extensions"](https://www.sciencedirect.com/science/article/pii/S0191261507000677) Transportation Research Part B, 42(3): 274-303.
+
+von Haefen, R. and Phaneuf D. (2005) ["Kuhn-Tucker Demand System Approaches to Non-Market Valuation"](https://link.springer.com/chapter/10.1007/1-4020-3684-1_8) In: Scarpa R., Alberini A. (eds) Applications of Simulation Methods in Environmental and Resource Economics. The Economics of Non-Market Goods and Resources, vol 6. Springer, Dordrecht.
 
 For more details on the welfare simulation:
 
@@ -68,13 +65,13 @@ Lloyd-Smith, P (2018). ["A New Approach to Calculating Welfare Measures in Kuhn-
 
 ## Estimation
 
-As an example, we can simulate some data using the Hybrid specification. In this example, we are simulating data for 1000 invdividuals and 10 non-numeraire alternatives. 
+As an example, we can simulate some data using Bhat (2008)'s 'Gamma' specification. In this example, we are simulating data for 2,000 individuals and 10 non-numeraire alternatives. 
 
 ```{r}
 library(pacman)
 p_load(tidyverse, rmdcev)
-model <- "hybrid"
-nobs <- 1000
+model <- "gamma"
+nobs <- 2000
 nalts <- 10
 sim.data <- GenerateMDCEVData(model = model, nobs = nobs, nalts = nalts)
 ```
@@ -84,6 +81,7 @@ Estimate model using MLE
 mdcev_est <- mdcev(~ b1 + b2 + b3 + b4 + b5 + b6 + b7 + b8-1,
 				   data = sim.data$data,
 				   model = model,
+				   std_errors = "deltamethod",
 				   algorithm = "MLE")
 ```
 
@@ -95,37 +93,21 @@ summary(mdcev_est)
 
 Compare estimates to true values
 ``` {r}
-parms_true <- tbl_df(sim.data$parms_true) %>%
-	mutate(true = as.numeric(true))
+coefs <- as_tibble(sim.data$parms_true) %>%
+	mutate(true = as.numeric(true)) %>%
+ cbind(summary(mdcev_est)[["CoefTable"]]) %>%
+	mutate(cl_lo = Estimate - 1.96 * Std.err,
+		   cl_hi = Estimate + 1.96 * Std.err)
 
-output <- tbl_df(mdcev_est[["stan_fit"]][["theta_tilde"]]) %>%
-				dplyr::select(-tidyselect::starts_with("log_like"),         
-							  -tidyselect::starts_with("sum_log_lik"))
-
-names(output)[1:mdcev_est$parms_info$n_vars$n_parms_total] <- mdcev_est$parms_info$parm_names$all_names
-
-output<- output %>%
-		tibble::rowid_to_column("sim_id") %>%
-		tidyr::gather(parms, value, -sim_id)
-
-coefs <- output %>%
-	mutate(parms = gsub("\\[|\\]", "", parms)) %>%
-	group_by(parms) %>%
-	summarise(mean = mean(value),
-			  sd = sd(value),
-			  zstat = mean / sd,
-			  cl_lo = quantile(value, 0.025),
-			  cl_hi = quantile(value, 0.975)) %>%
-	left_join(parms_true, by = "parms") %>%
-	print(n=200)
+head(coefs, 200)
 ```
 
 Compare outputs using a figure
 ```{r, warning = FALSE}
 coefs %>%
-	ggplot(aes(y = mean, x = true))  +
+	ggplot(aes(y = Estimate, x = true))  +
 	geom_point(size=2) +
-	geom_text(label=coefs$parms) +
+	geom_text(label=coefs$parms,position=position_jitter(width=.5,height=1)) +
 	geom_abline(slope = 1) +
 	geom_errorbar(aes(ymin=cl_lo,ymax=cl_hi,width=0.2))
 ```
@@ -137,9 +119,9 @@ Create policy simulations (these are 'no change' policies with no effects)
 ```{r}
 npols <- 2 # Choose number of policies
 
-policies<-	CreateBlankPolicies(npols, nalts, mdcev_est$stan_data[["dat_psi"]], price_change_only = TRUE)
+policies<-	CreateBlankPolicies(npols, nalts, mdcev_est$stan_data[["dat_psi"]])
 
-df_sim <- PrepareSimulationData(mdcev_est, policies)
+df_sim <- PrepareSimulationData(mdcev_est, policies, nsims = 1)
 ```
 
 Simulate welfare changes

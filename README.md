@@ -22,13 +22,15 @@ scenarios.
 Development is in progress. Currently users can estimate the following
 models:
 
+1.  Bhat (2008) MDCEV model specifications
+2.  Kuhn-Tucker model specification (von Haefen and Phaneuf, 2005)
+
+Models can be estimated using
+
 1.  Fixed parameter models (maximum likelihood or Bayesian estimation)
 2.  Latent class models (maximum likelihood estimation)
-3.  Random parameters models (Bayesian estimation)
-
-Under development
-
-2.  Phaneuf/von Haefen Kuhn Tucker model
+3.  Random parameters models (Bayesian estimation, except KT model
+    specifications)
 
 ## Installation
 
@@ -48,15 +50,6 @@ if (!require(devtools)) {
 install_github("plloydsmith/rmdcev", build_vignettes = FALSE, INSTALL_opts="--no-multiarch")
 ```
 
-Depending on your computer set-up, you may need to adjust your Makevars
-file of the .R folder (usually in your computer user folder) to ensure
-the first two lines are
-
-``` r
-CXX14 = $(BINPREF)g++ -m$(WIN) -std=c++1y
-CXX14FLAGS=-O3 -mtune=native -march=native
-```
-
 You can switch build\_vignettes to TRUE but it will take a lot longer to
 install. If installation fails, please let me know by [filing an
 issue](https://github.com/plloydsmith/rmdcev/issues).
@@ -68,8 +61,15 @@ For more details on the model specification and estimation:
 Bhat, C.R. (2008) [“The Multiple Discrete-Continuous Extreme Value
 (MDCEV) Model: Role of Utility Function Parameters, Identification
 Considerations, and Model
-Extensions.”](https://www.sciencedirect.com/science/article/pii/S0191261507000677)
+Extensions”](https://www.sciencedirect.com/science/article/pii/S0191261507000677)
 Transportation Research Part B, 42(3): 274-303.
+
+von Haefen, R. and Phaneuf D. (2005) [“Kuhn-Tucker Demand System
+Approaches to Non-Market
+Valuation”](https://link.springer.com/chapter/10.1007/1-4020-3684-1_8)
+In: Scarpa R., Alberini A. (eds) Applications of Simulation Methods in
+Environmental and Resource Economics. The Economics of Non-Market Goods
+and Resources, vol 6. Springer, Dordrecht.
 
 For more details on the welfare simulation:
 
@@ -80,15 +80,15 @@ Journal of Choice Modeling, 26: 19-27
 
 ## Estimation
 
-As an example, we can simulate some data using the Hybrid specification.
-In this example, we are simulating data for 1000 invdividuals and 10
-non-numeraire alternatives.
+As an example, we can simulate some data using Bhat (2008)‘s ’Gamma’
+specification. In this example, we are simulating data for 2,000
+individuals and 10 non-numeraire alternatives.
 
 ``` r
 library(pacman)
 p_load(tidyverse, rmdcev)
-model <- "hybrid"
-nobs <- 1000
+model <- "gamma"
+nobs <- 2000
 nalts <- 10
 sim.data <- GenerateMDCEVData(model = model, nobs = nobs, nalts = nalts)
 #> Checking data...
@@ -101,23 +101,18 @@ Estimate model using MLE
 mdcev_est <- mdcev(~ b1 + b2 + b3 + b4 + b5 + b6 + b7 + b8-1,
                    data = sim.data$data,
                    model = model,
+                   std_errors = "deltamethod",
                    algorithm = "MLE")
 #> Using MLE to estimate MDCEV
-#> Chain 1: Initial log joint probability = -18631.4
+#> Chain 1: Initial log joint probability = -51663.6
 #> Chain 1:     Iter      log prob        ||dx||      ||grad||       alpha      alpha0  # evals  Notes 
-#> Chain 1:       19      -15626.9      0.185145       107.315           1           1       22   
+#> Chain 1:       19      -38808.9       1.74731       438.401           1           1       24   
 #> Chain 1:     Iter      log prob        ||dx||      ||grad||       alpha      alpha0  # evals  Notes 
-#> Chain 1:       39        -15555       0.14702       84.1025           1           1       43   
+#> Chain 1:       39      -38330.4       0.27699       72.9864           1           1       49   
 #> Chain 1:     Iter      log prob        ||dx||      ||grad||       alpha      alpha0  # evals  Notes 
-#> Chain 1:       59      -15542.6     0.0775889        40.987           1           1       65   
+#> Chain 1:       59      -38325.9    0.00620657       9.51927           1           1       74   
 #> Chain 1:     Iter      log prob        ||dx||      ||grad||       alpha      alpha0  # evals  Notes 
-#> Chain 1:       79      -15541.4     0.0174648       7.09082           1           1       89   
-#> Chain 1:     Iter      log prob        ||dx||      ||grad||       alpha      alpha0  # evals  Notes 
-#> Chain 1:       99      -15540.9     0.0284867       3.21212           1           1      111   
-#> Chain 1:     Iter      log prob        ||dx||      ||grad||       alpha      alpha0  # evals  Notes 
-#> Chain 1:      119      -15540.9     0.0052752       1.16396           1           1      133   
-#> Chain 1:     Iter      log prob        ||dx||      ||grad||       alpha      alpha0  # evals  Notes 
-#> Chain 1:      128      -15540.9     0.0016659      0.312295           1           1      142   
+#> Chain 1:       76      -38325.8    0.00207364      0.389301           1           1       94   
 #> Chain 1: Optimization terminated normally: 
 #> Chain 1:   Convergence detected: relative gradient magnitude is below tolerance
 ```
@@ -128,105 +123,87 @@ Summarize results
 summary(mdcev_est)
 #> Model run using rmdcev for R, version 1.1.2 
 #> Estimation method                : MLE
-#> Model type                       : hybrid specification
+#> Model type                       : gamma specification
 #> Number of classes                : 1
-#> Number of individuals            : 1000
+#> Number of individuals            : 2000
 #> Number of non-numeraire alts     : 10
 #> Estimated parameters             : 20
-#> LL                               : -15540.88
-#> AIC                              : 31121.77
-#> BIC                              : 31219.92
-#> Standard errors calculated using : 50 MVN draws
+#> LL                               : -38325.79
+#> AIC                              : 76691.59
+#> BIC                              : 76803.61
+#> Standard errors calculated using : Delta method
 #> Exit of MLE                      : successful convergence
-#> Time taken (hh:mm:ss)            : 00:00:1.54
+#> Time taken (hh:mm:ss)            : 00:00:2.59
 #> 
 #> Average consumption of non-numeraire alternatives:
-#>     1     2     3     4     5     6     7     8     9    10 
-#> 25.51 15.15  9.70 23.00 37.43 25.60 12.60 12.74 27.76  9.32 
+#>      1      2      3      4      5      6      7      8      9     10 
+#> 169.86  11.77   0.76  40.80   4.12   4.92  52.11   6.63   7.22   1.07 
 #> 
 #> Parameter estimates --------------------------------  
 #>         Estimate Std.err z.stat
-#> psi_b1    -5.514   0.547 -10.09
-#> psi_b2     0.491   0.076   6.45
-#> psi_b3     1.986   0.107  18.49
-#> psi_b4    -1.433   0.102 -14.10
-#> psi_b5     3.190   0.175  18.28
-#> psi_b6    -2.126   0.122 -17.50
-#> psi_b7     0.988   0.085  11.63
-#> psi_b8     2.053   0.124  16.50
-#> gamma1     1.323   0.209   6.34
-#> gamma2     1.459   0.195   7.50
-#> gamma3     1.136   0.219   5.18
-#> gamma4     1.522   0.312   4.87
-#> gamma5     2.177   0.324   6.71
-#> gamma6     1.692   0.212   8.00
-#> gamma7     1.260   0.205   6.14
-#> gamma8     2.001   0.342   5.85
-#> gamma9     1.331   0.193   6.90
-#> gamma10    1.232   0.249   4.95
-#> alpha1     0.473   0.027  17.73
-#> scale      1.038   0.046  22.73
-#> Note: Alpha parameter is equal for all alternatives.
+#> psi_b1    -4.804   0.098 -49.02
+#> psi_b2     0.367   0.116   3.16
+#> psi_b3     1.899   0.086  22.09
+#> psi_b4    -1.494   0.055 -27.16
+#> psi_b5     3.010   0.051  59.02
+#> psi_b6    -1.992   0.059 -33.76
+#> psi_b7     0.994   0.043  23.12
+#> psi_b8     1.976   0.045  43.91
+#> gamma1     8.858   0.643  13.78
+#> gamma2     9.318   0.687  13.56
+#> gamma3     2.987   0.467   6.40
+#> gamma4     5.570   0.298  18.69
+#> gamma5     9.772   1.067   9.16
+#> gamma6     1.660   0.108  15.37
+#> gamma7     5.289   0.336  15.74
+#> gamma8     6.580   0.569  11.56
+#> gamma9     4.784   0.357  13.40
+#> gamma10    3.378   0.448   7.54
+#> alpha1     0.497   0.008  62.16
+#> scale      0.969   0.013  74.57
+#> Note: All non-numeraire alpha's fixed to 0.
 ```
 
 Compare estimates to true values
 
 ``` r
-parms_true <- tbl_df(sim.data$parms_true) %>%
-    mutate(true = as.numeric(true))
+coefs <- as_tibble(sim.data$parms_true) %>%
+    mutate(true = as.numeric(true)) %>%
+ cbind(summary(mdcev_est)[["CoefTable"]]) %>%
+    mutate(cl_lo = Estimate - 1.96 * Std.err,
+           cl_hi = Estimate + 1.96 * Std.err)
 
-output <- tbl_df(mdcev_est[["stan_fit"]][["theta_tilde"]]) %>%
-                dplyr::select(-tidyselect::starts_with("log_like"),         
-                              -tidyselect::starts_with("sum_log_lik"))
-
-names(output)[1:mdcev_est$parms_info$n_vars$n_parms_total] <- mdcev_est$parms_info$parm_names$all_names
-
-output<- output %>%
-        tibble::rowid_to_column("sim_id") %>%
-        tidyr::gather(parms, value, -sim_id)
-
-coefs <- output %>%
-    mutate(parms = gsub("\\[|\\]", "", parms)) %>%
-    group_by(parms) %>%
-    summarise(mean = mean(value),
-              sd = sd(value),
-              zstat = mean / sd,
-              cl_lo = quantile(value, 0.025),
-              cl_hi = quantile(value, 0.975)) %>%
-    left_join(parms_true, by = "parms") %>%
-    print(n=200)
-#> # A tibble: 20 x 7
-#>    parms     mean     sd  zstat  cl_lo  cl_hi  true
-#>    <chr>    <dbl>  <dbl>  <dbl>  <dbl>  <dbl> <dbl>
-#>  1 alpha1   0.473 0.0267  17.7   0.427  0.526  0.5 
-#>  2 gamma1   1.32  0.209    6.34  0.972  1.71   1.33
-#>  3 gamma10  1.23  0.249    4.95  0.880  1.90   1.13
-#>  4 gamma2   1.46  0.195    7.50  1.13   1.93   1.72
-#>  5 gamma3   1.14  0.219    5.18  0.813  1.57   1.69
-#>  6 gamma4   1.52  0.312    4.87  1.09   2.22   1.61
-#>  7 gamma5   2.18  0.324    6.71  1.67   2.72   1.75
-#>  8 gamma6   1.69  0.212    8.00  1.34   2.14   1.51
-#>  9 gamma7   1.26  0.205    6.14  0.911  1.70   1.21
-#> 10 gamma8   2.00  0.342    5.85  1.53   2.76   1.91
-#> 11 gamma9   1.33  0.193    6.90  0.987  1.64   1.48
-#> 12 psi_b1  -5.51  0.547  -10.1  -6.36  -4.39  -5   
-#> 13 psi_b2   0.491 0.0761   6.45  0.364  0.628  0.5 
-#> 14 psi_b3   1.99  0.107   18.5   1.82   2.19   2   
-#> 15 psi_b4  -1.43  0.102  -14.1  -1.62  -1.26  -1.5 
-#> 16 psi_b5   3.19  0.175   18.3   2.87   3.54   3   
-#> 17 psi_b6  -2.13  0.122  -17.5  -2.32  -1.90  -2   
-#> 18 psi_b7   0.988 0.0849  11.6   0.819  1.13   1   
-#> 19 psi_b8   2.05  0.124   16.5   1.80   2.25   2   
-#> 20 scale    1.04  0.0456  22.7   0.949  1.12   1
+head(coefs, 200)
+#>           parms      true Estimate Std.err z.stat    cl_lo    cl_hi
+#> psi_b1   psi_b1 -5.000000   -4.804   0.098 -49.02 -4.99608 -4.61192
+#> psi_b2   psi_b2  0.500000    0.367   0.116   3.16  0.13964  0.59436
+#> psi_b3   psi_b3  2.000000    1.899   0.086  22.09  1.73044  2.06756
+#> psi_b4   psi_b4 -1.500000   -1.494   0.055 -27.16 -1.60180 -1.38620
+#> psi_b5   psi_b5  3.000000    3.010   0.051  59.02  2.91004  3.10996
+#> psi_b6   psi_b6 -2.000000   -1.992   0.059 -33.76 -2.10764 -1.87636
+#> psi_b7   psi_b7  1.000000    0.994   0.043  23.12  0.90972  1.07828
+#> psi_b8   psi_b8  2.000000    1.976   0.045  43.91  1.88780  2.06420
+#> gamma1   gamma1  8.390458    8.858   0.643  13.78  7.59772 10.11828
+#> gamma2   gamma2  8.583333    9.318   0.687  13.56  7.97148 10.66452
+#> gamma3   gamma3  3.290057    2.987   0.467   6.40  2.07168  3.90232
+#> gamma4   gamma4  4.803377    5.570   0.298  18.69  4.98592  6.15408
+#> gamma5   gamma5  9.502540    9.772   1.067   9.16  7.68068 11.86332
+#> gamma6   gamma6  1.576536    1.660   0.108  15.37  1.44832  1.87168
+#> gamma7   gamma7  5.370277    5.289   0.336  15.74  4.63044  5.94756
+#> gamma8   gamma8  6.842473    6.580   0.569  11.56  5.46476  7.69524
+#> gamma9   gamma9  4.657651    4.784   0.357  13.40  4.08428  5.48372
+#> gamma10 gamma10  2.686770    3.378   0.448   7.54  2.49992  4.25608
+#> alpha1   alpha1  0.500000    0.497   0.008  62.16  0.48132  0.51268
+#> scale     scale  1.000000    0.969   0.013  74.57  0.94352  0.99448
 ```
 
 Compare outputs using a figure
 
 ``` r
 coefs %>%
-    ggplot(aes(y = mean, x = true))  +
+    ggplot(aes(y = Estimate, x = true))  +
     geom_point(size=2) +
-    geom_text(label=coefs$parms) +
+    geom_text(label=coefs$parms,position=position_jitter(width=.5,height=1)) +
     geom_abline(slope = 1) +
     geom_errorbar(aes(ymin=cl_lo,ymax=cl_hi,width=0.2))
 ```
@@ -241,9 +218,9 @@ effects)
 ``` r
 npols <- 2 # Choose number of policies
 
-policies<-  CreateBlankPolicies(npols, nalts, mdcev_est$stan_data[["dat_psi"]], price_change_only = TRUE)
+policies<-  CreateBlankPolicies(npols, nalts, mdcev_est$stan_data[["dat_psi"]])
 
-df_sim <- PrepareSimulationData(mdcev_est, policies)
+df_sim <- PrepareSimulationData(mdcev_est, policies, nsims = 1)
 ```
 
 Simulate welfare changes
@@ -255,14 +232,14 @@ wtp <- mdcev.sim(df_sim$df_indiv,
                  cond_err = 1, 
                  nerrs = 15, 
                  sim_type = "welfare")
-#> Using hybrid approach to simulation
+#> Using general approach to simulation
 #> Simulating welfare...
 #> 
-#> 9.00e+05simulations finished in0.18minutes.(82569per second)
+#> 6.00e+04simulations finished in0.35minutes.(2872per second)
 summary(wtp)
 #> # A tibble: 2 x 5
-#>   policy      mean  std.dev `ci_lo2.5%` `ci_hi97.5%`
-#>   <chr>      <dbl>    <dbl>       <dbl>        <dbl>
-#> 1 policy1 3.84e-12 7.79e-11   -1.16e-10     1.44e-10
-#> 2 policy2 3.84e-12 7.79e-11   -1.16e-10     1.44e-10
+#>   policy      mean std.dev `ci_lo2.5%` `ci_hi97.5%`
+#> * <chr>      <dbl>   <dbl>       <dbl>        <dbl>
+#> 1 policy1 7.13e-11      NA    7.13e-11     7.13e-11
+#> 2 policy2 7.13e-11      NA    7.13e-11     7.13e-11
 ```
