@@ -113,7 +113,7 @@ coefs %>%
 ```
 
 
-## Welfare simulation
+## Welfare simulation 
 
 Create policy simulations (these are 'no change' policies with no effects)
 ```{r}
