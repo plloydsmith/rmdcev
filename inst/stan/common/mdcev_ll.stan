@@ -74,7 +74,7 @@ return(log_like);
 
 real DeterminJacob(vector phi_quant_gamma, real alpha, vector phi_j, vector price_j_num,
                   vector nonzero, int J){
-
+// old, use Bhat (2008) form below
   matrix[J, J] jacobian;
   real j_det;
 

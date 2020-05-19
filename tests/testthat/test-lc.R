@@ -1,5 +1,5 @@
 context("Test LC")
-#library(rmdcev)
+library(rmdcev)
 tol <- 0.01
 data(data_rec, package = "rmdcev")
 data_rec
@@ -9,7 +9,7 @@ data_rec <- mdcev.data(data_rec, subset = id < 501,
 					   alt.var = "alt",
 					   choice = "quant")
 
-result <- mdcev( ~ 1 | university + ageindex,
+result_test <- mdcev( ~ 1 | university + ageindex,
 				   data = data_rec,
 				   model = "hybrid0",
 				   algorithm = "MLE",
@@ -20,19 +20,43 @@ result <- mdcev( ~ 1 | university + ageindex,
 test_that("LC 2-classes", {
 #	expect_true(abs(result$log.likelihood - (-12612.51)) < tol)
 
-	print(result$log.likelihood, digits =10)
+	print(result_test$log.likelihood, digits =10)
 #	expect_true(abs(result$bic - 25479.74) < tol)
-	expect_true(abs(result[["stan_fit"]][["par"]][["scale"]][[1]] - 0.682) < tol)
+	expect_true(abs(result_test[["stan_fit"]][["par"]][["scale"]][[1]] - 0.682) < tol)
 #	expect_true(abs(result[["stan_fit"]][["par"]][["psi"]][2,1] - -7.493115) < tol)
-	expect_true(abs(result[["stan_fit"]][["par"]][["delta"]][[1,2]] - .431) < tol)
+	expect_true(abs(result_test[["stan_fit"]][["par"]][["delta"]][[1,2]] - .431) < tol)
+})
+
+
+test_that("LC 2-classes with starting values", {
+
+	result_test <- mdcev( ~ 1 | university + ageindex,
+					 data = data_rec,
+					 model = "hybrid0",
+					 algorithm = "MLE",
+					 std_error = "deltamethod",
+					 n_classes = 2,
+					 print_iterations = FALSE)
+
+	result_test <- mdcev( ~ 1 | university + ageindex,
+					 data = data_rec,
+					 model = "hybrid0",
+					 initial.parameters = result_test$stan_fit$par,
+					 algorithm = "MLE",
+					 std_error = "deltamethod",
+					 n_classes = 2,
+					 print_iterations = FALSE)
+
+	expect_true(abs(result_test[["stan_fit"]][["par"]][["scale"]][[1]] - 0.682) < tol)
+
 })
 
 context("Test LC simulations")
 
 test_that("Test LC simulations", {
 	npols <- 2
-	policies <- CreateBlankPolicies(npols, result$stan_data[["J"]], result$stan_data[["dat_psi"]], price_change_only = TRUE)
-	df_sim <- PrepareSimulationData(result, policies, nsims = 1, class = "class1")
+	policies <- CreateBlankPolicies(npols, result_test$stan_data[["J"]], result_test$stan_data[["dat_psi"]], price_change_only = TRUE)
+	df_sim <- PrepareSimulationData(result_test, policies, nsims = 1, class = "class1")
 
 	# Test welfare
 	wtp <- mdcev.sim(df_sim$df_indiv, df_common = df_sim$df_common, sim_options = df_sim$sim_options,
@@ -45,6 +69,6 @@ test_that("Test LC simulations", {
 						 cond_err = 1, nerrs = 1, sim_type = "demand")
 
 #	print(demand[["class2"]][[5]][[1]][1,-1], digits =10)
-	expect_equal(sum(demand[[5]][[1]][1,-1]), sum(result$stan_data$quant_j[5,]))
+	expect_equal(sum(demand[[5]][[1]][1,-1]), sum(result_test$stan_data$quant_j[5,]))
 })
 

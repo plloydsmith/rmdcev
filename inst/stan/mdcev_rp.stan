@@ -69,34 +69,32 @@ transformed parameters {
 		beta = rep_matrix(mu', I) + diag_post_multiply(z, tau);
 	}
 	if(model_num < 5){
-	if (alpha_fixed == 0){
-		if (model_num < 4){
-			alpha_individual_1 = inv(1 + exp(-col(beta, RP_a)));
-			if (model_num == 1)
-			  	alpha_individual_j = rep_matrix(0, I, J);
-			else if (model_num == 2)
-			  	alpha_individual_j = inv(1 + exp(-block(beta, 1, RP_a + 1, I, J)));
-			else
-				alpha_individual_j = rep_matrix(alpha_individual_1, J);
-		} else {
-			alpha_individual_1 = rep_vector(1e-03, I);
-			alpha_individual_j = rep_matrix(1e-03, I, J);
+		if (alpha_fixed == 0){
+			if (model_num < 4){
+				alpha_individual_1 = inv(1 + exp(-col(beta, RP_a)));
+				if (model_num == 1)
+				  	alpha_individual_j = rep_matrix(0, I, J);
+				else if (model_num == 2)
+				  	alpha_individual_j = inv(1 + exp(-block(beta, 1, RP_a + 1, I, J)));
+				else
+					alpha_individual_j = rep_matrix(alpha_individual_1, J);
+			} else {
+				alpha_individual_1 = rep_vector(1e-03, I);
+				alpha_individual_j = rep_matrix(1e-03, I, J);
+			}
+		} else if (alpha_fixed == 1){
+			alpha_full = alpha_ll(alpha, I, J, model_num);
+			alpha_individual_1 = col(alpha_full, 1);
+			alpha_individual_j = block(alpha_full, 1, 2, I, J);
 		}
-	} else if (alpha_fixed == 1){
-		alpha_full = alpha_ll(alpha, I, J, model_num);
-		alpha_individual_1 = col(alpha_full, 1);
-		alpha_individual_j = block(alpha_full, 1, 2, I, J);
-	}
-
-	if (gamma_fixed == 0){
-		if (model_num == 2)
-	  		gamma_individual = rep_matrix(1, I, J);
-		else
-	  		gamma_individual = exp(block(beta, 1, RP_g, I, J));
-	} else if (gamma_fixed == 1){
-		gamma_individual = gamma_ll(gamma, I, J, Gamma);
-	}
-
+		if (gamma_fixed == 0){
+			if (model_num == 2)
+		  		gamma_individual = rep_matrix(1, I, J);
+			else
+		  		gamma_individual = exp(block(beta, 1, RP_g, I, J));
+		} else if (gamma_fixed == 1){
+			gamma_individual = gamma_ll(gamma, I, J, Gamma);
+		}
 	} else if (model_num == 5){
 		if (alpha_fixed == 0)
 			alpha_individual_1 = inv(1 + exp(-col(beta, RP_a)));
@@ -117,20 +115,17 @@ transformed parameters {
 
 	psi_individual = block(beta, 1, 1, I, NPsi);
 
-	for(t in 1:I){
-		row_vector[J] util;
-		util = psi_individual[task_individual[t]] * dat_psi[start[t]:end[t]]';
-		lpsi[t] = util;
+	for(i in 1:I){
+		lpsi[i] = psi_individual[task_individual[i]] * dat_psi[start[i]:end[i]]';
 
 		if(model_num  == 5){
 			if(NPhi > 0)
-				util = phi_individual[task_individual[t]] * dat_phi[start[t]:end[t]]';
+				phi_ij[i] = exp(phi_individual[task_individual[i]] * dat_phi[start[i]:end[i]]');
 			else if(NPhi == 0)
-				util = rep_row_vector(0, J);
-			phi_ij[t] = exp(util);
+				phi_ij[i] = rep_row_vector(1, J);
 		}
-
 	}
+
 	if(model_num < 5){
 		log_like = mdcev_ll(quant_j, price_j, log_num, income, M, log_M_fact, // data
 			lpsi, gamma_individual, alpha_individual_1, alpha_individual_j, scale_full, 						// parameters

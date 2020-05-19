@@ -116,8 +116,6 @@ return(output)
 #' @keywords internal
 ProcessSimulationData <- function(est_sim, object, policies, nsims){
 
-#	object <- mdcev_corr2
-
 	J <- object$stan_data$J
 	I <- object$stan_data$I
 	model_num <- object$stan_data$model_num
