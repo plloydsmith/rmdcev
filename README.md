@@ -89,7 +89,7 @@ results.
 library(pacman)
 p_load(tidyverse, rmdcev)
 model <- "gamma"
-nobs <- 10000
+nobs <- 2000
 nalts <- 10
 sim.data <- GenerateMDCEVData(model = model, nobs = nobs, nalts = nalts)
 #> Sorting data by id.var then alt...
@@ -107,20 +107,18 @@ mdcev_est <- mdcev(~ b1 + b2 + b3 + b4 + b5 + b6,
                    model = model,
                    algorithm = "MLE")
 #> Using MLE to estimate KT model
-#> Chain 1: Initial log joint probability = -470237
+#> Chain 1: Initial log joint probability = -60303.6
 #> Chain 1:     Iter      log prob        ||dx||      ||grad||       alpha      alpha0  # evals  Notes 
 #> Chain 1: Error evaluating model log probability: Non-finite gradient.
 #> Error evaluating model log probability: Non-finite gradient.
 #> 
-#> Chain 1:       19       -155997     0.0626126       2703.73       0.248       0.248       32   
+#> Chain 1:       19      -22587.6      0.147465        239.08           1           1       29   
 #> Chain 1:     Iter      log prob        ||dx||      ||grad||       alpha      alpha0  # evals  Notes 
-#> Chain 1:       39       -154683      0.155554        465.91           1           1       54   
+#> Chain 1:       39      -22417.9      0.105684       88.3198           1           1       52   
 #> Chain 1:     Iter      log prob        ||dx||      ||grad||       alpha      alpha0  # evals  Notes 
-#> Chain 1:       59       -154652      0.020183       48.4093      0.9566      0.9566       75   
+#> Chain 1:       59      -22414.6    0.00557064        6.4863      0.4163           1       75   
 #> Chain 1:     Iter      log prob        ||dx||      ||grad||       alpha      alpha0  # evals  Notes 
-#> Chain 1:       79       -154651    0.00202988       8.74596           1           1       99   
-#> Chain 1:     Iter      log prob        ||dx||      ||grad||       alpha      alpha0  # evals  Notes 
-#> Chain 1:       93       -154651   0.000157087      0.664501      0.2613      0.9589      118   
+#> Chain 1:       77      -22414.6   0.000197231      0.596081       0.341      0.9852      100   
 #> Chain 1: Optimization terminated normally: 
 #> Chain 1:   Convergence detected: relative gradient magnitude is below tolerance
 ```
@@ -133,40 +131,40 @@ summary(mdcev_est)
 #> Estimation method                : MLE
 #> Model type                       : gamma specification
 #> Number of classes                : 1
-#> Number of individuals            : 10000
+#> Number of individuals            : 2000
 #> Number of non-numeraire alts     : 10
 #> Estimated parameters             : 18
-#> LL                               : -154651.2
-#> AIC                              : 309338.4
-#> BIC                              : 309468.2
+#> LL                               : -22414.6
+#> AIC                              : 44865.21
+#> BIC                              : 44966.02
 #> Standard errors calculated using : Delta method
 #> Exit of MLE                      : successful convergence
-#> Time taken (hh:mm:ss)            : 00:00:17.19
+#> Time taken (hh:mm:ss)            : 00:00:2.58
 #> 
 #> Average consumption of non-numeraire alternatives:
 #>     1     2     3     4     5     6     7     8     9    10 
-#>  0.54  1.98 21.62  4.26 44.29  1.48 25.87  9.11 32.02  0.60 
+#>  1.11  1.65  9.71  1.06 14.70  5.16  1.31  5.32  5.64  9.06 
 #> 
 #> Parameter estimates --------------------------------  
 #>          Estimate Std.err z.stat
-#> psi_b1     -4.923   0.059 -83.43
-#> psi_b2      0.509   0.030  16.97
-#> psi_b3      2.144   0.054  39.71
-#> psi_b4     -1.508   0.026 -57.99
-#> psi_b5      1.966   0.024  81.93
-#> psi_b6     -1.012   0.024 -42.18
-#> gamma_1     3.623   0.318  11.39
-#> gamma_2     7.407   0.532  13.92
-#> gamma_3     1.637   0.044  37.21
-#> gamma_4     8.749   0.450  19.44
-#> gamma_5     5.938   0.166  35.77
-#> gamma_6     4.988   0.348  14.33
-#> gamma_7     9.460   0.280  33.79
-#> gamma_8     5.674   0.200  28.37
-#> gamma_9     8.487   0.245  34.64
-#> gamma_10    2.707   0.206  13.14
-#> alpha_1     0.506   0.005 101.25
-#> scale       1.000   0.007 142.90
+#> psi_b1     -5.017   0.129 -38.90
+#> psi_b2      0.585   0.080   7.31
+#> psi_b3      2.067   0.071  29.11
+#> psi_b4     -1.496   0.059 -25.36
+#> psi_b5      1.921   0.059  32.56
+#> psi_b6     -0.988   0.056 -17.64
+#> gamma_1     1.890   0.225   8.40
+#> gamma_2     3.831   0.586   6.54
+#> gamma_3     1.074   0.074  14.51
+#> gamma_4     1.506   0.168   8.96
+#> gamma_5     3.137   0.218  14.39
+#> gamma_6     7.937   0.838   9.47
+#> gamma_7     7.234   1.453   4.98
+#> gamma_8     1.314   0.093  14.13
+#> gamma_9     1.676   0.123  13.62
+#> gamma_10   10.196   0.995  10.25
+#> alpha_1     0.499   0.010  49.89
+#> scale       0.994   0.019  52.33
 #> Note: All non-numeraire alpha's fixed to 0.
 ```
 
@@ -181,24 +179,24 @@ coefs <- as_tibble(sim.data$parms_true) %>%
 
 head(coefs, 200)
 #>      parms      true Estimate Std.err z.stat    cl_lo    cl_hi
-#> 1   psi_b1 -5.000000   -4.923   0.059 -83.43 -5.03864 -4.80736
-#> 2   psi_b2  0.500000    0.509   0.030  16.97  0.45020  0.56780
-#> 3   psi_b3  2.000000    2.144   0.054  39.71  2.03816  2.24984
-#> 4   psi_b4 -1.500000   -1.508   0.026 -57.99 -1.55896 -1.45704
-#> 5   psi_b5  2.000000    1.966   0.024  81.93  1.91896  2.01304
-#> 6   psi_b6 -1.000000   -1.012   0.024 -42.18 -1.05904 -0.96496
-#> 7   gamma1  3.790078    3.623   0.318  11.39  2.99972  4.24628
-#> 8   gamma2  7.156351    7.407   0.532  13.92  6.36428  8.44972
-#> 9   gamma3  1.650154    1.637   0.044  37.21  1.55076  1.72324
-#> 10  gamma4  9.089130    8.749   0.450  19.44  7.86700  9.63100
-#> 11  gamma5  5.855912    5.938   0.166  35.77  5.61264  6.26336
-#> 12  gamma6  4.372138    4.988   0.348  14.33  4.30592  5.67008
-#> 13  gamma7  9.572931    9.460   0.280  33.79  8.91120 10.00880
-#> 14  gamma8  5.798455    5.674   0.200  28.37  5.28200  6.06600
-#> 15  gamma9  8.031057    8.487   0.245  34.64  8.00680  8.96720
-#> 16 gamma10  2.088844    2.707   0.206  13.14  2.30324  3.11076
-#> 17  alpha1  0.500000    0.506   0.005 101.25  0.49620  0.51580
-#> 18   scale  1.000000    1.000   0.007 142.90  0.98628  1.01372
+#> 1   psi_b1 -5.000000   -5.017   0.129 -38.90 -5.26984 -4.76416
+#> 2   psi_b2  0.500000    0.585   0.080   7.31  0.42820  0.74180
+#> 3   psi_b3  2.000000    2.067   0.071  29.11  1.92784  2.20616
+#> 4   psi_b4 -1.500000   -1.496   0.059 -25.36 -1.61164 -1.38036
+#> 5   psi_b5  2.000000    1.921   0.059  32.56  1.80536  2.03664
+#> 6   psi_b6 -1.000000   -0.988   0.056 -17.64 -1.09776 -0.87824
+#> 7   gamma1  1.672031    1.890   0.225   8.40  1.44900  2.33100
+#> 8   gamma2  4.454715    3.831   0.586   6.54  2.68244  4.97956
+#> 9   gamma3  1.121848    1.074   0.074  14.51  0.92896  1.21904
+#> 10  gamma4  1.779145    1.506   0.168   8.96  1.17672  1.83528
+#> 11  gamma5  2.666243    3.137   0.218  14.39  2.70972  3.56428
+#> 12  gamma6  7.543130    7.937   0.838   9.47  6.29452  9.57948
+#> 13  gamma7  8.978440    7.234   1.453   4.98  4.38612 10.08188
+#> 14  gamma8  1.198326    1.314   0.093  14.13  1.13172  1.49628
+#> 15  gamma9  1.641405    1.676   0.123  13.62  1.43492  1.91708
+#> 16 gamma10  9.692787   10.196   0.995  10.25  8.24580 12.14620
+#> 17  alpha1  0.500000    0.499   0.010  49.89  0.47940  0.51860
+#> 18   scale  1.000000    0.994   0.019  52.33  0.95676  1.03124
 ```
 
 Compare outputs using a figure
@@ -238,11 +236,11 @@ wtp <- mdcev.sim(df_sim$df_indiv,
                  sim_type = "welfare")
 #> Using general approach in simulation...
 #> 
-#> 3.00e+05simulations finished in1.49minutes.(3366per second)
+#> 6.00e+04simulations finished in0.28minutes.(3636per second)
 summary(wtp)
 #> # A tibble: 2 x 5
-#>   policy      mean std.dev `ci_lo2.5%` `ci_hi97.5%`
-#>   <chr>      <dbl>   <dbl>       <dbl>        <dbl>
-#> 1 policy1 9.22e-12      NA    9.22e-12     9.22e-12
-#> 2 policy2 9.22e-12      NA    9.22e-12     9.22e-12
+#>   policy       mean std.dev `ci_lo2.5%` `ci_hi97.5%`
+#>   <chr>       <dbl>   <dbl>       <dbl>        <dbl>
+#> 1 policy1 -1.77e-10      NA   -1.77e-10    -1.77e-10
+#> 2 policy2 -1.77e-10      NA   -1.77e-10    -1.77e-10
 ```

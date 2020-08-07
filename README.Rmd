@@ -67,7 +67,7 @@ Lloyd-Smith, P (2018). ["A New Approach to Calculating Welfare Measures in Kuhn-
 
 As an example, we can simulate some data using Bhat (2008)'s 'Gamma' specification. In this example, we are simulating data for 2,000 individuals and 10 non-numeraire alternatives. We will use randomly generate the parameter values to estimate and then check our estimation results.
 
-```{r}
+```{r} 
 library(pacman)
 p_load(tidyverse, rmdcev)
 model <- "gamma"
