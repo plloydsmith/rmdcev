@@ -99,12 +99,12 @@ test_that("MLE alpha", {
 	expect_true(abs(output$log.likelihood - (-2764.29)) < tol)
 })
 
-context("MLE kt_les specification")
+context("MLE kt_ee specification")
 
-test_that("MLE kt_les", {
+test_that("MLE kt_ee", {
 	output <- mdcev( ~ 0 | 0 | 0,
 					 data = data_rec,
-					 model = "kt_les",
+					 model = "kt_ee",
 					 algorithm = "MLE",
 					 print_iterations = FALSE)
 

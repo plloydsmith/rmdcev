@@ -57,11 +57,11 @@ test_that("Test LC simulations", {
 									result_test$stan_data[["J"]],
 									result_test$stan_data[["dat_psi"]],
 									price_change_only = TRUE)
-#	df_sim <- PrepareSimulationData(result_test, policies, nsims = 1, class = "class1")
+	df_sim <- PrepareSimulationData(result_test, policies, nsims = 1, class = "class1")
 
 	# Test welfare
-#	wtp <- mdcev.sim(df_sim$df_indiv, df_common = df_sim$df_common, sim_options = df_sim$sim_options,
-#						 cond_err = 1, nerrs = 1, sim_type = "welfare")
+	wtp <- mdcev.sim(df_sim$df_indiv, df_common = df_sim$df_common, sim_options = df_sim$sim_options,
+						 cond_err = 1, nerrs = 1, sim_type = "welfare")
 #	sum_wtp <- summary(wtp)
 
 #	expect_true(sum(abs(sum_wtp$CoefTable$mean)) < tol)

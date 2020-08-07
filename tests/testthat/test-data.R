@@ -112,8 +112,8 @@ test_that("gamma parm names", {
 	expect_equal(parms_info$n_vars$n_parms_total, length(parms_info$parm_names$all_names))
 })
 
-test_that("kt parm names", {
-	mle_options$model = "kt_les"
+test_that("kt_ee parm names", {
+	mle_options$model = "kt_ee"
 	formula = ~ alt -1 | 0 | 0
 	stan_data <- processMDCEVdata(formula, data_rec, mle_options)
 	parms_info <- CreateParmInfo(stan_data, alt_names, algorithm, random_parameters)

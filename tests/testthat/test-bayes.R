@@ -178,11 +178,11 @@ test_that("Bayes gamma corr specification with fixed gamma/alpha", {
 })
 
 
-context("Test Bayes kt_les rp correlated")
+context("Test Bayes kt_ee rp correlated")
 
 output <- mdcev(formula = ~ ageindex|0|1,
 				data = data_rec,
-				model = "kt_les",
+				model = "kt_ee",
 				algorithm = "Bayes",
 				random_parameters = "fixed",
 				print_iterations = FALSE,
