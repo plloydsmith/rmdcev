@@ -40,14 +40,14 @@ BayesMDCEV <- function(stan_data, bayes_options,
 	stan_data$data_class <- matrix(0, stan_data$I, 0)
 
 	if (bayes_options$random_parameters == "fixed"){
-		message("Using Bayes to estimate MDCEV")
+		message("Using Bayes to estimate KT model")
 		stan.model <- stanmodels$mdcev
 	}else if (bayes_options$random_parameters == "uncorr"){
-		message("Using Bayes to estimate uncorrelated RP-MDCEV")
+		message("Using Bayes to estimate uncorrelated RP-KT")
 		stan.model <- stanmodels$mdcev_rp
 		stan_data$corr <- 0
 	}else if (bayes_options$random_parameters == "corr"){
-		message("Using Bayes to estimate correlated RP-MDCEV")
+		message("Using Bayes to estimate correlated RP-KT")
 		stan.model <- stanmodels$mdcev_rp
 		stan_data$corr <- 1
 	}

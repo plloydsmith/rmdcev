@@ -24,7 +24,7 @@ print.mdcev <- function(x, digits = max(3, getOption("digits") - 3),
 #' @param printCI set to TRUE to print 95\% confidence intervals
 #' @export
 summary.mdcev <- function(object, printCI=FALSE, ...){
-
+#object <- output
 	if(object$algorithm == "MLE"){
 
 		if(object$std_errors == "deltamethod"){
@@ -111,11 +111,11 @@ summary.mdcev <- function(object, printCI=FALSE, ...){
 								  object[["parms_info"]][["parm_names"]][["sd_names"]]), max(output$sim_id))
 
 			# Transform estimates
-			if(object[["stan_data"]][["gamma_fixed"]]==0){
+			if(object[["stan_data"]][["gamma_nonrandom"]]==0){
 				output <- output %>%
 					mutate(value = ifelse(grepl(c("gamma"), parms), exp(value), value))
 			}
-			if(object[["stan_data"]][["alpha_fixed"]]==0){
+			if(object[["stan_data"]][["alpha_nonrandom"]]==0){
 				output <- output %>%
 					mutate(value = ifelse(grepl(c("alpha"), parms), 1 / (1 + exp(-value)), value))
 			}
@@ -142,7 +142,7 @@ summary.mdcev <- function(object, printCI=FALSE, ...){
 			mutate(parms = factor(parms,levels=unique(parms))) %>%
 			group_by(parms) %>%
 			summarise(Estimate = round(mean(value),3),
-					  Std.err = round(stats::sd(value),3),
+					  Std.dev = round(stats::sd(value),3),
 					  z.stat = round(mean(value) / stats::sd(value),2),
 					  ci_lo95 = round(stats::quantile(value, 0.025),3),
 					  ci_hi95 = round(stats::quantile(value, 0.975),3)) %>%
@@ -219,7 +219,7 @@ print.summary.mdcev <- function(x,...){
 
 	cat("\nAverage consumption of non-numeraire alternatives:\n")
 	mean_consumption <-  round(colMeans(x$stan_data$quant_j),2)
-	names(mean_consumption) <-c(1:x$stan_data$J)
+	names(mean_consumption) <-x$parms_info$alt_names
 	print(mean_consumption )
 	cat("\n")
 
@@ -250,7 +250,7 @@ print.summary.mdcev <- function(x,...){
 		cat("Note: Estimation accounts for truncated form of data.",'\n')
 
 	if(x$random_parameters == "corr"){
-		cat("Note: Full covariance matrix can be accessed using the print(model_est, pars = 'Sigma') command", '\n')
+		cat("Note: The full covariance matrix can be accessed using the print(output$stan_fit, pars = 'Sigma') command where output is name of model output", '\n')
 	}
 
 	if(x$algorithm == "Bayes"){

@@ -1,48 +1,73 @@
 #' @title CreateParmInfo
 #' @description Create parameter names and number of parameters
 #' @param stan_data data for model
+#' @param alt_names name of alternatives.
 #' @inheritParams mdcev
 #' @return A list of parameter names and numbers
 #' @keywords internal
-CreateParmInfo <- function(stan_data, algorithm, random_parameters){
+CreateParmInfo <- function(stan_data, alt_names, algorithm, random_parameters){
 
 J <- stan_data$J
 
-n_psi <- stan_data$NPsi
-psi_names <- colnames(stan_data[["dat_psi"]])
+if (stan_data$psi_ascs == 1){
+	n_psi_asc <- J - 1
+	psi_asc_names <- as.character(alt_names[-1])
+} else if (stan_data$psi_ascs == 0){
+	n_psi_asc <- 0
+	psi_asc_names <- NULL
+}
+if (stan_data$NPsi_ij > 0)
+	psi_non_asc_names <- colnames(stan_data[["dat_psi"]])
+else
+	psi_non_asc_names <- NULL
+
+# add in alternative-specific attributes
+n_psi <- n_psi_asc + stan_data$NPsi_ij
+psi_names <- c(psi_asc_names, psi_non_asc_names)
 
 # Remove alt from names of psi parms
-for (i in 1:length(psi_names))
-	psi_names[i] <- sub('alt', '', psi_names[i])
+#for (i in 1:length(psi_names))
+#	psi_names[i] <- sub('alt', '', psi_names[i])
+if (n_psi > 0)
+	psi_names <- paste0(rep('psi', n_psi), sep="_", psi_names)
 
-psi_names <- paste0(rep('psi', n_psi), sep="_", psi_names)
-
-
-if (stan_data$model_num == 1 || stan_data$model_num == 3){
+# alpha
+if (stan_data$model_num == 1 || stan_data$model_num == 5){
 	n_alpha <- 1
-	n_gamma <- J
+	alpha_names <- 'alpha_1'
 } else if (stan_data$model_num == 2){
 	n_alpha <- J + 1
-	n_gamma <- 0
+	alpha_names <- c('alpha_1', paste0(rep('alpha', n_alpha-1), sep = "_", alt_names))
+} else if (stan_data$model_num == 3){
+	n_alpha <- 1
+	alpha_names <- 'alpha'
 } else if (stan_data$model_num == 4){
 	n_alpha <- 0
-	n_gamma <- J
-} else if (stan_data$model_num == 5){
-	n_alpha <- 1
-
-	if (stan_data$gamma_ascs == 0)
-		n_gamma <- 1
-	else if (stan_data$gamma_ascs == 1)
-		n_gamma <- J
-
-	n_phi <- stan_data$NPhi
-	phi_names <- colnames(stan_data[["dat_phi"]])
-	phi_names <- paste0(rep('phi', n_phi), sep="_", phi_names)
+	alpha_names <- NULL
 }
 
+# gamma
+if (stan_data$model_num == 2){
+	n_gamma <- 0
+	gamma_names <- NULL
+} else if (stan_data$model_num != 2){
+	if (stan_data$gamma_ascs == 0){
+		n_gamma <- 1
+		gamma_names <- 'gamma'
+	} else if (stan_data$gamma_ascs == 1){
+		n_gamma <- J
+		gamma_names <- paste0(rep('gamma', n_gamma), sep = "_", alt_names)
+	}
+}
+
+# Phi parameters
 if (stan_data$model_num != 5 || stan_data$NPhi == 0){
 	phi_names <- NULL
 	n_phi <- 0
+} else if (stan_data$model_num == 5){
+	n_phi <- stan_data$NPhi
+	phi_names <- colnames(stan_data[["dat_phi"]])
+	phi_names <- paste0(rep('phi', n_phi), sep="_", phi_names)
 }
 
 if (stan_data$fixed_scale1 == 1){
@@ -51,20 +76,6 @@ if (stan_data$fixed_scale1 == 1){
 } else {
 	n_scale <- 1
 	scale_names <- "scale"
-}
-
-
-if (stan_data$model == 2){
-	gamma_names <- NULL
-} else if (stan_data$model != 2){
-	gamma_names <- paste0(rep('gamma', n_gamma), sep = "",
-						  c(1:n_gamma))
-}
-if (stan_data$model == 4){
-	alpha_names <- NULL
-} else if (stan_data$model != 4){
-	alpha_names <- paste0(rep('alpha', n_alpha), sep = "",
-						  c(1:n_alpha))
 }
 
 parm_names <- list(psi_names=psi_names,
@@ -90,18 +101,18 @@ if (stan_data$K > 1){
 }
 #standard deviations
 if(random_parameters != "fixed"){
-	if(stan_data$gamma_fixed == 1){
+	if(stan_data$gamma_nonrandom == 1){
 		n_gamma_rp <- 0
 		gamma_sd_names <- NULL
-	} else if(stan_data$gamma_fixed == 0){
+	} else if(stan_data$gamma_nonrandom == 0){
 		n_gamma_rp <- n_gamma
 		gamma_sd_names <- gamma_names
 	}
 
-	if(stan_data$alpha_fixed == 1){
+	if(stan_data$alpha_nonrandom == 1){
 		n_alpha_rp <- 0
 		alpha_sd_names <- NULL
-	} else if(stan_data$alpha_fixed == 0){
+	} else if(stan_data$alpha_nonrandom == 0){
 		n_alpha_rp <- n_alpha
 		alpha_sd_names <- alpha_names
 	}
@@ -117,7 +128,8 @@ if(random_parameters != "fixed"){
 n_vars$n_parms_total <- Reduce("+",n_vars)
 
 parms_info <- list(n_vars = n_vars,
-				   parm_names = parm_names)
+				   parm_names = parm_names,
+				   alt_names = alt_names)
 
 return(parms_info)
 }

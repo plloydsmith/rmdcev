@@ -1,16 +1,4 @@
 //Code for MDCEV Simulation Functions <- "
-/**
- * Return a data matrix of specified size with rows
- * corresponding to items and the first column filled
- * with the value 1 to represent the intercept and the
- * remaining columns randomly filled with unit-normal draws.
- *
- * @param N Number of rows correspond to data items
- * @param K Number of predictors, counting the intercept, per
- *          item.
- * @return Simulated predictor matrix.
- */
-
 functions {
 
 row_vector Shuffle_rng(row_vector inv, int nerrs){
@@ -528,23 +516,17 @@ return(hdemand);
 }
 
 // Overall code
-matrix CalcmdemandOne_rng(real income, vector price,
-						vector psi_sims, vector gamma_sims, vector alpha_sims, real scale_sims,
+vector CalcmdemandOne_rng(real income, vector price,
+						vector psi_j, vector phi, vector gamma_j, vector alpha, real scale,
 						int nerrs, int algo_gen, real tol, int max_loop){
 
-	int nalts = num_elements(gamma_sims);
+	int nalts = cols(price) - 1; // subtract numeraire
 	int nsims = 1;
-	matrix[nsims, nalts+1] mdemand_out;
-
-	for (sim in 1:nsims){
-		vector[nalts] psi_j = psi_sims;
-		vector[nalts + 1] gamma = append_row(1, gamma_sims);
-		vector[nalts + 1] alpha = alpha_sims;
-		real scale = scale_sims;
-		vector[nalts + 1] error[nerrs];
-		matrix[nerrs, nalts + 1] mdemand;
-		row_vector[nalts + 1] mdemand_sims;
-		matrix[nalts + 1, nerrs] mdemand_trans;
+	vector[nalts+1] mdemand_out;
+	vector[nalts + 1] gamma = append_row(1, gamma_j);
+	vector[nalts + 1] error[nerrs];
+	matrix[nerrs, nalts + 1] mdemand;
+	matrix[nalts + 1, nerrs] mdemand_trans;
 
 		for(err in 1:nerrs)
 			for(j in 1:nalts+1)
@@ -563,10 +545,7 @@ matrix CalcmdemandOne_rng(real income, vector price,
 		mdemand_trans = mdemand';
 
 		for(g in 1:nalts+1)
-  			mdemand_sims[g] = mean(mdemand_trans[g]);
-
-		mdemand_out[sim] = mdemand_sims;
-	}
+  			mdemand_out[g] = mean(mdemand_trans[g]);
 
 return(mdemand_out);
 }

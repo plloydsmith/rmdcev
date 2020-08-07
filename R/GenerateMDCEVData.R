@@ -11,7 +11,8 @@
 #' @param scale_parms Parameter value for scale term
 #' @param gamma_parms Parameter value for gamma terms
 #' @param psi_i_parms Parameter value for psi terms that vary by individual
-#' @param psi_j_parms Parameter value for psi terms that vary by alt
+#' @param psi_j_parms Parameter value for psi terms that vary by alt (only for MDCEV models)
+#' @param phi_parms Parameter value for phi terms that vary by alt
 #' @param nerrs Number of error draws for demand simulation
 #' @param tol Tolerance level for simulations if using general approach
 #' @param max_loop maximum number of loops for simulations if using general approach
@@ -28,8 +29,9 @@ GenerateMDCEVData <- function(model, nobs = 1000, nalts = 10,
 							  alpha_parms = 0.5,
 							  scale_parms = 1,
 							  gamma_parms = stats::runif(nalts, 1, 10),
-							  psi_i_parms = c(-1.5, 3, -2, 1, 2),
+							  psi_i_parms = c(-1.5, 2, -1),
 							  psi_j_parms = c(-5, 0.5, 2),
+							  phi_parms = c(-5, 0.5, 2),
 							  nerrs = 1,
 							  tol = 1e-20,
 							  max_loop = 999){
@@ -49,16 +51,17 @@ GenerateMDCEVData <- function(model, nobs = 1000, nalts = 10,
 	psi_j <- cbind(matrix(stats::runif(nalts*(length(psi_j_parms)), 0 , 1), nrow = nalts))
 	psi_j <-  rep(1, nobs) %x% psi_j
 
-	psi_i <- matrix(2 * stats::runif(nobs * length(psi_i_parms)), nobs,length(psi_i_parms))
+	psi_i <- matrix(2 * stats::runif(nobs * length(psi_i_parms)), nobs, length(psi_i_parms))
 	psi_i <- psi_i %x% rep(1, nalts)
 
 	dat_psi <- cbind(psi_j, psi_i)
 	colnames(dat_psi) <- c(paste(rep('b', ncol(dat_psi)), 1:ncol(dat_psi), sep=""))
 
+	# Name all parameters true
 	true <- c(psi_j_parms, psi_i_parms)
 
-	parms <- paste0(rep('psi', length(true)), sep="_",
-					colnames(dat_psi))
+	parms <- paste0(rep('psi', length(true)), sep="_", colnames(dat_psi))
+
 	parms_true <- cbind(parms, true)
 
 	if (model == "gamma"){
@@ -91,6 +94,34 @@ GenerateMDCEVData <- function(model, nobs = 1000, nalts = 10,
 		alpha_parms <- rep(1e-3, nalts+1)
 		parms_true <- rbind(parms_true, gamma_true, scale_true)
 		algo_gen <- 0
+	} else if (model == "kt_ee"){
+		model_num <- 5
+		# Create psi variables that vary over alternatives
+		psi_i <- matrix(2 * stats::runif(nobs * length(psi_i_parms)), nobs,length(psi_i_parms))
+		psi_i <- psi_i %x% rep(1, nalts)
+
+		dat_psi <- cbind(psi_i)
+		colnames(dat_psi) <- c(paste(rep('b', ncol(dat_psi)), 1:ncol(dat_psi), sep=""))
+
+		true <- c(psi_i_parms)
+
+		parms <- paste0(rep('psi', length(true)), sep="_", colnames(dat_psi))
+
+		parms_true <- cbind(parms, true)
+
+		dat_phi <- cbind(matrix(stats::runif(nalts*(length(phi_parms)), 0 , 1), nrow = nalts))
+		dat_phi <-  rep(1, nobs) %x% dat_phi
+		colnames(dat_phi) <- c(paste(rep('phi_', ncol(dat_phi)), 1:ncol(dat_phi), sep=""))
+
+		parms <- paste0(rep('phi', length(phi_parms)), sep="_", colnames(dat_phi))
+		phi_true <- cbind(parms, true)
+
+		alpha_parms <- c(alpha_parms, rep(0, nalts))
+		true <- alpha_parms[1]
+		parms <- 'alpha1'
+		alpha_true <- cbind(parms, true)
+		parms_true <- rbind(parms_true, phi_true, gamma_true, alpha_true, scale_true)
+		algo_gen <- 1
 	} else
 		stop("No model specificied. Choose a model")
 
@@ -113,6 +144,8 @@ GenerateMDCEVData <- function(model, nobs = 1000, nalts = 10,
 	PRNG <-rstan::get_rng(seed = 3)
 	o <- rstan::get_stream()
 
+	if (model != "kt_ee"){
+	dat_phi <- NULL
 	quant <- purrr::pmap(df_indiv, CalcmdemandOne_rng,
 				  gamma_sim=gamma_parms,
 				  alpha_sim=alpha_parms,
@@ -120,7 +153,15 @@ GenerateMDCEVData <- function(model, nobs = 1000, nalts = 10,
 				  nerrs=nerrs, algo_gen = algo_gen,
 				  tol = tol, max_loop = max_loop,
 				  PRNG, o)
-
+	} else if (model == "kt_ee"){
+	quant <- purrr::pmap(df_indiv, CalcmdemandOne_rng,
+						 gamma_sim=gamma_parms,
+						 alpha_sim=alpha_parms,
+						 scale_sim=scale_parms,
+						 nerrs=nerrs, algo_gen = algo_gen,
+						 tol = tol, max_loop = max_loop,
+						 PRNG, o)
+	}
 	# Convert simulated data into data form for estimation
 	quant <- matrix(unlist(quant), nrow = nobs, byrow = TRUE)
 	quant <- quant[,2:(ncol(quant))]
@@ -131,7 +172,7 @@ GenerateMDCEVData <- function(model, nobs = 1000, nalts = 10,
 	alt <- rep(1:nalts, times = nobs)
 	income <- rep(income, each = nalts)
 
-	data <- as.data.frame(cbind(id, alt, quant, price, dat_psi, income))
+	data <- as.data.frame(cbind(id, alt, quant, price, dat_psi, dat_phi, income))
 
 	data <- mdcev.data(data,
 					   id.var = "id",

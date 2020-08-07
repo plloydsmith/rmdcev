@@ -23,7 +23,10 @@ CreateListsRow <- function(x){
 #' tmp_list <- CreateListsCol(tmp)
 #'
 CreateListsCol <- function(x){
-	out <- lapply(seq_len(ncol(x)), function(i) x[,i])
+	if (is.vector(x))
+		out <- as.list(x)
+	else
+		out <- lapply(seq_len(ncol(x)), function(i) x[,i])
 	return(out)
 }
 
@@ -96,9 +99,8 @@ return(dat_psi)
 GrabParms <- function(data, parm_name){
 	out <- data %>%
 		dplyr::filter(stringr::str_detect(.data$parms, parm_name)) %>%
-		tidyr::spread_(key_col = 'sim_id',
-				value_col = 'value') %>%
-		dplyr::select(-parms) %>%
+		tidyr::pivot_wider(sim_id, names_from = "parms", values_from = "value") %>%
+		dplyr::select(-sim_id) %>%
 		as.matrix(.)
 	return(out)
 }
@@ -115,33 +117,56 @@ GrabIndividualParms <- function(est_sim, parm_name){
 		dplyr::select(id, sim_id, .data$parm_id, beta) %>%
 		tidyr::spread(.data$parm_id, beta) %>%
 		dplyr::select(-sim_id) %>%
-		dplyr::group_split(id, keep = F)
+		dplyr::group_split(id, .keep = F)
 	return(out)
 }
 
-#' @title GrabIndividualParms
-#' @param est_sim est_sim from results
-#' @param parm_name name of parameter to get simulations
-#' @description Pulls out specific mdcev parameter simulations
+#' @title CreatePsi
+#' @param dat_vars_i psi data for each person
+#' @param est_pars_i psi parameter estimates for each person
+#' @description Works at individual level and creates the psi
+#' variables for each simulation, policy, alternative
 #' @keywords internal
-CombinePsiPhiVariables <- function(dat_id, dat, sim_rand){
+CreatePsi = function(dat_vars_i, est_pars_i, J, NPsi_ij, psi_ascs, npols){
+#	dat_vars_i = dat_vars[[3]]
+#	est_pars_i = psi_sim_temp[[3]]
+	lpsi = matrix(0, nrow(est_pars_i), J)
+	if (psi_ascs == 1){
+		psi_non_ascs_start = J
+		psi_non_ascs_end = J+NPsi_ij-1
+		if (nrow(est_pars_i) == 1)
+			lpsi = lpsi + c(0, est_pars_i[,1:(J-1)])
+		else
+			lpsi = lpsi + cbind(0, est_pars_i[,1:(J-1)]) ##  alternative specific constants
+	} else if (psi_ascs == 0){
+		psi_non_ascs_start = 1
+		psi_non_ascs_end = NPsi_ij
+	}
 
-	dat_vars <- bind_cols(dat_id, as_tibble(dat)) %>%
-		group_split(id, keep = F)
+	if ((NPsi_ij > 0) && (nrow(dat_vars_i) == J)){
+		psi_non_ascs = est_pars_i[,psi_non_ascs_start:psi_non_ascs_end, drop=FALSE]
+		lpsi = lpsi + as.matrix(psi_non_ascs) %*% t(as.matrix(dat_vars_i))
+	}
 
-	var_sim <- mapply(function(x, y){
-
-		vars_sim <- CreateListsRow(x)
-		dat_vars_1 <- as.matrix(y)
-
-		out <- lapply(vars_sim, function(xx){
-			vars <- dat_vars_1 %*% t(as.matrix(xx))} )
-
-		out <- matrix(unlist(out), byrow=TRUE, nrow=length(out) )
-
-		if(sim_rand == "phi")
-			out <- exp(out)
-		return(out)
-	}, sim_rand, dat_vars)
-return(var_sim)
+	if (nrow(dat_vars_i) > J){
+		if (NPsi_ij == 0){
+			lpsi = CreateListsRow(lpsi)
+			lpsi = lapply(lpsi, function(x){
+				lpsi= matrix(x,nrow=npols,ncol=length(x),byrow=TRUE)
+			})
+		} else if (NPsi_ij > 0){
+			dat_vars_i = dat_vars_i %>%
+				group_split(policy, .keep = F)
+			psi_non_ascs <- est_pars_i[,psi_non_ascs_start:psi_non_ascs_end, drop=FALSE]
+			lpsi <- lapply(dat_vars_i, function(xx){
+				lpsi = lpsi + as.matrix(psi_non_ascs) %*% t(as.matrix(xx))
+				return(lpsi)
+			})
+			lpsi = aperm(array(unlist(lpsi),
+							   dim = c(nrow(lpsi[[1]]), ncol(lpsi[[1]]), length(lpsi))),
+						 perm=c(1,3,2))
+			lpsi = lapply(seq(dim(lpsi)[1]), function(x) lpsi[ x, , ])
+		}
+	}
+	return(lpsi)
 }

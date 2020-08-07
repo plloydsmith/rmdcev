@@ -32,59 +32,56 @@ parameters {
 
 transformed parameters {
 	vector[I] log_like;
+	{
+	vector[I] log_like_util[K];
+	for (k in 1:K){
+		matrix[I, J] gamma_full = gamma_ll(gamma[k], I, J, Gamma);
+		real scale_full = fixed_scale1 == 0 ? scale[k] : 1.0;
+		matrix[I, J] lpsi;
+		vector[NPsi] psi_k = psi[k];
+		if (psi_ascs == 1){
+			lpsi = rep_matrix(append_row(0, segment(psi_k, 1, J-1))', I); //  alternative specific constants
+			if (NPsi_ij > 0)
+    			lpsi = lpsi + to_matrix(dat_psi[] * segment(psi_k, J, NPsi_ij), I, J, 0);
+		} else if (psi_ascs == 0){
+			if (NPsi_ij > 0)
+    			lpsi = to_matrix(dat_psi[] * psi_k, I, J, 0);
+			else if (NPsi_ij == 0)
+    			lpsi = rep_matrix(0, I, J);
+		}
 
-  	if(K == 1){
-  		matrix[I, J] lpsi = to_matrix(dat_psi[] * psi[1], I, J, 0);
-		matrix[I, J] gamma_j = gamma_ll(gamma[1], I, J, Gamma);
-		real scale_full = fixed_scale1 == 0 ? scale[1] : 1.0;
+		if(model_num < 5){
+			matrix[I, J+1] alpha_full = alpha_ll(alpha[k], I, J, model_num);
 
-  		if(model_num < 5){
-			matrix[I, J+1] alpha_full = alpha_ll(alpha[1], I, J, model_num);
-
+			if(K == 1) {
 			log_like = mdcev_ll(quant_j, price_j, log_num, income, M, log_M_fact, // data
-					lpsi, gamma_j, col(alpha_full, 1), block(alpha_full, 1, 2, I, J), scale_full, // parameters
-					I, J, nonzero, trunc_data);
-
+				lpsi, gamma_full, col(alpha_full, 1), block(alpha_full, 1, 2, I, J), scale_full, 						// parameters
+				I, J, nonzero, trunc_data);
+			} else if (K > 1){
+			log_like_util[k] = mdcev_ll(quant_j, price_j, log_num, income, M, log_M_fact, // data
+				lpsi, gamma_full, col(alpha_full, 1), block(alpha_full, 1, 2, I, J), scale_full, 						// parameters
+				I, J, nonzero, trunc_data);
+			}
 		} else if (model_num == 5){
 			matrix[I, J] phi_ij;
 			if(NPhi > 0)
-	    		phi_ij = exp(to_matrix(dat_phi[] * phi[1], I, J, 0));
+	    		phi_ij = exp(to_matrix(dat_phi[] * phi[k], I, J, 0));
 			else if(NPhi == 0)
 	    		phi_ij = rep_matrix(1, I, J);
 
-	  		log_like = kt_ll(income, log_num, quant_j, price_j,
-  				lpsi, phi_ij, gamma_j,
-  				rep_vector(alpha[1, 1], I), scale_full,
+			if(K == 1) {
+			log_like = kt_ll(quant_j, price_j, log_num, income,
+  				lpsi, phi_ij, gamma_full, rep_vector(alpha[k, 1], I), scale_full,
   				I, J, nonzero, trunc_data);
-		}
-	} else if (K > 1){
-		vector[I] log_like_util[K];
-		for (k in 1:K){
-			matrix[I, J] lpsi = to_matrix(dat_psi[] * psi[k], I, J, 0);
-			matrix[I, J] gamma_full = gamma_ll(gamma[k], I, J, Gamma);
-			real scale_full = fixed_scale1 == 0 ? scale[k] : 1.0;
-
-			if(model_num < 5){
-				matrix[I, J+1] alpha_full = alpha_ll(alpha[k], I, J, model_num);
-
-				log_like_util[k] = mdcev_ll(quant_j, price_j, log_num, income, M, log_M_fact, // data
-					lpsi, gamma_full, col(alpha_full, 1), block(alpha_full, 1, 2, I, J), scale_full, 						// parameters
-					I, J, nonzero, trunc_data);
-
-			} else if (model_num == 5){
-				matrix[I, J] phi_ij;
-				if(NPhi > 0)
-		    		phi_ij = exp(to_matrix(dat_phi[] * phi[k], I, J, 0));
-				else if(NPhi == 0)
-		    		phi_ij = rep_matrix(1, I, J);
-
-	  			log_like_util[k] = kt_ll(income, log_num, quant_j, price_j,
-  					lpsi, phi_ij, gamma_full,
-  					rep_vector(alpha[k, 1], I), scale_full,
-  					I, J, nonzero, trunc_data);
+			} else if (K > 1){
+			log_like_util[k] = kt_ll(quant_j, price_j, log_num, income,
+  				lpsi, phi_ij, gamma_full, rep_vector(alpha[k, 1], I), scale_full,
+  				I, J, nonzero, trunc_data);
 			}
 		}
+	}
 
+	if (K > 1){
 		for(i in 1:I){
 			vector[K] ltheta = log_softmax(append_row(0, delta * data_class[i])); // class membership equation
 			vector[K] lps;
@@ -93,6 +90,7 @@ transformed parameters {
 			}
 			log_like[i] = log_sum_exp(lps);
 		}
+	}
 	}
 }
 

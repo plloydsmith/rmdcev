@@ -15,23 +15,24 @@ mdcev(
   n_classes = 1,
   fixed_scale1 = 0,
   trunc_data = 0,
-  gamma_ascs = 0,
+  psi_ascs = NULL,
+  gamma_ascs = 1,
   seed = "123",
   max_iterations = 2000,
   initial.parameters = NULL,
+  hessian = TRUE,
   algorithm = c("MLE", "Bayes"),
   flat_priors = NULL,
   print_iterations = TRUE,
-  hessian = TRUE,
   prior_psi_sd = 10,
   prior_gamma_sd = 10,
   prior_phi_sd = 10,
   prior_alpha_sd = 0.5,
   prior_scale_sd = 1,
   prior_delta_sd = 10,
-  gamma_fixed = 0,
-  alpha_fixed = 0,
-  std_errors = "mvn",
+  gamma_nonrandom = 0,
+  alpha_nonrandom = 0,
+  std_errors = "deltamethod",
   n_draws = 50,
   keep_loglik = 0,
   random_parameters = "fixed",
@@ -64,9 +65,8 @@ individual-specific variables. The second part corresponds for individual-specif
 variables that enter in the probability assignment in models with latent classes.}
 
 \item{data}{The (IxJ) data to be passed to Stan of class \code{\link[rmdcev]{mdcev.data}}
-including 1) id, 2) alt, 3) quant, 4) price, 5) income, and columns for psi variables.
-Arrange data by id then alt. Note: I is number of individuals and J is number of
-non-numeraire alternatives.}
+including 1) id, 2) alt, 3) choice, 4) price, 5) income, and columns for psi variables.
+Note: I is number of individuals and J is number of non-numeraire alternatives.}
 
 \item{weights}{an optional vector of weights. Default to 1.}
 
@@ -77,32 +77,39 @@ The options are "alpha", "gamma", "hybrid" and "hybrid0".}
 
 \item{fixed_scale1}{Whether to fix scale at 1.}
 
-\item{trunc_data}{Whether the estimation should be adjusted for truncation}
+\item{trunc_data}{Whether the estimation should be adjusted for truncation of non-numeraire alternatives.
+This option is useful if the data only includes individuals with positive non-numeraire consumption levels
+such as recreation data collected on-site. To account for the truncation of consumption, the likelihood is
+normalized by one minus the likelihood of observing zero consumption for all non-numeraire alternatives
+(i.e. likelihood of positive consumption) following Englin, Boxall and Watson (1998) and von Haefen (2003).}
 
-\item{gamma_ascs}{For kt_les model, whether to include alternative-specific gammas.}
+\item{psi_ascs}{Whether to include alternative-specific psi parameters. The first alternative is used as the reference category.}
+
+\item{gamma_ascs}{Indicator to include alternative-specific gammas parameters. The default is}
 
 \item{seed}{Random seed.}
 
-\item{max_iterations}{Maximum number of iterations in MLE estimation.}
+\item{max_iterations}{Maximum number of iterations in MLE.}
 
-\item{initial.parameters}{Specify initial parameters intead of starting at random.
+\item{initial.parameters}{The default for fixed and random parameter specifications is to use random starting values.
+For LC models, the default is to use slightly adjusted MLE point estimates from the single class model.
 Initial parameter values should be included in a named list. For the "hybrid" specification,
 initial parameters can be specified as:
-init = list(psi = array(0, dim = c(1, num_psi)),
-            gamma = array(1, dim = c(1, num_alt)),
-            alpha = array(0.5, dim = c(1, 0)),
-            scale = array(1, dim = c(1)))
-where num_psi is number of psi parameters and num_alt is number of non-numeraire alternatives}
+inititial.parameters = list(psi = array(runif(1), dim = c(K, num_psi)),
+                            gamma = array(1, dim = c(K, num_alt)),
+                            alpha = array(0.5, dim = c(K, 0)),
+                            scale = array(1, dim = c(K)))
+where K is the number of classes (i.e. K = 1 is used for single class models),
+num_psi is number of psi parameters, and num_alt is number of non-numeraire alternatives.}
 
-\item{algorithm}{Either "Bayes" for Bayes or "MLE"
-for maximum liklihood estimation.}
+\item{hessian}{Whether to keep the Hessian matrix}
 
-\item{flat_priors}{indicator if completely uninformative priors should be specified. If using MLE, the
-optimizing function will then be equal to log-likelihood. Defaults to 1 if MLE used and 0 if Bayes used.}
+\item{algorithm}{Either "Bayes" for Bayes or "MLE" for maximum likelihood estimation.}
+
+\item{flat_priors}{indicator if completely uninformative priors should be specified. Defaults to 1 if MLE used and 0 if Bayes used.
+If using MLE and set flat_priors = 0, penalized MLE is used and the optimizing objective is augmented with the priors.}
 
 \item{print_iterations}{Whether to print iteration information}
-
-\item{hessian}{Wheter to keep the Hessian matrix}
 
 \item{prior_psi_sd}{standard deviation for normal prior with mean 0.}
 
@@ -116,13 +123,13 @@ optimizing function will then be equal to log-likelihood. Defaults to 1 if MLE u
 
 \item{prior_delta_sd}{standard deviation for normal prior with mean 0.}
 
-\item{gamma_fixed}{indicator if gamma parameters should be fixed (i.e. not random).}
+\item{gamma_nonrandom}{indicator set to 1 if gamma parameters should not be random (i.e. no standard deviation).}
 
-\item{alpha_fixed}{indicator if alpha parameters should be fixed (i.e. not random).}
+\item{alpha_nonrandom}{indicator set to 1 if alpha parameters should not be random (i.e. no standard deviation).}
 
 \item{std_errors}{Compute standard errors using the delta method ("deltamethod")
-or multivariate normal draws ("mvn"). The default is "mvn" as only mvn parameter draws are required
-for demand and welfare simulation.}
+or multivariate normal draws ("mvn"). The default is "deltamethod". Note that mvn parameter draws should be
+used to incorporate parameter uncertainty for demand and welfare simulation. For maximum likelihood estimation only.}
 
 \item{n_draws}{The number of multivariate normal draws for standard error calculations.}
 
@@ -133,11 +140,12 @@ Bayes. Can be 'fixed', 'uncorr, 'corr'.}
 
 \item{show_stan_warnings}{Whether to show warnings from Stan.}
 
-\item{n_iterations}{The number of iterations in Bayesian estimation.}
+\item{n_iterations}{The number of iterations to use in Bayesian estimation. The default is for the number of
+iterations to be split evenly between warmup and posterior draws. The number of warmup draws can be directly controlled using the warmup argument (see \code{rstan::sampling}).}
 
-\item{n_chains}{The number of chains in Bayesian estimation.}
+\item{n_chains}{The number of independent Markov chains in Bayesian estimation.}
 
-\item{n_cores}{The number of cores to use in Bayesian estimation.
+\item{n_cores}{The number of cores used to execute the Markov chains in parellel in Bayesian estimation.
 Can set using options(mc.cores = parallel::detectCores()).}
 
 \item{max_tree_depth}{http://mc-stan.org/misc/warnings.html#maximum-treedepth-exceeded}
@@ -167,7 +175,7 @@ Fit a MDCEV model using MLE or Bayes
 \donttest{
 data(data_rec, package = "rmdcev")
 
-data_rec <- mdcev.data(data_rec, subset = id < 500, id.var = "id",
+data_rec <- mdcev.data(data_rec, subset = id <= 500, id.var = "id",
                 alt.var = "alt", choice = "quant")
 
 mdcev_est <- mdcev( ~ 1,

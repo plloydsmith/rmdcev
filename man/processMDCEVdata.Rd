@@ -14,11 +14,12 @@ individual-specific variables. The second part corresponds for individual-specif
 variables that enter in the probability assignment in models with latent classes.}
 
 \item{data}{The (IxJ) data to be passed to Stan of class \code{\link[rmdcev]{mdcev.data}}
-including 1) id, 2) alt, 3) quant, 4) price, 5) income, and columns for psi variables.
-Arrange data by id then alt. Note: I is number of individuals and J is number of
-non-numeraire alternatives.}
+including 1) id, 2) alt, 3) choice, 4) price, 5) income, and columns for psi variables.
+Note: I is number of individuals and J is number of non-numeraire alternatives.}
 
 \item{model_options}{list of model options}
+
+\item{alt_names}{name of alternatives.}
 }
 \description{
 Process MDCEV data

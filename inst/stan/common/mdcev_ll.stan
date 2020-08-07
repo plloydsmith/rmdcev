@@ -42,20 +42,14 @@ vector mdcev_ll(matrix quant_j, matrix price_j, vector log_num, vector income,
 	vector[I] logf1 = log(1 - alpha1) - log_num;
 	v_j = v_j / scale_full;
 
-	if (trunc_data == 0){
-		log_like = (1 - M) * log(scale_full) + logf1 + v1 + (nonzero .* (logf + v_j)) * ones_j +
-			log(inv(exp(logf1)) + (nonzero .* price_j ./ exp(logf)) * ones_j) -
-			M .* log(exp(v1) + exp(v_j) * ones_j) + log_M_fact;
+	log_like = (1 - M) * log(scale_full) + logf1 + v1 + (nonzero .* (logf + v_j)) * ones_j +
+		log(inv(exp(logf1)) + (nonzero .* price_j ./ exp(logf)) * ones_j) -
+		M .* log(exp(v1) + exp(v_j) * ones_j) + log_M_fact;
 
-	} else if (trunc_data == 1){
+	if (trunc_data == 1){
 		matrix[I, J+1] v_1;
-		vector[I] like_cond;
 		vector[I] like_trunc;
 		vector[I] sumv;
-
-		like_cond = exp((1 - M) * log(scale_full) + logf1 + v1 + (nonzero .* (logf + v_j)) * ones_j +
-			log(inv(exp(logf1)) + (nonzero .* price_j ./ exp(logf)) * ones_j) -
-			M .* log(exp(v1) + exp(v_j) * ones_j) + log_M_fact);
 
 		v_1 = append_col((alpha1 - 1) .* log(income), lpsi - log(price_j));
 		v_1 = exp(v_1 / scale_full);
@@ -66,7 +60,7 @@ vector mdcev_ll(matrix quant_j, matrix price_j, vector log_num, vector income,
 		for(i in 1:I)
 			like_trunc[i] = like_trunc[i] < 1 ? like_trunc[i] : 1;
 
-		log_like = log(like_cond ./ (1 - like_trunc));
+		log_like = log_like - log(1 - like_trunc);
 	}
 
 return(log_like);
@@ -88,8 +82,8 @@ return(j_det);
 
 }
 
-vector kt_ll(vector income, vector log_num, matrix quant_j, matrix price_j,
-          matrix psi_i, matrix phi_ij, matrix gamma, vector alpha, real scale_full,
+vector kt_ll(matrix quant_j, matrix price_j, vector log_num, vector income,
+          matrix lpsi, matrix phi_ij, matrix gamma, vector alpha, real scale_full,
           int I, int J, matrix nonzero, int trunc_data){
 
     vector[I] log_like;
@@ -108,7 +102,7 @@ vector kt_ll(vector income, vector log_num, matrix quant_j, matrix price_j,
          		log(exp(log_num) ./ (1 - alpha) + (nonzero .* phi_quant_gamma .* price_j ./ phi_ij) * ones_j);
 
 	 // Calculate the demand function, g
-  	g =  (-psi_i  + log(price_j) - log(phi_ij) +
+  	g =  (-lpsi  + log(price_j) - log(phi_ij) +
   		log(phi_quant_gamma) - rep_matrix((1 - alpha) .* log_num, J)) ./ scale_full;
 
   	// Calculate the liklihood
@@ -116,7 +110,7 @@ vector kt_ll(vector income, vector log_num, matrix quant_j, matrix price_j,
 
 	// adjust for truncation
 	if(trunc_data == 1){
-	  matrix[I, J] g_t = (-psi_i  + log(price_j) - log(phi_ij) + log(gamma) -
+	  matrix[I, J] g_t = (-lpsi  + log(price_j) - log(phi_ij) + log(gamma) -
 	                      rep_matrix((1 - alpha) .* log(income), J)) ./ scale_full;
   	  vector[I] like_trunc = exp(-exp(-g_t) * ones_j);
 

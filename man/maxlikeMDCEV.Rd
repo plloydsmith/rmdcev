@@ -9,14 +9,16 @@ maxlikeMDCEV(stan_data, initial.parameters, mle_options, parms_info, ...)
 \arguments{
 \item{stan_data}{data for model fromatted from processMDCEVdata}
 
-\item{initial.parameters}{Specify initial parameters intead of starting at random.
+\item{initial.parameters}{The default for fixed and random parameter specifications is to use random starting values.
+For LC models, the default is to use slightly adjusted MLE point estimates from the single class model.
 Initial parameter values should be included in a named list. For the "hybrid" specification,
 initial parameters can be specified as:
-init = list(psi = array(0, dim = c(1, num_psi)),
-            gamma = array(1, dim = c(1, num_alt)),
-            alpha = array(0.5, dim = c(1, 0)),
-            scale = array(1, dim = c(1)))
-where num_psi is number of psi parameters and num_alt is number of non-numeraire alternatives}
+inititial.parameters = list(psi = array(runif(1), dim = c(K, num_psi)),
+                            gamma = array(1, dim = c(K, num_alt)),
+                            alpha = array(0.5, dim = c(K, 0)),
+                            scale = array(1, dim = c(K)))
+where K is the number of classes (i.e. K = 1 is used for single class models),
+num_psi is number of psi parameters, and num_alt is number of non-numeraire alternatives.}
 
 \item{mle_options}{modeling options for MLE}
 

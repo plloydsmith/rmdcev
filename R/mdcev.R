@@ -6,49 +6,55 @@
 #' individual-specific variables. The second part corresponds for individual-specific
 #' variables that enter in the probability assignment in models with latent classes.
 #' @param data The (IxJ) data to be passed to Stan of class \code{\link[rmdcev]{mdcev.data}}
-#'  including 1) id, 2) alt, 3) quant, 4) price, 5) income, and columns for psi variables.
-#'  Arrange data by id then alt. Note: I is number of individuals and J is number of
-#'  non-numeraire alternatives.
+#'  including 1) id, 2) alt, 3) choice, 4) price, 5) income, and columns for psi variables.
+#'  Note: I is number of individuals and J is number of non-numeraire alternatives.
 #' @param weights an optional vector of weights. Default to 1.
 #' @param model A string indicating which model specification is estimated.
 #' The options are "alpha", "gamma", "hybrid" and "hybrid0".
 #' @param n_classes The number of latent classes.
 #' @param fixed_scale1 Whether to fix scale at 1.
-#' @param trunc_data Whether the estimation should be adjusted for truncation
-#' @param gamma_ascs For kt_les model, whether to include alternative-specific gammas.
+#' @param trunc_data Whether the estimation should be adjusted for truncation of non-numeraire alternatives.
+#' This option is useful if the data only includes individuals with positive non-numeraire consumption levels
+#' such as recreation data collected on-site. To account for the truncation of consumption, the likelihood is
+#' normalized by one minus the likelihood of observing zero consumption for all non-numeraire alternatives
+#' (i.e. likelihood of positive consumption) following Englin, Boxall and Watson (1998) and von Haefen (2003).
+#' @param gamma_ascs Indicator to include alternative-specific gammas parameters. The default is
+#' @param psi_ascs Whether to include alternative-specific psi parameters. The first alternative is used as the reference category.
 #' @param seed Random seed.
-#' @param algorithm Either "Bayes" for Bayes or "MLE"
-#'     for maximum liklihood estimation.
-#' @param flat_priors indicator if completely uninformative priors should be specified. If using MLE, the
-#' optimizing function will then be equal to log-likelihood. Defaults to 1 if MLE used and 0 if Bayes used.
-#' @param max_iterations Maximum number of iterations in MLE estimation.
+#' @param algorithm Either "Bayes" for Bayes or "MLE" for maximum likelihood estimation.
+#' @param max_iterations Maximum number of iterations in MLE.
 #' @param print_iterations Whether to print iteration information
 #' @param std_errors Compute standard errors using the delta method ("deltamethod")
-#' or multivariate normal draws ("mvn"). The default is "mvn" as only mvn parameter draws are required
-#' for demand and welfare simulation.
+#' or multivariate normal draws ("mvn"). The default is "deltamethod". Note that mvn parameter draws should be
+#' used to incorporate parameter uncertainty for demand and welfare simulation. For maximum likelihood estimation only.
 #' @param n_draws The number of multivariate normal draws for standard error calculations.
 #' @param keep_loglik Whether to keep the log_lik calculations
-#' @param hessian Wheter to keep the Hessian matrix
-#' @param initial.parameters Specify initial parameters intead of starting at random.
+#' @param hessian Whether to keep the Hessian matrix
+#' @param initial.parameters The default for fixed and random parameter specifications is to use random starting values.
+#' For LC models, the default is to use slightly adjusted MLE point estimates from the single class model.
 #' Initial parameter values should be included in a named list. For the "hybrid" specification,
 #' initial parameters can be specified as:
-#' init = list(psi = array(0, dim = c(1, num_psi)),
-#'             gamma = array(1, dim = c(1, num_alt)),
-#'             alpha = array(0.5, dim = c(1, 0)),
-#'             scale = array(1, dim = c(1)))
-#' where num_psi is number of psi parameters and num_alt is number of non-numeraire alternatives
+#' inititial.parameters = list(psi = array(runif(1), dim = c(K, num_psi)),
+#'                             gamma = array(1, dim = c(K, num_alt)),
+#'                             alpha = array(0.5, dim = c(K, 0)),
+#'                             scale = array(1, dim = c(K)))
+#' where K is the number of classes (i.e. K = 1 is used for single class models),
+#' num_psi is number of psi parameters, and num_alt is number of non-numeraire alternatives.
+#' @param flat_priors indicator if completely uninformative priors should be specified. Defaults to 1 if MLE used and 0 if Bayes used.
+#' If using MLE and set flat_priors = 0, penalized MLE is used and the optimizing objective is augmented with the priors.
 #' @param prior_psi_sd standard deviation for normal prior with mean 0.
 #' @param prior_phi_sd standard deviation for normal prior with mean 0.
 #' @param prior_gamma_sd standard deviation for normal prior with mean 0.
 #' @param prior_alpha_sd standard deviation for normal prior with mean 0.5.
 #' @param prior_scale_sd standard deviation for normal prior with mean 1.
 #' @param prior_delta_sd standard deviation for normal prior with mean 0.
-#' @param alpha_fixed indicator if alpha parameters should be fixed (i.e. not random).
-#' @param gamma_fixed indicator if gamma parameters should be fixed (i.e. not random).
+#' @param alpha_nonrandom indicator set to 1 if alpha parameters should not be random (i.e. no standard deviation).
+#' @param gamma_nonrandom indicator set to 1 if gamma parameters should not be random (i.e. no standard deviation).
 #' @param lkj_shape_prior Prior for Cholesky matrix
-#' @param n_iterations The number of iterations in Bayesian estimation.
-#' @param n_chains The number of chains in Bayesian estimation.
-#' @param n_cores The number of cores to use in Bayesian estimation.
+#' @param n_iterations The number of iterations to use in Bayesian estimation. The default is for the number of
+#' iterations to be split evenly between warmup and posterior draws. The number of warmup draws can be directly controlled using the warmup argument (see \code{rstan::sampling}).
+#' @param n_chains The number of independent Markov chains in Bayesian estimation.
+#' @param n_cores The number of cores used to execute the Markov chains in parellel in Bayesian estimation.
 #' Can set using options(mc.cores = parallel::detectCores()).
 #' @param random_parameters The form of the covariance matrix for
 #'     Bayes. Can be 'fixed', 'uncorr, 'corr'.
@@ -65,7 +71,7 @@
 #' \donttest{
 #' data(data_rec, package = "rmdcev")
 #'
-#' data_rec <- mdcev.data(data_rec, subset = id < 500, id.var = "id",
+#' data_rec <- mdcev.data(data_rec, subset = id <= 500, id.var = "id",
 #'                 alt.var = "alt", choice = "quant")
 #'
 #' mdcev_est <- mdcev( ~ 1,
@@ -75,27 +81,28 @@
 #'}
 mdcev <- function(formula = NULL, data,
 				 weights = NULL,
-				 model = c("alpha", "gamma", "hybrid", "hybrid0", "kt_les"),
+				 model = c("alpha", "gamma", "hybrid", "hybrid0", "kt_ee"),
 				 n_classes = 1,
 				 fixed_scale1 = 0,
 				 trunc_data = 0,
-				 gamma_ascs = 0,
+				 psi_ascs = NULL,
+				 gamma_ascs = 1,
 				 seed = "123",
 				 max_iterations = 2000,
 				 initial.parameters = NULL,
+				 hessian = TRUE,
 				 algorithm = c("MLE", "Bayes"),
 				 flat_priors = NULL,
 				 print_iterations = TRUE,
-				 hessian = TRUE,
 				 prior_psi_sd = 10,
 				 prior_gamma_sd = 10,
 				 prior_phi_sd = 10,
 				 prior_alpha_sd = 0.5,
 				 prior_scale_sd = 1,
 				 prior_delta_sd = 10,
-				 gamma_fixed = 0,
-				 alpha_fixed = 0,
-				 std_errors = "mvn",
+				 gamma_nonrandom = 0,
+				 alpha_nonrandom = 0,
+				 std_errors = "deltamethod",
 				 n_draws = 50,
 				 keep_loglik = 0,
 				 random_parameters = "fixed",
@@ -114,7 +121,7 @@ mdcev <- function(formula = NULL, data,
 	# Check models
 	if (!is.element(algorithm, c("MLE", "Bayes"))) stop("algorithm must be 'MLE' or 'Bayes'")
 	if (!is.element(random_parameters, c("fixed", "uncorr", "corr"))) stop("random_parameters must be 'fixed', 'uncorr' or 'corr'")
-	if (!is.element(model, c("alpha", "gamma", "hybrid", "hybrid0", "kt_les"))) stop("model must be 'alpha', 'gamma', 'hybrid', 'hybrid0', or 'kt_les'")
+	if (!is.element(model, c("alpha", "gamma", "hybrid", "hybrid0", "kt_ee"))) stop("model must be 'alpha', 'gamma', 'hybrid', 'hybrid0', or 'kt_les'")
 
 	if (algorithm == "Bayes" && n_classes > 1)
 		stop("Bayesian estimation can only be used with one class. Switch algorithm to MLE or choose n_classes = 1", "\n")
@@ -130,8 +137,8 @@ mdcev <- function(formula = NULL, data,
 		flat_priors <- 0
 
 	if (random_parameters == "fixed"){
-		gamma_fixed <- 1
-		alpha_fixed <- 1
+		gamma_nonrandom <- 1
+		alpha_nonrandom <- 1
 	}
 
 	if(algorithm == "Bayes" || std_errors == "deltamethod")
@@ -142,11 +149,12 @@ mdcev <- function(formula = NULL, data,
 						model = model,
 						n_classes = n_classes,
 						trunc_data = trunc_data,
+						psi_ascs = psi_ascs,
 						gamma_ascs = gamma_ascs,
 						seed = seed,
 						max_iterations = max_iterations,
-						print_iterations = print_iterations,
 						hessian = hessian,
+						print_iterations = print_iterations,
 						n_draws = n_draws,
 						keep_loglik = keep_loglik,
 						flat_priors = flat_priors,
@@ -155,8 +163,8 @@ mdcev <- function(formula = NULL, data,
 						prior_alpha_sd = prior_alpha_sd,
 						prior_scale_sd = prior_scale_sd,
 						prior_delta_sd = prior_delta_sd,
-						gamma_fixed = gamma_fixed,
-						alpha_fixed = alpha_fixed)
+						gamma_nonrandom = gamma_nonrandom,
+						alpha_nonrandom = alpha_nonrandom)
 
 	bayes_options <- list(n_iterations = n_iterations,
 						n_chains = n_chains,
@@ -169,9 +177,12 @@ mdcev <- function(formula = NULL, data,
 						show_stan_warnings = show_stan_warnings,
 						lkj_shape_prior = lkj_shape_prior)
 
+	# Need for naming gamma/alpha parameters
+	alt_names <- unique(data$alt)
+
 	stan_data <- processMDCEVdata(formula, data, mle_options)
 
-	parms_info <- CreateParmInfo(stan_data, algorithm, random_parameters)
+	parms_info <- CreateParmInfo(stan_data, alt_names, algorithm, random_parameters)
 
 	CleanInit <- function(init_input){
 		# Add dimension to starting values

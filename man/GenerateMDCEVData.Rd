@@ -14,7 +14,7 @@ GenerateMDCEVData(
   price_hi = 500,
   alpha_parms = 0.5,
   scale_parms = 1,
-  gamma_parms = stats::runif(nalts, 1, 2),
+  gamma_parms = stats::runif(nalts, 1, 10),
   psi_i_parms = c(-1.5, 3, -2, 1, 2),
   psi_j_parms = c(-5, 0.5, 2),
   nerrs = 1,

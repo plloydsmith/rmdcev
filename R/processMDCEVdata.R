@@ -1,23 +1,36 @@
 #' @title processMDCEVdata
 #' @description Process MDCEV data
 #' @inheritParams mdcev
+#' @param alt_names name of alternatives.
 #' @param model_options list of model options
 #' @keywords internal
 processMDCEVdata <- function(formula, data, model_options){
 
+
+
 	formula <- Formula::Formula(formula)
+
 	psi.vars <- stats::formula(formula, rhs = 1, lhs = 0)
+	# Delete intercept term for psi variables.
+	psi.vars <- stats::terms(psi.vars)
+	attr(psi.vars, "intercept") <- 0
 	dat_psi <- stats::model.matrix(psi.vars, data)
-	NPsi <- ncol(dat_psi)
+	NPsi_ij <- ncol(dat_psi)
+
+	if (NPsi_ij == 0){
+		dat_psi <- matrix(0, 0, NPsi_ij)
+	}
 
 	J <- nrow(unique(attr(data, "index")["alt"]))
 	I <- nrow(unique(attr(data, "index")["id"]))
 
-	if (model_options$model == "kt_les"){
+	if (model_options$model == "kt_ee"){
+		if (is.null(model_options$psi_ascs)) model_options$psi_ascs = 0
 		phi.vars <- stats::formula(formula, rhs = 3, lhs = 0)
 		dat_phi <- stats::model.matrix(phi.vars, data)
 		NPhi <- ncol(dat_phi)
 	} else{
+		if (is.null(model_options$psi_ascs)) model_options$psi_ascs = 1
 		NPhi <- 0
 		dat_phi <- matrix(0, 0, NPhi)
 	}
@@ -30,7 +43,7 @@ processMDCEVdata <- function(formula, data, model_options){
 		model_num <- 3
 	} else if (model_options$model == "hybrid0"){
 		model_num <- 4
-	} else if (model_options$model == "kt_les"){
+	} else if (model_options$model == "kt_ee"){
 		model_num <- 5
 	} else
 		stop("No model specificied. Choose a model specification")
@@ -46,7 +59,7 @@ processMDCEVdata <- function(formula, data, model_options){
 
 	# Put data into one list for rstan
 	stan_data =
-		list(I = I, J = J, NPsi = NPsi, NPhi = NPhi,
+		list(I = I, J = J, NPsi_ij = NPsi_ij, NPhi = NPhi,
 			 K = model_options$n_classes,
 			 dat_psi = as.matrix(dat_psi),
 			 dat_phi = as.matrix(dat_phi),
@@ -63,9 +76,10 @@ processMDCEVdata <- function(formula, data, model_options){
 			 model_num = model_num,
 			 fixed_scale1 = model_options$fixed_scale1,
 			 trunc_data = model_options$trunc_data,
+			 psi_ascs = model_options$psi_ascs,
 			 gamma_ascs = model_options$gamma_ascs,
-			 gamma_fixed = model_options$gamma_fixed,
-			 alpha_fixed = model_options$alpha_fixed)
+			 gamma_nonrandom = model_options$gamma_nonrandom,
+			 alpha_nonrandom = model_options$alpha_nonrandom)
 
 	if (model_options$n_classes > 1){
 		lc.vars <- formula(formula, rhs = 2, lhs = 0)

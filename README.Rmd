@@ -30,7 +30,7 @@ Models can be estimated using
 
 1. Fixed parameter models (maximum likelihood or Bayesian estimation)
 2. Latent class models (maximum likelihood estimation)
-3. Random parameters models (Bayesian estimation, except KT model specifications)
+3. Random parameters models (Bayesian estimation)
 
 
 ## Installation
@@ -65,7 +65,7 @@ Lloyd-Smith, P (2018). ["A New Approach to Calculating Welfare Measures in Kuhn-
 
 ## Estimation
 
-As an example, we can simulate some data using Bhat (2008)'s 'Gamma' specification. In this example, we are simulating data for 2,000 individuals and 10 non-numeraire alternatives. 
+As an example, we can simulate some data using Bhat (2008)'s 'Gamma' specification. In this example, we are simulating data for 2,000 individuals and 10 non-numeraire alternatives. We will use randomly generate the parameter values to estimate and then check our estimation results.
 
 ```{r}
 library(pacman)
@@ -76,12 +76,12 @@ nalts <- 10
 sim.data <- GenerateMDCEVData(model = model, nobs = nobs, nalts = nalts)
 ```
 
-Estimate model using MLE
+Estimate model using MLE (note that we set "psi_ascs = 0" to omit any alternative-specific constants)
 ``` {r}
-mdcev_est <- mdcev(~ b1 + b2 + b3 + b4 + b5 + b6 + b7 + b8-1,
+mdcev_est <- mdcev(~ b1 + b2 + b3 + b4 + b5 + b6,
 				   data = sim.data$data,
+				   psi_ascs = 0,
 				   model = model,
-				   std_errors = "deltamethod",
 				   algorithm = "MLE")
 ```
 
@@ -121,7 +121,7 @@ npols <- 2 # Choose number of policies
 
 policies<-	CreateBlankPolicies(npols, nalts, mdcev_est$stan_data[["dat_psi"]])
 
-df_sim <- PrepareSimulationData(mdcev_est, policies, nsims = 1)
+df_sim <- PrepareSimulationData(mdcev_est, policies, nsims = 1) 
 ```
 
 Simulate welfare changes

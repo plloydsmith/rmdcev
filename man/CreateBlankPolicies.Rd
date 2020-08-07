@@ -4,7 +4,7 @@
 \alias{CreateBlankPolicies}
 \title{CreateBlankPolicies}
 \usage{
-CreateBlankPolicies(npols, nalts, dat_psi, price_change_only)
+CreateBlankPolicies(npols, nalts, dat_psi, price_change_only = TRUE)
 }
 \arguments{
 \item{npols}{Number of policies to simulate}
@@ -13,7 +13,7 @@ CreateBlankPolicies(npols, nalts, dat_psi, price_change_only)
 
 \item{dat_psi}{Psi data matrix used in estimation}
 
-\item{price_change_only}{Logical value for whether to include policy changes to dat_psi.
+\item{price_change_only}{Logical value for whether to include policy changes to dat_psi. Defaults to TRUE.
 TRUE implies that only price changes are used in simulation.}
 }
 \description{

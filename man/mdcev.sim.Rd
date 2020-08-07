@@ -91,11 +91,12 @@ Simulate welfare or demand for MDCEV model
 \donttest{
 data(data_rec, package = "rmdcev")
 
-data_rec <- mdcev.data(data_rec, subset = id < 500, id.var = "id",
+data_rec <- mdcev.data(data_rec, subset = id <= 500, id.var = "id",
                 alt.var = "alt", choice = "quant")
 
 mdcev_est <- mdcev( ~ 1, data = data_rec,
-               model = "hybrid0", algorithm = "MLE")
+               model = "hybrid0", algorithm = "MLE",
+               std_errors = "mvn")
 
 policies <- CreateBlankPolicies(npols = 2,
 nalts = mdcev_est[["stan_data"]][["J"]],

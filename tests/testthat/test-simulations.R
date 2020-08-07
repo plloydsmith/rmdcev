@@ -10,10 +10,12 @@ data_rec <- mdcev.data(data_rec, subset = id < 100,
 					   alt.var = "alt",
 					   choice = "quant")
 
-result <- mdcev( ~ alt -1,
+result <- mdcev( ~ alt-1,
 				   data = data_rec,
 				   model = "hybrid0",
+				 psi_ascs = 0,
 				   algorithm = "MLE",
+				 std_errors = "mvn",
 				   print_iterations = FALSE)
 
 nalts <- result$stan_data[["J"]]

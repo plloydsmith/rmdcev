@@ -6,12 +6,12 @@
 #' @name mdcev.data
 #' @param data a `data.frame`,
 #' @param id.var the name of the variable that contains the individual
-#'     index.
+#'     index. Note that the id.var must be unique for each
 #' @param alt.var the name of the variable that contains the
 #'     alternative index or the name under which the alternative index
 #'     will be stored (the default  name is `alt`),
 #' @param choice the variable indicating the consumption of non-numeraire
-#'     alternatives that is made: it has to be a numerical vector
+#'     alternatives that is made: it has to be a numerical vector. Default is "choice".
 #' @param price the variable indicating the price of the non-numeraire
 #'     alternatives. Default is "price"
 #' @param income the variable indicating the income of the individual.
@@ -32,12 +32,19 @@
 mdcev.data <- function(data,
 					   id.var = NULL,
 					   alt.var = NULL,
-					   choice = NULL,
+					   choice = "choice",
 					   price = "price",
 					   income = "income",
 					   alt.levels = NULL,
 					   drop.index = FALSE,
 					   subset = NULL, ...){
+
+	if (is.null(alt.var) && is.null(alt.levels))
+		stop("at least one of alt.var and alt.levels should be filled")
+
+	if (is.null(id.var))
+		stop("must specify id.var variable")
+
 	# id, alt : the index variables
 
 	# if a subset argument is provided, subset the original data frame
@@ -50,8 +57,6 @@ mdcev.data <- function(data,
 		data <- eval(cldata, parent.frame())
 	}
 
-	if (is.null(alt.var) && is.null(alt.levels))
-		stop("at least one of alt.var and alt.levels should be filled")
 
 	if (! is.null(alt.levels)){
 		J <- length(alt.levels)
@@ -72,17 +77,23 @@ mdcev.data <- function(data,
 		J <- length(alt.levels)
 		alt <- data[[alt.name]]
 	}
-	n <- nrow(data) / J
+#	n <- nrow(data) / J
+
 	if (! is.null(id.var)){
 		idpos <- which(names(data) == id.var)
 		id.var <- as.factor(data[[id.var]])
 	}
+
+	message("Sorting data by id.var then alt...")
+	data <- data[order(id.var, alt), ]
+
 
 	if (! is.null(choice)){
 		choice.name <- choice
 		choice <- data[[choice]]
 		data[[choice.name]] <- choice
 	}
+
 	id <- as.factor(id.var)
 	alt <- as.factor(alt)
 	row.names(data) <- paste(id, alt, sep = ".")

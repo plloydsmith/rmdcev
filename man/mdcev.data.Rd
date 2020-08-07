@@ -8,7 +8,7 @@ mdcev.data(
   data,
   id.var = NULL,
   alt.var = NULL,
-  choice = NULL,
+  choice = "choice",
   price = "price",
   income = "income",
   alt.levels = NULL,
@@ -21,14 +21,14 @@ mdcev.data(
 \item{data}{a `data.frame`,}
 
 \item{id.var}{the name of the variable that contains the individual
-index.}
+index. Note that the id.var must be unique for each}
 
 \item{alt.var}{the name of the variable that contains the
 alternative index or the name under which the alternative index
 will be stored (the default  name is `alt`),}
 
 \item{choice}{the variable indicating the consumption of non-numeraire
-alternatives that is made: it has to be a numerical vector}
+alternatives that is made: it has to be a numerical vector. Default is "choice".}
 
 \item{price}{the variable indicating the price of the non-numeraire
 alternatives. Default is "price"}

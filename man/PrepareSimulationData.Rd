@@ -33,6 +33,7 @@ data_rec <- mdcev.data(data_rec, subset = id < 500, id.var = "id",
 
 mdcev_est <- mdcev( ~ 1,
 data = data_rec,
+psi_ascs = 0,
 model = "hybrid0",
 algorithm = "MLE")
 

@@ -12,7 +12,7 @@ maxlikeMDCEV <- function(stan_data, initial.parameters,
 
 	if (is.null(initial.parameters) || mle_options$n_classes == 1){
 
-		message("Using MLE to estimate MDCEV")
+		message("Using MLE to estimate KT model")
 
 		# ensure single class used for base model
 		stan_data_temp <- stan_data
@@ -53,10 +53,12 @@ maxlikeMDCEV <- function(stan_data, initial.parameters,
 
 			# add shift to psi values values
 			init.psi <- init.par$psi
-			init.shift <- seq(-0.02, 0.02, length.out = stan_data$NPsi)
-			for (i in 1:stan_data$NPsi)
-				init.psi[i] <- init.psi[i] + init.shift[i]
 
+			if(length(init.psi)>0){
+				init.shift <- seq(-0.02, 0.02, length.out = length(init.psi))
+				for (i in 1:length(init.psi))
+					init.psi[i] <- init.psi[i] + init.shift[i]
+			}
 			init.psi <- matrix(init.psi, nrow=stan_data$K,  ncol=length(init.psi), byrow=TRUE)
 
 			init = list(psi = init.psi)
@@ -64,31 +66,38 @@ maxlikeMDCEV <- function(stan_data, initial.parameters,
 			if (stan_data$fixed_scale1 == 0)
 				init$scale <- rep(stan_fit$par[["scale"]], stan_data$K)
 
-			if (stan_data$model_num == 1 || stan_data$model_num == 3){
+			if (stan_data$model_num == 1 || stan_data$model_num == 3 || stan_data$model_num == 5)
 				init$alpha <- matrix(rep(init.par$alpha, stan_data$K), nrow=stan_data$K, ncol=1)
-				init$gamma <- matrix(rep(init.par$gamma, stan_data$K), nrow=stan_data$K, ncol=stan_data$J)
-			} else if (stan_data$model_num == 2){
+			else if (stan_data$model_num == 2)
 				init$alpha <- matrix(rep(init.par$alpha, stan_data$K), nrow=stan_data$K, ncol=stan_data$J+1)
-			} else if (stan_data$model_num == 4){
-				init$gamma <- matrix(rep(init.par$gamma, stan_data$K), nrow=stan_data$K, ncol=stan_data$J)
-			} else if (stan_data$model_num == 5){
-				init$alpha <- matrix(rep(init.par$alpha, stan_data$K), nrow=stan_data$K, ncol=1)
+			else if (stan_data$model_num == 4)
+
+			if (stan_data$model_num != 2){
+				# add shift to psi values values
+				init.gamma <- init.par$gamma
+				init.shift <- seq(-0.02, 0.02, length.out = length(init.gamma))
+					for (i in 1:length(init.gamma))
+						init.gamma[i] <- init.gamma[i] + init.shift[i]
+				if (stan_data$gamma_ascs == 1)
+					init$gamma <- matrix(rep(init.gamma, stan_data$K), nrow=stan_data$K, ncol=stan_data$J)
+				else if (stan_data$gamma_ascs == 0)
+					init$gamma <- matrix(rep(init.gamma, stan_data$K), nrow=stan_data$K, ncol=1)
+
+			} else if (stan_data$model_num == 2)
+
+			if (stan_data$model_num == 5){
 				init$phi <- matrix(rep(init.par$phi, stan_data$K), nrow=stan_data$K, ncol=stan_data$NPhi)
-				if (stan_data$gamma_ascs == 1){
-					init$gamma <- matrix(rep(init.par$gamma, stan_data$K), nrow=stan_data$K, ncol=stan_data$J)
-				} else if (stan_data$gamma_ascs == 0){
-					init$gamma <- matrix(rep(init.par$gamma, stan_data$K), nrow=stan_data$K, ncol=1)
-				}
 			}
+
 		} else if (!is.null(initial.parameters)){
 			init <- initial.parameters
 		}
-		message("Using MLE to estimate LC-MDCEV")
+		message("Using MLE to estimate LC-KT")
 
 		stan_fit <- rstan::optimizing(stanmodels$mdcev, data = stan_data, as_vector = FALSE,
 							   seed = mle_options$seed, init = init,
 							   verbose = mle_options$print_iterations, iter = mle_options$max_iterations,
-							   draws = mle_options$n_draws, hessian = mle_options$hessian)
+							   draws = mle_options$n_draws, hessian = mle_options$hessian, ...)
 
 		if (mle_options$keep_loglik == 0)
 			stan_fit <- ReduceStanFitSize(stan_fit, parms_info)
