@@ -74,12 +74,10 @@ real DeterminJacob(vector phi_quant_gamma, real alpha, vector phi_j, vector pric
 
   jacobian = rep_matrix((1 - alpha) * price_j_num, J);
   jacobian = jacobian + diag_matrix(phi_j  ./ phi_quant_gamma);
-//    jacobian = add_diag(jacobian, phi_j  ./ phi_quant_gamma); // Add row_vector d to the diagonal of matrix m.
   jacobian = diag_post_multiply(jacobian, nonzero) + diag_matrix(1 - nonzero);
   j_det = fabs(determinant(jacobian));
 
 return(j_det);
-
 }
 
 vector kt_ll(matrix quant_j, matrix price_j, vector log_num, vector income,
@@ -90,20 +88,20 @@ vector kt_ll(matrix quant_j, matrix price_j, vector log_num, vector income,
     vector[J] ones_j = rep_vector(1, J);
     matrix[I, J] g; // demand function
     vector[I] like;
-    matrix[I, J] phi_quant_gamma =  phi_ij .* quant_j + gamma;
+    matrix[I, J] phi_quant_term =  (phi_ij .* quant_j + gamma) ./ phi_ij;
     vector[I] log_j_det;
+//    vector[I] j_det;
 
 //	  for(i in 1:I){
 //		vector[J] price_j_num = price_j[i]' ./ exp(log_num[i]);
-//         j_det[i] = DeterminJacob(phi_quant_gamma[i]', alpha[i], phi_ij[i]',
-//                    price_j_num, nonzero[i]', J);
+  //       j_det[i] = DeterminJacob(phi_quant_gamma[i]', alpha[i], phi_ij[i]',
+  //                  price_j_num, nonzero[i]', J);
 //    }
-	log_j_det = log(1 - alpha) - log_num + (nonzero .* (log(phi_ij) - log(phi_quant_gamma))) * ones_j +
-         		log(exp(log_num) ./ (1 - alpha) + (nonzero .* phi_quant_gamma .* price_j ./ phi_ij) * ones_j);
+	log_j_det = log(1 - alpha) - log_num + (nonzero .* inv(phi_quant_term)) * ones_j +
+         		log(exp(log_num) ./ (1 - alpha) + (nonzero .* phi_quant_term .* price_j) * ones_j);
 
 	 // Calculate the demand function, g
-  	g =  (-lpsi  + log(price_j) - log(phi_ij) +
-  		log(phi_quant_gamma) - rep_matrix((1 - alpha) .* log_num, J)) ./ scale_full;
+  	g =  (-lpsi + log(phi_quant_term .* price_j) - rep_matrix((1 - alpha) .* log_num, J)) ./ scale_full;
 
   	// Calculate the liklihood
   	like = (nonzero .*(-g - log(scale_full)) + (-exp(-g))) * ones_j;

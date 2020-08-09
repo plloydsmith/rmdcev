@@ -11,7 +11,7 @@ mdcev(
   formula = NULL,
   data,
   weights = NULL,
-  model = c("alpha", "gamma", "hybrid", "hybrid0", "kt_les"),
+  model = c("alpha", "gamma", "hybrid", "hybrid0", "kt_ee"),
   n_classes = 1,
   fixed_scale1 = 0,
   trunc_data = 0,
@@ -58,22 +58,27 @@ mdcev(
 \method{print}{summary.mdcev}(x, ...)
 }
 \arguments{
-\item{formula}{Formula for the model to be estimated.The formula is divided in
-two parts, separated by the symbol \code{|}. The first part is reserved for
-variables in the psi parameter. These can include alternative-specific and
-individual-specific variables. The second part corresponds for individual-specific
-variables that enter in the probability assignment in models with latent classes.}
+\item{formula}{Formula for the model to be estimated. The formula is divided in
+three parts, separated by the symbol \code{|}. The first part is reserved for
+alternative-specific and individual-specific variables in the psi parameters.
+Note that alternative-specific constants are handled by the \code{psi_ascs} argument.
+The second part corresponds for individual-specific variables that enter in the probability
+assignment in models with latent classes. The third part is reserved for the $q_k$ variables
+included in the $\phi_k$ parameters in the KT model specification used in environmental economics
+\code{model = "kt_ee"}.}
 
 \item{data}{The (IxJ) data to be passed to Stan of class \code{\link[rmdcev]{mdcev.data}}
-including 1) id, 2) alt, 3) choice, 4) price, 5) income, and columns for psi variables.
-Note: I is number of individuals and J is number of non-numeraire alternatives.}
+including 1) id, 2) alt, 3) choice, 4) price, 5) income, and columns for alternative-specific and
+individual specific variables. Note: I is number of individuals and J is number of non-numeraire alternatives.}
 
 \item{weights}{an optional vector of weights. Default to 1.}
 
 \item{model}{A string indicating which model specification is estimated.
-The options are "alpha", "gamma", "hybrid" and "hybrid0".}
+The options are "alpha", "gamma", "hybrid" and "hybrid0" for the MDCEV model and "kt_ee" for the environmental
+economics Kuhn-Tucker specification.}
 
-\item{n_classes}{The number of latent classes.}
+\item{n_classes}{The number of latent classes. Note that the LC model is automatically estimated as long as the
+prespecified number of classes is set greater than 1.}
 
 \item{fixed_scale1}{Whether to fix scale at 1.}
 
@@ -83,9 +88,9 @@ such as recreation data collected on-site. To account for the truncation of cons
 normalized by one minus the likelihood of observing zero consumption for all non-numeraire alternatives
 (i.e. likelihood of positive consumption) following Englin, Boxall and Watson (1998) and von Haefen (2003).}
 
-\item{psi_ascs}{Whether to include alternative-specific psi parameters. The first alternative is used as the reference category.}
+\item{psi_ascs}{Whether to include alternative-specific psi parameters. The first alternative is used as the reference category. Only specify to 1 for MDCEV models.}
 
-\item{gamma_ascs}{Indicator to include alternative-specific gammas parameters. The default is}
+\item{gamma_ascs}{Indicator to include alternative-specific gammas parameters.}
 
 \item{seed}{Random seed.}
 
@@ -93,9 +98,9 @@ normalized by one minus the likelihood of observing zero consumption for all non
 
 \item{initial.parameters}{The default for fixed and random parameter specifications is to use random starting values.
 For LC models, the default is to use slightly adjusted MLE point estimates from the single class model.
-Initial parameter values should be included in a named list. For the "hybrid" specification,
+Initial parameter values should be included in a named list. For example, the LC "hybrid" specification
 initial parameters can be specified as:
-inititial.parameters = list(psi = array(runif(1), dim = c(K, num_psi)),
+initial.parameters = list(psi = array(0, dim = c(K, num_psi)),
                             gamma = array(1, dim = c(K, num_alt)),
                             alpha = array(0.5, dim = c(K, 0)),
                             scale = array(1, dim = c(K)))
@@ -106,8 +111,8 @@ num_psi is number of psi parameters, and num_alt is number of non-numeraire alte
 
 \item{algorithm}{Either "Bayes" for Bayes or "MLE" for maximum likelihood estimation.}
 
-\item{flat_priors}{indicator if completely uninformative priors should be specified. Defaults to 1 if MLE used and 0 if Bayes used.
-If using MLE and set flat_priors = 0, penalized MLE is used and the optimizing objective is augmented with the priors.}
+\item{flat_priors}{indicator if completely uninformative priors should be specified. Defaults to 1 if MLE used and 0 if Bayes used. If using MLE and set flat_priors = 0,
+penalized MLE is used and the optimizing objective is augmented with the priors.}
 
 \item{print_iterations}{Whether to print iteration information}
 
@@ -131,12 +136,13 @@ If using MLE and set flat_priors = 0, penalized MLE is used and the optimizing o
 or multivariate normal draws ("mvn"). The default is "deltamethod". Note that mvn parameter draws should be
 used to incorporate parameter uncertainty for demand and welfare simulation. For maximum likelihood estimation only.}
 
-\item{n_draws}{The number of multivariate normal draws for standard error calculations.}
+\item{n_draws}{The number of multivariate normal draws for standard error calculations if "mvn" is specified.}
 
 \item{keep_loglik}{Whether to keep the log_lik calculations}
 
 \item{random_parameters}{The form of the covariance matrix for
-Bayes. Can be 'fixed', 'uncorr, 'corr'.}
+Bayes. Can be 'fixed' for no random parameters, 'uncorr' for uncorrelated random parameters, or
+'corr' for correlated random parameters.}
 
 \item{show_stan_warnings}{Whether to show warnings from Stan.}
 
@@ -145,7 +151,7 @@ iterations to be split evenly between warmup and posterior draws. The number of 
 
 \item{n_chains}{The number of independent Markov chains in Bayesian estimation.}
 
-\item{n_cores}{The number of cores used to execute the Markov chains in parellel in Bayesian estimation.
+\item{n_cores}{The number of cores used to execute the Markov chains in parallel in Bayesian estimation.
 Can set using options(mc.cores = parallel::detectCores()).}
 
 \item{max_tree_depth}{http://mc-stan.org/misc/warnings.html#maximum-treedepth-exceeded}
@@ -178,7 +184,7 @@ data(data_rec, package = "rmdcev")
 data_rec <- mdcev.data(data_rec, subset = id <= 500, id.var = "id",
                 alt.var = "alt", choice = "quant")
 
-mdcev_est <- mdcev( ~ 1,
+mdcev_est <- mdcev( ~ 0,
 data = data_rec,
 model = "hybrid0",
 algorithm = "MLE")
