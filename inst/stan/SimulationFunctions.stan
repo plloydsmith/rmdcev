@@ -186,9 +186,9 @@ vector MarshallianDemand(real income, vector price, vector MUzero, vector gamma,
 			E = ComputeE(M, lambda, g_price, b, c, d);			// Calculate E
 
 			if (E >= income || M+1 == nalts+1){
-				if(E < income)
+				if (E < income)
 					M += 1;
-//				M = E < income ? M + 1 : M;
+
 				lambda_l = E < income ? 0 : lambda;
 				lambda_u = mu[M];
 				lambda = (lambda_l + lambda_u) / 2;
@@ -203,8 +203,7 @@ vector MarshallianDemand(real income, vector price, vector MUzero, vector gamma,
 						lambda_u = lambda_mid;
 					else if (E > income)
 						lambda_l = lambda_mid;
-//					lambda_u = E > income ? lambda_u : (lambda_l + lambda_u) / 2;
-//					lambda_l = E < income ? lambda_l : (lambda_l + lambda_u) / 2;
+
 					lambda = (lambda_l + lambda_u) / 2;
 
 					if (fabs((E - income) / (E + income) * 0.5) < tol_e) break;
@@ -222,6 +221,92 @@ vector MarshallianDemand(real income, vector price, vector MUzero, vector gamma,
 	mdemand = X[order_x];
 return(mdemand);
 }
+
+real ComputeKtE(int M, real lambda, vector g_price__phi, vector psi, real alpha_1){
+	real output;
+	vector[M] temp;
+
+	temp[1] = pow(lambda, inv(alpha_1 - 1));
+	if(M > 1){
+		for (m in 2:M)
+			temp[m] = psi[m] / lambda - g_price__phi[m];
+	}
+
+	output =  sum(temp);
+return(output);
+}
+/**
+ * Calculate MarshktDemands for kt_ee
+ * @return vector of nalt demands
+ */
+vector MarshallianKtDemand(real income, vector price, vector MUzero, vector phi, vector gamma, real alpha_1,
+							int nalts, real tol_e, int max_loop) {
+
+	vector[nalts+1] mdemand;
+	real lambda;
+	real lambda_l;
+	real lambda_u;
+	int M = 1; // Indicator of which ordered alteratives (<=M) are being considered
+	int exit = 0;
+	real E;
+	int order_x[nalts+1] = CalcAltOrder(MUzero, nalts);
+	vector[nalts+1] X = rep_vector(0, nalts+1);
+	matrix[nalts+1, 4] parm_matrix = SortParmMatrix(MUzero, price, gamma, phi, nalts);
+	vector[nalts+1] mu = col(parm_matrix, 1); // obtain mu = psi*phi/(price*gamma)
+	vector[nalts+1] g__phi = col(parm_matrix, 3) ./ col(parm_matrix, 4); // obtain gamma/phi
+	vector[nalts+1] price_ord = col(parm_matrix, 2); // obtain price
+	vector[nalts+1] psi = mu .* price_ord .* g__phi; // obtain psi
+	vector[nalts+1] g_price__phi = psi ./ mu; // obtain gamma*price/phi
+
+	while (exit == 0){
+		lambda = mu[M + 1];	// Calculate lambda equal to MUzero(M+1)
+
+		E = ComputeKtE(M, lambda, g_price__phi, psi, alpha_1);			// Calculate E
+
+		if (E >= income || M+1 == nalts+1){
+			if (E < income)
+				M += 1;
+
+			lambda_l = E < income ? 0 : lambda;
+			lambda_u = mu[M];
+			lambda = (lambda_l + lambda_u) / 2;
+
+			for (n in 1:max_loop){
+				real lambda_mid = (lambda_l + lambda_u) / 2;
+
+				E = ComputeKtE(M, lambda, g_price__phi, psi, alpha_1);
+
+				// Update lambdas's
+				if (E < income)
+					lambda_u = lambda_mid;
+				else if (E > income)
+					lambda_l = lambda_mid;
+
+				lambda = (lambda_l + lambda_u) / 2;
+
+				if (fabs((E - income) / (E + income) * 0.5) < tol_e) break;
+			}
+			print("E = ", E);
+			print("lambda = ", lambda);
+			print("parm_matrix = ", parm_matrix);
+			print("M = ", M);
+			// Compute demands (using eq. 12 in Pinjari and Bhat)
+			X[1] = pow(lambda, inv(alpha_1 - 1));
+
+			if(M > 1){
+				for (m in 2:M)
+					X[m] = psi[m] / (lambda * price_ord[m]) - g__phi[m];
+			}
+			exit = 1;
+
+		} else if (E < income && M + 1 < nalts + 1)
+			M += 1; // adds one to M
+	}
+	// This code puts the choices back in their original order and exports demands
+	mdemand = X[order_x];
+return(mdemand);
+}
+
 /**
  * Calculate utility for all J alts
  * @return utility value
@@ -444,7 +529,7 @@ return(output);
 }
 
 /**
- * Calculate HicksDemands using general or hybrid approach
+ * Calculate HicksKtDemands for kt_ee utility function
  * @return vector of nalt demands
  */
 vector HicksianKtDemand(real util, vector price,
@@ -461,7 +546,7 @@ vector HicksianKtDemand(real util, vector price,
 	int order_x[nalts+1] = CalcAltOrder(MUzero, nalts);
 	vector[nalts+1] X = rep_vector(0, nalts+1); // vector to hold zero demands
 	matrix[nalts+1, 4] parm_matrix = SortParmMatrix(MUzero, price, gamma, phi, nalts);
-	vector[nalts+1] mu = col(parm_matrix, 1); // obtain mu
+	vector[nalts+1] mu = col(parm_matrix, 1); // obtain mu = psi*phi/(gamma*price)
 	vector[nalts+1] gamma_ord = col(parm_matrix, 3); // gamma
 	vector[nalts+1] g__phi = gamma_ord ./ col(parm_matrix, 4); // gamma/phi
 	vector[nalts+1] psi_phi__price = mu .* gamma_ord; // (MUzero * gamma = psi*phi/price)
@@ -495,10 +580,10 @@ vector HicksianKtDemand(real util, vector price,
 
 				if (fabs((lambda_l - lambda_u) / (lambda_l + lambda_u) * 0.5) < tol_l) break;
 			}
-	//		print("util_new = ", util_new);
-	//		print("lambda1 = ", lambda1);
-	//		print("parm_matrix = ", parm_matrix);
-		// Compute demands (using eq. 12 in Pinjari and Bhat)
+			print("util_new = ", util_new);
+			print("lambda1 = ", lambda1);
+			print("parm_matrix = ", parm_matrix);
+		// Compute demands (using modified version of eq. 12 in Pinjari and Bhat)
 			X[1] = pow(lambda1, inv(alpha_1 - 1));
 			if(M > 1){
 				for (m in 2:M)
@@ -879,57 +964,6 @@ matrix[] CalcMarshallianDemandPriceOnly_rng(real income, vector quant_j, vector 
 	mdemand_out[sim] = mdemand_pols;
 	}
 return(mdemand_out);
-}
-
-/**
- * Calculate HicksDemands using general or hybrid approach
- * @return vector of nalt demands
- */
-vector HicksianDemand0(real util, vector price,
-				vector MUzero, vector gamma, vector alpha,
-				int nalts, int algo_gen, int model_num, real tol_l, int max_loop) {
-
-	vector[nalts+1] hdemand;
-	int M = 1; // Indicator of which ordered alteratives (<=M) are being considered
-	int exit = 0;
-	real lambda1;
-	real util_new;
-	int order_x[nalts+1] = CalcAltOrder(MUzero, nalts);
-	vector[nalts+1] X = rep_vector(0, nalts+1); // vector to hold zero demands
-	vector[nalts+1] d = append_row(0, rep_vector(1, nalts));
-	matrix[nalts+1, 4] parm_matrix = SortParmMatrix(MUzero, price, gamma, alpha, nalts);
-	vector[nalts+1] mu = col(parm_matrix, 1); // obtain mu
-	vector[nalts+1] g = col(parm_matrix, 3); // obtain gamma
-
-	real lambda_num;
-	real lambda_den;
-	vector[nalts+1] g_psi = g .* mu .* col(parm_matrix, 2); // obtain gamma_psi
-
-	while (exit == 0){
-		// Calculate 1/lambda for a given M
-		lambda_num = util - sum(g_psi[1:M] .* log(mu[1:M]));// - g_psi[1]*log(mu[1]) is equal to 0
-		lambda_den = sum(g_psi[1:M]); // -g_psi[1]+1 = 0
-		lambda1 = inv(exp(lambda_num / lambda_den)); // create 1/lambda term
-
-		// Compare 1/lambda to baseline utility of the next lowest alternative
-		// (M+1). If lambda exceeds this value then all lower-valued
-		// alternatives have zero demand.
-		if (lambda1 > mu[min(M + 1, nalts + 1)] || M == nalts+1){
-
-			// Compute demands (using eq. 12 in Pinjari and Bhat)
-			for (m in 1:M)
-				X[m] = ((mu[m] / lambda1) - d[m]) * g[m];
-			exit = 1;
-
-		} else if (M < nalts + 1)
-			M += 1; // adds one to M
-	}
-
-
-	// This code puts the choices back in their original order and exports demands
-	hdemand = X[order_x];
-
-return(hdemand);
 }
 
 // end of functions
