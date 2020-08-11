@@ -512,95 +512,6 @@ vector HicksianDemand(real util, vector price,
 return(hdemand);
 }
 
-vector CalcKtDemand(vector price_j, real z_a,
-				vector psi_j, vector phi_j, vector gamma_j, real alpha_1,
-				int nalts){
-	// Calculate demand
-	vector[nalts] demand_j = ((psi_j .* phi_j) ./ (price_j * pow(z_a, alpha_1 - 1)) - gamma_j) ./ phi_j;
-
-	for (j in 1:nalts)
-		demand_j[j] = demand_j[j] < 0 ? 0 : demand_j[j];
-
-return(demand_j);
-}
-
-vector HicksianDemandBisection(real util, real quant_num, vector quant_j, vector price_j,
-				vector psi_j, vector phi_j, vector gamma_j, real alpha_1,
-				int nalts, real tol_l, int max_loop) {
-
-	vector[nalts+1] hdemand;
-	int M = 1; // Indicator of which ordered alteratives (<=M) are being considered
-	int exit = 0;
-	real util_new;
-	real z_a;
-	real z_l = quant_num * .01;
-	real z_u = quant_num * 1000000;
-	vector[nalts] demand_j = rep_vector(0, nalts);
-
-	z_a = (z_l + z_u) / 2;
-
-	for (n in 1:max_loop){
-		real z_mid = (z_l + z_u) / 2;
-		// Calculate demand
-		demand_j = CalcKtDemand(price_j, z_a, psi_j, phi_j, gamma_j, alpha_1, nalts);
-
-		// Calculate new utility
-		util_new = 1 / alpha_1  * pow(z_a, alpha_1) +
-					sum(psi_j .* log(phi_j .* demand_j + gamma_j) - psi_j .* log(gamma_j));
-
-		// Update lambdas's
-		if (util_new < util)
-			z_l = z_mid;
-		else if (util_new > util)
-			z_u = z_mid;
-
-		z_a = (z_l + z_u) / 2;
-
-		if (fabs((z_l - z_u) / (z_l + z_u) * 0.5) < tol_l) break;
-	}
-	demand_j = CalcKtDemand(price_j, z_a, psi_j, phi_j, gamma_j, alpha_1, nalts);
-	hdemand = append_row(z_a, demand_j);
-
-return(hdemand);
-}
-
-// Overall code
-vector CalcmdemandOne_rng(real income, vector price,
-						vector psi_j, vector phi_j, vector gamma_j, vector alpha, real scale,
-						int nerrs, int model_num, int algo_gen, real tol, int max_loop){
-
-	int nalts = cols(price) - 1; // subtract numeraire
-	vector[nalts + 1] mdemand_out;
-	vector[nalts + 1] gamma = append_row(1, gamma_j);
-	vector[nalts + 1] phi;
-	vector[nalts + 1] error[nerrs];
-	matrix[nerrs, nalts + 1] mdemand;
-	matrix[nalts + 1, nerrs] mdemand_trans;
-
-	if (model_num < 5)
-		phi = rep_vector(1, nalts + 1);
-	else if (model_num == 5)
-		phi = append_row(1, phi_j);
-
-	for(err in 1:nerrs)
-		for(g in 1:nalts+1)
-			error[err, g] = -log(-log(uniform_rng(0, 1))) * scale; //uniform(0,1) draws
-
-	// Compute Marshallian demands and baseline utility
-	for (err in 1:nerrs){
-		vector[nalts + 1] MUzero_b = exp(append_row(0, psi_j) + error[err]) ./ price;
-
-		mdemand[err] = MarshallianDemand(income, price, MUzero_b, phi, gamma, alpha,
-						nalts, algo_gen, model_num, tol, max_loop)';
-	}
-	mdemand_trans = mdemand';
-
-	for(g in 1:nalts+1)
-  		mdemand_out[g] = mean(mdemand_trans[g]);
-
-return(mdemand_out);
-}
-
 /**
  * Calculate WTP for each individual, simulation, and policy
  * @param income income
@@ -778,6 +689,45 @@ matrix[] CalcMarshallianDemand_rng(real income, vector quant_j, vector price,
 		}
 	mdemand_out[sim] = mdemand_pols;
 	}
+return(mdemand_out);
+}
+
+// CalcmdemandOne_rng
+// Calculates baseline Marshallian demand for with only one simulations and no policies
+// Used to simulate data
+vector CalcmdemandOne_rng(real income, vector price,
+						vector psi_j, vector phi_j, vector gamma_j, vector alpha, real scale,
+						int nerrs, int model_num, int algo_gen, real tol, int max_loop){
+
+	int nalts = cols(price) - 1; // subtract numeraire
+	vector[nalts + 1] mdemand_out;
+	vector[nalts + 1] gamma = append_row(1, gamma_j);
+	vector[nalts + 1] phi;
+	vector[nalts + 1] error[nerrs];
+	matrix[nerrs, nalts + 1] mdemand;
+	matrix[nalts + 1, nerrs] mdemand_trans;
+
+	if (model_num < 5)
+		phi = rep_vector(1, nalts + 1);
+	else if (model_num == 5)
+		phi = append_row(1, phi_j);
+
+	for(err in 1:nerrs)
+		for(g in 1:nalts+1)
+			error[err, g] = -log(-log(uniform_rng(0, 1))) * scale; //uniform(0,1) draws
+
+	// Compute Marshallian demands and baseline utility
+	for (err in 1:nerrs){
+		vector[nalts + 1] MUzero_b = exp(append_row(0, psi_j) + error[err]) ./ price;
+
+		mdemand[err] = MarshallianDemand(income, price, MUzero_b, phi, gamma, alpha,
+						nalts, algo_gen, model_num, tol, max_loop)';
+	}
+	mdemand_trans = mdemand';
+
+	for(g in 1:nalts+1)
+  		mdemand_out[g] = mean(mdemand_trans[g]);
+
 return(mdemand_out);
 }
 
