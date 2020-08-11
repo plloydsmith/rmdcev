@@ -34,10 +34,10 @@ if (n_psi > 0)
 # alpha
 if (stan_data$model_num == 1 || stan_data$model_num == 5){
 	n_alpha <- 1
-	alpha_names <- 'alpha_1'
+	alpha_names <- 'alpha_num'
 } else if (stan_data$model_num == 2){
 	n_alpha <- J + 1
-	alpha_names <- c('alpha_1', paste0(rep('alpha', n_alpha-1), sep = "_", alt_names))
+	alpha_names <- c('alpha_num', paste0(rep('alpha', n_alpha-1), sep = "_", alt_names))
 } else if (stan_data$model_num == 3){
 	n_alpha <- 1
 	alpha_names <- 'alpha'

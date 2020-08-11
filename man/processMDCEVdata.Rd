@@ -7,15 +7,18 @@
 processMDCEVdata(formula, data, model_options)
 }
 \arguments{
-\item{formula}{Formula for the model to be estimated.The formula is divided in
-two parts, separated by the symbol \code{|}. The first part is reserved for
-variables in the psi parameter. These can include alternative-specific and
-individual-specific variables. The second part corresponds for individual-specific
-variables that enter in the probability assignment in models with latent classes.}
+\item{formula}{Formula for the model to be estimated. The formula is divided in
+three parts, separated by the symbol \code{|}. The first part is reserved for
+alternative-specific and individual-specific variables in the psi parameters.
+Note that alternative-specific constants are handled by the \code{psi_ascs} argument.
+The second part corresponds for individual-specific variables that enter in the probability
+assignment in models with latent classes. The third part is reserved for the $q_k$ variables
+included in the $phi_k$ parameters in the KT model specification used in environmental economics
+\code{model = "kt_ee"}.}
 
 \item{data}{The (IxJ) data to be passed to Stan of class \code{\link[rmdcev]{mdcev.data}}
-including 1) id, 2) alt, 3) choice, 4) price, 5) income, and columns for psi variables.
-Note: I is number of individuals and J is number of non-numeraire alternatives.}
+including 1) id, 2) alt, 3) choice, 4) price, 5) income, and columns for alternative-specific and
+individual specific variables. Note: I is number of individuals and J is number of non-numeraire alternatives.}
 
 \item{model_options}{list of model options}
 

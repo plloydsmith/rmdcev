@@ -4,14 +4,12 @@
 \alias{CreateBlankPolicies}
 \title{CreateBlankPolicies}
 \usage{
-CreateBlankPolicies(npols, nalts, dat_psi, price_change_only = TRUE)
+CreateBlankPolicies(npols, model, price_change_only = TRUE)
 }
 \arguments{
 \item{npols}{Number of policies to simulate}
 
-\item{nalts}{Number of non-numeraire alts}
-
-\item{dat_psi}{Psi data matrix used in estimation}
+\item{model}{Estimated model from mdcev}
 
 \item{price_change_only}{Logical value for whether to include policy changes to dat_psi. Defaults to TRUE.
 TRUE implies that only price changes are used in simulation.}
@@ -21,6 +19,12 @@ Create 'zero effect' policies that can be modified
 }
 \examples{
 \donttest{
-CreateBlankPolicies(npols = 2, nalts = 10, dat_psi = NULL, price_change_only = TRUE)
+data_rec <- mdcev.data(data_rec, subset = id <= 500, id.var = "id",
+                alt.var = "alt", choice = "quant")
+
+mdcev_est <- mdcev( ~ 0, data = data_rec,
+               model = "hybrid0", algorithm = "MLE",
+               std_errors = "mvn")
+CreateBlankPolicies(npols = 2, mdcev_est)
 }
 }

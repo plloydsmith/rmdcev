@@ -9,18 +9,17 @@ StanSimulate <- function(df_indiv, df_common, sim_options, stan_seed){
 	PRNG <-rstan::get_rng(seed = stan_seed)
 	o <- rstan::get_stream()
 
-	if(sim_options$sim_type == "welfare"){
-		if (sim_options$price_change_only == FALSE)
+	if(sim_options[["price_change_only"]] == TRUE)
+		sim_options[["price_change_only"]] <- 1
+	else if (sim_options[["price_change_only"]] == FALSE)
+		sim_options[["price_change_only"]] <- 0
+
+
+	if(sim_options$sim_type == "welfare")
 			stan_function <- CalcWTP_rng
-		else if (sim_options$price_change_only == TRUE)
-			stan_function <- CalcWTPPriceOnly_rng
-	} else if(sim_options$sim_type == "demand"){
+	else if(sim_options$sim_type == "demand")
 		stan_function <- CalcMarshallianDemand_rng
-		if (sim_options$price_change_only == FALSE)
-			stan_function <- CalcMarshallianDemand_rng
-		else if (sim_options$price_change_only == TRUE)
-			stan_function <- CalcMarshallianDemandPriceOnly_rng
-	}
+
 
 		if(!is.null(df_common$gamma_sim_nonrandom) &
 		   !is.null(df_common$alpha_sim_nonrandom)){
@@ -35,6 +34,7 @@ StanSimulate <- function(df_indiv, df_common, sim_options, stan_seed){
 					draw_mlhs=sim_options$draw_mlhs,
 					algo_gen=sim_options$algo_gen,
 					model_num=sim_options$model_num,
+					price_change_only =sim_options$price_change_only,
 					tol = sim_options$tol,
 					max_loop = sim_options$max_loop,
 					PRNG, o)
@@ -51,6 +51,7 @@ StanSimulate <- function(df_indiv, df_common, sim_options, stan_seed){
 							   draw_mlhs=sim_options$draw_mlhs,
 							   algo_gen=sim_options$algo_gen,
 							   model_num=sim_options$model_num,
+							   price_change_only =sim_options$price_change_only,
 							   tol = sim_options$tol,
 							   max_loop = sim_options$max_loop,
 							   PRNG, o)
@@ -67,6 +68,7 @@ StanSimulate <- function(df_indiv, df_common, sim_options, stan_seed){
 							   draw_mlhs=sim_options$draw_mlhs,
 							   algo_gen=sim_options$algo_gen,
 							   model_num=sim_options$model_num,
+							   price_change_only =sim_options$price_change_only,
 							   tol = sim_options$tol,
 							   max_loop = sim_options$max_loop,
 							   PRNG, o)
@@ -82,7 +84,8 @@ StanSimulate <- function(df_indiv, df_common, sim_options, stan_seed){
 							   draw_mlhs=sim_options$draw_mlhs,
 							   algo_gen=sim_options$algo_gen,
 							   model_num=sim_options$model_num,
-							   tol = sim_options$tol,
+						       price_change_only =sim_options$price_change_only,
+						       tol = sim_options$tol,
 							   max_loop = sim_options$max_loop,
 							   PRNG, o)
 		}

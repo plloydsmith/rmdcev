@@ -1,47 +1,55 @@
 #' @title mdcev
 #' @description Fit a MDCEV model using MLE or Bayes
-#' @param formula Formula for the model to be estimated.The formula is divided in
-#' two parts, separated by the symbol \code{|}. The first part is reserved for
-#' variables in the psi parameter. These can include alternative-specific and
-#' individual-specific variables. The second part corresponds for individual-specific
-#' variables that enter in the probability assignment in models with latent classes.
+#' @param formula Formula for the model to be estimated. The formula is divided in
+#' three parts, separated by the symbol \code{|}. The first part is reserved for
+#' alternative-specific and individual-specific variables in the psi parameters.
+#' Note that alternative-specific constants are handled by the \code{psi_ascs} argument.
+#' The second part corresponds for individual-specific variables that enter in the probability
+#' assignment in models with latent classes. The third part is reserved for the $q_k$ variables
+#' included in the $phi_k$ parameters in the KT model specification used in environmental economics
+#' \code{model = "kt_ee"}.
 #' @param data The (IxJ) data to be passed to Stan of class \code{\link[rmdcev]{mdcev.data}}
-#'  including 1) id, 2) alt, 3) choice, 4) price, 5) income, and columns for psi variables.
-#'  Note: I is number of individuals and J is number of non-numeraire alternatives.
+#'  including 1) id, 2) alt, 3) choice, 4) price, 5) income, and columns for alternative-specific and
+#'  individual specific variables. Note: I is number of individuals and J is number of non-numeraire alternatives.
 #' @param weights an optional vector of weights. Default to 1.
 #' @param model A string indicating which model specification is estimated.
-#' The options are "alpha", "gamma", "hybrid" and "hybrid0".
-#' @param n_classes The number of latent classes.
+#' The options are "alpha", "gamma", "hybrid" and "hybrid0" for the MDCEV model and "kt_ee" for the environmental
+#' economics Kuhn-Tucker specification.
+#' @param n_classes The number of latent classes. Note that the LC model is automatically estimated as long as the
+#' prespecified number of classes is set greater than 1.
 #' @param fixed_scale1 Whether to fix scale at 1.
 #' @param trunc_data Whether the estimation should be adjusted for truncation of non-numeraire alternatives.
 #' This option is useful if the data only includes individuals with positive non-numeraire consumption levels
 #' such as recreation data collected on-site. To account for the truncation of consumption, the likelihood is
 #' normalized by one minus the likelihood of observing zero consumption for all non-numeraire alternatives
 #' (i.e. likelihood of positive consumption) following Englin, Boxall and Watson (1998) and von Haefen (2003).
-#' @param gamma_ascs Indicator to include alternative-specific gammas parameters. The default is
-#' @param psi_ascs Whether to include alternative-specific psi parameters. The first alternative is used as the reference category.
+#' @param gamma_ascs Indicator to include alternative-specific gammas parameters.
+#' @param psi_ascs Whether to include alternative-specific psi parameters. The first alternative is used as
+#' the reference category. Only specify to 1 for MDCEV models.
 #' @param seed Random seed.
 #' @param algorithm Either "Bayes" for Bayes or "MLE" for maximum likelihood estimation.
 #' @param max_iterations Maximum number of iterations in MLE.
+#' @param jacobian_analytical_grad indicator whether to use analytical gradient method for Jacobian (=1) or numerical
+#' gradient method (=0). For "kt_ee" model only,
 #' @param print_iterations Whether to print iteration information
 #' @param std_errors Compute standard errors using the delta method ("deltamethod")
 #' or multivariate normal draws ("mvn"). The default is "deltamethod". Note that mvn parameter draws should be
 #' used to incorporate parameter uncertainty for demand and welfare simulation. For maximum likelihood estimation only.
-#' @param n_draws The number of multivariate normal draws for standard error calculations.
+#' @param n_draws The number of multivariate normal draws for standard error calculations if "mvn" is specified.
 #' @param keep_loglik Whether to keep the log_lik calculations
 #' @param hessian Whether to keep the Hessian matrix
 #' @param initial.parameters The default for fixed and random parameter specifications is to use random starting values.
 #' For LC models, the default is to use slightly adjusted MLE point estimates from the single class model.
-#' Initial parameter values should be included in a named list. For the "hybrid" specification,
+#' Initial parameter values should be included in a named list. For example, the LC "hybrid" specification
 #' initial parameters can be specified as:
-#' inititial.parameters = list(psi = array(runif(1), dim = c(K, num_psi)),
+#' initial.parameters = list(psi = array(0, dim = c(K, num_psi)),
 #'                             gamma = array(1, dim = c(K, num_alt)),
 #'                             alpha = array(0.5, dim = c(K, 0)),
 #'                             scale = array(1, dim = c(K)))
 #' where K is the number of classes (i.e. K = 1 is used for single class models),
 #' num_psi is number of psi parameters, and num_alt is number of non-numeraire alternatives.
-#' @param flat_priors indicator if completely uninformative priors should be specified. Defaults to 1 if MLE used and 0 if Bayes used.
-#' If using MLE and set flat_priors = 0, penalized MLE is used and the optimizing objective is augmented with the priors.
+#' @param flat_priors indicator if completely uninformative priors should be specified. Defaults to 1 if MLE used and 0 if Bayes used. If using MLE and set flat_priors = 0,
+#' penalized MLE is used and the optimizing objective is augmented with the priors.
 #' @param prior_psi_sd standard deviation for normal prior with mean 0.
 #' @param prior_phi_sd standard deviation for normal prior with mean 0.
 #' @param prior_gamma_sd standard deviation for normal prior with mean 0.
@@ -54,10 +62,11 @@
 #' @param n_iterations The number of iterations to use in Bayesian estimation. The default is for the number of
 #' iterations to be split evenly between warmup and posterior draws. The number of warmup draws can be directly controlled using the warmup argument (see \code{rstan::sampling}).
 #' @param n_chains The number of independent Markov chains in Bayesian estimation.
-#' @param n_cores The number of cores used to execute the Markov chains in parellel in Bayesian estimation.
+#' @param n_cores The number of cores used to execute the Markov chains in parallel in Bayesian estimation.
 #' Can set using options(mc.cores = parallel::detectCores()).
 #' @param random_parameters The form of the covariance matrix for
-#'     Bayes. Can be 'fixed', 'uncorr, 'corr'.
+#'     Bayes. Can be 'fixed' for no random parameters, 'uncorr' for uncorrelated random parameters, or
+#'     'corr' for correlated random parameters.
 #' @param max_tree_depth
 #'     http://mc-stan.org/misc/warnings.html#maximum-treedepth-exceeded
 #' @param adapt_delta
@@ -74,7 +83,7 @@
 #' data_rec <- mdcev.data(data_rec, subset = id <= 500, id.var = "id",
 #'                 alt.var = "alt", choice = "quant")
 #'
-#' mdcev_est <- mdcev( ~ 1,
+#' mdcev_est <- mdcev( ~ 0,
 #' data = data_rec,
 #' model = "hybrid0",
 #' algorithm = "MLE")
@@ -89,6 +98,7 @@ mdcev <- function(formula = NULL, data,
 				 gamma_ascs = 1,
 				 seed = "123",
 				 max_iterations = 2000,
+				 jacobian_analytical_grad = 1,
 				 initial.parameters = NULL,
 				 hessian = TRUE,
 				 algorithm = c("MLE", "Bayes"),
@@ -122,6 +132,7 @@ mdcev <- function(formula = NULL, data,
 	if (!is.element(algorithm, c("MLE", "Bayes"))) stop("algorithm must be 'MLE' or 'Bayes'")
 	if (!is.element(random_parameters, c("fixed", "uncorr", "corr"))) stop("random_parameters must be 'fixed', 'uncorr' or 'corr'")
 	if (!is.element(model, c("alpha", "gamma", "hybrid", "hybrid0", "kt_ee"))) stop("model must be 'alpha', 'gamma', 'hybrid', 'hybrid0', or 'kt_les'")
+	if (!is.element(std_errors, c("deltamethod", "mvn"))) stop("std_errors must be 'deltamethod' or 'mvn'")
 
 	if (algorithm == "Bayes" && n_classes > 1)
 		stop("Bayesian estimation can only be used with one class. Switch algorithm to MLE or choose n_classes = 1", "\n")
@@ -152,6 +163,7 @@ mdcev <- function(formula = NULL, data,
 						psi_ascs = psi_ascs,
 						gamma_ascs = gamma_ascs,
 						seed = seed,
+						jacobian_analytical_grad = jacobian_analytical_grad,
 						max_iterations = max_iterations,
 						hessian = hessian,
 						print_iterations = print_iterations,

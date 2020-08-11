@@ -32,7 +32,7 @@ test_that("Bayes hybrid0 specification", {
 	expect_equal(dim(output_sum[["CoefTable"]]), c(34, 5))
 
 	npols <- 2
-	policies <- CreateBlankPolicies(npols, output$stan_data[["J"]], output$stan_data[["dat_psi"]], price_change_only = TRUE)
+	policies <- CreateBlankPolicies(npols, output, price_change_only = TRUE)
 	df_sim <- PrepareSimulationData(output, policies, nsims = 5, class = "class1")
 
 	# Test welfare
@@ -69,7 +69,7 @@ test_that("Bayes gamma specification no gamma/psi ascs", {
 	expect_equal(dim(output_sum[["CoefTable"]]), c(2, 5))
 
 	npols <- 2
-	policies <- CreateBlankPolicies(npols, output$stan_data[["J"]], output$stan_data[["dat_psi"]], price_change_only = TRUE)
+	policies <- CreateBlankPolicies(npols, output, price_change_only = TRUE)
 	df_sim <- PrepareSimulationData(output, policies, nsims = 5, class = "class1")
 
 	# Test welfare
@@ -101,7 +101,7 @@ test_that("Bayes gamma uncorr specification", {
 	expect_equal(dim(output_sum[["CoefTable"]]), c(69, 5))
 
 	npols <- 2
-	policies <- CreateBlankPolicies(npols, output$stan_data[["J"]], output$stan_data[["dat_psi"]], price_change_only = TRUE)
+	policies <- CreateBlankPolicies(npols, output, price_change_only = TRUE)
 	df_sim <- PrepareSimulationData(output, policies, nsims = 5, class = "class1")
 
 	# Test welfare
@@ -132,7 +132,7 @@ test_that("Bayes gamma corr specification", {
 	expect_equal(output$parms_info$n_vars$n_parms_total, 630)
 
 	npols <- 2
-	policies <- CreateBlankPolicies(npols, output$stan_data[["J"]], output$stan_data[["dat_psi"]], price_change_only = TRUE)
+	policies <- CreateBlankPolicies(npols, output, price_change_only = TRUE)
 	df_sim <- PrepareSimulationData(output, policies, nsims = 5, class = "class1")
 
 	# Test welfare
@@ -166,7 +166,7 @@ test_that("Bayes gamma corr specification with fixed gamma/alpha", {
 	expect_equal(output$parms_info$n_vars$n_parms_total, 170)
 
 	npols <- 2
-	policies <- CreateBlankPolicies(npols, output$stan_data[["J"]], output$stan_data[["dat_psi"]], price_change_only = TRUE)
+	policies <- CreateBlankPolicies(npols, output, price_change_only = TRUE)
 	df_sim <- PrepareSimulationData(output, policies, nsims = 5, class = "class1")
 
 	# Test welfare
@@ -180,7 +180,7 @@ test_that("Bayes gamma corr specification with fixed gamma/alpha", {
 
 context("Test Bayes kt_ee rp correlated")
 
-output <- mdcev(formula = ~ ageindex|0|1,
+output <- mdcev(formula = ~ ageindex|0|0,
 				data = data_rec,
 				model = "kt_ee",
 				algorithm = "Bayes",
@@ -196,9 +196,9 @@ output <- mdcev(formula = ~ ageindex|0|1,
 
 test_that("Bayes gamma corr specification with fixed gamma/alpha", {
 	output_sum <- summary(output)
-	expect_equal(output$parms_info$n_vars$n_parms_total, 20)
+	expect_equal(output$parms_info$n_vars$n_parms_total, 19)
 
 	npols <- 2
-	policies <- CreateBlankPolicies(npols, output$stan_data[["J"]], output$stan_data[["dat_psi"]], price_change_only = TRUE)
+	policies <- CreateBlankPolicies(npols, output, price_change_only = TRUE)
 	df_sim <- PrepareSimulationData(output, policies, nsims = 5, class = "class1")
 })

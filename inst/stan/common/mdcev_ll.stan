@@ -66,23 +66,23 @@ vector mdcev_ll(matrix quant_j, matrix price_j, vector log_num, vector income,
 return(log_like);
 }
 
-real DeterminJacob(vector phi_quant_gamma, real alpha, vector phi_j, vector price_j_num,
+real DeterminJacob(vector phi_quant_term, real alpha, vector price_j_num,
                   vector nonzero, int J){
 // old, use Bhat (2008) form below
   matrix[J, J] jacobian;
-  real j_det;
+  real log_j_det;
 
   jacobian = rep_matrix((1 - alpha) * price_j_num, J);
-  jacobian = jacobian + diag_matrix(phi_j  ./ phi_quant_gamma);
+  jacobian = jacobian + diag_matrix(inv(phi_quant_term));
   jacobian = diag_post_multiply(jacobian, nonzero) + diag_matrix(1 - nonzero);
-  j_det = fabs(determinant(jacobian));
+  log_j_det = log(fabs(determinant(jacobian)));
 
-return(j_det);
+return(log_j_det);
 }
 
 vector kt_ll(matrix quant_j, matrix price_j, vector log_num, vector income,
           matrix lpsi, matrix phi_ij, matrix gamma, vector alpha, real scale_full,
-          int I, int J, matrix nonzero, int trunc_data){
+          int I, int J, matrix nonzero, int trunc_data, int jacobian_analytical_grad){
 
     vector[I] log_like;
     vector[J] ones_j = rep_vector(1, J);
@@ -90,20 +90,21 @@ vector kt_ll(matrix quant_j, matrix price_j, vector log_num, vector income,
     vector[I] like;
     matrix[I, J] phi_quant_term =  (phi_ij .* quant_j + gamma) ./ phi_ij;
     vector[I] log_j_det;
-//    vector[I] j_det;
 
-//	  for(i in 1:I){
-//		vector[J] price_j_num = price_j[i]' ./ exp(log_num[i]);
-  //       j_det[i] = DeterminJacob(phi_quant_gamma[i]', alpha[i], phi_ij[i]',
-  //                  price_j_num, nonzero[i]', J);
-//    }
-	log_j_det = log(1 - alpha) - log_num + (nonzero .* inv(phi_quant_term)) * ones_j +
+	if (jacobian_analytical_grad == 0){
+	  for(i in 1:I){
+		vector[J] price_j_num = price_j[i]' ./ exp(log_num[i]);
+         log_j_det[i] = DeterminJacob(phi_quant_term[i]', alpha[i],
+                    price_j_num, nonzero[i]', J);
+    	}
+	} else if (jacobian_analytical_grad == 1){
+		log_j_det = log(1 - alpha) - log_num + (nonzero .* log(inv(phi_quant_term))) * ones_j +
          		log(exp(log_num) ./ (1 - alpha) + (nonzero .* phi_quant_term .* price_j) * ones_j);
-
+	}
 	 // Calculate the demand function, g
   	g =  (-lpsi + log(phi_quant_term .* price_j) - rep_matrix((1 - alpha) .* log_num, J)) ./ scale_full;
 
-  	// Calculate the liklihood
+  	// Calculate the likelihood
   	like = (nonzero .*(-g - log(scale_full)) + (-exp(-g))) * ones_j;
 
 	// adjust for truncation

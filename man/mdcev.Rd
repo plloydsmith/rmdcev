@@ -19,6 +19,7 @@ mdcev(
   gamma_ascs = 1,
   seed = "123",
   max_iterations = 2000,
+  jacobian_analytical_grad = 1,
   initial.parameters = NULL,
   hessian = TRUE,
   algorithm = c("MLE", "Bayes"),
@@ -64,7 +65,7 @@ alternative-specific and individual-specific variables in the psi parameters.
 Note that alternative-specific constants are handled by the \code{psi_ascs} argument.
 The second part corresponds for individual-specific variables that enter in the probability
 assignment in models with latent classes. The third part is reserved for the $q_k$ variables
-included in the $\phi_k$ parameters in the KT model specification used in environmental economics
+included in the $phi_k$ parameters in the KT model specification used in environmental economics
 \code{model = "kt_ee"}.}
 
 \item{data}{The (IxJ) data to be passed to Stan of class \code{\link[rmdcev]{mdcev.data}}
@@ -88,13 +89,17 @@ such as recreation data collected on-site. To account for the truncation of cons
 normalized by one minus the likelihood of observing zero consumption for all non-numeraire alternatives
 (i.e. likelihood of positive consumption) following Englin, Boxall and Watson (1998) and von Haefen (2003).}
 
-\item{psi_ascs}{Whether to include alternative-specific psi parameters. The first alternative is used as the reference category. Only specify to 1 for MDCEV models.}
+\item{psi_ascs}{Whether to include alternative-specific psi parameters. The first alternative is used as
+the reference category. Only specify to 1 for MDCEV models.}
 
 \item{gamma_ascs}{Indicator to include alternative-specific gammas parameters.}
 
 \item{seed}{Random seed.}
 
 \item{max_iterations}{Maximum number of iterations in MLE.}
+
+\item{jacobian_analytical_grad}{indicator whether to use analytical gradient method for Jacobian (=1) or numerical
+gradient method (=0). For "kt_ee" model only,}
 
 \item{initial.parameters}{The default for fixed and random parameter specifications is to use random starting values.
 For LC models, the default is to use slightly adjusted MLE point estimates from the single class model.

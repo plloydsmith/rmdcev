@@ -6,8 +6,6 @@
 #' @keywords internal
 processMDCEVdata <- function(formula, data, model_options){
 
-
-
 	formula <- Formula::Formula(formula)
 
 	psi.vars <- stats::formula(formula, rhs = 1, lhs = 0)
@@ -27,9 +25,11 @@ processMDCEVdata <- function(formula, data, model_options){
 	if (model_options$model == "kt_ee"){
 		if (is.null(model_options$psi_ascs)) model_options$psi_ascs = 0
 		phi.vars <- stats::formula(formula, rhs = 3, lhs = 0)
+		phi.vars <- stats::terms(phi.vars)
+		attr(phi.vars, "intercept") <- 0
 		dat_phi <- stats::model.matrix(phi.vars, data)
 		NPhi <- ncol(dat_phi)
-	} else{
+	} else if (model_options$model != "kt_ee"){
 		if (is.null(model_options$psi_ascs)) model_options$psi_ascs = 1
 		NPhi <- 0
 		dat_phi <- matrix(0, 0, NPhi)
@@ -76,6 +76,7 @@ processMDCEVdata <- function(formula, data, model_options){
 			 model_num = model_num,
 			 fixed_scale1 = model_options$fixed_scale1,
 			 trunc_data = model_options$trunc_data,
+			 jacobian_analytical_grad = model_options$jacobian_analytical_grad,
 			 psi_ascs = model_options$psi_ascs,
 			 gamma_ascs = model_options$gamma_ascs,
 			 gamma_nonrandom = model_options$gamma_nonrandom,

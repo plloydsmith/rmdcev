@@ -13,21 +13,18 @@
 #' \donttest{
 #' data(data_rec, package = "rmdcev")
 #'
-#' data_rec <- mdcev.data(data_rec, subset = id < 500, id.var = "id",
+#' data_rec <- mdcev.data(data_rec, subset = id <= 500, id.var = "id",
 #'                 alt.var = "alt", choice = "quant")
 #'
-#' mdcev_est <- mdcev( ~ 1,
-#' data = data_rec,
-#' psi_ascs = 0,
-#' model = "hybrid0",
-#' algorithm = "MLE")
+#' mdcev_est <- mdcev( ~ 0, data = data_rec,
+#'                model = "hybrid0", algorithm = "MLE",
+#'                std_errors = "mvn")
 #'
-#' policies <- CreateBlankPolicies(npols = 2,
-#' nalts = mdcev_est[["stan_data"]][["J"]],
-#' dat_psi = mdcev_est[["stan_data"]][["dat_psi"]],
-#' price_change_only = TRUE)
+#' policies <- CreateBlankPolicies(npols = 2, mdcev_est,
+#'              price_change_only = TRUE)
 #'
 #' df_sim <- PrepareSimulationData(mdcev_est, policies)
+#'
 #'}
 PrepareSimulationData <- function(object,
 								  policies,
@@ -38,10 +35,21 @@ PrepareSimulationData <- function(object,
 	if (object$algorithm == "Bayes") {
 		est_pars <- as.data.frame(rstan::extract(object$stan_fit, permuted = TRUE, inc_warmup = FALSE))
 	} else if (object$algorithm == "MLE") {
-		if(object$std_errors == "mvn")
+		if(object$std_errors == "mvn") {
 			est_pars <- as_tibble(object[["stan_fit"]][["theta_tilde"]])
-		else if (object$std_errors == "deltamethod")
-			est_pars <- as_tibble(t(object[["stan_fit"]][["theta_tilde"]]))
+			if (nsims > object$n_draws){
+				nsims <- object$n_draws
+				warning("Number of simulations > Number of mvn draws from mdcev object. nsims has been set to: ", nsims)
+			}
+		} else if (object$std_errors == "deltamethod"){
+			est_pars <- object[["stan_fit"]][["par"]]
+			est_pars <- est_pars[!grepl(c("^log_like|^sum_log_lik|^tau_unif|^Sigma|^lp__|^theta"),names(est_pars))]
+			est_pars <- as_tibble(t(unlist(est_pars)))
+			if (nsims > 1){
+				nsims <- 1
+				warning("Number of simulations > 1. Use mvn draws to incorporate parameter uncertainty nsims has been set to: ", nsims)
+			}
+		}
 	}
 
 	# drop extra variables
@@ -53,10 +61,7 @@ PrepareSimulationData <- function(object,
 	}
 
 	# Checks on simulation options
-	if (object$algorithm == "MLE" && nsims > object$n_draws){
-		nsims <- object$n_draws
-		warning("Number of simulations > Number of mvn draws from mdcev object. nsims has been set to: ", nsims)
-	} else if (object$algorithm == "Bayes" && nsims > nrow(est_pars)) {
+	if (object$algorithm == "Bayes" && nsims > nrow(est_pars)) {
 		nsims <- nrow(est_pars)
 		warning("Number of simulations > Number of posterior draws from mdcev object. nsims has been set to: ", nsims)
 	}
@@ -113,9 +118,9 @@ ProcessSimulationData <- function(est_sim, object, policies, nsims){
 	# scales (always fixed parameter)
 	if (object$stan_data$fixed_scale1 == 0){
 #		scale_sim = est_sim$scale
-		scale_sim <- t(GrabParms(est_sim, "scale"))
+		scale_sims <- t(GrabParms(est_sim, "scale"))
 	} else if (object$stan_data$fixed_scale1 == 1){
-		scale_sim = matrix(1, nsims, 1)
+		scale_sims = matrix(1, nsims, 1)
 	}
 
 	# Get fixed parameters for gammas
@@ -276,41 +281,16 @@ if (object[["parms_info"]][["n_vars"]][["n_psi"]] > 0){
 	dat_vars <- dat_vars %>%
 		group_split(id, .keep = F)
 
-		psi_sim <- mapply(CreatePsi, dat_vars, psi_sim_temp,
+		psi_sims <- mapply(CreatePsi, dat_vars, psi_sim_temp,
 					  J = J, NPsi_ij=NPsi_ij, psi_ascs=psi_ascs, npols = npols,
 					  SIMPLIFY = FALSE)
 } else {
-	psi_sim = replicate(I, matrix(0, nsims, J), simplify=FALSE)
+	psi_sims = replicate(I, matrix(0, nsims, J), simplify=FALSE)
 }
 
-psi_sims <- list(psi_sim)
+psi_sims <- list(psi_sims)
 names(psi_sims) <- "psi_sims"
 
-if (policies$price_change_only == FALSE) {
-
-	dat_vars <- tibble(id = rep(1:I, each = J))
-
-	if (NPsi_ij > 0){
-		dat_vars_temp <- mapply(cbind, policies[["dat_psi_p"]], "policy"=1:npols, SIMPLIFY=F)
-		dat_vars_temp <- lapply(dat_vars_temp, function(x){
-			bind_cols(dat_vars, as_tibble(x))})
-
-	dat_vars <- do.call(rbind, dat_vars_temp)
-	}
-
-	dat_vars <- dat_vars %>%
-		group_split(id, .keep = F)
-
-	psi_p_sim <- mapply(CreatePsi, dat_vars, psi_sim_temp,
-						J = J, NPsi_ij=NPsi_ij, psi_ascs=psi_ascs,npols = npols,
-						SIMPLIFY = FALSE)
-
-	psi_p_sims <- list(psi_p_sim)
-	names(psi_p_sims) <- "psi_p_sims"
-
-} else if (policies$price_change_only == TRUE){
-	psi_p_sims <- NULL
-}
 
 # phi
 # Get parameters for phis
@@ -321,8 +301,9 @@ if (object[["parms_info"]][["n_vars"]][["n_phi"]] > 0){
 
 	dat_vars <- dat_vars %>%
 		group_split(id, .keep = F)
+
 	phi_sims <- mapply(function(x, y){
-		phi_temp <- as.matrix(x) %*% t(as.matrix(y))
+		phi_temp <- exp(as.matrix(x) %*% t(as.matrix(y))) # exponentiate to get back to proper transformation
 		phi_temp <- t(phi_temp)
 	}, dat_vars, phi_sim_temp, SIMPLIFY = FALSE)
 
@@ -330,9 +311,69 @@ if (object[["parms_info"]][["n_vars"]][["n_phi"]] > 0){
 	names(phi_sims) <- "phi_sims"
 
 } else if (object[["parms_info"]][["n_vars"]][["n_phi"]] == 0){
-	phi_sims <- array(0, dim = c(0,0))
+	phi_sims <- array(1, dim = c(nsims,J))
+	phi_sims = replicate(I, phi_sims, simplify=FALSE)
+	phi_sims <- list(phi_sims)
+	names(phi_sims) <- "phi_sims"
 }
 
+# Set up psi_p and phi_p
+
+phi_p_sims <- replicate(I, matrix(0, 0, 0), simplify=FALSE)
+psi_p_sims <- replicate(I, matrix(0, 0, 0), simplify=FALSE)
+
+if (policies$price_change_only == FALSE) {
+
+	if (model_num < 5){
+		dat_vars <- tibble(id = rep(1:I, each = J))
+
+		if (NPsi_ij > 0){
+			dat_vars_temp <- mapply(cbind, policies[["dat_psi_p"]], "policy"=1:npols, SIMPLIFY=F)
+			dat_vars_temp <- lapply(dat_vars_temp, function(x){
+				bind_cols(dat_vars, as_tibble(x))})
+
+		dat_vars <- do.call(rbind, dat_vars_temp)
+		}
+
+		dat_vars <- dat_vars %>%
+			group_split(id, .keep = F)
+
+		psi_p_sims <- mapply(CreatePsi, dat_vars, psi_sim_temp,
+							J = J, NPsi_ij=NPsi_ij, psi_ascs=psi_ascs,npols = npols,
+							SIMPLIFY = FALSE)
+
+
+
+	} else if (model_num == 5){
+		dat_vars <- tibble(id = rep(1:I, each = J))
+
+			dat_vars_temp <- mapply(cbind, policies[["dat_phi_p"]], "policy"=1:npols, SIMPLIFY=F)
+			dat_vars_temp <- lapply(dat_vars_temp, function(x){
+				bind_cols(dat_vars, as_tibble(x))})
+
+			dat_vars <- do.call(rbind, dat_vars_temp)
+
+
+		dat_vars <- dat_vars %>%
+			group_split(id, .keep = F)
+
+		phi_p_sims <- mapply(function(x, y){
+			x_i = x %>%
+				group_split(policy, .keep = F)
+			phi_p_temp <- lapply(x_i, function(xx){
+			phi_p_temp <- exp(as.matrix(xx) %*% t(as.matrix(y))) # exponentiate to get back to proper transformation
+			phi_p_temp <- t(phi_p_temp)
+			return(phi_p_temp)
+			})
+		}, dat_vars, phi_sim_temp, SIMPLIFY = FALSE)
+
+
+	}
+}
+psi_p_sims <- list(psi_p_sims)
+names(psi_p_sims) <- "psi_p_sims"
+phi_p_sims <- list(phi_p_sims)
+names(phi_p_sims) <- "phi_p_sims"
 
 # Set baseline individual data into lists
 income <- list(as.list(object$stan_data$income))
@@ -346,13 +387,13 @@ price <- list(CreateListsRow(price))
 names(price) <- "price"
 
 # Pull individual level data into one list
-df_indiv <- c(income, quant_j, price, psi_sims, phi_sims, psi_p_sims,
+df_indiv <- c(income, quant_j, price, psi_sims, phi_sims, psi_p_sims, phi_p_sims,
 			  gamma_sim_rand, alpha_sim_rand)
 
 out <- list(df_indiv = df_indiv,
 			price_p_list = policies$price_p,
 			gamma_sim_nonrandom = gamma_sim_nonrandom,
 			alpha_sim_nonrandom = alpha_sim_nonrandom,
-			scale_sims = scale_sim)
+			scale_sims = scale_sims)
 return(out)
 }

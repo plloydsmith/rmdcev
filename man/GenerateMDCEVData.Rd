@@ -15,8 +15,9 @@ GenerateMDCEVData(
   alpha_parms = 0.5,
   scale_parms = 1,
   gamma_parms = stats::runif(nalts, 1, 10),
-  psi_i_parms = c(-1.5, 3, -2, 1, 2),
+  psi_i_parms = c(-1.5, 2, -1),
   psi_j_parms = c(-5, 0.5, 2),
+  phi_parms = c(-5, 0.5, 2),
   nerrs = 1,
   tol = 1e-20,
   max_loop = 999
@@ -24,7 +25,8 @@ GenerateMDCEVData(
 }
 \arguments{
 \item{model}{A string indicating which model specification is estimated.
-The options are "alpha", "gamma", "hybrid" and "hybrid0".}
+The options are "alpha", "gamma", "hybrid" and "hybrid0" for the MDCEV model and "kt_ee" for the environmental
+economics Kuhn-Tucker specification.}
 
 \item{nobs}{Number of individuals}
 
@@ -46,7 +48,9 @@ The options are "alpha", "gamma", "hybrid" and "hybrid0".}
 
 \item{psi_i_parms}{Parameter value for psi terms that vary by individual}
 
-\item{psi_j_parms}{Parameter value for psi terms that vary by alt}
+\item{psi_j_parms}{Parameter value for psi terms that vary by alt (only for MDCEV models)}
+
+\item{phi_parms}{Parameter value for phi terms that vary by alt}
 
 \item{nerrs}{Number of error draws for demand simulation}
 
@@ -63,6 +67,6 @@ Simulate data for MDCEV model
 }
 \examples{
 \donttest{
-data <- GenerateMDCEVData(model = "hybrid0")
+data <- GenerateMDCEVData(model = "gamma")
 }
 }

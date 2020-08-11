@@ -17,6 +17,7 @@ real prior_alpha_sd;
 real prior_scale_sd;
 int<lower=0, upper=1> fixed_scale1; // indicator to fix scale at 1
 int<lower=0, upper=1> trunc_data; //indicator to correct estimation for truncated data
+int<lower=0, upper=1> jacobian_analytical_grad; // indicator for using analytical gradient for jacobian else use numerical gradient
 int<lower=0, upper=1> gamma_ascs;
 int<lower=0, upper=1> psi_ascs;
 vector[I] weights; // user supplied weights

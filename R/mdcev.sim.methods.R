@@ -52,7 +52,7 @@ summary.mdcev.sim <- function(object, ci = 0.95, ...){
 		colnames(out)<- paste0(rep("policy",ncol(out)), 1:ncol(out))
 
 		out <- as_tibble(out) %>%
-			tidyr::gather(policy, wtp) %>%
+			tidyr::pivot_longer(everything(), names_to = "policy", values_to = "wtp") %>%
 			dplyr::group_by(.data$policy) %>%
 			dplyr::summarise(mean = mean(wtp),
 							 std_dev = stats::sd(wtp),

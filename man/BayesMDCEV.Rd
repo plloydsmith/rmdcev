@@ -20,9 +20,9 @@ BayesMDCEV(
 
 \item{initial.parameters}{The default for fixed and random parameter specifications is to use random starting values.
 For LC models, the default is to use slightly adjusted MLE point estimates from the single class model.
-Initial parameter values should be included in a named list. For the "hybrid" specification,
+Initial parameter values should be included in a named list. For example, the LC "hybrid" specification
 initial parameters can be specified as:
-inititial.parameters = list(psi = array(runif(1), dim = c(K, num_psi)),
+initial.parameters = list(psi = array(0, dim = c(K, num_psi)),
                             gamma = array(1, dim = c(K, num_alt)),
                             alpha = array(0.5, dim = c(K, 0)),
                             scale = array(1, dim = c(K)))

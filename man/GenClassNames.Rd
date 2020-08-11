@@ -9,7 +9,8 @@ GenClassNames(parms_names, n_classes)
 \arguments{
 \item{parms_names}{list of parameter names}
 
-\item{n_classes}{The number of latent classes.}
+\item{n_classes}{The number of latent classes. Note that the LC model is automatically estimated as long as the
+prespecified number of classes is set greater than 1.}
 }
 \value{
 A vector of LC names

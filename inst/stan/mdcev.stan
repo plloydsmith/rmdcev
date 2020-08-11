@@ -72,11 +72,11 @@ transformed parameters {
 			if(K == 1) {
 			log_like = kt_ll(quant_j, price_j, log_num, income,
   				lpsi, phi_ij, gamma_full, rep_vector(alpha[k, 1], I), scale_full,
-  				I, J, nonzero, trunc_data);
+  				I, J, nonzero, trunc_data, jacobian_analytical_grad);
 			} else if (K > 1){
 			log_like_util[k] = kt_ll(quant_j, price_j, log_num, income,
   				lpsi, phi_ij, gamma_full, rep_vector(alpha[k, 1], I), scale_full,
-  				I, J, nonzero, trunc_data);
+  				I, J, nonzero, trunc_data, jacobian_analytical_grad);
 			}
 		}
 	}

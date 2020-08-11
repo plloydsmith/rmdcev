@@ -29,21 +29,20 @@
 #' data_rec <- mdcev.data(data_rec, subset = id <= 500, id.var = "id",
 #'                 alt.var = "alt", choice = "quant")
 #'
-#' mdcev_est <- mdcev( ~ 1, data = data_rec,
+#' mdcev_est <- mdcev( ~ 0, data = data_rec,
 #'                model = "hybrid0", algorithm = "MLE",
 #'                std_errors = "mvn")
 #'
 #' policies <- CreateBlankPolicies(npols = 2,
-#' nalts = mdcev_est[["stan_data"]][["J"]],
-#' dat_psi = mdcev_est[["stan_data"]][["dat_psi"]],
-#' price_change_only = TRUE)
+#'              mdcev_est,
+#'              price_change_only = TRUE)
 #'
 #' df_sim <- PrepareSimulationData(mdcev_est, policies)
 #'
 #' wtp <- mdcev.sim(df_sim$df_indiv,
-#' df_common = df_sim$df_common,
-#' sim_options = df_sim$sim_options,
-#' cond_err = 1, nerrs = 5, sim_type = "welfare")
+#'                  df_common = df_sim$df_common,
+#'                  sim_options = df_sim$sim_options,
+#'                  cond_err = 1, nerrs = 5, sim_type = "welfare")
 #'}
 mdcev.sim <- function(df_indiv, df_common, sim_options,
 					  sim_type = c("welfare", "demand"),
@@ -70,10 +69,10 @@ mdcev.sim <- function(df_indiv, df_common, sim_options,
 	} else if (is.null(algo_gen)) {
 		if (model_num == 3 || model_num == 4)
 			algo_gen <- 0
-		else if (model_num == 1 || model_num == 2)
+		else if (model_num == 1 || model_num == 2 || model_num == 5)
 			algo_gen <- 1
-		else if (model_num == 5)
-			algo_gen <- 2
+#		else if (model_num == 5)
+#			algo_gen <- 2
 	}
 
 
@@ -83,8 +82,8 @@ mdcev.sim <- function(df_indiv, df_common, sim_options,
 		message("Using hybrid approach in simulation...")
 	}
 
-	if (model_num == 5)
-		message("Using numerical bisection approach in simulation...")
+#	if (model_num == 5)
+#		message("Using numerical bisection approach in simulation...")
 
 	# Organize options in list
 	sim_options[["nerrs"]] <- nerrs

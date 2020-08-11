@@ -52,26 +52,43 @@ DoCbind <- function(x){
 
 #' @title CreateBlankPolicies
 #' @description Create 'zero effect' policies that can be modified
+#' @param npols Number of policies to simulate
+#' @param model Estimated model from mdcev
 #' @param price_change_only Logical value for whether to include policy changes to dat_psi. Defaults to TRUE.
 #' TRUE implies that only price changes are used in simulation.
-#' @param npols Number of policies to simulate
-#' @param nalts Number of non-numeraire alts
-#' @param dat_psi Psi data matrix used in estimation
 #' @export
 #' @examples
 #' \donttest{
-#' CreateBlankPolicies(npols = 2, nalts = 10, dat_psi = NULL, price_change_only = TRUE)
+#' data_rec <- mdcev.data(data_rec, subset = id <= 500, id.var = "id",
+#'                 alt.var = "alt", choice = "quant")
+#'
+#' mdcev_est <- mdcev( ~ 0, data = data_rec,
+#'                model = "hybrid0", algorithm = "MLE",
+#'                std_errors = "mvn")
+#' CreateBlankPolicies(npols = 2, mdcev_est)
 #'}
-CreateBlankPolicies <- function(npols, nalts, dat_psi, price_change_only = TRUE){
+CreateBlankPolicies <- function(npols, model, price_change_only = TRUE){
 
-	price_p <- CreateListsRow(matrix(0, nrow = npols, ncol = nalts + 1))
+	price_p <- CreateListsRow(matrix(0, nrow = npols, ncol = model[["stan_data"]][["J"]] + 1))
+	model_num <- model[["stan_data"]][["model_num"]]
 
-	if (price_change_only == FALSE)
-		dat_psi_p <- lapply(seq_len(npols), function(X) dat_psi)
-	else if (price_change_only == TRUE)
-		dat_psi_p <- NULL
+	dat_psi_p <- NULL
+	dat_phi_p <- NULL
 
-	out <- list(price_p = price_p, dat_psi_p = dat_psi_p,
+	if (price_change_only == FALSE){
+		if (model_num < 5 && model[["parms_info"]][["n_vars"]][["n_psi"]] == 0)
+			stop("No psi variables to vary! Use price_change_only == TRUE option.")
+
+		if (model_num == 5 && model[["parms_info"]][["n_vars"]][["n_phi"]] == 0)
+			stop("No phi variables to vary! Use price_change_only == TRUE option.")
+
+		if (model_num < 5)
+			dat_psi_p <- lapply(seq_len(npols), function(X) model[["stan_data"]][["dat_psi"]])
+		else if (model_num == 5)
+			dat_phi_p <- lapply(seq_len(npols), function(X) model[["stan_data"]][["dat_phi"]])
+	}
+
+	out <- list(price_p = price_p, dat_psi_p = dat_psi_p, dat_phi_p = dat_phi_p,
 				price_change_only = price_change_only)
 	return(out)
 }

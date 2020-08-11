@@ -119,7 +119,7 @@ transformed parameters {
 
 		log_like = kt_ll(quant_j, price_j, log_num, income,
   					lpsi, phi_ij, gamma_individual, alpha_individual_1, scale_full,
-  					I, J, nonzero, trunc_data);
+  					I, J, nonzero, trunc_data, jacobian_analytical_grad);
 	}
   	}
 }

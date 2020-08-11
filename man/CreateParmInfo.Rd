@@ -14,7 +14,8 @@ CreateParmInfo(stan_data, alt_names, algorithm, random_parameters)
 \item{algorithm}{Either "Bayes" for Bayes or "MLE" for maximum likelihood estimation.}
 
 \item{random_parameters}{The form of the covariance matrix for
-Bayes. Can be 'fixed', 'uncorr, 'corr'.}
+Bayes. Can be 'fixed' for no random parameters, 'uncorr' for uncorrelated random parameters, or
+'corr' for correlated random parameters.}
 }
 \value{
 A list of parameter names and numbers
