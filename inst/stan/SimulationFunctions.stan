@@ -146,10 +146,10 @@ vector MarshallianDemand(real income, vector price, vector MUzero, vector phi, v
 	int order_x[nalts+1] = CalcAltOrder(MUzero, nalts);
 	vector[nalts+1] X = rep_vector(0, nalts+1);
 	vector[nalts+1] d = append_row(0, rep_vector(1, nalts));
-	vector[nalts+1] mu = col(parm_matrix, 1); // obtain mu
 
 	if (algo_gen == 0) { //Hybrid
 		matrix[nalts+1, 4] parm_matrix = SortParmMatrix(MUzero, price, gamma, alpha, nalts);
+		vector[nalts+1] mu = col(parm_matrix, 1); // obtain mu
 		real lambda_num;
 		real lambda_den;
 		vector[nalts+1] g = col(parm_matrix, 3); // obtain gamma
@@ -188,6 +188,7 @@ vector MarshallianDemand(real income, vector price, vector MUzero, vector phi, v
 		real lambda_u;
 		if (model_num < 5){
 			matrix[nalts+1, 4] parm_matrix = SortParmMatrix(MUzero, price, gamma, alpha, nalts);
+			vector[nalts+1] mu = col(parm_matrix, 1); // obtain mu
 			vector[nalts+1] g = col(parm_matrix, 3); // obtain gamma
 			vector[nalts+1] g_price = g .* col(parm_matrix, 2);
 			vector[nalts+1] c;
@@ -235,8 +236,9 @@ vector MarshallianDemand(real income, vector price, vector MUzero, vector phi, v
 					M += 1; // adds one to M
 			}
 		} else if (model_num == 5){
-			matrix[nalts+1, 4] parm_matrix = SortParmMatrix(MUzero, price, gamma, phi, nalts);
 			real alpha_1 = alpha[1];
+			matrix[nalts+1, 4] parm_matrix = SortParmMatrix(MUzero, price, gamma, phi, nalts);
+			vector[nalts+1] mu = col(parm_matrix, 1); // obtain mu
 			vector[nalts+1] g__phi = col(parm_matrix, 3) ./ col(parm_matrix, 4); // obtain gamma/phi
 			vector[nalts+1] g_price__phi = g__phi .* col(parm_matrix, 2); // obtain gamma*price/phi
 
@@ -368,14 +370,14 @@ vector HicksianDemand(real util, vector price,
 	int order_x[nalts+1] = CalcAltOrder(MUzero, nalts);
 	vector[nalts+1] X = rep_vector(0, nalts+1); // vector to hold zero demands
 	vector[nalts+1] d = append_row(0, rep_vector(1, nalts));
-	vector[nalts+1] mu = col(parm_matrix, 1); // obtain mu
-	vector[nalts+1] g = col(parm_matrix, 3); // obtain gamma
 
 	if (algo_gen == 0) { //Hybrid approach to demand simulation (constant alpha's)
 		matrix[nalts+1, 4] parm_matrix = SortParmMatrix(MUzero, price, gamma, alpha, nalts);
 		real lambda_num;
 		real lambda_den;
 		real alpha_1 = alpha[1]; // all alpha's are equal
+		vector[nalts+1] mu = col(parm_matrix, 1); // obtain mu
+		vector[nalts+1] g = col(parm_matrix, 3); // obtain gamma
 		vector[nalts+1] g_psi = g .* mu .* col(parm_matrix, 2); // obtain gamma_psi
 		vector[nalts+1] b;
 		vector[nalts+1] c;
@@ -409,6 +411,8 @@ vector HicksianDemand(real util, vector price,
 		real lambda_u;
 		if (model_num < 5){
 			matrix[nalts+1, 4] parm_matrix = SortParmMatrix(MUzero, price, gamma, alpha, nalts);
+			vector[nalts+1] mu = col(parm_matrix, 1); // obtain mu
+			vector[nalts+1] g = col(parm_matrix, 3); // obtain gamma
 			vector[nalts+1] price_ord = col(parm_matrix, 2); // price
 			vector[nalts+1] a = col(parm_matrix, 4);//	alpha
 			vector[nalts+1] psi = mu .* price_ord;
@@ -459,16 +463,17 @@ vector HicksianDemand(real util, vector price,
 		} else if (model_num == 5){
 			matrix[nalts+1, 4] parm_matrix = SortParmMatrix(MUzero, price, gamma, phi, nalts);
 			real alpha_1 = alpha[1];
-			vector[nalts+1] gamma_ord = col(parm_matrix, 3); // gamma
-			vector[nalts+1] g__phi = gamma_ord ./ col(parm_matrix, 4); // gamma/phi
-			vector[nalts+1] psi_phi__price = mu .* gamma_ord; // (MUzero * gamma = psi*phi/price)
+			vector[nalts+1] mu = col(parm_matrix, 1); // obtain mu
+			vector[nalts+1] g = col(parm_matrix, 3); // obtain gamma
+			vector[nalts+1] g__phi = g ./ col(parm_matrix, 4); // gamma/phi
+			vector[nalts+1] psi_phi__price = mu .* g; // (MUzero * gamma = psi*phi/price)
 			vector[nalts+1] psi_ord = mu .* g__phi .* col(parm_matrix, 2);
 
 			while (exit == 0){
 				lambda1 = mu[M + 1];// Calculate lambda1 equal to MUzero(M+1)
 
 				// Calculate new utility
-				util_new = ComputeKtUtilM(M, lambda1, psi_ord, psi_phi__price, gamma_ord, alpha_1);
+				util_new = ComputeKtUtilM(M, lambda1, psi_ord, psi_phi__price, g, alpha_1);
 
 				if (util_new >= util || M+1 == nalts+1){
 					if(util_new < util)
@@ -480,7 +485,7 @@ vector HicksianDemand(real util, vector price,
 					for (n in 1:max_loop){
 						real lambda_mid = (lambda_l + lambda_u) / 2;
 
-						util_new = ComputeKtUtilM(M, lambda1, psi_ord, psi_phi__price, gamma_ord, alpha_1);
+						util_new = ComputeKtUtilM(M, lambda1, psi_ord, psi_phi__price, g, alpha_1);
 
 						// Update lambdas's
 						if (util_new < util)
