@@ -93,22 +93,20 @@ return(order_x);
 }
 /**
  * Sort matrix of parameters/prices
- * @return Matrix of nalts x 5
+ * @return Matrix of nalts x 4
  */
-matrix SortParmMatrix(vector MUzero, vector price, vector gamma, vector alpha, vector phi, int nalts) {
+matrix SortParmMatrix(vector MUzero, vector price, vector gamma, vector alpha_phi, int nalts) {
 
-	matrix[nalts+1, 5] parm_matrix;
+	matrix[nalts+1, 4] parm_matrix;
 	vector[nalts] MU_j = MUzero[2:nalts+1];
 	vector[nalts] price_j = price[2:nalts+1];
 	vector[nalts] gamma_j = gamma[2:nalts+1];
-	vector[nalts] alpha_j = alpha[2:nalts+1];
-	vector[nalts] phi_j = phi[2:nalts+1];
+	vector[nalts] alpha_phi_j = alpha_phi[2:nalts+1];
 	int order_MU[nalts] = sort_indices_desc(MU_j);	// find ranking of non-numeraire alts by MUzero
 
 	parm_matrix = append_col(append_row(MUzero[1], MU_j[order_MU]),
 	append_col(append_row(price[1], price_j[order_MU]),
-	append_col(append_row(gamma[1], gamma_j[order_MU]),
-	append_col(append_row(alpha[1], alpha_j[order_MU]), append_row(phi[1], phi_j[order_MU])))));
+	append_col(append_row(gamma[1], gamma_j[order_MU]), append_row(alpha_phi[1], alpha_phi_j[order_MU]))));
 return(parm_matrix);
 }
 
@@ -148,10 +146,10 @@ vector MarshallianDemand(real income, vector price, vector MUzero, vector phi, v
 	int order_x[nalts+1] = CalcAltOrder(MUzero, nalts);
 	vector[nalts+1] X = rep_vector(0, nalts+1);
 	vector[nalts+1] d = append_row(0, rep_vector(1, nalts));
-	matrix[nalts+1, 5] parm_matrix = SortParmMatrix(MUzero, price, gamma, alpha, phi, nalts);
 	vector[nalts+1] mu = col(parm_matrix, 1); // obtain mu
 
 	if (algo_gen == 0) { //Hybrid
+		matrix[nalts+1, 4] parm_matrix = SortParmMatrix(MUzero, price, gamma, alpha, nalts);
 		real lambda_num;
 		real lambda_den;
 		vector[nalts+1] g = col(parm_matrix, 3); // obtain gamma
@@ -188,7 +186,8 @@ vector MarshallianDemand(real income, vector price, vector MUzero, vector phi, v
 	} else if (algo_gen == 1) {//	General
 		real lambda_l;
 		real lambda_u;
-			if (model_num < 5){
+		if (model_num < 5){
+			matrix[nalts+1, 4] parm_matrix = SortParmMatrix(MUzero, price, gamma, alpha, nalts);
 			vector[nalts+1] g = col(parm_matrix, 3); // obtain gamma
 			vector[nalts+1] g_price = g .* col(parm_matrix, 2);
 			vector[nalts+1] c;
@@ -236,8 +235,9 @@ vector MarshallianDemand(real income, vector price, vector MUzero, vector phi, v
 					M += 1; // adds one to M
 			}
 		} else if (model_num == 5){
+			matrix[nalts+1, 4] parm_matrix = SortParmMatrix(MUzero, price, gamma, phi, nalts);
 			real alpha_1 = alpha[1];
-			vector[nalts+1] g__phi = col(parm_matrix, 3) ./ col(parm_matrix, 5); // obtain gamma/phi
+			vector[nalts+1] g__phi = col(parm_matrix, 3) ./ col(parm_matrix, 4); // obtain gamma/phi
 			vector[nalts+1] g_price__phi = g__phi .* col(parm_matrix, 2); // obtain gamma*price/phi
 
 			while (exit == 0){
@@ -368,11 +368,11 @@ vector HicksianDemand(real util, vector price,
 	int order_x[nalts+1] = CalcAltOrder(MUzero, nalts);
 	vector[nalts+1] X = rep_vector(0, nalts+1); // vector to hold zero demands
 	vector[nalts+1] d = append_row(0, rep_vector(1, nalts));
-	matrix[nalts+1, 5] parm_matrix = SortParmMatrix(MUzero, price, gamma, alpha, phi, nalts);
 	vector[nalts+1] mu = col(parm_matrix, 1); // obtain mu
 	vector[nalts+1] g = col(parm_matrix, 3); // obtain gamma
 
 	if (algo_gen == 0) { //Hybrid approach to demand simulation (constant alpha's)
+		matrix[nalts+1, 4] parm_matrix = SortParmMatrix(MUzero, price, gamma, alpha, nalts);
 		real lambda_num;
 		real lambda_den;
 		real alpha_1 = alpha[1]; // all alpha's are equal
@@ -408,6 +408,7 @@ vector HicksianDemand(real util, vector price,
 		real lambda_l;
 		real lambda_u;
 		if (model_num < 5){
+			matrix[nalts+1, 4] parm_matrix = SortParmMatrix(MUzero, price, gamma, alpha, nalts);
 			vector[nalts+1] price_ord = col(parm_matrix, 2); // price
 			vector[nalts+1] a = col(parm_matrix, 4);//	alpha
 			vector[nalts+1] psi = mu .* price_ord;
@@ -456,9 +457,10 @@ vector HicksianDemand(real util, vector price,
 					M += 1; // adds one to M
 			}
 		} else if (model_num == 5){
+			matrix[nalts+1, 4] parm_matrix = SortParmMatrix(MUzero, price, gamma, phi, nalts);
 			real alpha_1 = alpha[1];
 			vector[nalts+1] gamma_ord = col(parm_matrix, 3); // gamma
-			vector[nalts+1] g__phi = gamma_ord ./ col(parm_matrix, 5); // gamma/phi
+			vector[nalts+1] g__phi = gamma_ord ./ col(parm_matrix, 4); // gamma/phi
 			vector[nalts+1] psi_phi__price = mu .* gamma_ord; // (MUzero * gamma = psi*phi/price)
 			vector[nalts+1] psi_ord = mu .* g__phi .* col(parm_matrix, 2);
 
