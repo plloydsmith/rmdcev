@@ -33,7 +33,7 @@ CreateListsCol <- function(x){
 #' @title MultiplyMatrix
 #' @description Convert list to matrix by row
 #' @param x matrix B to be multiplied
-#' @param mat_temp matrix A to be multipled
+#' @param mat_temp matrix A to be multiplied
 #' @param n_rows number of rows for final matrix
 #' @keywords internal
 MultiplyMatrix <- function(mat_temp, x, n_rows){

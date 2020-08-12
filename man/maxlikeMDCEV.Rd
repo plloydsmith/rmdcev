@@ -7,7 +7,7 @@
 maxlikeMDCEV(stan_data, initial.parameters, mle_options, parms_info, ...)
 }
 \arguments{
-\item{stan_data}{data for model fromatted from processMDCEVdata}
+\item{stan_data}{data for model formatted from processMDCEVdata}
 
 \item{initial.parameters}{The default for fixed and random parameter specifications is to use random starting values.
 For LC models, the default is to use slightly adjusted MLE point estimates from the single class model.

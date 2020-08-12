@@ -7,7 +7,7 @@
 MultiplyMatrix(mat_temp, x, n_rows)
 }
 \arguments{
-\item{mat_temp}{matrix A to be multipled}
+\item{mat_temp}{matrix A to be multiplied}
 
 \item{x}{matrix B to be multiplied}
 

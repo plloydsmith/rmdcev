@@ -1,12 +1,13 @@
-#' rmdcev: Estimating and simulating multiple discrete-continuous extreme value (MDCEV) demand models
+#' rmdcev: Estimating and simulating Kuhn-Tucker and multiple discrete-continuous extreme value (MDCEV) demand models
 #'
-#' @description The rmdcev R package estimates and simulates multiple discrete-continuous extreme value (MDCEV)
-#' demand models (also known as Kuhn-Tucker demand models) with observed and unobserved individual heterogneity (Bhat (2008) <doi.org/10.1016/j.trb.2007.06.002>).
-#' Fixed parameter, latent class, and random parameter models can be estimated. These models are estimated using
-#' maximum likelihood or Bayesian estimation techniques and are implemented in Stan, which is a
-#' C++ package for performing full Bayesian inference (see Stan Development Team (2018) <http://mc-stan.org>).
-#' The package also includes demand simulation (Pinjari and Bhat (2011) <https://repositories.lib.utexas.edu/handle/2152/23880>)
-#' and welfare simulation (Lloyd-Smith (2018) <doi.org/10.1016/j.jocm.2017.12.002>).
+#' @description The rmdcev R package estimate and simulates Kuhn-Tucker demand models with individual
+#' heterogeneity. The models supported by rmdcev are the multiple-discrete continuous extreme value (MDCEV)
+#' model and Kuhn-Tucker specification common in the environmental economics literature on recreation demand.
+#' Latent class and random parameters specifications can be implemented and the models are fit using maximum
+#' likelihood estimation or Bayesian estimation. All models are implemented in Stan, which is a C++ package
+#' for performing full Bayesian inference (see Stan Development Team, 2019) <http://mc-stan.org/>. The rmdcev package also implements
+#' demand forecasting (Pinjari and Bhat (2011) <https://repositories.lib.utexas.edu/handle/2152/23880>) and
+#' welfare calculation (Lloyd-Smith (2018) <doi.org/10.1016/j.jocm.2017.12.002>) for policy simulation.
 #'
 #' @docType package
 #' @name rmdcev

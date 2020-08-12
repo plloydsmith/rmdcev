@@ -1,6 +1,6 @@
 #' @title maxlikeMDCEV
 #' @description Fit a MDCEV model with MLE
-#' @param stan_data data for model fromatted from processMDCEVdata
+#' @param stan_data data for model formatted from processMDCEVdata
 #' @inheritParams mdcev
 #' @param mle_options modeling options for MLE
 #' @param parms_info information on parameters

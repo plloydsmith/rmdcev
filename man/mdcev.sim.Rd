@@ -56,15 +56,15 @@ Conditional error draws (=1) or unconditional error draws.}
 \item{draw_mlhs}{Generate draws using Modified Latin Hypercube Sampling
 algorithm (=1) or uniform (=0)}
 
-\item{algo_gen}{Type of algorhitm for simulation. algo_gen = 0 for Hybrid Approach
-(i.e. constant alphas, only model 3/4) alog_gen = 1 for General approach
+\item{algo_gen}{Type of algorithm for simulation. algo_gen = 0 for Hybrid Approach
+(i.e. constant alphas, only hybrid models) algo_gen = 1 for General approach
 (i.e. heterogeneous alpha's, all models)}
 
 \item{tol}{Tolerance level for simulations if using general approach}
 
 \item{max_loop}{maximum number of loops for simulations if using general approach}
 
-\item{suppressTime}{Supress simulation time calculation}
+\item{suppressTime}{Suppress simulation time calculation}
 
 \item{stan_seed}{Seed for pseudo-random number generator get_rng see help(get_rng, package = "rstan")}
 
