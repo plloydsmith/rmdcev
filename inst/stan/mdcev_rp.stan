@@ -127,11 +127,11 @@ transformed parameters {
 model {
   // priors on the parameters
   	gamma ~ normal(1, prior_gamma_sd);
-	alpha ~ normal(.5, prior_alpha_sd);
+	alpha ~ beta(prior_alpha_shape, prior_alpha_shape);
 	to_vector(z) ~ std_normal();
 	to_vector(mu) ~ normal(0, 10);
 	L_Omega ~ lkj_corr_cholesky(lkj_shape);                 // lkj prior
-	scale ~ normal(1, 1);
+	scale ~ normal(0, 1);
 	// no priors for tau because already constrained to uniform
   target += sum(log_like .* weights);//objective to target
 }

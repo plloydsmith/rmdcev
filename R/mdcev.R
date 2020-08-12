@@ -52,9 +52,9 @@
 #' penalized MLE is used and the optimizing objective is augmented with the priors.
 #' @param prior_psi_sd standard deviation for normal prior with mean 0.
 #' @param prior_phi_sd standard deviation for normal prior with mean 0.
-#' @param prior_gamma_sd standard deviation for normal prior with mean 0.
-#' @param prior_alpha_sd standard deviation for normal prior with mean 0.5.
-#' @param prior_scale_sd standard deviation for normal prior with mean 1.
+#' @param prior_gamma_sd standard deviation for half-normal prior with mean 1.
+#' @param prior_alpha_shape shape parameter for beta distribution.
+#' @param prior_scale_sd standard deviation for half-normal prior with mean 0.
 #' @param prior_delta_sd standard deviation for normal prior with mean 0.
 #' @param alpha_nonrandom indicator set to 1 if alpha parameters should not be random (i.e. no standard deviation).
 #' @param gamma_nonrandom indicator set to 1 if gamma parameters should not be random (i.e. no standard deviation).
@@ -107,7 +107,7 @@ mdcev <- function(formula = NULL, data,
 				 prior_psi_sd = 10,
 				 prior_gamma_sd = 10,
 				 prior_phi_sd = 10,
-				 prior_alpha_sd = 0.5,
+				 prior_alpha_shape = 1,
 				 prior_scale_sd = 1,
 				 prior_delta_sd = 10,
 				 gamma_nonrandom = 0,
@@ -172,7 +172,7 @@ mdcev <- function(formula = NULL, data,
 						flat_priors = flat_priors,
 						prior_psi_sd = prior_psi_sd,
 						prior_gamma_sd = prior_gamma_sd,
-						prior_alpha_sd = prior_alpha_sd,
+						prior_alpha_shape = prior_alpha_shape,
 						prior_scale_sd = prior_scale_sd,
 						prior_delta_sd = prior_delta_sd,
 						gamma_nonrandom = gamma_nonrandom,

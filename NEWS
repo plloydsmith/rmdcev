@@ -1,3 +1,18 @@
+rmdcev v1.2.0 (Release date: 2020-08-12)
+==============
+
+Changes:
+
+Major changes as part of R Journal revision
+
+** Added estimation and simulation capabilities for environmental economics KT formulation (von Haefen and Phaneuf, 2005)
+** Changed psi argument of formula to incorporate alternative-specific constants for psi by default
+** Changed default prior distribution for alpha parameter (beta(1,1) which is uniform(0,1) on transformed scale)
+** Reformulated GenerateMDCEVData to accept income, price, dat_psi, and dat_phi data
+** User can now set starting values for LC model
+** default standard errors is now deltamethod
+** vignette coming soon
+
 rmdcev v1.1.2 (Release date: 2019-11-22)
 ==============
 

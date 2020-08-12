@@ -28,7 +28,7 @@ mdcev(
   prior_psi_sd = 10,
   prior_gamma_sd = 10,
   prior_phi_sd = 10,
-  prior_alpha_sd = 0.5,
+  prior_alpha_shape = 1,
   prior_scale_sd = 1,
   prior_delta_sd = 10,
   gamma_nonrandom = 0,
@@ -123,13 +123,13 @@ penalized MLE is used and the optimizing objective is augmented with the priors.
 
 \item{prior_psi_sd}{standard deviation for normal prior with mean 0.}
 
-\item{prior_gamma_sd}{standard deviation for normal prior with mean 0.}
+\item{prior_gamma_sd}{standard deviation for half-normal prior with mean 1.}
 
 \item{prior_phi_sd}{standard deviation for normal prior with mean 0.}
 
-\item{prior_alpha_sd}{standard deviation for normal prior with mean 0.5.}
+\item{prior_alpha_shape}{shape parameter for beta distribution.}
 
-\item{prior_scale_sd}{standard deviation for normal prior with mean 1.}
+\item{prior_scale_sd}{standard deviation for half-normal prior with mean 0.}
 
 \item{prior_delta_sd}{standard deviation for normal prior with mean 0.}
 

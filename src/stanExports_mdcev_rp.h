@@ -507,7 +507,7 @@ private:
         double prior_psi_sd;
         double prior_phi_sd;
         double prior_gamma_sd;
-        double prior_alpha_sd;
+        double prior_alpha_shape;
         double prior_scale_sd;
         int fixed_scale1;
         int trunc_data;
@@ -688,11 +688,11 @@ public:
             pos__ = 0;
             prior_gamma_sd = vals_r__[pos__++];
             current_statement_begin__ = 147;
-            context__.validate_dims("data initialization", "prior_alpha_sd", "double", context__.to_vec());
-            prior_alpha_sd = double(0);
-            vals_r__ = context__.vals_r("prior_alpha_sd");
+            context__.validate_dims("data initialization", "prior_alpha_shape", "double", context__.to_vec());
+            prior_alpha_shape = double(0);
+            vals_r__ = context__.vals_r("prior_alpha_shape");
             pos__ = 0;
-            prior_alpha_sd = vals_r__[pos__++];
+            prior_alpha_shape = vals_r__[pos__++];
             current_statement_begin__ = 148;
             context__.validate_dims("data initialization", "prior_scale_sd", "double", context__.to_vec());
             prior_scale_sd = double(0);
@@ -1377,7 +1377,7 @@ public:
             current_statement_begin__ = 314;
             lp_accum__.add(normal_log<propto__>(gamma, 1, prior_gamma_sd));
             current_statement_begin__ = 315;
-            lp_accum__.add(normal_log<propto__>(alpha, .5, prior_alpha_sd));
+            lp_accum__.add(beta_log<propto__>(alpha, prior_alpha_shape, prior_alpha_shape));
             current_statement_begin__ = 316;
             lp_accum__.add(std_normal_log<propto__>(to_vector(z)));
             current_statement_begin__ = 317;
@@ -1385,7 +1385,7 @@ public:
             current_statement_begin__ = 318;
             lp_accum__.add(lkj_corr_cholesky_log<propto__>(L_Omega, lkj_shape));
             current_statement_begin__ = 319;
-            lp_accum__.add(normal_log<propto__>(scale, 1, 1));
+            lp_accum__.add(normal_log<propto__>(scale, 0, 1));
             current_statement_begin__ = 321;
             lp_accum__.add(sum(elt_multiply(log_like, weights)));
         } catch (const std::exception& e) {

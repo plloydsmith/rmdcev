@@ -23,7 +23,7 @@ transformed data {
 
 parameters {
 	vector[NPsi] psi[K];
-	vector<lower=0 >[NPhi] phi[K];
+	vector[NPhi] phi[K];
 	vector<lower=0 >[Gamma] gamma[K];
 	vector<lower=0, upper=1>[A] alpha[K];
 	vector<lower=0>[fixed_scale1 == 0 ? K : 0] scale;
@@ -97,20 +97,21 @@ transformed parameters {
 model {
   // priors on the parameters
   if(flat_priors == 0){ // no priors ensure optimizing returns MLE
-	scale ~ normal(1, prior_scale_sd);
+	scale ~ normal(0, prior_scale_sd);
 
   	if(K == 1){
 	  psi[1] ~ normal(0, prior_psi_sd);
 	  phi[1] ~ normal(0, prior_phi_sd);
 	  gamma[1] ~ normal(1, prior_gamma_sd);
-	  alpha[1] ~ normal(.5, prior_alpha_sd);
+	  alpha[1] ~ beta(prior_alpha_shape, prior_alpha_shape);
+
 	} else if (K > 1){
 		to_vector(delta) ~ normal(0, prior_delta_sd);
 		for (k in 1:K){
 			to_vector(psi[k]) ~ normal(0, prior_psi_sd);
 			to_vector(phi[k]) ~ normal(0, prior_phi_sd);
 			to_vector(gamma[k]) ~ normal(1, prior_gamma_sd);
-			to_vector(alpha[k]) ~ normal(.5, prior_alpha_sd);
+			to_vector(alpha[k]) ~ beta(prior_alpha_shape, prior_alpha_shape);
 		}
 	}
   }

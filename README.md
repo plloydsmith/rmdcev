@@ -1,5 +1,5 @@
 
-# Multiple Discrete-Continuous Extreme Value (MDCEV) Model Estimation and Simulation in R: The rmdcev Package
+# Kuhn-Tucker and Multiple Discrete-Continuous Extreme Value (MDCEV) Model Estimation and Simulation in R: The rmdcev Package
 
 <!-- badges: start -->
 
@@ -7,15 +7,16 @@
 Status](https://travis-ci.org/plloydsmith/rmdcev.svg?branch=master)](https://travis-ci.org/plloydsmith/rmdcev)
 <!-- badges: end -->
 
-The *rmdcev* R package estimates and simulates multiple
-discrete-continuous extreme value (MDCEV) demand models with observed
-and unobserved individual heterogneity. Fixed parameter, latent class,
-and random parameter models can be estimated. These models are estimated
-using maximum likelihood or Bayesian estimation techniques and are
-implemented in Stan, which is a C++ package for performing full Bayesian
-inference (see <http://mc-stan.org/>). The package also includes
-functions for simulating demand and welfare outcomes from policy
-scenarios.
+The *rmdcev* R package estimate and simulates Kuhn-Tucker demand models
+with individual heterogeneity. The models supported by *rmdcev* are the
+multiple-discrete continuous extreme value (MDCEV) model and Kuhn-Tucker
+specification common in the environmental economics literature on
+recreation demand. Latent class and random parameters specifications can
+be implemented and the models are fit using maximum likelihood
+estimation or Bayesian estimation. All models are implemented in Stan,
+which is a C++ package for performing full Bayesian inference (see
+<http://mc-stan.org/>). The *rmdcev* package also implements demand
+forecasting and welfare calculation for policy simulation.
 
 ## Current Status
 
@@ -23,7 +24,8 @@ Development is in progress. Currently users can estimate the following
 models:
 
 1.  Bhat (2008) MDCEV model specifications
-2.  Kuhn-Tucker model specification (von Haefen and Phaneuf, 2005)
+2.  Kuhn-Tucker model specification in environmental economics (von
+    Haefen and Phaneuf, 2005)
 
 Models can be estimated using
 
@@ -33,8 +35,7 @@ Models can be estimated using
 
 ## Installation
 
-I recommend you first install **rstan** and C++ toolchain by following
-these steps:
+I recommend you first install **rstan** by following these steps:
 
 <https://github.com/stan-dev/rstan/wiki/RStan-Getting-Started>
 
@@ -49,8 +50,8 @@ if (!require(devtools)) {
 install_github("plloydsmith/rmdcev", build_vignettes = FALSE, INSTALL_opts="--no-multiarch")
 ```
 
-You can switch build\_vignettes to TRUE but it will take a lot longer to
-install. If installation fails, please let me know by [filing an
+If you have any issues with installation or use of the package, please
+let me know by [filing an
 issue](https://github.com/plloydsmith/rmdcev/issues).
 
 ## References
@@ -70,7 +71,14 @@ In: Scarpa R., Alberini A. (eds) Applications of Simulation Methods in
 Environmental and Resource Economics. The Economics of Non-Market Goods
 and Resources, vol 6. Springer, Dordrecht.
 
-For more details on the welfare simulation:
+For more details on the demand and welfare simulation:
+
+Pinjari, A.R. and Bhat , C.R. (2011) [“Computationally Efficient
+Forecasting Procedures for Kuhn-Tucker Consumer Demand Model Systems:
+Application to Residential Energy Consumption
+Analysis.”](https://www.caee.utexas.edu/prof/bhat/MDCEV_Forecasting.html)
+Technical paper, Department of Civil & Environmental Engineering,
+University of South Florida.
 
 Lloyd-Smith, P (2018). [“A New Approach to Calculating Welfare Measures
 in Kuhn-Tucker Demand
@@ -107,20 +115,23 @@ mdcev_est <- mdcev(~ b1 + b2 + b3 + b4 + b5 + b6,
                    model = model,
                    algorithm = "MLE")
 #> Using MLE to estimate KT model
-#> Chain 1: Initial log joint probability = -77850.8
+#> Chain 1: Initial log joint probability = -72987.3
 #> Chain 1:     Iter      log prob        ||dx||      ||grad||       alpha      alpha0  # evals  Notes 
 #> Chain 1: Error evaluating model log probability: Non-finite gradient.
-#> Error evaluating model log probability: Non-finite gradient.
 #> 
-#> Chain 1:       19      -29151.4      0.387104       268.866           1           1       30   
+#> Chain 1:       19      -23345.5      0.156605       222.227           1           1       31   
 #> Chain 1:     Iter      log prob        ||dx||      ||grad||       alpha      alpha0  # evals  Notes 
-#> Chain 1:       39      -29074.5     0.0456729       33.6302           1           1       54   
+#> Chain 1:       39      -23251.6     0.0940246       80.7835           1           1       55   
 #> Chain 1:     Iter      log prob        ||dx||      ||grad||       alpha      alpha0  # evals  Notes 
-#> Chain 1:       59      -29064.8      0.017239        26.829      0.8147      0.8147       75   
+#> Chain 1:       59      -23238.4     0.0436308       64.8183      0.2972           1       77   
 #> Chain 1:     Iter      log prob        ||dx||      ||grad||       alpha      alpha0  # evals  Notes 
-#> Chain 1:       79      -29064.3     0.0067155       2.44497           1           1       97   
+#> Chain 1:       79      -23234.8      0.014661       4.36058           1           1       98   
 #> Chain 1:     Iter      log prob        ||dx||      ||grad||       alpha      alpha0  # evals  Notes 
-#> Chain 1:       92      -29064.3   0.000473185      0.375743           1           1      114   
+#> Chain 1:       99      -23234.6    0.00315425       2.96504      0.8754      0.8754      119   
+#> Chain 1:     Iter      log prob        ||dx||      ||grad||       alpha      alpha0  # evals  Notes 
+#> Chain 1:      119      -23234.5    0.00094661      0.475567           1           1      142   
+#> Chain 1:     Iter      log prob        ||dx||      ||grad||       alpha      alpha0  # evals  Notes 
+#> Chain 1:      128      -23234.5   0.000268274      0.287345           1           1      151   
 #> Chain 1: Optimization terminated normally: 
 #> Chain 1:   Convergence detected: relative gradient magnitude is below tolerance
 ```
@@ -129,44 +140,44 @@ Summarize results
 
 ``` r
 summary(mdcev_est)
-#> Model run using rmdcev for R, version 1.1.3 
+#> Model run using rmdcev for R, version 1.2.0 
 #> Estimation method                : MLE
 #> Model type                       : gamma specification
 #> Number of classes                : 1
 #> Number of individuals            : 2000
 #> Number of non-numeraire alts     : 10
 #> Estimated parameters             : 18
-#> LL                               : -29064.31
-#> AIC                              : 58164.62
-#> BIC                              : 58265.44
+#> LL                               : -23234.55
+#> AIC                              : 46505.1
+#> BIC                              : 46605.91
 #> Standard errors calculated using : Delta method
 #> Exit of MLE                      : successful convergence
-#> Time taken (hh:mm:ss)            : 00:00:2.7
+#> Time taken (hh:mm:ss)            : 00:00:3.44
 #> 
 #> Average consumption of non-numeraire alternatives:
 #>     1     2     3     4     5     6     7     8     9    10 
-#> 22.36 17.37  6.77  1.94  6.16 20.07  0.26 19.86  1.57  2.35 
+#>  7.23  1.73  0.12 58.74  1.63 16.13  6.38  1.94  0.10  3.93 
 #> 
 #> Parameter estimates --------------------------------  
 #>           Estimate Std.err z.stat
-#> psi_b1      -4.884   0.109 -44.81
-#> psi_b2       0.413   0.070   5.90
-#> psi_b3       1.760   0.093  18.92
-#> psi_b4      -1.493   0.058 -25.75
-#> psi_b5       2.039   0.054  37.75
-#> psi_b6      -0.985   0.053 -18.58
-#> gamma_1      7.574   0.511  14.82
-#> gamma_2      2.192   0.139  15.77
-#> gamma_3      4.694   0.391  12.00
-#> gamma_4      3.531   0.390   9.05
-#> gamma_5      3.584   0.284  12.62
-#> gamma_6      2.493   0.170  14.67
-#> gamma_7      2.986   0.813   3.67
-#> gamma_8      4.449   0.301  14.78
-#> gamma_9      4.241   0.564   7.52
-#> gamma_10     7.839   1.107   7.08
-#> alpha_num    0.491   0.009  54.53
-#> scale        1.003   0.017  58.98
+#> psi_b1      -4.770   0.110 -43.37
+#> psi_b2       0.600   0.063   9.52
+#> psi_b3       2.127   0.089  23.90
+#> psi_b4      -1.487   0.060 -24.78
+#> psi_b5       1.850   0.053  34.90
+#> psi_b6      -0.951   0.054 -17.61
+#> gamma_1     12.042   1.299   9.27
+#> gamma_2      2.905   0.327   8.88
+#> gamma_3      4.154   1.375   3.02
+#> gamma_4      4.411   0.305  14.46
+#> gamma_5      3.700   0.444   8.33
+#> gamma_6      2.107   0.139  15.16
+#> gamma_7      4.290   0.363  11.82
+#> gamma_8      3.953   0.494   8.00
+#> gamma_9      1.881   0.530   3.55
+#> gamma_10     7.642   0.915   8.35
+#> alpha_num    0.504   0.009  55.99
+#> scale        0.970   0.018  53.90
 #> Note: All non-numeraire alpha's fixed to 0.
 ```
 
@@ -181,24 +192,24 @@ coefs <- as_tibble(sim.data$parms_true) %>%
 
 head(coefs, 200)
 #>      parms      true Estimate Std.err z.stat    cl_lo    cl_hi
-#> 1   psi_b1 -5.000000   -4.884   0.109 -44.81 -5.09764 -4.67036
-#> 2   psi_b2  0.500000    0.413   0.070   5.90  0.27580  0.55020
-#> 3   psi_b3  2.000000    1.760   0.093  18.92  1.57772  1.94228
-#> 4   psi_b4 -1.500000   -1.493   0.058 -25.75 -1.60668 -1.37932
-#> 5   psi_b5  2.000000    2.039   0.054  37.75  1.93316  2.14484
-#> 6   psi_b6 -1.000000   -0.985   0.053 -18.58 -1.08888 -0.88112
-#> 7   gamma1  7.314567    7.574   0.511  14.82  6.57244  8.57556
-#> 8   gamma2  2.097729    2.192   0.139  15.77  1.91956  2.46444
-#> 9   gamma3  5.392488    4.694   0.391  12.00  3.92764  5.46036
-#> 10  gamma4  3.970054    3.531   0.390   9.05  2.76660  4.29540
-#> 11  gamma5  3.523847    3.584   0.284  12.62  3.02736  4.14064
-#> 12  gamma6  2.684004    2.493   0.170  14.67  2.15980  2.82620
-#> 13  gamma7  2.787718    2.986   0.813   3.67  1.39252  4.57948
-#> 14  gamma8  4.648740    4.449   0.301  14.78  3.85904  5.03896
-#> 15  gamma9  5.393200    4.241   0.564   7.52  3.13556  5.34644
-#> 16 gamma10  8.095358    7.839   1.107   7.08  5.66928 10.00872
-#> 17  alpha1  0.500000    0.491   0.009  54.53  0.47336  0.50864
-#> 18   scale  1.000000    1.003   0.017  58.98  0.96968  1.03632
+#> 1   psi_b1 -5.000000   -4.770   0.110 -43.37 -4.98560 -4.55440
+#> 2   psi_b2  0.500000    0.600   0.063   9.52  0.47652  0.72348
+#> 3   psi_b3  2.000000    2.127   0.089  23.90  1.95256  2.30144
+#> 4   psi_b4 -1.500000   -1.487   0.060 -24.78 -1.60460 -1.36940
+#> 5   psi_b5  2.000000    1.850   0.053  34.90  1.74612  1.95388
+#> 6   psi_b6 -1.000000   -0.951   0.054 -17.61 -1.05684 -0.84516
+#> 7   gamma1  9.571871   12.042   1.299   9.27  9.49596 14.58804
+#> 8   gamma2  2.662405    2.905   0.327   8.88  2.26408  3.54592
+#> 9   gamma3  5.278969    4.154   1.375   3.02  1.45900  6.84900
+#> 10  gamma4  4.149304    4.411   0.305  14.46  3.81320  5.00880
+#> 11  gamma5  3.880138    3.700   0.444   8.33  2.82976  4.57024
+#> 12  gamma6  2.032531    2.107   0.139  15.16  1.83456  2.37944
+#> 13  gamma7  4.464965    4.290   0.363  11.82  3.57852  5.00148
+#> 14  gamma8  4.318229    3.953   0.494   8.00  2.98476  4.92124
+#> 15  gamma9  1.439274    1.881   0.530   3.55  0.84220  2.91980
+#> 16 gamma10  7.136159    7.642   0.915   8.35  5.84860  9.43540
+#> 17  alpha1  0.500000    0.504   0.009  55.99  0.48636  0.52164
+#> 18   scale  1.000000    0.970   0.018  53.90  0.93472  1.00528
 ```
 
 Compare outputs using a figure
@@ -238,11 +249,11 @@ wtp <- mdcev.sim(df_sim$df_indiv,
                  sim_type = "welfare")
 #> Using general approach in simulation...
 #> 
-#> 6.00e+04simulations finished in0.36minutes.(2783per second)
+#> 6.00e+04simulations finished in0.34minutes.(2970per second)
 summary(wtp)
 #> # A tibble: 2 x 5
 #>   policy       mean std.dev `ci_lo2.5%` `ci_hi97.5%`
 #>   <chr>       <dbl>   <dbl>       <dbl>        <dbl>
-#> 1 policy1 -3.86e-12      NA   -3.86e-12    -3.86e-12
-#> 2 policy2 -3.86e-12      NA   -3.86e-12    -3.86e-12
+#> 1 policy1 -1.65e-10      NA   -1.65e-10    -1.65e-10
+#> 2 policy2 -1.65e-10      NA   -1.65e-10    -1.65e-10
 ```

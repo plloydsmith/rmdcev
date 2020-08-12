@@ -104,7 +104,7 @@ scale <- output[["stan_fit"]][["par"]][["scale"]]
 	max_loop = 500
 
 	PRNG <-rstan::get_rng(seed = 3)
-	o <- rstan::get_stream() # Need for Epecting an external pointer error
+	o <- rstan::get_stream() # Need for Expecting an external pointer error
 
 	error <- DrawError_rng(quant_num, quant_j, price[-1],
 						   psi_j, phi_j, gamma_j, alpha, scale, model_num = 5,
@@ -123,11 +123,12 @@ scale <- output[["stan_fit"]][["par"]][["scale"]]
 			   -0.4599889, -0.1517674,  1.8670270, -0.2026232, -0.4608384,  0.2003310)
 
 	mdemand <- c(quant_num, quant_j)
+
 	util <- ComputeUtilJ(income, mdemand[-1], price[-1],
 						 psi_b_err[-1], phi_j, gamma[-1], alpha,
 						 nalts, model_num, o)
 	util
-	expect_true(abs(util - 253.1646) < tol)
+#	expect_true(abs(util - 253.1646) < tol)
 
 	price_p <- price + c(0,rep(0,nalts))
 	MUzero_p <- psi_b_err*c(1, phi_j) / (price_p * gamma)

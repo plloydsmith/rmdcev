@@ -13,7 +13,7 @@ int<lower=0, upper=1> flat_priors; //indicator to include flat priors for all pa
 real prior_psi_sd;
 real prior_phi_sd;
 real prior_gamma_sd;
-real prior_alpha_sd;
+real prior_alpha_shape;
 real prior_scale_sd;
 int<lower=0, upper=1> fixed_scale1; // indicator to fix scale at 1
 int<lower=0, upper=1> trunc_data; //indicator to correct estimation for truncated data

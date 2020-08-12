@@ -45,7 +45,7 @@ stan::io::program_reader prog_reader__() {
     reader.add_event(166, 0, "start", "/common/mdcev_tdata.stan");
     reader.add_event(206, 40, "end", "/common/mdcev_tdata.stan");
     reader.add_event(206, 21, "restart", "model_mdcev");
-    reader.add_event(320, 133, "end", "model_mdcev");
+    reader.add_event(321, 134, "end", "model_mdcev");
     return reader;
 }
 template <typename T0__>
@@ -507,7 +507,7 @@ private:
         double prior_psi_sd;
         double prior_phi_sd;
         double prior_gamma_sd;
-        double prior_alpha_sd;
+        double prior_alpha_shape;
         double prior_scale_sd;
         int fixed_scale1;
         int trunc_data;
@@ -681,11 +681,11 @@ public:
             pos__ = 0;
             prior_gamma_sd = vals_r__[pos__++];
             current_statement_begin__ = 150;
-            context__.validate_dims("data initialization", "prior_alpha_sd", "double", context__.to_vec());
-            prior_alpha_sd = double(0);
-            vals_r__ = context__.vals_r("prior_alpha_sd");
+            context__.validate_dims("data initialization", "prior_alpha_shape", "double", context__.to_vec());
+            prior_alpha_shape = double(0);
+            vals_r__ = context__.vals_r("prior_alpha_shape");
             pos__ = 0;
-            prior_alpha_sd = vals_r__[pos__++];
+            prior_alpha_shape = vals_r__[pos__++];
             current_statement_begin__ = 151;
             context__.validate_dims("data initialization", "prior_scale_sd", "double", context__.to_vec());
             prior_scale_sd = double(0);
@@ -942,7 +942,7 @@ public:
         size_t phi_i_0_max__ = K;
         for (size_t i_0__ = 0; i_0__ < phi_i_0_max__; ++i_0__) {
             try {
-                writer__.vector_lb_unconstrain(0, phi[i_0__]);
+                writer__.vector_unconstrain(phi[i_0__]);
             } catch (const std::exception& e) {
                 stan::lang::rethrow_located(std::runtime_error(std::string("Error transforming variable phi: ") + e.what()), current_statement_begin__, prog_reader__());
             }
@@ -1074,9 +1074,9 @@ public:
             phi.reserve(phi_d_0_max__);
             for (size_t d_0__ = 0; d_0__ < phi_d_0_max__; ++d_0__) {
                 if (jacobian__)
-                    phi.push_back(in__.vector_lb_constrain(0, NPhi, lp__));
+                    phi.push_back(in__.vector_constrain(NPhi, lp__));
                 else
-                    phi.push_back(in__.vector_lb_constrain(0, NPhi));
+                    phi.push_back(in__.vector_constrain(NPhi));
             }
             current_statement_begin__ = 212;
             std::vector<Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> > gamma;
@@ -1275,7 +1275,7 @@ public:
             current_statement_begin__ = 284;
             if (as_bool(logical_eq(flat_priors, 0))) {
                 current_statement_begin__ = 285;
-                lp_accum__.add(normal_log<propto__>(scale, 1, prior_scale_sd));
+                lp_accum__.add(normal_log<propto__>(scale, 0, prior_scale_sd));
                 current_statement_begin__ = 287;
                 if (as_bool(logical_eq(K, 1))) {
                     current_statement_begin__ = 288;
@@ -1285,24 +1285,24 @@ public:
                     current_statement_begin__ = 290;
                     lp_accum__.add(normal_log<propto__>(get_base1(gamma, 1, "gamma", 1), 1, prior_gamma_sd));
                     current_statement_begin__ = 291;
-                    lp_accum__.add(normal_log<propto__>(get_base1(alpha, 1, "alpha", 1), .5, prior_alpha_sd));
+                    lp_accum__.add(beta_log<propto__>(get_base1(alpha, 1, "alpha", 1), prior_alpha_shape, prior_alpha_shape));
                 } else if (as_bool(logical_gt(K, 1))) {
-                    current_statement_begin__ = 293;
-                    lp_accum__.add(normal_log<propto__>(to_vector(delta), 0, prior_delta_sd));
                     current_statement_begin__ = 294;
+                    lp_accum__.add(normal_log<propto__>(to_vector(delta), 0, prior_delta_sd));
+                    current_statement_begin__ = 295;
                     for (int k = 1; k <= K; ++k) {
-                        current_statement_begin__ = 295;
-                        lp_accum__.add(normal_log<propto__>(to_vector(get_base1(psi, k, "psi", 1)), 0, prior_psi_sd));
                         current_statement_begin__ = 296;
-                        lp_accum__.add(normal_log<propto__>(to_vector(get_base1(phi, k, "phi", 1)), 0, prior_phi_sd));
+                        lp_accum__.add(normal_log<propto__>(to_vector(get_base1(psi, k, "psi", 1)), 0, prior_psi_sd));
                         current_statement_begin__ = 297;
-                        lp_accum__.add(normal_log<propto__>(to_vector(get_base1(gamma, k, "gamma", 1)), 1, prior_gamma_sd));
+                        lp_accum__.add(normal_log<propto__>(to_vector(get_base1(phi, k, "phi", 1)), 0, prior_phi_sd));
                         current_statement_begin__ = 298;
-                        lp_accum__.add(normal_log<propto__>(to_vector(get_base1(alpha, k, "alpha", 1)), .5, prior_alpha_sd));
+                        lp_accum__.add(normal_log<propto__>(to_vector(get_base1(gamma, k, "gamma", 1)), 1, prior_gamma_sd));
+                        current_statement_begin__ = 299;
+                        lp_accum__.add(beta_log<propto__>(to_vector(get_base1(alpha, k, "alpha", 1)), prior_alpha_shape, prior_alpha_shape));
                     }
                 }
             }
-            current_statement_begin__ = 303;
+            current_statement_begin__ = 304;
             lp_accum__.add(sum(elt_multiply(log_like, weights)));
         } catch (const std::exception& e) {
             stan::lang::rethrow_located(e, current_statement_begin__, prog_reader__());
@@ -1401,7 +1401,7 @@ public:
         size_t phi_d_0_max__ = K;
         phi.reserve(phi_d_0_max__);
         for (size_t d_0__ = 0; d_0__ < phi_d_0_max__; ++d_0__) {
-            phi.push_back(in__.vector_lb_constrain(0, NPhi));
+            phi.push_back(in__.vector_constrain(NPhi));
         }
         size_t phi_j_1_max__ = NPhi;
         size_t phi_k_0_max__ = K;
@@ -1616,35 +1616,35 @@ public:
             }
             if (!include_gqs__) return;
             // declare and define generated quantities
-            current_statement_begin__ = 307;
+            current_statement_begin__ = 308;
             double sum_log_lik;
             (void) sum_log_lik;  // dummy to suppress unused var warning
             stan::math::initialize(sum_log_lik, DUMMY_VAR__);
             stan::math::fill(sum_log_lik, DUMMY_VAR__);
             stan::math::assign(sum_log_lik,0);
-            current_statement_begin__ = 308;
+            current_statement_begin__ = 309;
             validate_non_negative_index("theta", "(logical_gt(K, 1) ? I : 0 )", (logical_gt(K, 1) ? I : 0 ));
             validate_non_negative_index("theta", "K", K);
             std::vector<Eigen::Matrix<double, Eigen::Dynamic, 1> > theta(K, Eigen::Matrix<double, Eigen::Dynamic, 1>((logical_gt(K, 1) ? I : 0 )));
             stan::math::initialize(theta, DUMMY_VAR__);
             stan::math::fill(theta, DUMMY_VAR__);
             // generated quantities statements
-            current_statement_begin__ = 310;
+            current_statement_begin__ = 311;
             for (int i = 1; i <= I; ++i) {
-                current_statement_begin__ = 311;
-                stan::math::assign(sum_log_lik, (sum_log_lik + (get_base1(log_like, i, "log_like", 1) * get_base1(weights, i, "weights", 1))));
                 current_statement_begin__ = 312;
+                stan::math::assign(sum_log_lik, (sum_log_lik + (get_base1(log_like, i, "log_like", 1) * get_base1(weights, i, "weights", 1))));
+                current_statement_begin__ = 313;
                 if (as_bool(logical_gt(K, 1))) {
                     {
-                    current_statement_begin__ = 313;
+                    current_statement_begin__ = 314;
                     validate_non_negative_index("theta1", "K", K);
                     Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> theta1(K);
                     stan::math::initialize(theta1, DUMMY_VAR__);
                     stan::math::fill(theta1, DUMMY_VAR__);
                     stan::math::assign(theta1,log_softmax(append_row(0, multiply(delta, get_base1(data_class, i, "data_class", 1)))));
-                    current_statement_begin__ = 314;
+                    current_statement_begin__ = 315;
                     for (int k = 1; k <= K; ++k) {
-                        current_statement_begin__ = 315;
+                        current_statement_begin__ = 316;
                         stan::model::assign(theta, 
                                     stan::model::cons_list(stan::model::index_uni(k), stan::model::cons_list(stan::model::index_uni(i), stan::model::nil_index_list())), 
                                     get_base1(theta1, k, "theta1", 1), 
@@ -1654,9 +1654,9 @@ public:
                 }
             }
             // validate, write generated quantities
-            current_statement_begin__ = 307;
-            vars__.push_back(sum_log_lik);
             current_statement_begin__ = 308;
+            vars__.push_back(sum_log_lik);
+            current_statement_begin__ = 309;
             size_t theta_j_1_max__ = (logical_gt(K, 1) ? I : 0 );
             size_t theta_k_0_max__ = K;
             for (size_t j_1__ = 0; j_1__ < theta_j_1_max__; ++j_1__) {

@@ -11,8 +11,6 @@ data_rec <- mdcev.data(data_rec, subset = id <= 500,
 					   alt.var = "alt",
 					   choice = "quant")
 
-
-
 output <- mdcev(~ 0,
 				data = data_rec,
 				model = "hybrid0",
@@ -33,7 +31,7 @@ test_that("Bayes hybrid0 specification", {
 
 	npols <- 2
 	policies <- CreateBlankPolicies(npols, output, price_change_only = TRUE)
-	df_sim <- PrepareSimulationData(output, policies, nsims = 5, class = "class1")
+	df_sim <- PrepareSimulationData(output, policies, nsims = 5)
 
 	# Test welfare
 	wtp <- mdcev.sim(df_sim$df_indiv, df_common = df_sim$df_common, sim_options = df_sim$sim_options,
@@ -42,10 +40,6 @@ test_that("Bayes hybrid0 specification", {
 
 	expect_true(sum(abs(sum_wtp$CoefTable$mean)) < tol)
 })
-
-
-
-
 
 test_that("Bayes gamma specification no gamma/psi ascs", {
 
@@ -70,7 +64,7 @@ test_that("Bayes gamma specification no gamma/psi ascs", {
 
 	npols <- 2
 	policies <- CreateBlankPolicies(npols, output, price_change_only = TRUE)
-	df_sim <- PrepareSimulationData(output, policies, nsims = 5, class = "class1")
+	df_sim <- PrepareSimulationData(output, policies, nsims = 5)
 
 	# Test welfare
 	wtp <- mdcev.sim(df_sim$df_indiv, df_common = df_sim$df_common, sim_options = df_sim$sim_options,
@@ -79,7 +73,6 @@ test_that("Bayes gamma specification no gamma/psi ascs", {
 
 	expect_true(sum(abs(sum_wtp$CoefTable$mean)) < tol)
 })
-
 
 context("Test Bayes rp uncorrelated")
 
@@ -102,7 +95,7 @@ test_that("Bayes gamma uncorr specification", {
 
 	npols <- 2
 	policies <- CreateBlankPolicies(npols, output, price_change_only = TRUE)
-	df_sim <- PrepareSimulationData(output, policies, nsims = 5, class = "class1")
+	df_sim <- PrepareSimulationData(output, policies, nsims = 5)
 
 	# Test welfare
 	wtp <- mdcev.sim(df_sim$df_indiv, df_common = df_sim$df_common, sim_options = df_sim$sim_options,
@@ -111,7 +104,6 @@ test_that("Bayes gamma uncorr specification", {
 
 	expect_true(sum(abs(sum_wtp$CoefTable$mean)) < tol)
 })
-
 
 context("Test Bayes rp correlated")
 
@@ -133,7 +125,7 @@ test_that("Bayes gamma corr specification", {
 
 	npols <- 2
 	policies <- CreateBlankPolicies(npols, output, price_change_only = TRUE)
-	df_sim <- PrepareSimulationData(output, policies, nsims = 5, class = "class1")
+	df_sim <- PrepareSimulationData(output, policies, nsims = 5)
 
 	# Test welfare
 	wtp <- mdcev.sim(df_sim$df_indiv, df_common = df_sim$df_common, sim_options = df_sim$sim_options,
@@ -142,8 +134,6 @@ test_that("Bayes gamma corr specification", {
 
 	expect_true(sum(abs(sum_wtp$CoefTable$mean)) < tol)
 })
-
-
 
 context("Test Bayes rp correlated with fixed gamma/alpha")
 
@@ -167,7 +157,7 @@ test_that("Bayes gamma corr specification with fixed gamma/alpha", {
 
 	npols <- 2
 	policies <- CreateBlankPolicies(npols, output, price_change_only = TRUE)
-	df_sim <- PrepareSimulationData(output, policies, nsims = 5, class = "class1")
+	df_sim <- PrepareSimulationData(output, policies, nsims = 5)
 
 	# Test welfare
 	wtp <- mdcev.sim(df_sim$df_indiv, df_common = df_sim$df_common, sim_options = df_sim$sim_options,
@@ -177,8 +167,7 @@ test_that("Bayes gamma corr specification with fixed gamma/alpha", {
 	expect_true(sum(abs(sum_wtp$CoefTable$mean)) < tol)
 })
 
-
-context("Test Bayes kt_ee rp correlated")
+context("Test Bayes kt_ee rp")
 
 output <- mdcev(formula = ~ ageindex|0|0,
 				data = data_rec,
@@ -194,11 +183,34 @@ output <- mdcev(formula = ~ ageindex|0|0,
 				n_iterations = 10,
 				show_stan_warnings = FALSE)
 
-test_that("Bayes gamma corr specification with fixed gamma/alpha", {
+test_that("Test Bayes kt_ee rp fixed", {
 	output_sum <- summary(output)
 	expect_equal(output$parms_info$n_vars$n_parms_total, 19)
 
 	npols <- 2
 	policies <- CreateBlankPolicies(npols, output, price_change_only = TRUE)
-	df_sim <- PrepareSimulationData(output, policies, nsims = 5, class = "class1")
+	df_sim <- PrepareSimulationData(output, policies, nsims = 5)
+})
+
+test_that("Test Bayes kt_ee rp uncorrelated", {
+
+	output <- mdcev(formula = ~ ageindex |0|0,
+					data = data_rec,
+					model = "kt_ee",
+					algorithm = "Bayes",
+					random_parameters = "uncorr",
+					print_iterations = FALSE,
+					gamma_ascs = 0,
+					fixed_scale1 = 1,
+					n_cores = 1,
+					n_chains = 1,
+					n_iterations = 10,
+					show_stan_warnings = FALSE)
+
+		output_sum <- summary(output)
+	expect_equal(output$parms_info$n_vars$n_parms_total, 6)
+
+	npols <- 2
+	policies <- CreateBlankPolicies(npols, output, price_change_only = TRUE)
+	df_sim <- PrepareSimulationData(output, policies, nsims = 5)
 })

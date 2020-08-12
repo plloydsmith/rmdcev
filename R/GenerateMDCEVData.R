@@ -1,18 +1,19 @@
 #' @title GenerateMDCEVData
-#' @description Simulate data for MDCEV model
+#' @description Simulate data for KT models
 #' @inheritParams mdcev
 #' @param nobs Number of individuals
 #' @param nalts Number of non-numeraire alts
-#' @param inc_lo Low bound of income for uniform draw
-#' @param inc_hi High bound of income for uniform draw
-#' @param price_lo Low bound of price for uniform draw
-#' @param price_hi High bound of price for uniform draw
+#' @param income Vector of individual income
+#' @param price Matrix of prices for non-numeraire alternatives.
 #' @param alpha_parms Parameter value for alpha term
 #' @param scale_parms Parameter value for scale term
 #' @param gamma_parms Parameter value for gamma terms
 #' @param psi_i_parms Parameter value for psi terms that vary by individual
-#' @param psi_j_parms Parameter value for psi terms that vary by alt (only for MDCEV models)
-#' @param phi_parms Parameter value for phi terms that vary by alt
+#' @param psi_j_parms Parameter value for psi terms that vary by alt (all models except kt_ee)
+#' @param phi_parms Parameter value for phi terms that vary by alt (kt_ee model only)
+#' @param dat_psi_i (nobs X # psi_i_parms) matrix with individual-specific characteristics
+#' @param dat_psi_j (nalts X # psi_j_parms) matrix with alternative-specific variables (all models except kt_ee)
+#' @param dat_phi (nalts X # phi_parms) matrix with alternative-specific variables (kt_ee model only)
 #' @param nerrs Number of error draws for demand simulation
 #' @param tol Tolerance level for simulations if using general approach
 #' @param max_loop maximum number of loops for simulations if using general approach
@@ -24,20 +25,20 @@
 #' data <- GenerateMDCEVData(model = "gamma")
 #'}
 GenerateMDCEVData <- function(model, nobs = 1000, nalts = 10,
-							  inc_lo = 100000, inc_hi = 150000,
-							  price_lo = 100, price_hi = 500,
+							  income = stats::runif(nobs, 100000, 150000),
+							  price = matrix(stats::runif(nobs*nalts, 100, 500), nobs, nalts),
 							  alpha_parms = 0.5,
 							  scale_parms = 1,
 							  gamma_parms = stats::runif(nalts, 1, 10),
 							  psi_i_parms = c(-1.5, 2, -1),
 							  psi_j_parms = c(-5, 0.5, 2),
 							  phi_parms = c(-5, 0.5, 2),
+							  dat_psi_i = matrix(2 * stats::runif(nobs * length(psi_i_parms)), nobs, length(psi_i_parms)),
+							  dat_psi_j = cbind(matrix(stats::runif(nalts*(length(psi_j_parms)), 0 , 1), nrow = nalts)),
+							  dat_phi = cbind(matrix(stats::runif(nalts*(length(phi_parms)), 0 , 1), nrow = nalts)),
 							  nerrs = 1,
 							  tol = 1e-20,
 							  max_loop = 999){
-
-	income <-  stats::runif(nobs, inc_lo, inc_hi)
-	price <- matrix(stats::runif(nobs*nalts, price_lo, price_hi), nobs, nalts)
 
 	true <- gamma_parms
 	parms <- c(paste(rep('gamma', nalts), 1:nalts, sep=""))
@@ -46,21 +47,27 @@ GenerateMDCEVData <- function(model, nobs = 1000, nalts = 10,
 	true <- scale_parms
 	parms <- 'scale'
 	scale_true <- cbind(parms, true)
-	dat_phi <- NULL
 
+	if (model != "kt_ee"){
 	# Create psi variables that vary over alternatives
-	psi_j <- cbind(matrix(stats::runif(nalts*(length(psi_j_parms)), 0 , 1), nrow = nalts))
-	psi_j <-  rep(1, nobs) %x% psi_j
+		dat_psi_j <-  rep(1, nobs) %x% dat_psi_j
+		dat_phi <- NULL
+		phi_sims <- replicate(nobs, rep(0, nalts), simplify=FALSE)
+	} else if (model == "kt_ee"){
+		psi_j_parms <- NULL
+		dat_psi_j <- NULL
+		dat_phi <-  rep(1, nobs) %x% dat_phi
+		colnames(dat_phi) <- c(paste(rep('phi_', ncol(dat_phi)), 1:ncol(dat_phi), sep=""))
+		phi_sims <- matrix(dat_phi %*% phi_parms, ncol = nalts, byrow = TRUE)
+		phi_sims <- CreateListsRow(phi_sims)
+		parms <- paste0(rep('phi', length(phi_parms)), sep="_", colnames(dat_phi))
+	}
 
-	psi_i <- matrix(2 * stats::runif(nobs * length(psi_i_parms)), nobs, length(psi_i_parms))
-	psi_i <- psi_i %x% rep(1, nalts)
-
-	dat_psi <- cbind(psi_j, psi_i)
+	dat_psi_i <- dat_psi_i %x% rep(1, nalts)
+	dat_psi <- cbind(dat_psi_j, dat_psi_i)
 	colnames(dat_psi) <- c(paste(rep('b', ncol(dat_psi)), 1:ncol(dat_psi), sep=""))
 
 	# Create blank phi
-	phi_sims <- replicate(nobs, rep(0, nalts), simplify=FALSE)
-
 
 	# Name all parameters true
 	true <- c(psi_j_parms, psi_i_parms)
@@ -101,13 +108,6 @@ GenerateMDCEVData <- function(model, nobs = 1000, nalts = 10,
 		algo_gen <- 0
 	} else if (model == "kt_ee"){
 		model_num <- 5
-		psi_j_parms <- NULL
-		# Create psi variables that vary over alternatives
-		psi_i <- matrix(2 * stats::runif(nobs * length(psi_i_parms)), nobs,length(psi_i_parms))
-		psi_i <- psi_i %x% rep(1, nalts)
-
-		dat_psi <- cbind(psi_i)
-		colnames(dat_psi) <- c(paste(rep('b', ncol(dat_psi)), 1:ncol(dat_psi), sep=""))
 
 		true <- c(psi_i_parms)
 
@@ -115,15 +115,6 @@ GenerateMDCEVData <- function(model, nobs = 1000, nalts = 10,
 
 		parms_true <- cbind(parms, true)
 
-		dat_phi <- cbind(matrix(stats::runif(nalts*(length(phi_parms)), 0 , 1), nrow = nalts))
-		dat_phi <-  rep(1, nobs) %x% dat_phi
-		colnames(dat_phi) <- c(paste(rep('phi_', ncol(dat_phi)), 1:ncol(dat_phi), sep=""))
-
-
-		phi_sims <- matrix(dat_phi %*% phi_parms, ncol = nalts, byrow = TRUE)
-		phi_sims <- CreateListsRow(phi_sims)
-
-		parms <- paste0(rep('phi', length(phi_parms)), sep="_", colnames(dat_phi))
 		phi_true <- cbind(parms, true)
 
 		alpha_parms <- c(alpha_parms, rep(0, nalts))

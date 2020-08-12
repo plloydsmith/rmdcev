@@ -8,16 +8,20 @@ GenerateMDCEVData(
   model,
   nobs = 1000,
   nalts = 10,
-  inc_lo = 1e+05,
-  inc_hi = 150000,
-  price_lo = 100,
-  price_hi = 500,
+  income = stats::runif(nobs, 1e+05, 150000),
+  price = matrix(stats::runif(nobs * nalts, 100, 500), nobs, nalts),
   alpha_parms = 0.5,
   scale_parms = 1,
   gamma_parms = stats::runif(nalts, 1, 10),
   psi_i_parms = c(-1.5, 2, -1),
   psi_j_parms = c(-5, 0.5, 2),
   phi_parms = c(-5, 0.5, 2),
+  dat_psi_i = matrix(2 * stats::runif(nobs * length(psi_i_parms)), nobs,
+    length(psi_i_parms)),
+  dat_psi_j = cbind(matrix(stats::runif(nalts * (length(psi_j_parms)), 0, 1), nrow =
+    nalts)),
+  dat_phi = cbind(matrix(stats::runif(nalts * (length(phi_parms)), 0, 1), nrow =
+    nalts)),
   nerrs = 1,
   tol = 1e-20,
   max_loop = 999
@@ -32,13 +36,9 @@ economics Kuhn-Tucker specification.}
 
 \item{nalts}{Number of non-numeraire alts}
 
-\item{inc_lo}{Low bound of income for uniform draw}
+\item{income}{Vector of individual income}
 
-\item{inc_hi}{High bound of income for uniform draw}
-
-\item{price_lo}{Low bound of price for uniform draw}
-
-\item{price_hi}{High bound of price for uniform draw}
+\item{price}{Matrix of prices for non-numeraire alternatives.}
 
 \item{alpha_parms}{Parameter value for alpha term}
 
@@ -48,9 +48,15 @@ economics Kuhn-Tucker specification.}
 
 \item{psi_i_parms}{Parameter value for psi terms that vary by individual}
 
-\item{psi_j_parms}{Parameter value for psi terms that vary by alt (only for MDCEV models)}
+\item{psi_j_parms}{Parameter value for psi terms that vary by alt (all models except kt_ee)}
 
-\item{phi_parms}{Parameter value for phi terms that vary by alt}
+\item{phi_parms}{Parameter value for phi terms that vary by alt (kt_ee model only)}
+
+\item{dat_psi_i}{(nobs X # psi_i_parms) matrix with individual-specific characteristics}
+
+\item{dat_psi_j}{(nalts X # psi_j_parms) matrix with alternative-specific variables (all models except kt_ee)}
+
+\item{dat_phi}{(nalts X # phi_parms) matrix with alternative-specific variables (kt_ee model only)}
 
 \item{nerrs}{Number of error draws for demand simulation}
 
@@ -63,7 +69,7 @@ A `mdcev.data` object, which is a `data.frame` in long
     format. Also includes parms_true with parameter values
 }
 \description{
-Simulate data for MDCEV model
+Simulate data for KT models
 }
 \examples{
 \donttest{
