@@ -113,13 +113,13 @@ coefs %>%
 ```
 
 
-## Welfare simulation 
+## Welfare simulation
 
 Create policy simulations (these are 'no change' policies with no effects)
 ```{r}
 npols <- 2 # Choose number of policies
 
-policies<-	CreateBlankPolicies(npols, nalts, mdcev_est$stan_data[["dat_psi"]])
+policies <-	CreateBlankPolicies(npols, mdcev_est)
 
 df_sim <- PrepareSimulationData(mdcev_est, policies, nsims = 1) 
 ```
