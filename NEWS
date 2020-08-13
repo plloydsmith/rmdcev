@@ -11,6 +11,7 @@ Major changes as part of R Journal revision
 ** Reformulated GenerateMDCEVData to accept income, price, dat_psi, and dat_phi data
 ** User can now set starting values for LC model
 ** default standard errors is now deltamethod
+** revised dependcies to reflect new rstan requirements
 ** vignette coming soon
 
 rmdcev v1.1.2 (Release date: 2019-11-22)

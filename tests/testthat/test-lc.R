@@ -1,5 +1,5 @@
 context("Test LC")
-library(rmdcev)
+#library(rmdcev)
 tol <- 0.01
 data(data_rec, package = "rmdcev")
 data_rec
