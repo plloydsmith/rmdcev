@@ -17,7 +17,7 @@ knitr::opts_chunk$set(
 [![Build Status](https://travis-ci.org/plloydsmith/rmdcev.svg?branch=master)](https://travis-ci.org/plloydsmith/rmdcev)
 <!-- badges: end -->
 
-The _rmdcev_ R package estimate and simulates Kuhn-Tucker demand models with individual heterogeneity. The models supported by _rmdcev_ are the multiple-discrete continuous extreme value (MDCEV) model and Kuhn-Tucker specification common in the environmental economics literature on recreation demand. Latent class and random parameters specifications can be implemented and the models are fit using maximum likelihood estimation or Bayesian estimation. All models are implemented in Stan, which is a C++ package for performing full Bayesian inference (see http://mc-stan.org/). The _rmdcev_ package also implements demand forecasting and welfare calculation for policy simulation.
+The **rmdcev** R package estimate and simulates Kuhn-Tucker demand models with individual heterogeneity. The models supported by **rmdcev** are the multiple-discrete continuous extreme value (MDCEV) model and Kuhn-Tucker specification common in the environmental economics literature on recreation demand. Latent class and random parameters specifications can be implemented and the models are fit using maximum likelihood estimation or Bayesian estimation. All models are implemented in Stan, which is a C++ package for performing full Bayesian inference (see http://mc-stan.org). The **rmdcev** package also implements demand forecasting and welfare calculation for policy simulation.
 
 ## Current Status
 
@@ -38,7 +38,7 @@ I recommend you first install **rstan** by following these steps:
 
 https://github.com/stan-dev/rstan/wiki/RStan-Getting-Started
 
-Once **rstan** is installed, you can install the released version of rmdcev from GitHub using devtools
+Once **rstan** is installed, you can install the released version of **rmdcev** from GitHub using devtools
 
 ``` r
 if (!require(devtools)) {
