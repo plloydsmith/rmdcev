@@ -40,7 +40,7 @@ transformed parameters {
 		matrix[I, J] lpsi;
 		vector[NPsi] psi_k = psi[k];
 		if (psi_ascs == 1){
-			lpsi = rep_matrix(append_row(0, segment(psi_k, 1, J-1))', I); //  alternative specific constants
+			lpsi = rep_matrix(append_row(0, head(psi_k, J-1))', I); //  alternative specific constants
 			if (NPsi_ij > 0)
     			lpsi = lpsi + to_matrix(dat_psi[] * segment(psi_k, J, NPsi_ij), I, J, 0);
 		} else if (psi_ascs == 0){
@@ -116,7 +116,7 @@ model {
 	}
   }
 
-target += sum(log_like .* weights);//objective to target
+target += dot_product(log_like, weights);//objective to target
 }
 
 generated quantities{

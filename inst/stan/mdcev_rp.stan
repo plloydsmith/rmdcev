@@ -133,7 +133,7 @@ model {
 	L_Omega ~ lkj_corr_cholesky(lkj_shape);                 // lkj prior
 	scale ~ normal(0, 1);
 	// no priors for tau because already constrained to uniform
-  target += sum(log_like .* weights);//objective to target
+  target += dot_product(log_like, weights);//objective to target
 }
 
 generated quantities{

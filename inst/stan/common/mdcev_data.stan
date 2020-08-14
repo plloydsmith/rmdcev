@@ -3,7 +3,7 @@ int I; // number of Individuals
 int J; // number of non-numeraire alternatives
 int NPsi_ij; // number of alt-specific attributes
 int NPhi; // number of alt covariates
-int<lower = 1, upper = 5> model_num; // 1 is les, 2 is alpha, 3 gamma (one alpha for all), 4 alpha's set to 1e-03
+int<lower = 1, upper = 5> model_num; // 1 is gamma, 2 is alpha, 3 hybrid (one alpha for all), 4 alpha's set to 1e-03, 5 is kt_ee
 matrix[(NPsi_ij > 0 ? I * J : 0), NPsi_ij] dat_psi; // alt characteristics
 matrix[(model_num == 5 ? I * J : 0), NPhi] dat_phi; // alt characteristics
 matrix[I, J] price_j; // non-numeraire price
