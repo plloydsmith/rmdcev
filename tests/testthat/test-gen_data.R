@@ -13,7 +13,8 @@ test_that("Generate gamma MDCEV data", {
 					   data = sim.data$data,
 					   psi_ascs = 0,
 					   model = model,
-					   algorithm = "MLE")
+					   algorithm = "MLE",
+					print_iterations = F)
 	output.sum <- summary(output)
 	expect_equal(length(output.sum[["CoefTable"]]$Std.err), 13)
 })
@@ -26,7 +27,8 @@ test_that("Generate alpha MDCEV data", {
 					data = sim.data$data,
 					psi_ascs = 0,
 					model = model,
-					algorithm = "MLE")
+					algorithm = "MLE",
+					print_iterations = F)
 	output.sum <- summary(output)
 	expect_equal(length(output.sum[["CoefTable"]]$Std.err), 10)
 })
@@ -39,7 +41,8 @@ test_that("Generate hybrid0 MDCEV data", {
 					data = sim.data$data,
 					psi_ascs = 0,
 					model = model,
-					algorithm = "MLE")
+					algorithm = "MLE",
+					print_iterations = F)
 	output.sum <- summary(output)
 	expect_equal(length(output.sum[["CoefTable"]]$Std.err), 9)
 })

@@ -36,14 +36,13 @@ vector mdcev_ll(matrix quant_j, matrix price_j, vector log_num, vector income,
 
 	vector[I] log_like;
 	vector[J] ones_j = rep_vector(1, J);
-	matrix[I, J] v_j= lpsi + (alpha_j - 1) .* log(quant_j ./ gamma_j + 1) - log(price_j);
+	matrix[I, J] v_j= (lpsi + (alpha_j - 1) .* log(quant_j ./ gamma_j + 1) - log(price_j)) / scale_full;
 	vector[I] v1 = (alpha1 - 1) .* log_num / scale_full;
-	matrix[I, J] f = (1 - alpha_j) ./ (quant_j + gamma_j);
+	matrix[I, J] logf = log(1 - alpha_j) - log(quant_j + gamma_j);
 	vector[I] logf1 = log(1 - alpha1) - log_num;
-	v_j = v_j / scale_full;
 
-	log_like = (1 - M) * log(scale_full) + logf1 + v1 + rows_dot_product(nonzero, log(f) + v_j) +
-		log(inv(exp(logf1)) + rows_dot_product(nonzero, price_j ./ f)) -
+	log_like = (1 - M) * log(scale_full) + logf1 + v1 + rows_dot_product(nonzero, logf + v_j) +
+		log(inv(exp(logf1)) + rows_dot_product(nonzero, price_j ./ exp(logf))) -
 		M .* log(exp(v1) + exp(v_j) * ones_j) + log_M_fact;
 
 	if (trunc_data == 1){

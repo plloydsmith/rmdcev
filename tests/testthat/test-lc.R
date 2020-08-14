@@ -32,20 +32,20 @@ test_that("LC 2-classes with starting values", {
 
 	result_test <- mdcev( ~ 0| university,
 					 data = data_rec,
-					 model = "hybrid",
+					 model = "hybrid0",
 					 algorithm = "MLE",
 					 n_classes = 2,
 					 print_iterations = FALSE)
 
 	result_test <- mdcev( ~ 0 | university,
 					 data = data_rec,
-					 model = "hybrid",
+					 model = "hybrid0",
 					 initial.parameters = result_test$stan_fit$par,
 					 algorithm = "MLE",
 					 n_classes = 2,
 					 print_iterations = FALSE)
 
-#	expect_true(abs(result_test[["stan_fit"]][["par"]][["scale"]][[1]] - 0.5007734) < tol)
+	expect_true(abs(result_test[["stan_fit"]][["par"]][["scale"]][[1]] - 0.7586523) < tol)
 
 })
 
@@ -67,7 +67,7 @@ test_that("Test LC simulations", {
 	demand <- mdcev.sim(df_sim$df_indiv, df_common = df_sim$df_common, sim_options = df_sim$sim_options,
 						 cond_err = 1, nerrs = 1, sim_type = "demand")
 
-	print(demand[["class2"]][[5]][[1]][1,-1], digits =10)
+	print(demand[[5]][[1]][1,-1], digits =10)
 	expect_equal(sum(demand[[5]][[1]][1,-1]), sum(result_test$stan_data$quant_j[5,]))
 })
 
