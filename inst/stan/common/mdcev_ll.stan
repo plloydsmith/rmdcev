@@ -17,7 +17,7 @@ matrix alpha_ll(vector alpha, int I, int J, int model_num) {
 
 	matrix[I, J+1] alpha_full;
 
-	if (model_num == 1)
+	if (model_num == 1 || model_num == 5)
 	  alpha_full = append_col(rep_vector(alpha[1], I), rep_matrix(0, I, J));
 	else if (model_num == 2)
 	  alpha_full = rep_matrix(alpha', I);
