@@ -10,8 +10,7 @@ tol <- 0.01
 #library(rmdcev)
 data(data_rec, package = "rmdcev")
 
-data_rec <- data_rec %>%
-	mutate(beach = ifelse(alt == "beach", 1, 0))
+data_rec$beach = ifelse(data_rec$alt == "beach", 1, 0)
 
 data_rec <- mdcev.data(data_rec, subset = id < 100,
 					   id.var = "id",
@@ -48,7 +47,7 @@ test_that("kt_ee model estimation", {
 					gamma_ascs = 0,
 					algorithm = "MLE",
 					initial.parameters = init,
-					print_iterations = T)
+					print_iterations = F)
 
 	output.sum <- summary(output)
 	expect_equal(length(output.sum[["CoefTable"]]$Std.err), 5)
@@ -62,6 +61,31 @@ test_that("kt_ee model estimation", {
 	expect_equal(length(output[["stan_fit"]][["par"]][["alpha"]]), 1)
 })
 
+test_that("kt_ee model estimation using num grad", {
+
+	output <- mdcev(formula = ~ ageindex| 0 | beach,
+					data = data_rec,
+					model = "kt_ee",
+					gamma_ascs = 0,
+					algorithm = "MLE",
+					initial.parameters = init,
+					jacobian_analytical_grad = 0,
+					print_iterations = F)
+	expect_true(abs(output$log.likelihood - (-2770.00194)) < tol)
+})
+
+test_that("kt_ee model estimation using trunc_data", {
+
+	output <- mdcev(formula = ~ ageindex| 0 | beach,
+					data = data_rec,
+					model = "kt_ee",
+					gamma_ascs = 0,
+					algorithm = "MLE",
+					trunc_data = 1,
+					print_iterations = F)
+	expect_true(abs(output$log.likelihood - (-2768.959809)) < tol)
+})
+
 test_that("Conditional error draw", {
 
 output <- mdcev(formula = ~ ageindex| 0 | beach,
@@ -70,7 +94,6 @@ output <- mdcev(formula = ~ ageindex| 0 | beach,
 				gamma_ascs = 0,
 				algorithm = "MLE",
 				print_iterations = F)
-
 nalts <- output$stan_data[["J"]]
 model_num <- 5
 npols <- 2
