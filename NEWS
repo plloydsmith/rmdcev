@@ -1,3 +1,11 @@
+rmdcev v1.2.1 (Release date: XX)
+==============
+
+- fix alt_name issue if alternatives not named alt
+- fix phi / gamma naming in summary for random parmater models
+- change default n_draws for non mvn to 0.
+
+
 rmdcev v1.2.0 (Release date: 2020-08-12)
 ==============
 

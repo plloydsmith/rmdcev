@@ -38,7 +38,7 @@ test_that("MLE hybrid0", {
 	output <- mdcev( ~ alt - 1,
 				   data = data_rec,
 				   model = "hybrid0",
-					 psi_ascs = 0,
+				   psi_ascs = 0,
 				   algorithm = "MLE",
 				   print_iterations = FALSE)
 
@@ -53,6 +53,23 @@ test_that("MLE hybrid0", {
 	expect_true(abs(output[["stan_fit"]][["par"]][["scale"]] - 0.7849449) < tol)
 	expect_true(abs(output[["stan_fit"]][["par"]][["psi"]][[1]] - -7.08514) < tol)
 	expect_equal(length(output[["stan_fit"]][["par"]][["alpha"]]), 0)
+})
+
+
+test_that("MLE hybrid0 mvn draws", {
+
+	output <- mdcev( ~ alt - 1,
+					 data = data_rec,
+					 model = "hybrid0",
+					 psi_ascs = 0,
+					 algorithm = "MLE",
+					 std_errors = "mvn",
+					 print_iterations = FALSE)
+
+	output.sum <- summary(output)
+	expect_equal(length(output.sum[["CoefTable"]]$Std.err), 35)
+	expect_equal(output$model, "hybrid0")
+
 })
 
 

@@ -106,7 +106,7 @@ mdcev.data <- function(data,
 	}
 
 	index <- data.frame(id = id, alt = alt)
-	rownames(index) <- rownames(data)
+	rownames(index) <- row.names(data)
 	attr(data, "index") <- index
 	attr(data, "class") <- c("mdcev.data", "data.frame")
 	if (! is.null(choice)) attr(data, "choice") <- choice.name

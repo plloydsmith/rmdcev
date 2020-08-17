@@ -6,7 +6,7 @@ tol <- 0.01
 
 data(data_rec, package = "rmdcev")
 
-data_rec <- mdcev.data(data_rec, subset = id <= 500,
+data_rec <- mdcev.data(data_rec, subset = id <= 200,
 					   id.var = "id",
 					   alt.var = "alt",
 					   choice = "quant")
@@ -67,7 +67,9 @@ test_that("Bayes gamma specification no gamma/psi ascs", {
 	df_sim <- PrepareSimulationData(output, policies, nsims = 5)
 
 	# Test welfare
-	wtp <- mdcev.sim(df_sim$df_indiv, df_common = df_sim$df_common, sim_options = df_sim$sim_options,
+
+	df_indiv <- lapply(df_sim$df_indiv, "[", c(1:10))
+	wtp <- mdcev.sim(df_indiv, df_common = df_sim$df_common, sim_options = df_sim$sim_options,
 					 cond_err = 1, nerrs = 1, sim_type = "welfare")
 	sum_wtp <- summary(wtp)
 
@@ -98,7 +100,8 @@ test_that("Bayes gamma uncorr specification", {
 	df_sim <- PrepareSimulationData(output, policies, nsims = 5)
 
 	# Test welfare
-	wtp <- mdcev.sim(df_sim$df_indiv, df_common = df_sim$df_common, sim_options = df_sim$sim_options,
+	df_indiv <- lapply(df_sim$df_indiv, "[", c(1:10))
+	wtp <- mdcev.sim(df_indiv, df_common = df_sim$df_common, sim_options = df_sim$sim_options,
 					 cond_err = 1, nerrs = 1, sim_type = "welfare")
 	sum_wtp <- summary(wtp)
 
@@ -128,7 +131,8 @@ test_that("Bayes gamma corr specification", {
 	df_sim <- PrepareSimulationData(output, policies, nsims = 5)
 
 	# Test welfare
-	wtp <- mdcev.sim(df_sim$df_indiv, df_common = df_sim$df_common, sim_options = df_sim$sim_options,
+	df_indiv <- lapply(df_sim$df_indiv, "[", c(1:10))
+	wtp <- mdcev.sim(df_indiv, df_common = df_sim$df_common, sim_options = df_sim$sim_options,
 					 cond_err = 1, nerrs = 1, sim_type = "welfare")
 	sum_wtp <- summary(wtp)
 
@@ -160,7 +164,8 @@ test_that("Bayes gamma corr specification with fixed gamma/alpha", {
 	df_sim <- PrepareSimulationData(output, policies, nsims = 5)
 
 	# Test welfare
-	wtp <- mdcev.sim(df_sim$df_indiv, df_common = df_sim$df_common, sim_options = df_sim$sim_options,
+	df_indiv <- lapply(df_sim$df_indiv, "[", c(1:10))
+	wtp <- mdcev.sim(df_indiv, df_common = df_sim$df_common, sim_options = df_sim$sim_options,
 					 cond_err = 1, nerrs = 1, sim_type = "welfare")
 	sum_wtp <- summary(wtp)
 

@@ -121,7 +121,7 @@ alpha_ll(const Eigen::Matrix<T0__, Eigen::Dynamic, 1>& alpha,
         stan::math::initialize(alpha_full, DUMMY_VAR__);
         stan::math::fill(alpha_full, DUMMY_VAR__);
         current_statement_begin__ = 23;
-        if (as_bool(logical_eq(model_num, 1))) {
+        if (as_bool((primitive_value(logical_eq(model_num, 1)) || primitive_value(logical_eq(model_num, 5))))) {
             current_statement_begin__ = 24;
             stan::math::assign(alpha_full, append_col(rep_vector(get_base1(alpha, 1, "alpha", 1), I), rep_matrix(0, I, J)));
         } else if (as_bool(logical_eq(model_num, 2))) {

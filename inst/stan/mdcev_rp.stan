@@ -19,15 +19,18 @@ data {
 
 transformed data {
 	int RP;
+	int RP_Phi;
 	int RP_g;
 	int RP_a;
+
 #include /common/mdcev_tdata.stan
 	{
 	int n_gamma_rp = gamma_nonrandom == 0 ? Gamma : 0;
 	int n_alpha_rp = alpha_nonrandom == 0 ? A : 0;
-	RP = NPsi + n_gamma_rp + n_alpha_rp + NPhi; // number of random parameters
-	RP_g = NPsi + 1; // location of first gamma
-	RP_a = NPsi + n_gamma_rp + 1; // location of first alpha
+	RP = NPsi + NPhi + n_gamma_rp + n_alpha_rp; // number of random parameters
+	RP_Phi = NPsi + 1; // location of first phi
+	RP_g = RP_Phi + NPhi; // location of first gamma
+	RP_a = RP_g + n_gamma_rp; // location of first alpha
 	}
 //	n_psi_rp = sum(psi_ndx);
 //	n_psi_fixed = NPsi - sum(psi_ndx);
@@ -72,7 +75,7 @@ transformed parameters {
 			  	alpha_individual_j = rep_matrix(0, I, J);
 			else if (model_num == 2)
 			  	alpha_individual_j = inv(1 + exp(-block(beta, 1, RP_a + 1, I, J)));
-			else
+			else if  (model_num == 3)
 				alpha_individual_j = rep_matrix(alpha_individual_1, J);
 		} else {
 			alpha_individual_1 = rep_vector(1e-03, I);
@@ -115,7 +118,7 @@ transformed parameters {
 			phi_ij = rep_matrix(1, I, J);
 		else if(NPhi > 0)
 			for(i in 1:I)
-				phi_ij[i] = exp(sub_row(beta, task_individual[i], RP - NPhi + 1, NPhi) * dat_phi[start[i]:end[i]]');
+				phi_ij[i] = exp(sub_row(beta, task_individual[i], RP_Phi, NPhi) * dat_phi[start[i]:end[i]]');
 
 		log_like = kt_ll(quant_j, price_j, log_num, income,
   					lpsi, phi_ij, gamma_individual, alpha_individual_1, scale_full,

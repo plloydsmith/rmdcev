@@ -153,7 +153,7 @@ mdcev <- function(formula = NULL, data,
 	}
 
 	if(algorithm == "Bayes" || std_errors == "deltamethod")
-		n_draws <- 1
+		n_draws <- 0
 
 		# Put model options in a list
 	mle_options <- list(fixed_scale1 = fixed_scale1,
@@ -190,7 +190,7 @@ mdcev <- function(formula = NULL, data,
 						lkj_shape_prior = lkj_shape_prior)
 
 	# Need for naming gamma/alpha parameters
-	alt_names <- unique(data$alt)
+	alt_names <- unlist(unique(attr(data, "index")["alt"]))
 
 	stan_data <- processMDCEVdata(formula, data, mle_options)
 

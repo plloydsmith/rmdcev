@@ -40,7 +40,7 @@ summary.mdcev <- function(object, printCI=FALSE, ...){
 					   std_err = as.numeric(std_err),
 					   Estimate = round(coefs, 3),
 					   Std.err = round(ifelse(stringr::str_detect(parms, "alpha"), std_err*exp(-coefs)/((1+exp(-coefs)))^2,
-					   					   ifelse(stringr::str_detect(parms, "gamma|scale|phi"), std_err*coefs, std_err)),3),
+					   					   ifelse(stringr::str_detect(parms, "gamma|scale"), std_err*coefs, std_err)),3),
 					   z.stat = round(coefs / Std.err,2),
 					   ci_lo95 = round(coefs - 1.96 * Std.err,3),
 					   ci_hi95 = round(coefs + 1.96 * Std.err,3)) %>%
@@ -49,49 +49,49 @@ summary.mdcev <- function(object, printCI=FALSE, ...){
 		} else if(object$std_errors == "mvn"){
 
 			# Get parameter estimates in matrix form
-			output <- as_tibble(object[["stan_fit"]][["theta_tilde"]]) %>%
-				dplyr::select(-tidyselect::starts_with("log_like"), -tidyselect::starts_with("sum_log_lik"))
+			output <- as_tibble(object[["stan_fit"]][["theta_tilde"]])
+
+			output <- output[,!grepl(c("^log_like|^sum_log_lik"), colnames(output))]
 
 			names(output)[1:object$parms_info$n_vars$n_parms_total] <- object$parms_info$parm_names$all_names
 
-			output <- output %>%
-				tibble::rowid_to_column("sim_id") %>%
-				tidyr::gather(parms, value, -sim_id)
+			output$sim_id <- seq.int(nrow(output))
 
 			output <- output %>%
+				tidyr::pivot_longer(-sim_id, names_to = "parms", values_to = "value") %>%
 				mutate(parms = factor(parms,levels=unique(parms))) %>%
 				group_by(parms) %>%
 				summarise(Estimate = round(mean(value),3),
 						  Std.err = round(stats::sd(value),3),
 						  z.stat = round(mean(value) / stats::sd(value),2),
 						  ci_lo95 = round(stats::quantile(value, 0.025),3),
-						  ci_hi95 = round(stats::quantile(value, 0.975),3))
+						  ci_hi95 = round(stats::quantile(value, 0.975),3),
+						  .groups = 'drop')
 		}
 	} else if (object$algorithm == "Bayes"){
 
 		# Get parameter estimates in matrix form
-		output <- rstan::extract(object$stan_fit, permuted = TRUE, inc_warmup = FALSE) %>%
-			as.data.frame() %>%
-			dplyr::select(-tidyselect::starts_with("log_like"), -tidyselect::starts_with("sum_log_lik"),
-						  -tidyselect::starts_with("tau_unif"), -.data$lp__)
+		output <- as.data.frame(rstan::extract(object$stan_fit, permuted = TRUE, inc_warmup = FALSE))
+		output <- output[,!grepl(c("^log_like|^sum_log_lik|^tau_unif|^lp__"), colnames(output))]
 
 		if (object$random_parameters == "fixed")
 			names(output)[1:object$parms_info$n_vars$n_parms_total] <- object$parms_info$parm_names$all_names
 
+		output$sim_id <- seq.int(nrow(output))
+
 		output <- output %>%
-			tibble::rowid_to_column("sim_id") %>%
-			tidyr::gather(parms, value, -sim_id)
+			tidyr::pivot_longer(-sim_id, names_to = "parms", values_to = "value")
 
 		bayes_extra <- as_tibble(rstan::summary(object$stan_fit)$summary) %>%
-			mutate(parms = row.names(rstan::summary(object$stan_fit)$summary))
+			mutate(parms = row.names(rstan::summary(object$stan_fit)$summary)) %>%
+				filter(!grepl(c("log_lik"), parms)) %>%
+				filter(!grepl(c("lp_"), parms))
 
 		if (object$random_parameters == "fixed"){
 
 			parm.names <- unique(output$parms)
 
-			bayes_extra <- bayes_extra %>%
-				filter(!grepl(c("log_lik"), parms)) %>%
-				filter(!grepl(c("lp_"), parms)) %>%
+			bayes_extra <- bayes_extra  %>%
 				select(parms, n_eff, Rhat) %>%
 				mutate(parms = factor(parm.names,levels=unique(parm.names)),
 					   n_eff = round(as.numeric(n_eff), 0),
@@ -145,7 +145,8 @@ summary.mdcev <- function(object, printCI=FALSE, ...){
 					  Std.dev = round(stats::sd(value),3),
 					  z.stat = round(mean(value) / stats::sd(value),2),
 					  ci_lo95 = round(stats::quantile(value, 0.025),3),
-					  ci_hi95 = round(stats::quantile(value, 0.975),3)) %>%
+					  ci_hi95 = round(stats::quantile(value, 0.975),3),
+					  .groups = 'drop') %>%
 			left_join(bayes_extra, by = "parms")
 	}
 
