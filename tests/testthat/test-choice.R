@@ -119,13 +119,17 @@ test_that("MLE alpha", {
 context("MLE kt_ee specification")
 
 test_that("MLE kt_ee", {
-	output <- mdcev( ~ 0 | 0 | 0,
+
+	data_rec$beach = ifelse(data_rec$alt == "beach", 1, 0)
+
+	output <- mdcev( ~ ageindex | 0 | beach,
 					 data = data_rec,
+					 gamma_ascs = 0,
 					 model = "kt_ee",
 					 algorithm = "MLE",
 					 print_iterations = FALSE)
 
 	output.sum <- summary(output)
-	expect_equal(length(output.sum[["CoefTable"]]$Std.err), 19)
-	expect_true(abs(output$log.likelihood - (-2775.93)) < tol)
+	expect_equal(length(output.sum[["CoefTable"]]$Std.err), 5)
+	expect_true(abs(output$log.likelihood - (-5492.903)) < tol)
 })
