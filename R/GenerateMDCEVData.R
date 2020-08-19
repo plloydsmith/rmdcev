@@ -61,6 +61,9 @@ GenerateMDCEVData <- function(model, nobs = 1000, nalts = 10,
 		phi_sims <- matrix(dat_phi %*% phi_parms, ncol = nalts, byrow = TRUE)
 		phi_sims <- CreateListsRow(phi_sims)
 		parms <- paste0(rep('phi', length(phi_parms)), sep="_", colnames(dat_phi))
+		true <- c(phi_parms)
+		phi_true <- cbind(parms, true)
+
 	}
 
 	dat_psi_i <- dat_psi_i %x% rep(1, nalts)
@@ -114,8 +117,6 @@ GenerateMDCEVData <- function(model, nobs = 1000, nalts = 10,
 		parms <- paste0(rep('psi', length(true)), sep="_", colnames(dat_psi))
 
 		parms_true <- cbind(parms, true)
-
-		phi_true <- cbind(parms, true)
 
 		alpha_parms <- c(alpha_parms, rep(0, nalts))
 		true <- alpha_parms[1]
