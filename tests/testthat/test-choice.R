@@ -131,5 +131,5 @@ test_that("MLE kt_ee", {
 
 	output.sum <- summary(output)
 	expect_equal(length(output.sum[["CoefTable"]]$Std.err), 5)
-	expect_true(abs(output$log.likelihood - (-5492.903)) < tol)
+	expect_true(abs(output$log.likelihood - (-2826.694653)) < tol)
 })
