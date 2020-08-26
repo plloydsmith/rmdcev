@@ -1,6 +1,6 @@
 citHeader("To cite the 'rmdcev' package in publications use:")
 
-year = 2019
+year = 2020
 vers = paste('R package version', meta$Version)
 
 citEntry(

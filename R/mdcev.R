@@ -131,7 +131,7 @@ mdcev <- function(formula = NULL, data,
 	# Check models
 	if (!is.element(algorithm, c("MLE", "Bayes"))) stop("algorithm must be 'MLE' or 'Bayes'")
 	if (!is.element(random_parameters, c("fixed", "uncorr", "corr"))) stop("random_parameters must be 'fixed', 'uncorr' or 'corr'")
-	if (!is.element(model, c("alpha", "gamma", "hybrid", "hybrid0", "kt_ee"))) stop("model must be 'alpha', 'gamma', 'hybrid', 'hybrid0', or 'kt_les'")
+	if (!is.element(model, c("alpha", "gamma", "hybrid", "hybrid0", "kt_ee"))) stop("model must be 'alpha', 'gamma', 'hybrid', 'hybrid0', or 'kt_ee'")
 	if (!is.element(std_errors, c("deltamethod", "mvn"))) stop("std_errors must be 'deltamethod' or 'mvn'")
 
 	if (algorithm == "Bayes" && n_classes > 1)
@@ -171,6 +171,7 @@ mdcev <- function(formula = NULL, data,
 						keep_loglik = keep_loglik,
 						flat_priors = flat_priors,
 						prior_psi_sd = prior_psi_sd,
+						pior_phi_sd = prior_phi_sd,
 						prior_gamma_sd = prior_gamma_sd,
 						prior_alpha_shape = prior_alpha_shape,
 						prior_scale_sd = prior_scale_sd,
