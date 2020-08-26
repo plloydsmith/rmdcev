@@ -11,7 +11,7 @@ J <- stan_data$J
 
 if (stan_data$psi_ascs == 1){
 	n_psi_asc <- J - 1
-	psi_asc_names <- as.character(alt_names[-1])
+	psi_asc_names <- alt_names[-1]
 } else if (stan_data$psi_ascs == 0){
 	n_psi_asc <- 0
 	psi_asc_names <- NULL

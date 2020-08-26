@@ -191,7 +191,7 @@ mdcev <- function(formula = NULL, data,
 						lkj_shape_prior = lkj_shape_prior)
 
 	# Need for naming gamma/alpha parameters
-	alt_names <- unlist(unique(attr(data, "index")["alt"]))
+	alt_names <- as.character(unlist(unique(attr(data, "index")["alt"])))
 
 	stan_data <- processMDCEVdata(formula, data, mle_options)
 
