@@ -35,12 +35,19 @@ Models can be estimated using
 
 ## Installation
 
+*Note that currently the package only installs on linux and windows*
+
 I recommend you first install **rstan** by following these steps:
 
 <https://github.com/stan-dev/rstan/wiki/RStan-Getting-Started>
 
-Once **rstan** is installed, you can install the released version of
-**rmdcev** from GitHub using devtools
+Once **rstan** is installed, you can install **rmdcev** from CRAN using
+
+``` r
+install.packages("rmdcev")
+```
+
+Or install the latest version of **rmdcev** from GitHub using devtools
 
 ``` r
 if (!require(devtools)) {
@@ -96,6 +103,7 @@ our estimation results.
 ``` r
 library(pacman)
 p_load(tidyverse, rmdcev)
+set.seed(12345)
 model <- "gamma"
 nobs <- 2000
 nalts <- 10
@@ -115,22 +123,22 @@ mdcev_est <- mdcev(~ b1 + b2 + b3 + b4 + b5 + b6,
                    model = model,
                    algorithm = "MLE")
 #> Using MLE to estimate KT model
-#> Chain 1: Initial log joint probability = -102091
+#> Chain 1: Initial log joint probability = -100801
 #> Chain 1:     Iter      log prob        ||dx||      ||grad||       alpha      alpha0  # evals  Notes 
 #> Chain 1: Error evaluating model log probability: Non-finite gradient.
 #> Error evaluating model log probability: Non-finite gradient.
 #> 
-#> Chain 1:       19      -36191.9      0.238697        170.87           1           1       33   
+#> Chain 1:       19      -35837.5      0.834357       710.653           1           1       38   
 #> Chain 1:     Iter      log prob        ||dx||      ||grad||       alpha      alpha0  # evals  Notes 
-#> Chain 1:       39      -36099.7       0.09316       104.396           1           1       54   
+#> Chain 1:       39      -35733.9     0.0404306       61.8681      0.7313      0.7313       58   
 #> Chain 1:     Iter      log prob        ||dx||      ||grad||       alpha      alpha0  # evals  Notes 
-#> Chain 1:       59      -36075.1     0.0173156       53.9469      0.3078      0.3078       80   
+#> Chain 1:       59      -35725.9     0.0298134       12.9001       0.994       0.994       80   
 #> Chain 1:     Iter      log prob        ||dx||      ||grad||       alpha      alpha0  # evals  Notes 
-#> Chain 1:       79      -36072.3     0.0278811       12.2672           1           1      103   
+#> Chain 1:       79      -35723.7     0.0276683       16.9662           1           1      102   
 #> Chain 1:     Iter      log prob        ||dx||      ||grad||       alpha      alpha0  # evals  Notes 
-#> Chain 1:       99      -36072.2    0.00180446      0.959796           1           1      124   
+#> Chain 1:       99      -35723.4    0.00404058       2.37686           1           1      123   
 #> Chain 1:     Iter      log prob        ||dx||      ||grad||       alpha      alpha0  # evals  Notes 
-#> Chain 1:      107      -36072.2   0.000747187      0.522778      0.9515      0.9515      135   
+#> Chain 1:      108      -35723.4   0.000840364      0.431756           1           1      133   
 #> Chain 1: Optimization terminated normally: 
 #> Chain 1:   Convergence detected: relative gradient magnitude is below tolerance
 ```
@@ -146,37 +154,37 @@ summary(mdcev_est)
 #> Number of individuals            : 2000
 #> Number of non-numeraire alts     : 10
 #> Estimated parameters             : 18
-#> LL                               : -36072.19
-#> AIC                              : 72180.38
-#> BIC                              : 72281.2
+#> LL                               : -35723.35
+#> AIC                              : 71482.7
+#> BIC                              : 71583.52
 #> Standard errors calculated using : Delta method
 #> Exit of MLE                      : successful convergence
-#> Time taken (hh:mm:ss)            : 00:00:2.85
+#> Time taken (hh:mm:ss)            : 00:00:3.52
 #> 
 #> Average consumption of non-numeraire alternatives:
 #>     1     2     3     4     5     6     7     8     9    10 
-#>  7.18  0.95 16.85 11.57  8.81 58.15 18.51 17.74  0.30  6.56 
+#> 59.90 10.43  0.84 71.64  4.89  1.46 10.40 13.49 21.86  0.37 
 #> 
 #> Parameter estimates --------------------------------  
 #>           Estimate Std.err z.stat
-#> psi_b1      -5.012   0.126 -39.78
-#> psi_b2       0.484   0.082   5.91
-#> psi_b3       2.107   0.074  28.47
-#> psi_b4      -1.513   0.055 -27.52
-#> psi_b5       2.015   0.047  42.86
-#> psi_b6      -1.027   0.053 -19.38
-#> gamma_1      5.673   0.480  11.82
-#> gamma_2      1.799   0.207   8.69
-#> gamma_3      2.237   0.140  15.98
-#> gamma_4      2.440   0.147  16.60
-#> gamma_5      6.482   0.527  12.30
-#> gamma_6      8.840   0.512  17.27
-#> gamma_7      2.684   0.156  17.20
-#> gamma_8      8.299   0.573  14.48
-#> gamma_9      6.507   1.892   3.44
-#> gamma_10     3.867   0.313  12.36
-#> alpha_num    0.501   0.008  62.67
-#> scale        1.006   0.015  67.04
+#> psi_b1      -4.897   0.115 -42.58
+#> psi_b2       0.556   0.091   6.11
+#> psi_b3       2.010   0.062  32.42
+#> psi_b4      -1.501   0.057 -26.33
+#> psi_b5       2.079   0.046  45.20
+#> psi_b6      -1.089   0.055 -19.79
+#> gamma_1      6.971   0.411  16.96
+#> gamma_2      8.437   0.740  11.40
+#> gamma_3      7.373   1.526   4.83
+#> gamma_4      8.724   0.534  16.34
+#> gamma_5      4.876   0.425  11.47
+#> gamma_6      2.142   0.234   9.15
+#> gamma_7      3.445   0.232  14.85
+#> gamma_8      5.589   0.385  14.52
+#> gamma_9      7.669   0.509  15.07
+#> gamma_10     7.822   2.758   2.84
+#> alpha_num    0.503   0.008  62.86
+#> scale        1.000   0.015  66.70
 #> Note: All non-numeraire alpha's fixed to 0.
 ```
 
@@ -191,24 +199,24 @@ coefs <- as_tibble(sim.data$parms_true) %>%
 
 head(coefs, 200)
 #>      parms      true Estimate Std.err z.stat    cl_lo    cl_hi
-#> 1   psi_b1 -5.000000   -5.012   0.126 -39.78 -5.25896 -4.76504
-#> 2   psi_b2  0.500000    0.484   0.082   5.91  0.32328  0.64472
-#> 3   psi_b3  2.000000    2.107   0.074  28.47  1.96196  2.25204
-#> 4   psi_b4 -1.500000   -1.513   0.055 -27.52 -1.62080 -1.40520
-#> 5   psi_b5  2.000000    2.015   0.047  42.86  1.92288  2.10712
-#> 6   psi_b6 -1.000000   -1.027   0.053 -19.38 -1.13088 -0.92312
-#> 7   gamma1  5.880124    5.673   0.480  11.82  4.73220  6.61380
-#> 8   gamma2  2.037718    1.799   0.207   8.69  1.39328  2.20472
-#> 9   gamma3  2.326599    2.237   0.140  15.98  1.96260  2.51140
-#> 10  gamma4  2.378944    2.440   0.147  16.60  2.15188  2.72812
-#> 11  gamma5  6.188133    6.482   0.527  12.30  5.44908  7.51492
-#> 12  gamma6  9.298275    8.840   0.512  17.27  7.83648  9.84352
-#> 13  gamma7  2.845774    2.684   0.156  17.20  2.37824  2.98976
-#> 14  gamma8  7.553436    8.299   0.573  14.48  7.17592  9.42208
-#> 15  gamma9  8.992650    6.507   1.892   3.44  2.79868 10.21532
-#> 16 gamma10  3.494510    3.867   0.313  12.36  3.25352  4.48048
-#> 17  alpha1  0.500000    0.501   0.008  62.67  0.48532  0.51668
-#> 18   scale  1.000000    1.006   0.015  67.04  0.97660  1.03540
+#> 1   psi_b1 -5.000000   -4.897   0.115 -42.58 -5.12240 -4.67160
+#> 2   psi_b2  0.500000    0.556   0.091   6.11  0.37764  0.73436
+#> 3   psi_b3  2.000000    2.010   0.062  32.42  1.88848  2.13152
+#> 4   psi_b4 -1.500000   -1.501   0.057 -26.33 -1.61272 -1.38928
+#> 5   psi_b5  2.000000    2.079   0.046  45.20  1.98884  2.16916
+#> 6   psi_b6 -1.000000   -1.089   0.055 -19.79 -1.19680 -0.98120
+#> 7   gamma1  7.488135    6.971   0.411  16.96  6.16544  7.77656
+#> 8   gamma2  8.881959    8.437   0.740  11.40  6.98660  9.88740
+#> 9   gamma3  7.848841    7.373   1.526   4.83  4.38204 10.36396
+#> 10  gamma4  8.975121    8.724   0.534  16.34  7.67736  9.77064
+#> 11  gamma5  5.108329    4.876   0.425  11.47  4.04300  5.70900
+#> 12  gamma6  2.497346    2.142   0.234   9.15  1.68336  2.60064
+#> 13  gamma7  3.925858    3.445   0.232  14.85  2.99028  3.89972
+#> 14  gamma8  5.583019    5.589   0.385  14.52  4.83440  6.34360
+#> 15  gamma9  7.549347    7.669   0.509  15.07  6.67136  8.66664
+#> 16 gamma10  9.907632    7.822   2.758   2.84  2.41632 13.22768
+#> 17  alpha1  0.500000    0.503   0.008  62.86  0.48732  0.51868
+#> 18   scale  1.000000    1.000   0.015  66.70  0.97060  1.02940
 ```
 
 Compare outputs using a figure
@@ -248,11 +256,11 @@ wtp <- mdcev.sim(df_sim$df_indiv,
                  sim_type = "welfare")
 #> Using general approach in simulation...
 #> 
-#> 6.00e+04simulations finished in0.4minutes.(2477per second)
+#> 6.00e+04simulations finished in0.41minutes.(2426per second)
 summary(wtp)
 #> # A tibble: 2 x 5
-#>   policy      mean std.dev `ci_lo2.5%` `ci_hi97.5%`
-#>   <chr>      <dbl>   <dbl>       <dbl>        <dbl>
-#> 1 policy1 4.19e-11      NA    4.19e-11     4.19e-11
-#> 2 policy2 4.19e-11      NA    4.19e-11     4.19e-11
+#>   policy       mean std.dev `ci_lo2.5%` `ci_hi97.5%`
+#>   <chr>       <dbl>   <dbl>       <dbl>        <dbl>
+#> 1 policy1 -3.63e-11      NA   -3.63e-11    -3.63e-11
+#> 2 policy2 -3.63e-11      NA   -3.63e-11    -3.63e-11
 ```

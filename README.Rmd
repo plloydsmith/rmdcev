@@ -34,11 +34,19 @@ Models can be estimated using
 
 ## Installation
 
+*Note that currently the package only installs on linux and windows*
+
 I recommend you first install **rstan** by following these steps:
 
 https://github.com/stan-dev/rstan/wiki/RStan-Getting-Started
 
-Once **rstan** is installed, you can install the released version of **rmdcev** from GitHub using devtools
+Once **rstan** is installed, you can install **rmdcev** from CRAN using
+
+``` r
+install.packages("rmdcev")
+```
+
+Or install the latest version of **rmdcev** from GitHub using devtools
 
 ``` r
 if (!require(devtools)) {
@@ -71,6 +79,7 @@ As an example, we can simulate some data using Bhat (2008)'s 'Gamma' specificati
 ```{r} 
 library(pacman)
 p_load(tidyverse, rmdcev)
+set.seed(12345)
 model <- "gamma"
 nobs <- 2000
 nalts <- 10
