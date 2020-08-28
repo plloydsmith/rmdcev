@@ -6,6 +6,7 @@ rmdcev v1.2.1 (Release date: XX)
 - change default n_draws for non mvn to 0.
 - fix phi name error in GenerateMDCEVData
 - fix prior_phi_sd issue
+- remove stringr/tidyselect as dependencies
 
 rmdcev v1.2.0 (Release date: 2020-08-12)
 ==============

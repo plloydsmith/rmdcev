@@ -77,8 +77,7 @@ PrepareSimulationData <- function(object,
 #	if (object$random_parameters == "corr")
 #		stop("Demand and welfare simulation not set up for correlated RP-MDCEV models yet.", "\n")
 	if(object$n_classes > 1){
-		est_sim <- est_sim %>%
-			filter(stringr::str_detect(.data$parms, paste(class)))
+		est_sim <- est_sim[grepl(class, est_sim$parms),]
 	}
 
 	sim_data <- ProcessSimulationData(est_sim, object, policies, nsims)

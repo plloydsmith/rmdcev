@@ -115,7 +115,7 @@ return(dat_psi)
 #' @keywords internal
 GrabParms <- function(data, parm_name){
 	out <- data %>%
-		dplyr::filter(stringr::str_detect(.data$parms, parm_name)) %>%
+		dplyr::filter(grepl(parm_name, .data$parms)) %>%
 		tidyr::pivot_wider(sim_id, names_from = "parms", values_from = "value") %>%
 		dplyr::select(-sim_id) %>%
 		as.matrix(.)

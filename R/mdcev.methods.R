@@ -39,8 +39,8 @@ summary.mdcev <- function(object, printCI=FALSE, ...){
 				mutate(coefs = as.numeric(coefs),
 					   std_err = as.numeric(std_err),
 					   Estimate = round(coefs, 3),
-					   Std.err = round(ifelse(stringr::str_detect(parms, "alpha"), std_err*exp(-coefs)/((1+exp(-coefs)))^2,
-					   					   ifelse(stringr::str_detect(parms, "gamma|scale"), std_err*coefs, std_err)),3),
+					   Std.err = round(ifelse(grepl("alpha", parms), std_err*exp(-coefs)/((1+exp(-coefs)))^2,
+					   					   ifelse(grepl("gamma|scale", parms), std_err*coefs, std_err)),3),
 					   z.stat = round(coefs / Std.err,2),
 					   ci_lo95 = round(coefs - 1.96 * Std.err,3),
 					   ci_hi95 = round(coefs + 1.96 * Std.err,3)) %>%
@@ -99,11 +99,10 @@ summary.mdcev <- function(object, printCI=FALSE, ...){
 
 		} else if (object$random_parameters != "fixed"){
 
-			output_non_mu <- output %>%
-				filter(stringr::str_detect(parms, "gamma|alpha|tau|scale"))
+			output_non_mu <- output[grepl("gamma|alpha|tau|scale", output$parms),]
 
 			output <- output %>%
-				filter(stringr::str_detect(parms, "mu")) %>%
+				filter(grepl("mu", parms)) %>%
 				bind_rows(output_non_mu) %>%
 				arrange(sim_id)
 
