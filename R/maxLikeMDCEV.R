@@ -104,7 +104,7 @@ maxlikeMDCEV <- function(stan_data, initial.parameters,
 
 		result$stan_fit <- stan_fit
 		result$log.likelihood <- stan_fit[["par"]][["sum_log_lik"]]
-		class_probabilities <- exp(t(stan_fit[["par"]][["theta"]]))
+		class_probabilities <- stan_fit[["par"]][["theta"]]
 		colnames(class_probabilities) <- paste0("class", c(1:mle_options$n_classes))
 		result$class_probabilities <- class_probabilities
 	}

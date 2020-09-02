@@ -70,11 +70,11 @@ transformed parameters {
 
 	if (alpha_nonrandom == 0){
 		if (model_num != 4){
-			alpha_individual_1 = inv(1 + exp(-col(beta, RP_a)));
+			alpha_individual_1 = inv_logit(col(beta, RP_a));
 			if (model_num == 1)
 			  	alpha_individual_j = rep_matrix(0, I, J);
 			else if (model_num == 2)
-			  	alpha_individual_j = inv(1 + exp(-block(beta, 1, RP_a + 1, I, J)));
+			  	alpha_individual_j = inv_logit(block(beta, 1, RP_a + 1, I, J));
 			else if  (model_num == 3)
 				alpha_individual_j = rep_matrix(alpha_individual_1, J);
 		} else {
@@ -108,7 +108,7 @@ transformed parameters {
 			lpsi = rep_matrix(0, I, J);
 	}
 
-	if(model_num < 5){
+	if (model_num < 5){
 		log_like = mdcev_ll(quant_j, price_j, log_num, income, M, log_M_fact, // data
 			lpsi, gamma_individual, alpha_individual_1, alpha_individual_j, scale_full, 						// parameters
 			I, J, nonzero, trunc_data);
@@ -116,7 +116,7 @@ transformed parameters {
 		matrix[I, J] phi_ij;
 		if (NPhi == 0)
 			phi_ij = rep_matrix(1, I, J);
-		else if(NPhi > 0)
+		else if (NPhi > 0)
 			for(i in 1:I)
 				phi_ij[i] = exp(sub_row(beta, task_individual[i], RP_Phi, NPhi) * dat_phi[start[i]:end[i]]');
 

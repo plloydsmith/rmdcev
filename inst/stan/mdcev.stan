@@ -13,7 +13,8 @@ data {
 
 // additional LC data that can be set to 0 if not used
 	int L; // number of predictors in membership equation
-	vector[L] data_class[I];   // predictors for component membership
+//	vector[L] data_class[I];   // predictors for component membership
+	matrix[I, L] data_class;   // predictors for component membership
 	real prior_delta_sd;
 }
 
@@ -33,7 +34,7 @@ parameters {
 transformed parameters {
 	vector[I] log_like;
 	{
-	vector[I] log_like_util[K];
+	matrix[I, K] log_like_util;
 	for (k in 1:K){
 		matrix[I, J] gamma_full = gamma_ll(gamma[k], I, J, Gamma);
 		real scale_full = fixed_scale1 == 0 ? scale[k] : 1.0;
@@ -58,7 +59,7 @@ transformed parameters {
 				lpsi, gamma_full, col(alpha_full, 1), block(alpha_full, 1, 2, I, J), scale_full, 						// parameters
 				I, J, nonzero, trunc_data);
 			} else if (K > 1){
-			log_like_util[k] = mdcev_ll(quant_j, price_j, log_num, income, M, log_M_fact, // data
+			log_like_util[ , k] = mdcev_ll(quant_j, price_j, log_num, income, M, log_M_fact, // data
 				lpsi, gamma_full, col(alpha_full, 1), block(alpha_full, 1, 2, I, J), scale_full, 						// parameters
 				I, J, nonzero, trunc_data);
 			}
@@ -74,7 +75,7 @@ transformed parameters {
   				lpsi, phi_ij, gamma_full, rep_vector(alpha[k, 1], I), scale_full,
   				I, J, nonzero, trunc_data, jacobian_analytical_grad);
 			} else if (K > 1){
-			log_like_util[k] = kt_ll(quant_j, price_j, log_num, income,
+			log_like_util[ , k] = kt_ll(quant_j, price_j, log_num, income,
   				lpsi, phi_ij, gamma_full, rep_vector(alpha[k, 1], I), scale_full,
   				I, J, nonzero, trunc_data, jacobian_analytical_grad);
 			}
@@ -82,13 +83,18 @@ transformed parameters {
 	}
 
 	if (K > 1){
+		matrix[I, K] theta = append_col(rep_vector(0, I), data_class * delta'); // class membership equation
 		for(i in 1:I){
-			vector[K] ltheta = log_softmax(append_row(0, delta * data_class[i])); // class membership equation
-			vector[K] lps;
-			for (k in 1:K){
-				lps[k] = ltheta[k] + log_like_util[k,i];
-			}
-			log_like[i] = log_sum_exp(lps);
+//			vector[K] theta = softmax(append_row(0, delta * data_class[i])); // class membership equation
+//			vector[K] theta_temp = softmax(theta[i]); // class membership equation
+			log_like[i] = log_mix(softmax(theta[i]'), log_like_util[i]);
+//			log_like[i] = log_mix(theta, log_like_util[i]);
+//			vector[K] ltheta = log_softmax(append_row(0, delta * data_class[i])); // class membership equation
+//			vector[K] lps;
+//			for (k in 1:K){
+//				lps[k] = ltheta[k] + log_like_util[k,i];
+//			}
+//			log_like[i] = log_sum_exp(lps);
 		}
 	}
 	}
@@ -121,14 +127,11 @@ target += dot_product(log_like, weights);//objective to target
 
 generated quantities{
 	real sum_log_lik = 0;
-	vector[K > 1 ? I : 0] theta[K];
+	matrix[K > 1 ? I : 0, K] theta;
 
 	for(i in 1:I){
 		sum_log_lik = sum_log_lik + log_like[i] * weights[i];
-		if (K > 1){
-  			vector[K] theta1 = log_softmax(append_row(0, delta * data_class[i]));
-			for(k in 1:K)
-  				theta[k,i] = theta1[k];
-		}
+		if (K > 1)
+  			theta[i] = softmax(append_row(0, delta * data_class[i]'))';
 	}
 }

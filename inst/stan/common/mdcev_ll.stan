@@ -38,21 +38,21 @@ vector mdcev_ll(matrix quant_j, matrix price_j, vector log_num, vector income,
 	vector[J] ones_j = rep_vector(1, J);
 	matrix[I, J] v_j= (lpsi + (alpha_j - 1) .* log(quant_j ./ gamma_j + 1) - log(price_j)) / scale_full;
 	vector[I] v1 = (alpha1 - 1) .* log_num / scale_full;
-	matrix[I, J] logf = log(1 - alpha_j) - log(quant_j + gamma_j);
-	vector[I] logf1 = log(1 - alpha1) - log_num;
+	matrix[I, J] logf = log1m(alpha_j) - log(quant_j + gamma_j);
+	vector[I] logf1 = log1m(alpha1) - log_num;
 
 	log_like = (1 - M) * log(scale_full) + logf1 + v1 + rows_dot_product(nonzero, logf + v_j) +
 		log(inv(exp(logf1)) + rows_dot_product(nonzero, price_j ./ exp(logf))) -
 		M .* log(exp(v1) + exp(v_j) * ones_j) + log_M_fact;
 
 	if (trunc_data == 1){
-		matrix[I, J+1] v_1 = exp(append_col((alpha1 - 1) .* log(income), lpsi - log(price_j))/ scale_full);
+		matrix[I, J+1] v_1 = exp(append_col((alpha1 - 1) .* log(income), lpsi - log(price_j)) / scale_full);
 		vector[I] like_trunc = col(v_1, 1) ./ (v_1 * rep_vector(1, J+1));
 
 		for(i in 1:I)
 			like_trunc[i] = like_trunc[i] < 1 ? like_trunc[i] : 1;
 
-		log_like = log_like - log(1 - like_trunc);
+		log_like = log_like - log1m(like_trunc);
 	}
 
 return(log_like);
@@ -60,11 +60,9 @@ return(log_like);
 
 real DeterminJacob(vector phi_quant_term, real alpha, vector price_j_num,
                   vector nonzero, int J){
-// old, use Bhat (2008) form below
-  matrix[J, J] jacobian;
+// older version, use Bhat (2008) form below
   real log_j_det;
-
-  jacobian = add_diag(rep_matrix((1 - alpha) * price_j_num, J), inv(phi_quant_term));
+  matrix[J, J] jacobian = add_diag(rep_matrix((1 - alpha) * price_j_num, J), inv(phi_quant_term));
   jacobian = add_diag(diag_post_multiply(jacobian, nonzero), 1 - nonzero);
   log_j_det = log_determinant(jacobian);
 
@@ -88,7 +86,7 @@ vector kt_ll(matrix quant_j, matrix price_j, vector log_num, vector income,
                     price_j_num, nonzero[i]', J);
     	}
 	} else if (jacobian_analytical_grad == 1){
-		log_j_det = log(1 - alpha) - log_num + rows_dot_product(nonzero, log(inv(phi_quant_term))) +
+		log_j_det = log1m(alpha) - log_num + rows_dot_product(nonzero, log(inv(phi_quant_term))) +
          		log(exp(log_num) ./ (1 - alpha) + rows_dot_product(nonzero, phi_quant_term .* price_j));
 	}
 	 // Calculate the demand function, g
@@ -106,7 +104,7 @@ vector kt_ll(matrix quant_j, matrix price_j, vector log_num, vector income,
       for(i in 1:I)
 		  like_trunc[i] = like_trunc[i] < 1 ? like_trunc[i] : 1;
 
-   	      log_like = log_j_det + log_like - log(1 - like_trunc);
+   	      log_like = log_j_det + log_like - log1m(like_trunc);
 	}
 	else
   		log_like = log_j_det + log_like ; // Calculate the liklihood log(j_det*exp(x))=log(j_det)+x

@@ -55,7 +55,9 @@ test_that("Test LC simulations", {
 	npols <- 2
 	policies <- CreateBlankPolicies(npols, result_test,
 									price_change_only = TRUE)
+
 	df_sim <- PrepareSimulationData(result_test, policies, nsims = 1, class = "class1")
+	df_sim <- PrepareSimulationData(result_test, policies, nsims = 1, class = "class2")
 
 	# Test welfare
 	wtp <- mdcev.sim(df_sim$df_indiv, df_common = df_sim$df_common, sim_options = df_sim$sim_options,
