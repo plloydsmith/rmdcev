@@ -380,16 +380,17 @@ vector HicksianDemand(real util, vector price,
 		vector[nalts+1] mu = col(parm_matrix, 1); // obtain mu
 		vector[nalts+1] g = col(parm_matrix, 3); // obtain gamma
 		vector[nalts+1] g_psi = g .* mu .* col(parm_matrix, 2); // obtain gamma_psi
-		vector[nalts+1] b;
 		vector[nalts+1] c;
 
 		if (model_num == 3){
+			vector[nalts+1] b;
 			for (j in 1:nalts+1)
 				b[j] = pow(mu[j], -alpha_1 / (alpha_1 - 1)); // want price/psi so take negative of exponent
 
-		c = g_psi .* b;
+			c = g_psi .* b;
+
 		} if (model_num == 4){
-			b = g_psi .* log(mu);
+			c = g_psi .* log(mu);
 		}
 
 		while (exit == 0){
@@ -399,7 +400,7 @@ vector HicksianDemand(real util, vector price,
 				real lambda_den = sum(c[1:M]);
 				lambda1 = pow(lambda_num / lambda_den, (alpha_1 - 1) / alpha_1); // create 1/lambda term
 			} else if (model_num == 4){
-				real lambda_num = util - sum(b[1:M]);
+				real lambda_num = util - sum(c[1:M]);
 				real lambda_den = sum(g_psi[1:M]);
 				lambda1 = inv(exp(lambda_num / lambda_den)); // create 1/lambda term = 1/exp(expression)
 			}
