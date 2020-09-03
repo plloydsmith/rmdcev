@@ -383,10 +383,14 @@ vector HicksianDemand(real util, vector price,
 		vector[nalts+1] b;
 		vector[nalts+1] c;
 
-		for (j in 1:nalts+1)
-			b[j] = pow(mu[j], -alpha_1 / (alpha_1 - 1)); // want price/psi so take negative of exponent
+		if (model_num == 3){
+			for (j in 1:nalts+1)
+				b[j] = pow(mu[j], -alpha_1 / (alpha_1 - 1)); // want price/psi so take negative of exponent
 
 		c = g_psi .* b;
+		} if (model_num == 4){
+			b = g_psi .* log(mu);
+		}
 
 		while (exit == 0){
 			// Calculate 1/lambda for a given M
@@ -395,9 +399,9 @@ vector HicksianDemand(real util, vector price,
 				real lambda_den = sum(c[1:M]);
 				lambda1 = pow(lambda_num / lambda_den, (alpha_1 - 1) / alpha_1); // create 1/lambda term
 			} else if (model_num == 4){
-				real lambda_num = util + sum(g_psi[1:M]) - g_psi[1]; // utility not expenditure and subtract numeriare psi
-				real lambda_den = sum(c[1:M]);
-				lambda1 = pow(lambda_num / lambda_den, (alpha_1 - 1) / alpha_1); // create 1/lambda term
+				real lambda_num = util - sum(b[1:M]);
+				real lambda_den = sum(g_psi[1:M]);
+				lambda1 = inv(exp(lambda_num / lambda_den)); // create 1/lambda term = 1/exp(expression)
 			}
 			// Compare 1/lambda to baseline utility of the next lowest alternative
 			// (M+1). If lambda exceeds this value then all lower-valued
