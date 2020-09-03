@@ -17,14 +17,12 @@ matrix alpha_j_ll(vector alpha, int I, int J, int model_num) {
 
 	matrix[I, J] alpha_j;
 
-	if (model_num == 1 || model_num == 5)
+	if (model_num == 1 || model_num == 4 || model_num == 5)
 	  alpha_j = rep_matrix(0, I, J);
 	else if (model_num == 2)
 	  alpha_j = rep_matrix(alpha[2:(J+1)]', I);
 	else if (model_num == 3)
 	  alpha_j = rep_matrix(alpha[1], I, J);
-	else if (model_num == 4)
-	  alpha_j = rep_matrix(1e-03, I, J);
 
 return(alpha_j);
 }
@@ -34,7 +32,7 @@ vector alpha_1_ll(vector alpha, int I, int model_num) {
 	vector[I] alpha_1;
 
 	if (model_num == 4)
-	  alpha_1 = rep_vector(1e-03, I);
+	  alpha_1 = rep_vector(0, I);
 	else
 	  alpha_1 = rep_vector(alpha[1], I);
 

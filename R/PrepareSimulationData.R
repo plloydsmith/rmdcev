@@ -136,7 +136,7 @@ ProcessSimulationData <- function(est_sim, object, policies, nsims){
 
 	# alphas
 	if (model_num == 4){
-		alpha_sim_nonrandom <- matrix(1e-3, nsims, J+1)
+		alpha_sim_nonrandom <- matrix(0, nsims, J+1)
 	} else if (model_num != 4 & alpha_nonrandom == 1){
 #		alpha_sim_nonrandom = est_sim$alpha
 		alpha_sim_nonrandom <- GrabParms(est_sim, "alpha")

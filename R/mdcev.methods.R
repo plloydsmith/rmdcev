@@ -244,7 +244,7 @@ print.summary.mdcev <- function(x,...){
 	}else if (x$model == "hybrid"){
 		cat("Note: Alpha parameter is equal for all alternatives.",'\n')
 	}else if (x$model == "hybrid0")
-		cat("Note: All alpha parameters fixed to 1e-3.",'\n')
+		cat("Note: All alpha parameters fixed to 0.",'\n')
 
 	if(x$stan_data$trunc_data == 1)
 		cat("Note: Estimation accounts for truncated form of data.",'\n')
