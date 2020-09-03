@@ -105,21 +105,18 @@ vector kt_ll(matrix quant_j, matrix price_j, vector log_num, vector income,
   	g =  (-lpsi + log(phi_quant_term .* price_j) - rep_matrix((1 - alpha) .* log_num, J)) / scale_full;
 
   	// Calculate the likelihood
-  	log_like = (nonzero .*(-g - log(scale_full)) + (-exp(-g))) * ones_j ;
+  	// Calculate the liklihood log(j_det*exp(x))=log(j_det)+x
+  	log_like = log_j_det + (nonzero .*(-g - log(scale_full)) + (-exp(-g))) * ones_j ;
 
 	// adjust for truncation
 	if(trunc_data == 1){
-	  matrix[I, J] g_t = (-lpsi  + log(price_j) - log(phi_ij) + log(gamma) -
-	                      rep_matrix((1 - alpha) .* log(income), J)) / scale_full;
-  	  vector[I] like_trunc = exp(-exp(-g_t) * ones_j);
-
+	  vector[I] like_trunc = exp(-exp(-(-lpsi  + log(price_j) - log(phi_ij) + log(gamma) -
+	                      rep_matrix((1 - alpha) .* log(income), J)) / scale_full) * ones_j);
       for(i in 1:I)
 		  like_trunc[i] = like_trunc[i] < 1 ? like_trunc[i] : 1;
 
-   	      log_like = log_j_det + log_like - log1m(like_trunc);
+   	      log_like = log_like - log1m(like_trunc);
 	}
-	else
-  		log_like = log_j_det + log_like ; // Calculate the liklihood log(j_det*exp(x))=log(j_det)+x
 
 return(log_like);
 }
