@@ -104,7 +104,6 @@ vector kt_ll(matrix quant_j, matrix price_j, vector log_num, vector income,
 	 // Calculate the demand function, g
   	g =  (-lpsi + log(phi_quant_term .* price_j) - rep_matrix((1 - alpha) .* log_num, J)) / scale_full;
 
-  	// Calculate the likelihood
   	// Calculate the liklihood log(j_det*exp(x))=log(j_det)+x
   	log_like = log_j_det + (nonzero .*(-g - log(scale_full)) + (-exp(-g))) * ones_j ;
 

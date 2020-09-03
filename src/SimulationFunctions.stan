@@ -1,12 +1,12 @@
 //Code for MDCEV Simulation Functions <- "
 functions {
 
-row_vector Shuffle_rng(row_vector inv_temp, int nerrs){
+row_vector Shuffle_rng(row_vector inv, int nerrs){
 
 	row_vector[nerrs] out;
 	row_vector[nerrs] temp1 = rep_row_vector(0, nerrs) ;
 	row_vector[nerrs] temp2 = to_row_vector(uniform_rng(temp1, 1));
-	out = inv_temp[sort_indices_asc(temp2)];
+	out = inv[sort_indices_asc(temp2)];
 
 return(out);
 }
@@ -305,9 +305,12 @@ real ComputeUtilJ(real income, vector quant_j, vector price_j,
 	real util_num; // numeraire
 	vector[nalts] util_j;
 
-	util_num = pow(income -  price_j' * quant_j, alpha[1]) / alpha[1];
+	if (model_num == 4)
+		util_num = log(income -  price_j' * quant_j);
+	else
+		util_num = pow(income -  price_j' * quant_j, alpha[1]) / alpha[1];
 
-	if (model_num == 1){
+	if (model_num == 1 || model_num == 4){
 		util_j = psi_j .* gamma_j .* log(quant_j ./ gamma_j + 1);
 	} else if (model_num == 5){
 		util_j = psi_j .* log((phi_j .* quant_j ./ gamma_j) +1);
@@ -373,8 +376,6 @@ vector HicksianDemand(real util, vector price,
 
 	if (algo_gen == 0) { //Hybrid approach to demand simulation (constant alpha's)
 		matrix[nalts+1, 4] parm_matrix = SortParmMatrix(MUzero, price, gamma, alpha, nalts);
-		real lambda_num;
-		real lambda_den;
 		real alpha_1 = alpha[1]; // all alpha's are equal
 		vector[nalts+1] mu = col(parm_matrix, 1); // obtain mu
 		vector[nalts+1] g = col(parm_matrix, 3); // obtain gamma
@@ -389,10 +390,15 @@ vector HicksianDemand(real util, vector price,
 
 		while (exit == 0){
 			// Calculate 1/lambda for a given M
-			lambda_num = alpha_1 * util + sum(g_psi[1:M]) - g_psi[1]; // utility not expenditure and subtract numeriare psi
-			lambda_den = sum(c[1:M]);
-			lambda1 = pow(lambda_num / lambda_den, (alpha_1 - 1) / alpha_1); // create 1/lambda term
-
+			if (model_num == 1){
+				real lambda_num = alpha_1 * util + sum(g_psi[1:M]) - g_psi[1]; // utility not expenditure and subtract numeriare psi
+				real lambda_den = sum(c[1:M]);
+				lambda1 = pow(lambda_num / lambda_den, (alpha_1 - 1) / alpha_1); // create 1/lambda term
+			} else if (model_num == 4){
+				real lambda_num = util + sum(g_psi[1:M]) - g_psi[1]; // utility not expenditure and subtract numeriare psi
+				real lambda_den = sum(c[1:M]);
+				lambda1 = pow(lambda_num / lambda_den, (alpha_1 - 1) / alpha_1); // create 1/lambda term
+			}
 			// Compare 1/lambda to baseline utility of the next lowest alternative
 			// (M+1). If lambda exceeds this value then all lower-valued
 			// alternatives have zero demand.
