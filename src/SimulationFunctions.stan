@@ -238,7 +238,7 @@ vector MarshallianDemand(real income, vector price, vector MUzero, vector phi, v
 		} else if (model_num == 5){
 			real alpha_1 = alpha[1];
 			matrix[nalts+1, 4] parm_matrix = SortParmMatrix(MUzero, price, gamma, phi, nalts);
-			vector[nalts+1] mu = col(parm_matrix, 1); // obtain mu
+			vector[nalts+1] mu = col(parm_matrix, 1); // obtain mu = psi*phi/(gamma*price)
 			vector[nalts+1] g__phi = col(parm_matrix, 3) ./ col(parm_matrix, 4); // obtain gamma/phi
 			vector[nalts+1] g_price__phi = g__phi .* col(parm_matrix, 2); // obtain gamma*price/phi
 
@@ -345,13 +345,13 @@ real ComputeUtilM(int M, real lambda1, vector g_psi_a, vector a_a_1, vector mu_a
 return(output);
 }
 
-real ComputeKtUtilM(int M, real lambda1, vector psi, vector mu, real alpha_1){
+real ComputeKtUtilM(int M, real lambda1, vector psi, vector mu_g, real alpha_1){
 	real output;
 	vector[M] temp = rep_vector(0, M);
 	temp[1] = pow(lambda1, alpha_1 / (alpha_1 - 1)) / alpha_1; // compute numeraire util
 	if (M > 1){
 		for (m in 2:M)
-			temp[m] = psi[m] * log(mu[m] / lambda1);
+			temp[m] = psi[m] * log(mu_g[m] / lambda1);
 	}
 	output =  sum(temp);
 return(output);
@@ -474,15 +474,16 @@ vector HicksianDemand(real util, vector price,
 		} else if (model_num == 5){
 			matrix[nalts+1, 4] parm_matrix = SortParmMatrix(MUzero, price, gamma, phi, nalts);
 			real alpha_1 = alpha[1];
-			vector[nalts+1] mu = col(parm_matrix, 1); // obtain mu
+			vector[nalts+1] mu = col(parm_matrix, 1); // obtain mu = psi*phi/(gamma*price)
 			vector[nalts+1] g__phi = col(parm_matrix, 3) ./ col(parm_matrix, 4); // gamma/phi
-			vector[nalts+1] psi_ord = mu .* g__phi .* col(parm_matrix, 2);
+			vector[nalts+1] psi_ord = mu .* col(parm_matrix, 2) .* g__phi;
+			vector[nalts+1] mu_g = mu .* col(parm_matrix, 3);
 
 			while (exit == 0){
 				lambda1 = mu[M + 1];// Calculate lambda1 equal to MUzero(M+1)
 
 				// Calculate new utility
-				util_new = ComputeKtUtilM(M, lambda1, psi_ord, mu, alpha_1);
+				util_new = ComputeKtUtilM(M, lambda1, psi_ord, mu_g, alpha_1);
 
 				if (util_new >= util || M+1 == nalts+1){
 					if(util_new < util)
@@ -494,7 +495,7 @@ vector HicksianDemand(real util, vector price,
 					for (n in 1:max_loop){
 						real lambda_mid = (lambda_l + lambda_u) / 2;
 
-						util_new = ComputeKtUtilM(M, lambda1, psi_ord, mu, alpha_1);
+						util_new = ComputeKtUtilM(M, lambda1, psi_ord, mu_g, alpha_1);
 
 						// Update lambdas's
 						if (util_new < util)
@@ -506,9 +507,9 @@ vector HicksianDemand(real util, vector price,
 
 						if (fabs((lambda_l - lambda_u) / (lambda_l + lambda_u) * 0.5) < tol_l) break;
 					}
-				//	print("util_new = ", util_new);
-				//	print("lambda1 = ", lambda1);
-				//	print("parm_matrix = ", parm_matrix);
+					print("util_new = ", util_new);
+					print("lambda1 = ", lambda1);
+					print("parm_matrix = ", parm_matrix);
 				// Compute demands (using modified version of eq. 12 in Pinjari and Bhat)
 					X[1] = pow(lambda1, inv(alpha_1 - 1));
 					if(M > 1){
@@ -583,6 +584,8 @@ matrix CalcWTP_rng(real income, vector quant_j, vector price,
 			vector[nalts + 1] MUzero_b;
 			vector[nalts + 1] psi_b_err = exp(append_row(0, psi_j) + error[err]);
 			MUzero_b = psi_b_err ./ price;
+			if (model_num == 5)
+				MUzero_b = MUzero_b .* phi ./ gamma; // specific form for kt_ee model
 
 			if (cond_error == 1){
 				mdemand = append_row(quant_num, quant_j);
@@ -609,7 +612,7 @@ matrix CalcWTP_rng(real income, vector quant_j, vector price,
 				vector[nalts + 1] hdemand;
 				vector[nalts + 1] MUzero_p = exp(append_row(0, psi_p) + error[err]) ./ price_p; //change for no psi_p;
 				if (model_num == 5)
-					MUzero_p = MUzero_p .* phi ./ gamma; //change for no psi_p
+					MUzero_p = MUzero_p .* phi ./ gamma; // specific form for kt_ee model
 
 				hdemand = HicksianDemand(util[err], price_p, MUzero_p, phi, gamma, alpha,
 											nalts, algo_gen, model_num, tol, max_loop);
@@ -662,8 +665,10 @@ matrix[] CalcMarshallianDemand_rng(real income, vector quant_j, vector price,
 		for (err in 1:nerrs){
 			vector[nalts + 1] mdemand_util;
 			vector[nalts + 1] MUzero_b;
-			vector[nalts + 1] psi_b_err = exp(append_row(0, psi_j) + error[err]); //change for no psi_p
-			MUzero_b = psi_b_err ./ price; //change for no psi_p
+			vector[nalts + 1] psi_b_err = exp(append_row(0, psi_j) + error[err]);
+			MUzero_b = psi_b_err ./ price;
+			if (model_num == 5)
+				MUzero_b = MUzero_b .* phi ./ gamma; // specific form for kt_ee model
 
 			if (cond_error == 1){
 				mdemand_util= append_row(quant_num, quant_j);

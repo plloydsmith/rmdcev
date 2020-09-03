@@ -141,10 +141,6 @@ scale <- output[["stan_fit"]][["par"]][["scale"]]
 								 nalts, algo_gen, model_num, tol_e = tol_e, max_loop = max_loop, o)
 	expect_true(sum(abs(mdemand - quant)) < tol)
 
-	error <- c(0.0000000,  1.7188760, -1.1717926, -0.8366603, -0.1971004,  0.3529786,
-			   -0.9131608, -0.8034196,  1.2728031, -0.8363515, -0.2597812, -0.5655930,
-			   -0.4599889, -0.1517674,  1.8670270, -0.2026232, -0.4608384,  0.2003310)
-
 	mdemand <- c(quant_num, quant_j)
 
 	util <- ComputeUtilJ(income, mdemand[-1], price[-1],

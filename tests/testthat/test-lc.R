@@ -19,12 +19,12 @@ result_test <- mdcev( ~ alt | university,
 
 test_that("LC 2-classes", {
 	print(result_test$log.likelihood, digits =10)
-	expect_true(abs(result_test$log.likelihood - (-5073.683272)) < tol)
+	expect_true(abs(result_test$log.likelihood - (-5073.717925)) < tol)
 
 #	expect_true(abs(result$bic - 25479.74) < tol)
-	expect_true(abs(result_test[["stan_fit"]][["par"]][["scale"]][[1]] - 0.8064565) < tol)
+	expect_true(abs(result_test[["stan_fit"]][["par"]][["scale"]][[1]] - 0.8072385) < tol)
 #	expect_true(abs(result[["stan_fit"]][["par"]][["psi"]][2,1] - -7.493115) < tol)
-	expect_true(abs(result_test[["stan_fit"]][["par"]][["delta"]][[1,2]] - -0.9664987) < tol)
+	expect_true(abs(result_test[["stan_fit"]][["par"]][["delta"]][[1,2]] - -0.9649197) < tol)
 })
 
 
@@ -45,7 +45,7 @@ test_that("LC 2-classes with starting values", {
 					 n_classes = 2,
 					 print_iterations = FALSE)
 
-	expect_true(abs(result_test[["stan_fit"]][["par"]][["scale"]][[1]] - 0.7586523) < tol)
+	expect_true(abs(result_test[["stan_fit"]][["par"]][["scale"]][[1]] - 0.7593204) < tol)
 
 })
 

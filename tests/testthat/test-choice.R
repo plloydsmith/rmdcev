@@ -48,10 +48,10 @@ test_that("MLE hybrid0", {
 	print(output$log.likelihood, digits =10)
 	print(output$bic, digits =10)
 
-	expect_true(abs(output$log.likelihood - (-2653.222965)) < tol)
-	expect_true(abs(output$bic - 5467.626887) < tol)
-	expect_true(abs(output[["stan_fit"]][["par"]][["scale"]] - 0.7849449) < tol)
-	expect_true(abs(output[["stan_fit"]][["par"]][["psi"]][[1]] - -7.08514) < tol)
+	expect_true(abs(output$log.likelihood - (-2653.237031)) < tol)
+	expect_true(abs(output$bic - 5467.655) < tol)
+	expect_true(abs(output[["stan_fit"]][["par"]][["scale"]] - 0.7856681) < tol)
+	expect_true(abs(output[["stan_fit"]][["par"]][["psi"]][[1]] - -7.096204) < tol)
 	expect_equal(length(output[["stan_fit"]][["par"]][["alpha"]]), 0)
 })
 
