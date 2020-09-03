@@ -39,6 +39,8 @@ transformed parameters {
 		matrix[I, J] gamma_full = gamma_ll(gamma[k], I, J, Gamma);
 		real scale_full = fixed_scale1 == 0 ? scale[k] : 1.0;
 		matrix[I, J] lpsi;
+		vector[I] alpha_1 = alpha_1_ll(alpha[k], I, model_num);
+
 		vector[NPsi] psi_k = psi[k];
 		if (psi_ascs == 1){
 			lpsi = rep_matrix(append_row(0, head(psi_k, J-1))', I); //  alternative specific constants
@@ -52,15 +54,15 @@ transformed parameters {
 		}
 
 		if(model_num < 5){
-			matrix[I, J+1] alpha_full = alpha_ll(alpha[k], I, J, model_num);
+			matrix[I, J] alpha_j = alpha_j_ll(alpha[k], I, J, model_num);
 
 			if(K == 1) {
 			log_like = mdcev_ll(quant_j, price_j, log_num, income, M, log_M_fact, // data
-				lpsi, gamma_full, col(alpha_full, 1), block(alpha_full, 1, 2, I, J), scale_full, 						// parameters
+				lpsi, gamma_full, alpha_1, alpha_j, scale_full, 						// parameters
 				I, J, nonzero, trunc_data);
 			} else if (K > 1){
 			log_like_util[ , k] = mdcev_ll(quant_j, price_j, log_num, income, M, log_M_fact, // data
-				lpsi, gamma_full, col(alpha_full, 1), block(alpha_full, 1, 2, I, J), scale_full, 						// parameters
+				lpsi, gamma_full, alpha_1, alpha_j, scale_full, 						// parameters
 				I, J, nonzero, trunc_data);
 			}
 		} else if (model_num == 5){
@@ -72,11 +74,11 @@ transformed parameters {
 
 			if(K == 1) {
 			log_like = kt_ll(quant_j, price_j, log_num, income,
-  				lpsi, phi_ij, gamma_full, rep_vector(alpha[k, 1], I), scale_full,
+  				lpsi, phi_ij, gamma_full, alpha_1, scale_full,
   				I, J, nonzero, trunc_data, jacobian_analytical_grad);
 			} else if (K > 1){
 			log_like_util[ , k] = kt_ll(quant_j, price_j, log_num, income,
-  				lpsi, phi_ij, gamma_full, rep_vector(alpha[k, 1], I), scale_full,
+  				lpsi, phi_ij, gamma_full, alpha_1, scale_full,
   				I, J, nonzero, trunc_data, jacobian_analytical_grad);
 			}
 		}

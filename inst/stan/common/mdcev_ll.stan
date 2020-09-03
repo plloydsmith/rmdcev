@@ -13,20 +13,32 @@ matrix gamma_ll(vector gamma, int I, int J, int Gamma) {
 return(gamma_j);
 }
 
-matrix alpha_ll(vector alpha, int I, int J, int model_num) {
+matrix alpha_j_ll(vector alpha, int I, int J, int model_num) {
 
-	matrix[I, J+1] alpha_full;
+	matrix[I, J] alpha_j;
 
 	if (model_num == 1 || model_num == 5)
-	  alpha_full = append_col(rep_vector(alpha[1], I), rep_matrix(0, I, J));
+	  alpha_j = rep_matrix(0, I, J);
 	else if (model_num == 2)
-	  alpha_full = rep_matrix(alpha', I);
+	  alpha_j = rep_matrix(alpha[2:(J+1)]', I);
 	else if (model_num == 3)
-	  alpha_full = rep_matrix(alpha[1], I, J+1);
+	  alpha_j = rep_matrix(alpha[1], I, J);
 	else if (model_num == 4)
-	  alpha_full = rep_matrix(1e-03, I, J+1);
+	  alpha_j = rep_matrix(1e-03, I, J);
 
-return(alpha_full);
+return(alpha_j);
+}
+
+vector alpha_1_ll(vector alpha, int I, int model_num) {
+
+	vector[I] alpha_1;
+
+	if (model_num == 4)
+	  alpha_1 = rep_vector(1e-03, I);
+	else
+	  alpha_1 = rep_vector(alpha[1], I);
+
+return(alpha_1);
 }
 
 vector mdcev_ll(matrix quant_j, matrix price_j, vector log_num, vector income,
@@ -47,7 +59,7 @@ vector mdcev_ll(matrix quant_j, matrix price_j, vector log_num, vector income,
 
 	if (trunc_data == 1){
 		matrix[I, J+1] v_1 = exp(append_col((alpha1 - 1) .* log(income), lpsi - log(price_j)) / scale_full);
-		vector[I] like_trunc = col(v_1, 1) ./ (v_1 * rep_vector(1, J+1));
+		vector[I] like_trunc = v_1[ , 1] ./ (v_1 * rep_vector(1, J+1));
 
 		for(i in 1:I)
 			like_trunc[i] = like_trunc[i] < 1 ? like_trunc[i] : 1;

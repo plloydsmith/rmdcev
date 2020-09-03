@@ -1,12 +1,12 @@
 //Code for MDCEV Simulation Functions <- "
 functions {
 
-row_vector Shuffle_rng(row_vector inv, int nerrs){
+row_vector Shuffle_rng(row_vector inv_temp, int nerrs){
 
 	row_vector[nerrs] out;
 	row_vector[nerrs] temp1 = rep_row_vector(0, nerrs) ;
 	row_vector[nerrs] temp2 = to_row_vector(uniform_rng(temp1, 1));
-	out = inv[sort_indices_asc(temp2)];
+	out = inv_temp[sort_indices_asc(temp2)];
 
 return(out);
 }

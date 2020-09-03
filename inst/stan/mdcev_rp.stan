@@ -1,4 +1,4 @@
-// saved as mdcev_lc.stan
+// saved as mdcev_rp.stan
 functions {
 #include /common/mdcev_ll.stan
 }
@@ -68,30 +68,24 @@ transformed parameters {
 		beta = rep_matrix(mu', I) + diag_post_multiply(z, tau);
 	}
 
-	if (alpha_nonrandom == 0){
-		if (model_num != 4){
-			alpha_individual_1 = inv_logit(col(beta, RP_a));
-			if (model_num == 1)
-			  	alpha_individual_j = rep_matrix(0, I, J);
-			else if (model_num == 2)
-			  	alpha_individual_j = inv_logit(block(beta, 1, RP_a + 1, I, J));
-			else if  (model_num == 3)
-				alpha_individual_j = rep_matrix(alpha_individual_1, J);
-		} else {
-			alpha_individual_1 = rep_vector(1e-03, I);
-			alpha_individual_j = rep_matrix(1e-03, I, J);
-		}
-	} else if (alpha_nonrandom == 1){
-		matrix[I, J+1] alpha_full = alpha_ll(alpha, I, J, model_num);
-		alpha_individual_1 = col(alpha_full, 1);
-		alpha_individual_j = block(alpha_full, 1, 2, I, J);
+	if (alpha_nonrandom == 0 && model_num != 4){
+		alpha_individual_1 = inv_logit(beta[ , RP_a]);
+		if (model_num == 1)
+		  	alpha_individual_j = rep_matrix(0, I, J);
+		else if (model_num == 2)
+		  	alpha_individual_j = inv_logit(block(beta, 1, RP_a + 1, I, J));
+		else if  (model_num == 3)
+			alpha_individual_j = rep_matrix(alpha_individual_1, J);
+	} else if (alpha_nonrandom == 1 || model_num == 4){
+		alpha_individual_1  = alpha_1_ll(alpha, I, model_num);
+		alpha_individual_j = alpha_j_ll(alpha, I, J, model_num);
 	}
 
 	if (gamma_nonrandom == 0 && model_num != 2){
 		if (gamma_ascs == 1)
 			gamma_individual = exp(block(beta, 1, RP_g, I, Gamma));
 		else if (gamma_ascs == 0)
-			gamma_individual = rep_matrix(exp(col(beta, RP_g)), J);
+			gamma_individual = rep_matrix(exp(beta[ , RP_g]), J);
 	} else
 		gamma_individual = gamma_ll(gamma, I, J, Gamma);
 
