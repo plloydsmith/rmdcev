@@ -186,18 +186,18 @@ BEGIN_RCPP
 END_RCPP
 }
 // ComputeKtUtilM
-double ComputeKtUtilM(const int& M, const double& lambda1, const Eigen::Matrix<double, Eigen::Dynamic, 1>& psi, const Eigen::Matrix<double, Eigen::Dynamic, 1>& mu_g, const double& alpha_1, std::ostream* pstream__);
-RcppExport SEXP _rmdcev_ComputeKtUtilM(SEXP MSEXP, SEXP lambda1SEXP, SEXP psiSEXP, SEXP mu_gSEXP, SEXP alpha_1SEXP, SEXP pstream__SEXP) {
+double ComputeKtUtilM(const int& M, const double& lambda1, const Eigen::Matrix<double, Eigen::Dynamic, 1>& psi, const Eigen::Matrix<double, Eigen::Dynamic, 1>& mu, const double& alpha_1, std::ostream* pstream__);
+RcppExport SEXP _rmdcev_ComputeKtUtilM(SEXP MSEXP, SEXP lambda1SEXP, SEXP psiSEXP, SEXP muSEXP, SEXP alpha_1SEXP, SEXP pstream__SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const int& >::type M(MSEXP);
     Rcpp::traits::input_parameter< const double& >::type lambda1(lambda1SEXP);
     Rcpp::traits::input_parameter< const Eigen::Matrix<double, Eigen::Dynamic, 1>& >::type psi(psiSEXP);
-    Rcpp::traits::input_parameter< const Eigen::Matrix<double, Eigen::Dynamic, 1>& >::type mu_g(mu_gSEXP);
+    Rcpp::traits::input_parameter< const Eigen::Matrix<double, Eigen::Dynamic, 1>& >::type mu(muSEXP);
     Rcpp::traits::input_parameter< const double& >::type alpha_1(alpha_1SEXP);
     Rcpp::traits::input_parameter< std::ostream* >::type pstream__(pstream__SEXP);
-    rcpp_result_gen = Rcpp::wrap(ComputeKtUtilM(M, lambda1, psi, mu_g, alpha_1, pstream__));
+    rcpp_result_gen = Rcpp::wrap(ComputeKtUtilM(M, lambda1, psi, mu, alpha_1, pstream__));
     return rcpp_result_gen;
 END_RCPP
 }

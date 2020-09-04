@@ -147,7 +147,7 @@ scale <- output[["stan_fit"]][["par"]][["scale"]]
 						 psi_b_err[-1], phi_j, gamma[-1], alpha,
 						 nalts, model_num, o)
 	util
-#	expect_true(abs(util - 253.1646) < tol)
+	expect_true(abs(util - 253.1988) < tol)
 
 	price_p <- price + c(0,rep(0,nalts))
 	MUzero_p <- psi_b_err*c(1, phi_j) / (price_p * gamma)
@@ -158,7 +158,7 @@ scale <- output[["stan_fit"]][["par"]][["scale"]]
 	hdemand # Will not equal mdemand here because of errors
 	wtp_err <- income - t(price_p) %*% hdemand
 	wtp_err
-#	expect_true(abs(wtp_err) < tol)
+	expect_true(abs(wtp_err) < tol)
 
 	price_p <- price + c(0,rep(1000000,nalts))
 	MUzero_p <- psi_b_err*c(1, phi_j) / (price_p * gamma)
@@ -166,7 +166,7 @@ scale <- output[["stan_fit"]][["par"]][["scale"]]
 	hdemand <- HicksianDemand(util, price_p, MUzero_p, c(1, phi_j), gamma, alpha,
 							  nalts, algo_gen, model_num, tol_l = tol_l, max_loop = max_loop, o)
 	wtp_err <- income - t(price_p) %*% hdemand
-#	expect_true(abs(wtp_err - (-375.0025)) < tol)
+	expect_true(abs(wtp_err - (-375.0262)) < tol)
 })
 
 test_that("Test full simulation function", {

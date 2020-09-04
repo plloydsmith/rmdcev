@@ -41,8 +41,8 @@ ComputeUtilM <- function(M, lambda1, g_psi_a, a_a_1, mu_a_a_1, psi, g, price, d,
     .Call(`_rmdcev_ComputeUtilM`, M, lambda1, g_psi_a, a_a_1, mu_a_a_1, psi, g, price, d, model_num, pstream__)
 }
 
-ComputeKtUtilM <- function(M, lambda1, psi, mu_g, alpha_1, pstream__ = 0L) {
-    .Call(`_rmdcev_ComputeKtUtilM`, M, lambda1, psi, mu_g, alpha_1, pstream__)
+ComputeKtUtilM <- function(M, lambda1, psi, mu, alpha_1, pstream__ = 0L) {
+    .Call(`_rmdcev_ComputeKtUtilM`, M, lambda1, psi, mu, alpha_1, pstream__)
 }
 
 HicksianDemand <- function(util, price, MUzero, phi, gamma, alpha, nalts, algo_gen, model_num, tol_l, max_loop, pstream__ = 0L) {

@@ -140,7 +140,7 @@ vector MarshallianDemand(real income, vector price, vector MUzero, vector phi, v
 
 	vector[nalts+1] mdemand;
 	real lambda;
-	int M = 1; // Indicator of which ordered alteratives (<=M) are being considered
+	int M = 1; // Indicator of which ordered alternatives (<=M) are being considered
 	int exit = 0;
 	real E;
 	int order_x[nalts+1] = CalcAltOrder(MUzero, nalts);
@@ -150,29 +150,23 @@ vector MarshallianDemand(real income, vector price, vector MUzero, vector phi, v
 	if (algo_gen == 0) { //Hybrid
 		matrix[nalts+1, 4] parm_matrix = SortParmMatrix(MUzero, price, gamma, alpha, nalts);
 		vector[nalts+1] mu = col(parm_matrix, 1); // obtain mu
-		real lambda_num;
-		real lambda_den;
 		vector[nalts+1] g = col(parm_matrix, 3); // obtain gamma
 		vector[nalts+1] g_price = g .* col(parm_matrix, 2);
 		real alpha_1 = alpha[1];
 		vector[nalts+1] b;
-		vector[nalts+1] c;
 
 		for (j in 1:nalts+1)
-			b[j] = pow(mu[j], inv(1 - alpha_1));
-
-		c = g_price .* b;
+			b[j] = g_price[j] * pow(mu[j], inv(1 - alpha_1));
 
 		while (exit == 0){
 			// Calculate lambda equal to MUzero(M+1)
-			lambda_num = income + sum(g_price[1:M]) - 1; // minus one for numeraire
-			lambda_den = sum(c[1:M]);
+			real lambda_num = income + sum(g_price[1:M]) - 1; // minus one for numeraire
+			real lambda_den = sum(b[1:M]);
 			lambda = pow(lambda_num / lambda_den, alpha_1 - 1);
 
 			//Compare lambda to baseline utility of the next lowest alternative
 			//(M+1). If lambda exceeds this value then all lower-valued
 			//alternatives have zero demand.
-
 			if (lambda > mu[min(M + 1, nalts + 1)] || M == nalts+1){
 				// Compute demands (using eq. 12 in Pinjari and Bhat)
 				for (m in 1:M)
@@ -192,8 +186,7 @@ vector MarshallianDemand(real income, vector price, vector MUzero, vector phi, v
 			vector[nalts+1] g = col(parm_matrix, 3); // obtain gamma
 			vector[nalts+1] g_price = g .* col(parm_matrix, 2);
 			vector[nalts+1] c;
-			vector[nalts+1] b_temp = col(parm_matrix, 4);
-			vector[nalts+1] b = inv(append_row(b_temp[1], b_temp[2:nalts+1]) - 1);
+			vector[nalts+1] b = inv(col(parm_matrix, 4) - 1);
 
 			for (j in 1:nalts+1)
 				c[j] = mu[j] ^ b[j];
@@ -345,13 +338,14 @@ real ComputeUtilM(int M, real lambda1, vector g_psi_a, vector a_a_1, vector mu_a
 return(output);
 }
 
-real ComputeKtUtilM(int M, real lambda1, vector psi, vector mu_g, real alpha_1){
+real ComputeKtUtilM(int M, real lambda1, vector psi, vector mu, real alpha_1){
+	// use mu in logs
 	real output;
 	vector[M] temp = rep_vector(0, M);
 	temp[1] = pow(lambda1, alpha_1 / (alpha_1 - 1)) / alpha_1; // compute numeraire util
 	if (M > 1){
 		for (m in 2:M)
-			temp[m] = psi[m] * log(mu_g[m] / lambda1);
+			temp[m] = psi[m] * log(mu[m] / lambda1);
 	}
 	output =  sum(temp);
 return(output);
@@ -395,7 +389,7 @@ vector HicksianDemand(real util, vector price,
 
 		while (exit == 0){
 			// Calculate 1/lambda for a given M
-			if (model_num == 1){
+			if (model_num == 3){
 				real lambda_num = alpha_1 * util + sum(g_psi[1:M]) - g_psi[1]; // utility not expenditure and subtract numeriare psi
 				real lambda_den = sum(c[1:M]);
 				lambda1 = pow(lambda_num / lambda_den, (alpha_1 - 1) / alpha_1); // create 1/lambda term
@@ -477,13 +471,12 @@ vector HicksianDemand(real util, vector price,
 			vector[nalts+1] mu = col(parm_matrix, 1); // obtain mu = psi*phi/(gamma*price)
 			vector[nalts+1] g__phi = col(parm_matrix, 3) ./ col(parm_matrix, 4); // gamma/phi
 			vector[nalts+1] psi_ord = mu .* col(parm_matrix, 2) .* g__phi;
-			vector[nalts+1] mu_g = mu .* col(parm_matrix, 3);
 
 			while (exit == 0){
 				lambda1 = mu[M + 1];// Calculate lambda1 equal to MUzero(M+1)
 
 				// Calculate new utility
-				util_new = ComputeKtUtilM(M, lambda1, psi_ord, mu_g, alpha_1);
+				util_new = ComputeKtUtilM(M, lambda1, psi_ord, mu, alpha_1);
 
 				if (util_new >= util || M+1 == nalts+1){
 					if(util_new < util)
@@ -495,7 +488,7 @@ vector HicksianDemand(real util, vector price,
 					for (n in 1:max_loop){
 						real lambda_mid = (lambda_l + lambda_u) / 2;
 
-						util_new = ComputeKtUtilM(M, lambda1, psi_ord, mu_g, alpha_1);
+						util_new = ComputeKtUtilM(M, lambda1, psi_ord, mu, alpha_1);
 
 						// Update lambdas's
 						if (util_new < util)
@@ -507,9 +500,6 @@ vector HicksianDemand(real util, vector price,
 
 						if (fabs((lambda_l - lambda_u) / (lambda_l + lambda_u) * 0.5) < tol_l) break;
 					}
-//					print("util_new = ", util_new);
-//					print("lambda1 = ", lambda1);
-//					print("parm_matrix = ", parm_matrix);
 				// Compute demands (using modified version of eq. 12 in Pinjari and Bhat)
 					X[1] = pow(lambda1, inv(alpha_1 - 1));
 					if(M > 1){
