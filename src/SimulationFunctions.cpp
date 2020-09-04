@@ -9,7 +9,7 @@
 
 #include <stan/model/standalone_functions_header.hpp>
 
-namespace user_5162a6f98529036cd6abeb85354c034d { 
+namespace user_8f31f335c664cc8307a620d6195c6e69 { 
 using std::istream;
 using std::string;
 using std::stringstream;
@@ -1803,24 +1803,6 @@ HicksianDemand(const T0__& util,
                             }
                             }
                         }
-                        current_statement_begin__ = 510;
-                        if (pstream__) {
-                            stan_print(pstream__,"util_new = ");
-                            stan_print(pstream__,util_new);
-                            *pstream__ << std::endl;
-                        }
-                        current_statement_begin__ = 511;
-                        if (pstream__) {
-                            stan_print(pstream__,"lambda1 = ");
-                            stan_print(pstream__,lambda1);
-                            *pstream__ << std::endl;
-                        }
-                        current_statement_begin__ = 512;
-                        if (pstream__) {
-                            stan_print(pstream__,"parm_matrix = ");
-                            stan_print(pstream__,parm_matrix);
-                            *pstream__ << std::endl;
-                        }
                         current_statement_begin__ = 514;
                         stan::model::assign(X, 
                                     stan::model::cons_list(stan::model::index_uni(1), stan::model::nil_index_list()), 
@@ -2656,7 +2638,7 @@ Eigen::Matrix<double, 1, Eigen::Dynamic>
 Shuffle_rng(const Eigen::Matrix<double, 1, Eigen::Dynamic>& inv,
                 const int& nerrs, boost::ecuyer1988& base_rng__, std::ostream* pstream__ = 0){
   return 
-user_5162a6f98529036cd6abeb85354c034d::Shuffle_rng<double, boost::ecuyer1988>(inv, nerrs, base_rng__, pstream__);
+user_8f31f335c664cc8307a620d6195c6e69::Shuffle_rng<double, boost::ecuyer1988>(inv, nerrs, base_rng__, pstream__);
 }
 
 // [[Rcpp::export]]
@@ -2664,7 +2646,7 @@ Eigen::Matrix<double, 1, Eigen::Dynamic>
 DrawMlhs_rng(const int& nerrs,
                  const int& draw_mlhs, boost::ecuyer1988& base_rng__, std::ostream* pstream__ = 0){
   return 
-user_5162a6f98529036cd6abeb85354c034d::DrawMlhs_rng<boost::ecuyer1988>(nerrs, draw_mlhs, base_rng__, pstream__);
+user_8f31f335c664cc8307a620d6195c6e69::DrawMlhs_rng<boost::ecuyer1988>(nerrs, draw_mlhs, base_rng__, pstream__);
 }
 
 // [[Rcpp::export]]
@@ -2683,7 +2665,7 @@ DrawError_rng(const double& quant_num,
                   const int& cond_error,
                   const int& draw_mlhs, boost::ecuyer1988& base_rng__, std::ostream* pstream__ = 0){
   return 
-user_5162a6f98529036cd6abeb85354c034d::DrawError_rng<double, double, double, double, double, double, double, double, boost::ecuyer1988>(quant_num, quant_j, price_j, psi_j, phi_j, gamma_j, alpha, scale, model_num, nalts, nerrs, cond_error, draw_mlhs, base_rng__, pstream__);
+user_8f31f335c664cc8307a620d6195c6e69::DrawError_rng<double, double, double, double, double, double, double, double, boost::ecuyer1988>(quant_num, quant_j, price_j, psi_j, phi_j, gamma_j, alpha, scale, model_num, nalts, nerrs, cond_error, draw_mlhs, base_rng__, pstream__);
 }
 
 // [[Rcpp::export]]
@@ -2691,7 +2673,7 @@ std::vector<int>
 CalcAltOrder(const Eigen::Matrix<double, Eigen::Dynamic, 1>& MUzero,
                  const int& nalts, std::ostream* pstream__ = 0){
   return 
-user_5162a6f98529036cd6abeb85354c034d::CalcAltOrder<double>(MUzero, nalts, pstream__);
+user_8f31f335c664cc8307a620d6195c6e69::CalcAltOrder<double>(MUzero, nalts, pstream__);
 }
 
 // [[Rcpp::export]]
@@ -2702,7 +2684,7 @@ SortParmMatrix(const Eigen::Matrix<double, Eigen::Dynamic, 1>& MUzero,
                    const Eigen::Matrix<double, Eigen::Dynamic, 1>& alpha_phi,
                    const int& nalts, std::ostream* pstream__ = 0){
   return 
-user_5162a6f98529036cd6abeb85354c034d::SortParmMatrix<double, double, double, double>(MUzero, price, gamma, alpha_phi, nalts, pstream__);
+user_8f31f335c664cc8307a620d6195c6e69::SortParmMatrix<double, double, double, double>(MUzero, price, gamma, alpha_phi, nalts, pstream__);
 }
 
 // [[Rcpp::export]]
@@ -2714,7 +2696,7 @@ ComputeE(const int& M,
              const Eigen::Matrix<double, Eigen::Dynamic, 1>& c,
              const Eigen::Matrix<double, Eigen::Dynamic, 1>& d, std::ostream* pstream__ = 0){
   return 
-user_5162a6f98529036cd6abeb85354c034d::ComputeE<double, double, double, double, double>(M, lambda, g_price, b, c, d, pstream__);
+user_8f31f335c664cc8307a620d6195c6e69::ComputeE<double, double, double, double, double>(M, lambda, g_price, b, c, d, pstream__);
 }
 
 // [[Rcpp::export]]
@@ -2725,7 +2707,7 @@ ComputeKtE(const int& M,
                const Eigen::Matrix<double, Eigen::Dynamic, 1>& g_price__phi,
                const double& alpha_1, std::ostream* pstream__ = 0){
   return 
-user_5162a6f98529036cd6abeb85354c034d::ComputeKtE<double, double, double, double>(M, lambda, mu, g_price__phi, alpha_1, pstream__);
+user_8f31f335c664cc8307a620d6195c6e69::ComputeKtE<double, double, double, double>(M, lambda, mu, g_price__phi, alpha_1, pstream__);
 }
 
 // [[Rcpp::export]]
@@ -2742,7 +2724,7 @@ MarshallianDemand(const double& income,
                       const double& tol_e,
                       const int& max_loop, std::ostream* pstream__ = 0){
   return 
-user_5162a6f98529036cd6abeb85354c034d::MarshallianDemand<double, double, double, double, double, double, double>(income, price, MUzero, phi, gamma, alpha, nalts, algo_gen, model_num, tol_e, max_loop, pstream__);
+user_8f31f335c664cc8307a620d6195c6e69::MarshallianDemand<double, double, double, double, double, double, double>(income, price, MUzero, phi, gamma, alpha, nalts, algo_gen, model_num, tol_e, max_loop, pstream__);
 }
 
 // [[Rcpp::export]]
@@ -2757,7 +2739,7 @@ ComputeUtilJ(const double& income,
                  const int& nalts,
                  const int& model_num, std::ostream* pstream__ = 0){
   return 
-user_5162a6f98529036cd6abeb85354c034d::ComputeUtilJ<double, double, double, double, double, double, double>(income, quant_j, price_j, psi_j, phi_j, gamma_j, alpha, nalts, model_num, pstream__);
+user_8f31f335c664cc8307a620d6195c6e69::ComputeUtilJ<double, double, double, double, double, double, double>(income, quant_j, price_j, psi_j, phi_j, gamma_j, alpha, nalts, model_num, pstream__);
 }
 
 // [[Rcpp::export]]
@@ -2773,7 +2755,7 @@ ComputeUtilM(const int& M,
                  const Eigen::Matrix<double, Eigen::Dynamic, 1>& d,
                  const int& model_num, std::ostream* pstream__ = 0){
   return 
-user_5162a6f98529036cd6abeb85354c034d::ComputeUtilM<double, double, double, double, double, double, double, double>(M, lambda1, g_psi_a, a_a_1, mu_a_a_1, psi, g, price, d, model_num, pstream__);
+user_8f31f335c664cc8307a620d6195c6e69::ComputeUtilM<double, double, double, double, double, double, double, double>(M, lambda1, g_psi_a, a_a_1, mu_a_a_1, psi, g, price, d, model_num, pstream__);
 }
 
 // [[Rcpp::export]]
@@ -2784,7 +2766,7 @@ ComputeKtUtilM(const int& M,
                    const Eigen::Matrix<double, Eigen::Dynamic, 1>& mu_g,
                    const double& alpha_1, std::ostream* pstream__ = 0){
   return 
-user_5162a6f98529036cd6abeb85354c034d::ComputeKtUtilM<double, double, double, double>(M, lambda1, psi, mu_g, alpha_1, pstream__);
+user_8f31f335c664cc8307a620d6195c6e69::ComputeKtUtilM<double, double, double, double>(M, lambda1, psi, mu_g, alpha_1, pstream__);
 }
 
 // [[Rcpp::export]]
@@ -2801,7 +2783,7 @@ HicksianDemand(const double& util,
                    const double& tol_l,
                    const int& max_loop, std::ostream* pstream__ = 0){
   return 
-user_5162a6f98529036cd6abeb85354c034d::HicksianDemand<double, double, double, double, double, double, double>(util, price, MUzero, phi, gamma, alpha, nalts, algo_gen, model_num, tol_l, max_loop, pstream__);
+user_8f31f335c664cc8307a620d6195c6e69::HicksianDemand<double, double, double, double, double, double, double>(util, price, MUzero, phi, gamma, alpha, nalts, algo_gen, model_num, tol_l, max_loop, pstream__);
 }
 
 // [[Rcpp::export]]
@@ -2826,7 +2808,7 @@ CalcWTP_rng(const double& income,
                 const double& tol,
                 const int& max_loop, boost::ecuyer1988& base_rng__, std::ostream* pstream__ = 0){
   return 
-user_5162a6f98529036cd6abeb85354c034d::CalcWTP_rng<double, double, double, double, double, double, double, double, double, double, double, double, boost::ecuyer1988>(income, quant_j, price, price_p_policy, psi_p_sims, phi_p_sims, psi_sims, phi_sims, gamma_sims, alpha_sims, scale_sims, nerrs, cond_error, draw_mlhs, algo_gen, model_num, price_change_only, tol, max_loop, base_rng__, pstream__);
+user_8f31f335c664cc8307a620d6195c6e69::CalcWTP_rng<double, double, double, double, double, double, double, double, double, double, double, double, boost::ecuyer1988>(income, quant_j, price, price_p_policy, psi_p_sims, phi_p_sims, psi_sims, phi_sims, gamma_sims, alpha_sims, scale_sims, nerrs, cond_error, draw_mlhs, algo_gen, model_num, price_change_only, tol, max_loop, base_rng__, pstream__);
 }
 
 // [[Rcpp::export]]
@@ -2851,7 +2833,7 @@ CalcMarshallianDemand_rng(const double& income,
                               const double& tol,
                               const int& max_loop, boost::ecuyer1988& base_rng__, std::ostream* pstream__ = 0){
   return 
-user_5162a6f98529036cd6abeb85354c034d::CalcMarshallianDemand_rng<double, double, double, double, double, double, double, double, double, double, double, double, boost::ecuyer1988>(income, quant_j, price, price_p_policy, psi_p_sims, phi_p_sims, psi_sims, phi_sims, gamma_sims, alpha_sims, scale_sims, nerrs, cond_error, draw_mlhs, algo_gen, model_num, price_change_only, tol, max_loop, base_rng__, pstream__);
+user_8f31f335c664cc8307a620d6195c6e69::CalcMarshallianDemand_rng<double, double, double, double, double, double, double, double, double, double, double, double, boost::ecuyer1988>(income, quant_j, price, price_p_policy, psi_p_sims, phi_p_sims, psi_sims, phi_sims, gamma_sims, alpha_sims, scale_sims, nerrs, cond_error, draw_mlhs, algo_gen, model_num, price_change_only, tol, max_loop, base_rng__, pstream__);
 }
 
 // [[Rcpp::export]]
@@ -2869,6 +2851,7 @@ CalcmdemandOne_rng(const double& income,
                        const double& tol,
                        const int& max_loop, boost::ecuyer1988& base_rng__, std::ostream* pstream__ = 0){
   return 
-user_5162a6f98529036cd6abeb85354c034d::CalcmdemandOne_rng<double, double, double, double, double, double, double, double, boost::ecuyer1988>(income, price, psi_j, phi_j, gamma_j, alpha, scale, nerrs, model_num, algo_gen, tol, max_loop, base_rng__, pstream__);
+user_8f31f335c664cc8307a620d6195c6e69::CalcmdemandOne_rng<double, double, double, double, double, double, double, double, boost::ecuyer1988>(income, price, psi_j, phi_j, gamma_j, alpha, scale, nerrs, model_num, algo_gen, tol, max_loop, base_rng__, pstream__);
 }
+
 

@@ -507,9 +507,9 @@ vector HicksianDemand(real util, vector price,
 
 						if (fabs((lambda_l - lambda_u) / (lambda_l + lambda_u) * 0.5) < tol_l) break;
 					}
-					print("util_new = ", util_new);
-					print("lambda1 = ", lambda1);
-					print("parm_matrix = ", parm_matrix);
+//					print("util_new = ", util_new);
+//					print("lambda1 = ", lambda1);
+//					print("parm_matrix = ", parm_matrix);
 				// Compute demands (using modified version of eq. 12 in Pinjari and Bhat)
 					X[1] = pow(lambda1, inv(alpha_1 - 1));
 					if(M > 1){
