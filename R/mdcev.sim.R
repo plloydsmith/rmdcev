@@ -62,7 +62,7 @@ mdcev.sim <- function(df_indiv, df_common, sim_options,
 	model_num <- sim_options$model_num
 
 	if (!is.null(algo_gen)){
-		if ((model_num != 4) && algo_gen == 0){
+		if ((model_num == 1 || model_num == 2 || model_num == 5) && algo_gen == 0){
 			warning("Can't use hybrid algorithm with non-hybrid model specifications. Changing to general approach.")
 			algo_gen <- 1
 		}

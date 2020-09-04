@@ -193,9 +193,9 @@ test_that("Conditional error hybrid draw", {
 
 	expect_true(sum(abs(mdemand_0 - mdemand_1)) < tol)
 
-	error <- c(0.0000000000,1.70860392,0.09740258,0.43580157,0.57046604,
-			0.22554382 -0.95752753,0.79871627,0.64340736,0.38675191,
-			-0.35739897,0.15933184 -0.40152362, -0.33500928,0.82087624,
+	error <- c(0.0000000000, 1.70860392,0.09740258,0.43580157,0.57046604,
+			0.22554382, -0.95752753,0.79871627,0.64340736,0.38675191,
+			-0.35739897,0.15933184, -0.40152362, -0.33500928,0.82087624,
 			0.16345204,0.02210642, -0.04967792)
 
 	psi_b_err <- exp(c(0, psi_j) + error)
@@ -207,7 +207,7 @@ test_that("Conditional error hybrid draw", {
 						 psi_b_err[-1], phi_j, gamma[-1], alpha,
 						 nalts, model_num, o)
 
-	expect_true(abs(util - 29.5847) < tol)
+	expect_true(abs(util - 29.56664) < tol)
 
 	price_p <- price + c(.001,rep(1,nalts))
 	MUzero_p <- psi_b_err / price_p
@@ -215,13 +215,13 @@ test_that("Conditional error hybrid draw", {
 	hdemand <- HicksianDemand(util, price_p, MUzero_p,  c(1, phi_j), gamma, alpha,
 							  nalts, algo_gen = 1, model_num, tol_l = tol_l, max_loop = max_loop, o)
 	wtp_err <- income - t(price_p) %*% hdemand
-	expect_true(abs(wtp_err - (-50.24413)) < tol)
+	expect_true(abs(wtp_err - (-41.56801)) < tol)
 
 	# Test general form
 	hdemand <- HicksianDemand(util, price_p, MUzero_p,  c(1, phi_j), gamma, alpha,
 							  nalts, algo_gen = 0, model_num, tol_l = tol_l, max_loop = max_loop, o)
 	wtp_err <- income - t(price_p) %*% hdemand
-	expect_true(abs(wtp_err - (-50.24413)) < tol)
+	expect_true(abs(wtp_err - (-41.56801)) < tol)
 
 })
 
