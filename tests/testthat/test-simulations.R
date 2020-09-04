@@ -1,6 +1,6 @@
 context("Test Simulations")
 
-tol <- 0.001
+tol <- 0.01
 data(data_rec, package = "rmdcev")
 data_rec
 
