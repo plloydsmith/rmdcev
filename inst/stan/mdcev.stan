@@ -85,18 +85,11 @@ transformed parameters {
 	}
 
 	if (K > 1){
-		matrix[I, K] theta = append_col(rep_vector(0, I), data_class * delta'); // class membership equation
+//		matrix[I, K] theta = append_col(rep_vector(0, I), data_class * delta'); // class membership equation
 		for(i in 1:I){
-//			vector[K] theta = softmax(append_row(0, delta * data_class[i])); // class membership equation
+			vector[K] theta = softmax(append_row(0, delta * data_class[i]')); // class membership equation
 //			vector[K] theta_temp = softmax(theta[i]); // class membership equation
-			log_like[i] = log_mix(softmax(theta[i]'), log_like_util[i]);
-//			log_like[i] = log_mix(theta, log_like_util[i]);
-//			vector[K] ltheta = log_softmax(append_row(0, delta * data_class[i])); // class membership equation
-//			vector[K] lps;
-//			for (k in 1:K){
-//				lps[k] = ltheta[k] + log_like_util[k,i];
-//			}
-//			log_like[i] = log_sum_exp(lps);
+			log_like[i] = log_mix(theta, log_like_util[i]);
 		}
 	}
 	}

@@ -45,7 +45,7 @@ stan::io::program_reader prog_reader__() {
     reader.add_event(161, 0, "start", "/common/mdcev_tdata.stan");
     reader.add_event(201, 40, "end", "/common/mdcev_tdata.stan");
     reader.add_event(201, 22, "restart", "model_mdcev");
-    reader.add_event(320, 139, "end", "model_mdcev");
+    reader.add_event(313, 132, "end", "model_mdcev");
     return reader;
 }
 template <typename T0__>
@@ -1245,22 +1245,21 @@ public:
             }
             current_statement_begin__ = 266;
             if (as_bool(logical_gt(K, 1))) {
-                {
-                current_statement_begin__ = 267;
-                validate_non_negative_index("theta", "I", I);
-                validate_non_negative_index("theta", "K", K);
-                Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, Eigen::Dynamic> theta(I, K);
-                stan::math::initialize(theta, DUMMY_VAR__);
-                stan::math::fill(theta, DUMMY_VAR__);
-                stan::math::assign(theta,append_col(rep_vector(0, I), multiply(data_class, transpose(delta))));
                 current_statement_begin__ = 268;
                 for (int i = 1; i <= I; ++i) {
+                    {
+                    current_statement_begin__ = 269;
+                    validate_non_negative_index("theta", "K", K);
+                    Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> theta(K);
+                    stan::math::initialize(theta, DUMMY_VAR__);
+                    stan::math::fill(theta, DUMMY_VAR__);
+                    stan::math::assign(theta,softmax(append_row(0, multiply(delta, transpose(get_base1(data_class, i, "data_class", 1))))));
                     current_statement_begin__ = 271;
                     stan::model::assign(log_like, 
                                 stan::model::cons_list(stan::model::index_uni(i), stan::model::nil_index_list()), 
-                                log_mix(softmax(transpose(get_base1(theta, i, "theta", 1))), get_base1(log_like_util, i, "log_like_util", 1)), 
+                                log_mix(theta, get_base1(log_like_util, i, "log_like_util", 1)), 
                                 "assigning variable log_like");
-                }
+                    }
                 }
             }
             }
@@ -1277,37 +1276,37 @@ public:
                 }
             }
             // model body
-            current_statement_begin__ = 286;
+            current_statement_begin__ = 279;
             if (as_bool(logical_eq(flat_priors, 0))) {
-                current_statement_begin__ = 287;
+                current_statement_begin__ = 280;
                 lp_accum__.add(normal_log<propto__>(scale, 0, prior_scale_sd));
-                current_statement_begin__ = 289;
+                current_statement_begin__ = 282;
                 if (as_bool(logical_eq(K, 1))) {
-                    current_statement_begin__ = 290;
+                    current_statement_begin__ = 283;
                     lp_accum__.add(normal_log<propto__>(get_base1(psi, 1, "psi", 1), 0, prior_psi_sd));
-                    current_statement_begin__ = 291;
+                    current_statement_begin__ = 284;
                     lp_accum__.add(normal_log<propto__>(get_base1(phi, 1, "phi", 1), 0, prior_phi_sd));
-                    current_statement_begin__ = 292;
+                    current_statement_begin__ = 285;
                     lp_accum__.add(normal_log<propto__>(get_base1(gamma, 1, "gamma", 1), 1, prior_gamma_sd));
-                    current_statement_begin__ = 293;
+                    current_statement_begin__ = 286;
                     lp_accum__.add(beta_log<propto__>(get_base1(alpha, 1, "alpha", 1), prior_alpha_shape, prior_alpha_shape));
                 } else if (as_bool(logical_gt(K, 1))) {
-                    current_statement_begin__ = 296;
+                    current_statement_begin__ = 289;
                     lp_accum__.add(normal_log<propto__>(to_vector(delta), 0, prior_delta_sd));
-                    current_statement_begin__ = 297;
+                    current_statement_begin__ = 290;
                     for (int k = 1; k <= K; ++k) {
-                        current_statement_begin__ = 298;
+                        current_statement_begin__ = 291;
                         lp_accum__.add(normal_log<propto__>(to_vector(get_base1(psi, k, "psi", 1)), 0, prior_psi_sd));
-                        current_statement_begin__ = 299;
+                        current_statement_begin__ = 292;
                         lp_accum__.add(normal_log<propto__>(to_vector(get_base1(phi, k, "phi", 1)), 0, prior_phi_sd));
-                        current_statement_begin__ = 300;
+                        current_statement_begin__ = 293;
                         lp_accum__.add(normal_log<propto__>(to_vector(get_base1(gamma, k, "gamma", 1)), 1, prior_gamma_sd));
-                        current_statement_begin__ = 301;
+                        current_statement_begin__ = 294;
                         lp_accum__.add(beta_log<propto__>(to_vector(get_base1(alpha, k, "alpha", 1)), prior_alpha_shape, prior_alpha_shape));
                     }
                 }
             }
-            current_statement_begin__ = 306;
+            current_statement_begin__ = 299;
             lp_accum__.add(dot_product(log_like, weights));
         } catch (const std::exception& e) {
             stan::lang::rethrow_located(e, current_statement_begin__, prog_reader__());
@@ -1583,22 +1582,21 @@ public:
             }
             current_statement_begin__ = 266;
             if (as_bool(logical_gt(K, 1))) {
-                {
-                current_statement_begin__ = 267;
-                validate_non_negative_index("theta", "I", I);
-                validate_non_negative_index("theta", "K", K);
-                Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, Eigen::Dynamic> theta(I, K);
-                stan::math::initialize(theta, DUMMY_VAR__);
-                stan::math::fill(theta, DUMMY_VAR__);
-                stan::math::assign(theta,append_col(rep_vector(0, I), multiply(data_class, transpose(delta))));
                 current_statement_begin__ = 268;
                 for (int i = 1; i <= I; ++i) {
+                    {
+                    current_statement_begin__ = 269;
+                    validate_non_negative_index("theta", "K", K);
+                    Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> theta(K);
+                    stan::math::initialize(theta, DUMMY_VAR__);
+                    stan::math::fill(theta, DUMMY_VAR__);
+                    stan::math::assign(theta,softmax(append_row(0, multiply(delta, transpose(get_base1(data_class, i, "data_class", 1))))));
                     current_statement_begin__ = 271;
                     stan::model::assign(log_like, 
                                 stan::model::cons_list(stan::model::index_uni(i), stan::model::nil_index_list()), 
-                                log_mix(softmax(transpose(get_base1(theta, i, "theta", 1))), get_base1(log_like_util, i, "log_like_util", 1)), 
+                                log_mix(theta, get_base1(log_like_util, i, "log_like_util", 1)), 
                                 "assigning variable log_like");
-                }
+                    }
                 }
             }
             }
@@ -1615,26 +1613,26 @@ public:
             }
             if (!include_gqs__) return;
             // declare and define generated quantities
-            current_statement_begin__ = 310;
+            current_statement_begin__ = 303;
             double sum_log_lik;
             (void) sum_log_lik;  // dummy to suppress unused var warning
             stan::math::initialize(sum_log_lik, DUMMY_VAR__);
             stan::math::fill(sum_log_lik, DUMMY_VAR__);
             stan::math::assign(sum_log_lik,0);
-            current_statement_begin__ = 311;
+            current_statement_begin__ = 304;
             validate_non_negative_index("theta", "(logical_gt(K, 1) ? I : 0 )", (logical_gt(K, 1) ? I : 0 ));
             validate_non_negative_index("theta", "K", K);
             Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> theta((logical_gt(K, 1) ? I : 0 ), K);
             stan::math::initialize(theta, DUMMY_VAR__);
             stan::math::fill(theta, DUMMY_VAR__);
             // generated quantities statements
-            current_statement_begin__ = 313;
+            current_statement_begin__ = 306;
             for (int i = 1; i <= I; ++i) {
-                current_statement_begin__ = 314;
+                current_statement_begin__ = 307;
                 stan::math::assign(sum_log_lik, (sum_log_lik + (get_base1(log_like, i, "log_like", 1) * get_base1(weights, i, "weights", 1))));
-                current_statement_begin__ = 315;
+                current_statement_begin__ = 308;
                 if (as_bool(logical_gt(K, 1))) {
-                    current_statement_begin__ = 316;
+                    current_statement_begin__ = 309;
                     stan::model::assign(theta, 
                                 stan::model::cons_list(stan::model::index_uni(i), stan::model::nil_index_list()), 
                                 transpose(softmax(append_row(0, multiply(delta, transpose(get_base1(data_class, i, "data_class", 1)))))), 
@@ -1642,9 +1640,9 @@ public:
                 }
             }
             // validate, write generated quantities
-            current_statement_begin__ = 310;
+            current_statement_begin__ = 303;
             vars__.push_back(sum_log_lik);
-            current_statement_begin__ = 311;
+            current_statement_begin__ = 304;
             size_t theta_j_2_max__ = K;
             size_t theta_j_1_max__ = (logical_gt(K, 1) ? I : 0 );
             for (size_t j_2__ = 0; j_2__ < theta_j_2_max__; ++j_2__) {

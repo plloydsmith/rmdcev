@@ -267,7 +267,6 @@ return(mdemand);
 real ComputeUtilJ(real income, vector quant_j, vector price_j,
 					vector psi_j, vector phi_j, vector gamma_j, vector alpha,
 					int nalts, int model_num) {
-
 	real output;
 	real util_num; // numeraire
 	vector[nalts] util_j;
