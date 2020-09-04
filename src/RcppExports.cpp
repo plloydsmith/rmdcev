@@ -8,21 +8,21 @@
 using namespace Rcpp;
 
 // Shuffle_rng
-Eigen::Matrix<double, 1, Eigen::Dynamic> Shuffle_rng(const Eigen::Matrix<double, 1, Eigen::Dynamic>& inv, const int& nerrs, boost::ecuyer1988& base_rng__, std::ostream* pstream__);
-RcppExport SEXP _rmdcev_Shuffle_rng(SEXP invSEXP, SEXP nerrsSEXP, SEXP base_rng__SEXP, SEXP pstream__SEXP) {
+Eigen::Matrix<double, Eigen::Dynamic, 1> Shuffle_rng(const Eigen::Matrix<double, Eigen::Dynamic, 1>& inv_temp, const int& nerrs, boost::ecuyer1988& base_rng__, std::ostream* pstream__);
+RcppExport SEXP _rmdcev_Shuffle_rng(SEXP inv_tempSEXP, SEXP nerrsSEXP, SEXP base_rng__SEXP, SEXP pstream__SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const Eigen::Matrix<double, 1, Eigen::Dynamic>& >::type inv(invSEXP);
+    Rcpp::traits::input_parameter< const Eigen::Matrix<double, Eigen::Dynamic, 1>& >::type inv_temp(inv_tempSEXP);
     Rcpp::traits::input_parameter< const int& >::type nerrs(nerrsSEXP);
     Rcpp::traits::input_parameter< boost::ecuyer1988& >::type base_rng__(base_rng__SEXP);
     Rcpp::traits::input_parameter< std::ostream* >::type pstream__(pstream__SEXP);
-    rcpp_result_gen = Rcpp::wrap(Shuffle_rng(inv, nerrs, base_rng__, pstream__));
+    rcpp_result_gen = Rcpp::wrap(Shuffle_rng(inv_temp, nerrs, base_rng__, pstream__));
     return rcpp_result_gen;
 END_RCPP
 }
 // DrawMlhs_rng
-Eigen::Matrix<double, 1, Eigen::Dynamic> DrawMlhs_rng(const int& nerrs, const int& draw_mlhs, boost::ecuyer1988& base_rng__, std::ostream* pstream__);
+Eigen::Matrix<double, Eigen::Dynamic, 1> DrawMlhs_rng(const int& nerrs, const int& draw_mlhs, boost::ecuyer1988& base_rng__, std::ostream* pstream__);
 RcppExport SEXP _rmdcev_DrawMlhs_rng(SEXP nerrsSEXP, SEXP draw_mlhsSEXP, SEXP base_rng__SEXP, SEXP pstream__SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;

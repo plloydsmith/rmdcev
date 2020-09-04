@@ -1,12 +1,11 @@
 //Code for MDCEV Simulation Functions <- "
 functions {
 
-row_vector Shuffle_rng(row_vector inv, int nerrs){
+vector Shuffle_rng(vector inv_temp, int nerrs){
 
-	row_vector[nerrs] out;
-	row_vector[nerrs] temp1 = rep_row_vector(0, nerrs) ;
-	row_vector[nerrs] temp2 = to_row_vector(uniform_rng(temp1, 1));
-	out = inv[sort_indices_asc(temp2)];
+	vector[nerrs] out;
+	vector[nerrs] temp1 = to_vector(uniform_rng(rep_vector(0, nerrs), 1));
+	out = inv_temp[sort_indices_asc(temp1)];
 
 return(out);
 }
@@ -15,22 +14,22 @@ return(out);
 #' Algorithm described in
 #' Hess, S., Train, K., and Polak, J. (2006) Transportation Research 40B, 147 - 163.
 **/
-row_vector DrawMlhs_rng(int nerrs, int draw_mlhs){
+vector DrawMlhs_rng(int nerrs, int draw_mlhs){
 
-	row_vector[nerrs] error;
-	row_vector[nerrs] temp0 = rep_row_vector(0, nerrs);
+	vector[nerrs] error;
+	vector[nerrs] temp0 = rep_vector(0, nerrs);
 
 	if(draw_mlhs == 0){
-		error = to_row_vector(uniform_rng(temp0, 1));
+		error = to_vector(uniform_rng(temp0, 1));
 	} else if(draw_mlhs == 1){
 		int temp1[nerrs];
-		row_vector[nerrs] temp;
+		vector[nerrs] temp;
 
 		for (err in 1:nerrs)
 			temp1[err] = err - 1;
 
-		temp = to_row_vector(temp1) / nerrs;
-		error = Shuffle_rng(temp + to_row_vector(uniform_rng(temp0, 1))/ nerrs, nerrs);
+		temp = to_vector(temp1) / nerrs;
+		error = Shuffle_rng(temp + to_vector(uniform_rng(temp0, 1))/ nerrs, nerrs);
 	}
 return(error);
 }
@@ -40,14 +39,13 @@ vector[] DrawError_rng(real quant_num, vector quant_j, vector price_j,
 					int model_num, int nalts, int nerrs, int cond_error, int draw_mlhs){
 
 	vector[nalts+1] out[nerrs];
-	matrix[nalts+1, nerrs] error;
-	matrix[nerrs, nalts+1] error_t;
+	matrix[nerrs, nalts+1] error;
 	vector[nerrs] temp0 = rep_vector(0, nerrs);
 
 	if (cond_error == 0){	// Unconditional
 	//	error[1] = rep_row_vector(0, nerrs);
 		for(j in 1:nalts+1)
-			error[j] = -log(-log(DrawMlhs_rng(nerrs, draw_mlhs))) * scale;
+			error[ , j] = -log(-log(DrawMlhs_rng(nerrs, draw_mlhs))) * scale;
 
 	} else if (cond_error == 1){	// Conditional
 		// Cacluate the demand function, g
@@ -65,13 +63,12 @@ vector[] DrawError_rng(real quant_num, vector quant_j, vector price_j,
 		// Calculate errors
 		// For unvisited alternatives, draw from truncated multivariate logistic distribution
 		for(j in 1:nalts+1)
-			error[j] = cond_demand[j] > 0 ? rep_row_vector(ek[j] * scale, nerrs) :
+			error[ , j] = cond_demand[j] > 0 ? rep_vector(ek[j] * scale, nerrs) :
 					-log(-log(DrawMlhs_rng(nerrs, draw_mlhs) * exp(-exp(-ek[j])))) * scale;
 	}
 
-	error_t = error';
 	for(err in 1:nerrs)
-		out[err] = error_t[err]';
+		out[err] = error[err]';
 return(out);
 }
 
@@ -651,9 +648,7 @@ matrix[] CalcMarshallianDemand_rng(real income, vector quant_j, vector price,
 		for (policy in 1:npols){
 			vector[nalts + 1] price_p = price + price_p_policy[policy]; // add price increase
 			vector[nalts] psi_p; //change for no psi_p
-			row_vector[nalts + 1] mdemand_g;
-			matrix[nerrs, nalts + 1] mdemand_p;
-			matrix[nalts + 1, nerrs] mdemand_trans;
+			vector[nalts + 1] mdemand_p = rep_vector(0, nalts + 1);
 
 			if (price_change_only == 0)
 				psi_p = psi_p_policy[policy]';
@@ -665,15 +660,10 @@ matrix[] CalcMarshallianDemand_rng(real income, vector quant_j, vector price,
 				if (model_num == 5)
 					MUzero_p = MUzero_p .* phi ./ gamma; //change for no psi_p
 
-				mdemand_p[err] = MarshallianDemand(income, price, MUzero_p, phi, gamma, alpha,
-											nalts, algo_gen, model_num, tol, max_loop)';
+				mdemand_p = mdemand_p + MarshallianDemand(income, price_p, MUzero_p, phi, gamma, alpha,
+								nalts, algo_gen, model_num, tol, max_loop) / nerrs; // take average
 			}
-		mdemand_trans = mdemand_p';
-
-		for(g in 1:nalts+1)
-  			mdemand_g[g] = mean(mdemand_trans[g]);
-
-		mdemand_pols[policy] = mdemand_g;
+		mdemand_pols[policy] = mdemand_p';
 		}
 	mdemand_out[sim] = mdemand_pols;
 	}
@@ -688,12 +678,10 @@ vector CalcmdemandOne_rng(real income, vector price,
 						int nerrs, int model_num, int algo_gen, real tol, int max_loop){
 
 	int nalts = num_elements(price) - 1; // subtract numeraire
-	vector[nalts + 1] mdemand_out;
+	vector[nalts + 1] mdemand = rep_vector(0, nalts + 1);
 	vector[nalts + 1] gamma = append_row(1, gamma_j);
 	vector[nalts + 1] phi;
 	vector[nalts + 1] error[nerrs];
-	matrix[nerrs, nalts + 1] mdemand;
-	matrix[nalts + 1, nerrs] mdemand_trans;
 
 	if (model_num < 5)
 		phi = rep_vector(1, nalts + 1);
@@ -710,15 +698,11 @@ vector CalcmdemandOne_rng(real income, vector price,
 		if (model_num == 5)
 			MUzero_b = MUzero_b .* phi ./ gamma; //change for no psi_p
 
-		mdemand[err] = MarshallianDemand(income, price, MUzero_b, phi, gamma, alpha,
-						nalts, algo_gen, model_num, tol, max_loop)';
+		mdemand = mdemand + MarshallianDemand(income, price, MUzero_b, phi, gamma, alpha,
+						nalts, algo_gen, model_num, tol, max_loop) / nerrs; // take average
 	}
-	mdemand_trans = mdemand';
 
-	for(g in 1:nalts+1)
-  		mdemand_out[g] = mean(mdemand_trans[g]);
-
-return(mdemand_out);
+return(mdemand);
 }
 
 // end of functions
