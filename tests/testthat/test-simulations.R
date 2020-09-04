@@ -141,7 +141,6 @@ test_that("Conditional error hybrid draw", {
 					 model = "hybrid",
 					 psi_ascs = 0,
 					 algorithm = "MLE",
-					 std_errors = "mvn",
 					 print_iterations = FALSE)
 
 	nalts <- result$stan_data[["J"]]
@@ -149,7 +148,7 @@ test_that("Conditional error hybrid draw", {
 	npols <- 2
 	policies<-	CreateBlankPolicies(npols, result, price_change_only = TRUE)
 
-	df_sim <- PrepareSimulationData(result, policies, nsims = 3)
+	df_sim <- PrepareSimulationData(result, policies, nsims = 1)
 	income <- df_sim[["df_indiv"]][["income"]][[2]]
 	quant_j <- df_sim[["df_indiv"]][["quant_j"]][[2]]
 	price <- df_sim[["df_indiv"]][["price"]][[2]]
@@ -206,7 +205,7 @@ test_that("Conditional error hybrid draw", {
 	util <- ComputeUtilJ(income, mdemand[-1], price[-1],
 						 psi_b_err[-1], phi_j, gamma[-1], alpha,
 						 nalts, model_num, o)
-
+	util
 	expect_true(abs(util - 29.56664) < tol)
 
 	price_p <- price + c(.001,rep(1,nalts))
@@ -215,12 +214,14 @@ test_that("Conditional error hybrid draw", {
 	hdemand <- HicksianDemand(util, price_p, MUzero_p,  c(1, phi_j), gamma, alpha,
 							  nalts, algo_gen = 1, model_num, tol_l = tol_l, max_loop = max_loop, o)
 	wtp_err <- income - t(price_p) %*% hdemand
+	wtp_err
 	expect_true(abs(wtp_err - (-41.56801)) < tol)
 
 	# Test general form
 	hdemand <- HicksianDemand(util, price_p, MUzero_p,  c(1, phi_j), gamma, alpha,
 							  nalts, algo_gen = 0, model_num, tol_l = tol_l, max_loop = max_loop, o)
 	wtp_err <- income - t(price_p) %*% hdemand
+	wtp_err
 	expect_true(abs(wtp_err - (-41.56801)) < tol)
 
 })
