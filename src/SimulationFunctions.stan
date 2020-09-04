@@ -180,105 +180,82 @@ vector MarshallianDemand(real income, vector price, vector MUzero, vector phi, v
 	} else if (algo_gen == 1) {//	General
 		real lambda_l;
 		real lambda_u;
-		if (model_num < 5){
-			matrix[nalts+1, 4] parm_matrix = SortParmMatrix(MUzero, price, gamma, alpha, nalts);
-			vector[nalts+1] mu = col(parm_matrix, 1); // obtain mu
-			vector[nalts+1] g = col(parm_matrix, 3); // obtain gamma
-			vector[nalts+1] g_price = g .* col(parm_matrix, 2);
-			vector[nalts+1] c;
-			vector[nalts+1] b = inv(col(parm_matrix, 4) - 1);
+		matrix[nalts+1, 4] parm_matrix;
+		vector[nalts+1] mu; // obtain mu
+		vector[nalts+1] c;
+		vector[nalts+1] b;
+		real alpha_1;
+		vector[nalts+1] g__phi; // obtain gamma/phi
+		vector[nalts+1] g_price__phi; // obtain gamma*price/phi
 
+		if (model_num < 5){
+			parm_matrix = SortParmMatrix(MUzero, price, gamma, alpha, nalts);
+			mu = col(parm_matrix, 1); // obtain mu = psi/price
+			g__phi = col(parm_matrix, 3); // obtain gamma
+			b = inv(col(parm_matrix, 4) - 1);
 			for (j in 1:nalts+1)
 				c[j] = mu[j] ^ b[j];
-
-			while (exit == 0){
-				lambda = mu[M + 1];	// Calculate lambda equal to MUzero(M+1)
-
-				E = ComputeE(M, lambda, g_price, b, c, d);	// Calculate E
-
-				if (E >= income || M+1 == nalts+1){
-					if (E < income)
-						M += 1;
-
-					lambda_l = E < income ? 0 : lambda;
-					lambda_u = mu[M];
-					lambda = (lambda_l + lambda_u) / 2;
-
-					for (n in 1:max_loop){
-						real lambda_mid = (lambda_l + lambda_u) / 2;
-
-						E = ComputeE(M, lambda, g_price, b, c, d);	// Calculate E
-
-						// Update lambdas's
-						if (E < income)
-							lambda_u = lambda_mid;
-						else if (E > income)
-							lambda_l = lambda_mid;
-
-						lambda = (lambda_l + lambda_u) / 2;
-
-						if (fabs((E - income) / (E + income) * 0.5) < tol_e) break;
-					}
-					// Compute demands (using eq. 12 in Pinjari and Bhat)
-					for (m in 1:M)
-						X[m] = ((lambda / mu[m]) ^ b[m] -d[m]) * g[m];
-
-					exit = 1;
-
-				} else if (E < income && M + 1 < nalts + 1)
-					M += 1; // adds one to M
-			}
 		} else if (model_num == 5){
-			real alpha_1 = alpha[1];
-			matrix[nalts+1, 4] parm_matrix = SortParmMatrix(MUzero, price, gamma, phi, nalts);
-			vector[nalts+1] mu = col(parm_matrix, 1); // obtain mu = psi*phi/(gamma*price)
-			vector[nalts+1] g__phi = col(parm_matrix, 3) ./ col(parm_matrix, 4); // obtain gamma/phi
-			vector[nalts+1] g_price__phi = g__phi .* col(parm_matrix, 2); // obtain gamma*price/phi
+			parm_matrix = SortParmMatrix(MUzero, price, gamma, phi, nalts);
+			alpha_1 = alpha[1];
+			mu = col(parm_matrix, 1); // obtain mu = psi/price  or= psi*phi/(gamma*price) for kt_ee
+			g__phi = col(parm_matrix, 3) ./ col(parm_matrix, 4); // obtain gamma/phi
+		}
+		g_price__phi = g__phi .* col(parm_matrix, 2); // obtain gamma*price/phi
 
-			while (exit == 0){
-				lambda = mu[M + 1];	// Calculate lambda equal to MUzero(M+1)
+		while (exit == 0){
+			lambda = mu[M + 1];	// Calculate lambda equal to MUzero(M+1)
 
-				E = ComputeKtE(M, lambda, mu, g_price__phi, alpha_1);	// Calculate E
+			if (model_num < 5)
+				E = ComputeE(M, lambda, g_price__phi, b, c, d);
 
-				if (E >= income || M+1 == nalts+1){
-					if (E < income)
-						M += 1;
+			else if (model_num == 5)
+				E = ComputeKtE(M, lambda, mu, g_price__phi, alpha_1);
 
-					lambda_l = E < income ? 0 : lambda;
-					lambda_u = mu[M];
-					lambda = (lambda_l + lambda_u) / 2;
+			if (E >= income || M+1 == nalts+1){
+				if (E < income)
+					M += 1;
 
-					for (n in 1:max_loop){
-						real lambda_mid = (lambda_l + lambda_u) / 2;
+				lambda_l = E < income ? 0 : lambda;
+				lambda_u = mu[M];
+				lambda = (lambda_l + lambda_u) / 2;
 
+				for (n in 1:max_loop){
+					real lambda_mid = (lambda_l + lambda_u) / 2;
+
+					if (model_num < 5)
+						E = ComputeE(M, lambda, g_price__phi, b, c, d);
+					else if (model_num == 5)
 						E = ComputeKtE(M, lambda, mu, g_price__phi, alpha_1);
 
-						// Update lambdas's
-						if (E < income)
-							lambda_u = lambda_mid;
-						else if (E > income)
-							lambda_l = lambda_mid;
+					// Update lambdas's
+					if (E < income)
+						lambda_u = lambda_mid;
+					else if (E > income)
+						lambda_l = lambda_mid;
 
-						lambda = (lambda_l + lambda_u) / 2;
+					lambda = (lambda_l + lambda_u) / 2;
 
-						if (fabs((E - income) / (E + income) * 0.5) < tol_e) break;
-					}
-					//print("E = ", E);
-					//print("lambda = ", lambda);
-					//print("parm_matrix = ", parm_matrix);
-					//print("M = ", M);
-					// Compute demands (using eq. 12 in Pinjari and Bhat)
+					if (fabs((E - income) / (E + income) * 0.5) < tol_e) break;
+				}
+				// Compute demands (using eq. 12 in Pinjari and Bhat)
+				if (model_num < 5){
+					for (m in 1:M)
+						X[m] = ((lambda / mu[m]) ^ b[m] -d[m]) * g__phi[m];
+				}
+				else if (model_num == 5){
 					X[1] = pow(lambda, inv(alpha_1 - 1));
 
 					if(M > 1){
 						for (m in 2:M)
 							X[m] = (mu[m] / lambda - 1) * g__phi[m];
 					}
-					exit = 1;
+				}
 
-				} else if (E < income && M + 1 < nalts + 1)
-					M += 1; // adds one to M
-			}
+				exit = 1;
+
+			} else if (E < income && M + 1 < nalts + 1)
+				M += 1; // adds one to M
 		}
 	}
 	// This code puts the choices back in their original order and exports demands
@@ -730,6 +707,8 @@ vector CalcmdemandOne_rng(real income, vector price,
 	// Compute Marshallian demands and baseline utility
 	for (err in 1:nerrs){
 		vector[nalts + 1] MUzero_b = exp(append_row(0, psi_j) + error[err]) ./ price;
+		if (model_num == 5)
+			MUzero_b = MUzero_b .* phi ./ gamma; //change for no psi_p
 
 		mdemand[err] = MarshallianDemand(income, price, MUzero_b, phi, gamma, alpha,
 						nalts, algo_gen, model_num, tol, max_loop)';

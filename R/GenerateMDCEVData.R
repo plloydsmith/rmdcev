@@ -106,7 +106,7 @@ GenerateMDCEVData <- function(model, nobs = 1000, nalts = 10,
 		algo_gen <- 0
 	} else if (model == "hybrid0"){
 		model_num <- 4
-		alpha_parms <- rep(1e-3, nalts+1)
+		alpha_parms <- rep(0, nalts+1)
 		parms_true <- rbind(parms_true, gamma_true, scale_true)
 		algo_gen <- 0
 	} else if (model == "kt_ee"){

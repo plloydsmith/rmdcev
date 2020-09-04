@@ -4,9 +4,10 @@ rmdcev v1.2.1 (Release date: XX)
 - fix alt_name issue if alternatives not named alt
 - fix phi / gamma naming in summary for random parmater models
 - change default n_draws for non mvn to 0.
-- fix phi name error in GenerateMDCEVData
+- fix phi error in GenerateMDCEVData
 - fix prior_phi_sd issue
 - remove stringr/tidyselect as dependencies
+- changed hybrid0 to use log(numeraire) in utility function
 
 rmdcev v1.2.0 (Release date: 2020-08-12)
 ==============
