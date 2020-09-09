@@ -316,7 +316,7 @@ RcppExport SEXP _rcpp_module_boot_stan_fit4mdcev_rp_mod();
 
 static const R_CallMethodDef CallEntries[] = {
     {"_rcpp_module_boot_stan_fit4mdcev_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4mdcev_mod, 3},
-    {"_rcpp_module_boot_stan_fit4mdcev_lc_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4mdcev_rp_mod, 3},
+    {"_rcpp_module_boot_stan_fit4mdcev_rp_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4mdcev_rp_mod, 3},
     {"_rmdcev_Shuffle_rng", (DL_FUNC) &_rmdcev_Shuffle_rng, 4},
     {"_rmdcev_DrawMlhs_rng", (DL_FUNC) &_rmdcev_DrawMlhs_rng, 4},
     {"_rmdcev_DrawError_rng", (DL_FUNC) &_rmdcev_DrawError_rng, 15},
