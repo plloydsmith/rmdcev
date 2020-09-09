@@ -43,6 +43,8 @@ Biarch: true
 Suggests:
     knitr,
     rmarkdown,
-	testthat
+	  testthat
+URL: https://github.com/plloydsmith/rmdcev
+BugReports: https://github.com/plloydsmith/rmdcev/issues
 Author: Patrick Lloyd-Smith [aut, cre],
   Trustees of Columbia University [cph]
