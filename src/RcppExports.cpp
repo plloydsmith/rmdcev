@@ -313,7 +313,6 @@ END_RCPP
 RcppExport SEXP _rcpp_module_boot_stan_fit4mdcev_mod();
 RcppExport SEXP _rcpp_module_boot_stan_fit4mdcev_rp_mod();
 
-
 static const R_CallMethodDef CallEntries[] = {
     {"_rcpp_module_boot_stan_fit4mdcev_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4mdcev_mod, 3},
     {"_rcpp_module_boot_stan_fit4mdcev_rp_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4mdcev_rp_mod, 3},
@@ -332,8 +331,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_rmdcev_CalcWTP_rng", (DL_FUNC) &_rmdcev_CalcWTP_rng, 21},
     {"_rmdcev_CalcMarshallianDemand_rng", (DL_FUNC) &_rmdcev_CalcMarshallianDemand_rng, 21},
     {"_rmdcev_CalcmdemandOne_rng", (DL_FUNC) &_rmdcev_CalcmdemandOne_rng, 14},
-    {"_rcpp_module_boot_stan_fit4mdcev_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4mdcev_mod, 0},
-    {"_rcpp_module_boot_stan_fit4mdcev_rp_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4mdcev_rp_mod, 0},
     {NULL, NULL, 0}
 };
 
