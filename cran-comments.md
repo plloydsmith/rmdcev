@@ -1,5 +1,4 @@
 ## Test environments
-* local R installation, R 4.0.2
 * macOS Catalina 10.15.6 (on github-actions), R 4.0.2
 * ubuntu 20.04 (on github-actions), devel
 * ubuntu 20.04 (on github-actions), R 4.0.2
@@ -9,7 +8,7 @@
 
 ## R CMD check results
 
-* This is a new version of a package. I fixed the http to https issue with
+* This is a new version of a package. I fixed the http://mc-stan.org to https://mc-stan.org.
 
 
 0 errors | 0 warnings | 2 note
