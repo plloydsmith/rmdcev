@@ -6,4 +6,7 @@ doc
 Meta
 *.dll
 man/figures
-*.o
+src/*.o
+src/*.so
+src/*.dll
+src/*.exe
