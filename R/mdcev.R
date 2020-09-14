@@ -68,9 +68,9 @@
 #'     Bayes. Can be 'fixed' for no random parameters, 'uncorr' for uncorrelated random parameters, or
 #'     'corr' for correlated random parameters.
 #' @param max_tree_depth
-#'     http://mc-stan.org/misc/warnings.html#maximum-treedepth-exceeded
+#'     https://mc-stan.org/misc/warnings.html#maximum-treedepth-exceeded
 #' @param adapt_delta
-#'    http://mc-stan.org/misc/warnings.html#divergent-transitions-after-warmup
+#'    https://mc-stan.org/misc/warnings.html#divergent-transitions-after-warmup
 #' @param show_stan_warnings Whether to show warnings from Stan.
 #' @param ... Additional parameters to pass on to \code{rstan::stan}
 #'     and \code{rstan::sampling}.

@@ -15,7 +15,7 @@ literature on recreation demand. Latent class and random parameters
 specifications can be implemented and the models are fit using maximum
 likelihood estimation or Bayesian estimation. All models are implemented
 in Stan, which is a C++ package for performing full Bayesian inference
-(see <http://mc-stan.org/>). The **rmdcev** package also implements
+(see <https://mc-stan.org/>). The **rmdcev** package also implements
 demand forecasting and welfare calculation for policy simulation.
 
 ## Current Status
@@ -159,7 +159,7 @@ summary(mdcev_est)
 #> BIC                              : 71583.52
 #> Standard errors calculated using : Delta method
 #> Exit of MLE                      : successful convergence
-#> Time taken (hh:mm:ss)            : 00:00:3.52
+#> Time taken (hh:mm:ss)            : 00:00:3.09
 #> 
 #> Average consumption of non-numeraire alternatives:
 #>     1     2     3     4     5     6     7     8     9    10 
@@ -256,7 +256,7 @@ wtp <- mdcev.sim(df_sim$df_indiv,
                  sim_type = "welfare")
 #> Using general approach in simulation...
 #> 
-#> 6.00e+04simulations finished in0.41minutes.(2426per second)
+#> 6.00e+04simulations finished in0.43minutes.(2350per second)
 summary(wtp)
 #> # A tibble: 2 x 5
 #>   policy       mean std.dev `ci_lo2.5%` `ci_hi97.5%`

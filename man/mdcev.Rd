@@ -159,9 +159,9 @@ iterations to be split evenly between warmup and posterior draws. The number of 
 \item{n_cores}{The number of cores used to execute the Markov chains in parallel in Bayesian estimation.
 Can set using options(mc.cores = parallel::detectCores()).}
 
-\item{max_tree_depth}{http://mc-stan.org/misc/warnings.html#maximum-treedepth-exceeded}
+\item{max_tree_depth}{https://mc-stan.org/misc/warnings.html#maximum-treedepth-exceeded}
 
-\item{adapt_delta}{http://mc-stan.org/misc/warnings.html#divergent-transitions-after-warmup}
+\item{adapt_delta}{https://mc-stan.org/misc/warnings.html#divergent-transitions-after-warmup}
 
 \item{lkj_shape_prior}{Prior for Cholesky matrix}
 
