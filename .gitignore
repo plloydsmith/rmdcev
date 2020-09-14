@@ -4,7 +4,6 @@ inst/doc
 PackageWalkthrough_cache
 doc
 Meta
-*.dll
 man/figures
 src/*.o
 src/*.so
