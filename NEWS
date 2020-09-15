@@ -1,9 +1,10 @@
-rmdcev v1.2.2 (Release date: XX)
+rmdcev v1.2.2 (Release date: 2020-09-15)
 ==============
 
-- fix error in unconditional welfare
+- fix error in unconditional welfare calculations
+- add additional tests
 
-rmdcev v1.2.1 (Release date: 2020-09-14)
+rmdcev v1.2.1
 ==============
 
 - fix alt_name issue if alternatives not named alt
