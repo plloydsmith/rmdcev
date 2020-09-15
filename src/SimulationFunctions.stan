@@ -40,7 +40,6 @@ vector[] DrawError_rng(real quant_num, vector quant_j, vector price_j,
 
 	vector[nalts+1] out[nerrs];
 	matrix[nerrs, nalts+1] error;
-	vector[nerrs] temp0 = rep_vector(0, nerrs);
 
 	if (cond_error == 0){	// Unconditional
 	//	error[1] = rep_row_vector(0, nerrs);
@@ -205,7 +204,6 @@ vector MarshallianDemand(real income, vector price, vector MUzero, vector phi, v
 
 			if (model_num < 5)
 				E = ComputeE(M, lambda, g_price__phi, b, c, d);
-
 			else if (model_num == 5)
 				E = ComputeKtE(M, lambda, mu, g_price__phi, alpha_1);
 
@@ -265,24 +263,24 @@ return(mdemand);
  * @return utility value
  */
 real ComputeUtilJ(real income, vector quant_j, vector price_j,
-					vector psi_j, vector phi_j, vector gamma_j, vector alpha,
+					vector psi, vector phi_j, vector gamma_j, vector alpha,
 					int nalts, int model_num) {
 	real output;
 	real util_num; // numeraire
 	vector[nalts] util_j;
 
 	if (model_num == 4)
-		util_num = log(income -  price_j' * quant_j);
+		util_num = psi[1] * log(income -  price_j' * quant_j);
 	else
-		util_num = pow(income -  price_j' * quant_j, alpha[1]) / alpha[1];
+		util_num = psi[1] * pow(income -  price_j' * quant_j, alpha[1]) / alpha[1];
 
 	if (model_num == 1 || model_num == 4){
-		util_j = psi_j .* gamma_j .* log(quant_j ./ gamma_j + 1);
+		util_j = psi[2:nalts+1] .* gamma_j .* log(quant_j ./ gamma_j + 1);
 	} else if (model_num == 5){
-		util_j = psi_j .* log((phi_j .* quant_j ./ gamma_j) +1);
+		util_j = psi[2:nalts+1] .* log((phi_j .* quant_j ./ gamma_j) +1);
 	} else {
 		for (n in 1:nalts)
-			util_j[n] = (psi_j[n] * gamma_j[n]) / alpha[n+1] *
+			util_j[n] = (psi[n+1] * gamma_j[n]) / alpha[n+1] *
 			(pow(quant_j[n] / gamma_j[n] + 1, alpha[n+1]) - 1);
 	}
 
@@ -315,7 +313,7 @@ real ComputeKtUtilM(int M, real lambda1, vector psi, vector mu, real alpha_1){
 	// use mu in logs
 	real output;
 	vector[M] temp = rep_vector(0, M);
-	temp[1] = pow(lambda1, alpha_1 / (alpha_1 - 1)) / alpha_1; // compute numeraire util
+	temp[1] = psi[1] * pow(lambda1, alpha_1 / (alpha_1 - 1)) / alpha_1; // compute numeraire util
 	if (M > 1){
 		for (m in 2:M)
 			temp[m] = psi[m] * log(mu[m] / lambda1);
@@ -374,6 +372,7 @@ vector HicksianDemand(real util, vector price,
 			// Compare 1/lambda to baseline utility of the next lowest alternative
 			// (M+1). If lambda exceeds this value then all lower-valued
 			// alternatives have zero demand.
+
 			if (lambda1 > mu[min(M + 1, nalts + 1)] || M == nalts+1){
 
 				// Compute demands (using eq. 12 in Pinjari and Bhat)
@@ -384,106 +383,95 @@ vector HicksianDemand(real util, vector price,
 			} else if (M < nalts + 1)
 				M += 1; // adds one to M
 		}
+//					print("util_new = ", util);
+//					print("lambda1 = ", lambda1);
+//					print("parm_matrix = ", parm_matrix);
 	} else if (algo_gen == 1) {//General approach to demand simulation (het. alpha's)
 		real lambda_l;
 		real lambda_u;
+		matrix[nalts+1, 4] parm_matrix;
+		vector[nalts+1] psi_ord;
+		vector[nalts+1] mu;
+		vector[nalts+1] g; // obtain gamma
+		vector[nalts+1] price_ord; // price
+		vector[nalts+1] a;//	alpha
+		vector[nalts+1] g_psi_a; // gamma*psi/alpha
+		vector[nalts+1] a_a_1; // (alpha/(alpha-1))
+		vector[nalts+1] mu_a_a_1; // (1/MUzero)^(alpha/(alpha-1))
+		vector[nalts+1] g__phi;
+		real alpha_1;
+
 		if (model_num < 5){
-			matrix[nalts+1, 4] parm_matrix = SortParmMatrix(MUzero, price, gamma, alpha, nalts);
-			vector[nalts+1] mu = col(parm_matrix, 1); // obtain mu
-			vector[nalts+1] g = col(parm_matrix, 3); // obtain gamma
-			vector[nalts+1] price_ord = col(parm_matrix, 2); // price
-			vector[nalts+1] a = col(parm_matrix, 4);//	alpha
-			vector[nalts+1] psi = mu .* price_ord;
-			vector[nalts+1] g_psi_a = g .* psi ./ a; // gamma*psi/alpha
-			vector[nalts+1] a_a_1 = a ./ (a - 1); // (alpha/(alpha-1))
-			vector[nalts+1] mu_a_a_1; // (1/MUzero)^(alpha/(alpha-1))
+			parm_matrix = SortParmMatrix(MUzero, price, gamma, alpha, nalts);
+			mu = col(parm_matrix, 1); // obtain mu
+			g = col(parm_matrix, 3); // obtain gamma
+			price_ord = col(parm_matrix, 2); // price
+			a = col(parm_matrix, 4);//	alpha
+			a_a_1 = a ./ (a - 1); // (alpha/(alpha-1))
+			psi_ord = mu .* price_ord;
+			g_psi_a = g .* psi_ord ./ a; // gamma*psi/alpha
 
 			for (j in 1:nalts+1)
 				mu_a_a_1[j] = pow(inv(mu[j]), a_a_1[j]);
 
-			while (exit == 0){
-				lambda1 = mu[M + 1];// Calculate lambda1 equal to MUzero(M+1)
-
-				// Calculate new utility
-				util_new = ComputeUtilM(M, lambda1, g_psi_a, a_a_1, mu_a_a_1, psi, g, price_ord, d, model_num);
-
-				if (util_new >= util || M+1 == nalts+1){
-					if(util_new < util)
-						M += 1;
-					lambda_l = util_new < util ? 0 : lambda1;
-					lambda_u = mu[M];
-					lambda1 = (lambda_l + lambda_u) / 2;
-
-					for (n in 1:max_loop){
-						real lambda_mid = (lambda_l + lambda_u) / 2;
-
-						util_new = ComputeUtilM(M, lambda1, g_psi_a, a_a_1, mu_a_a_1, psi, g, price_ord, d, model_num);
-
-						// Update lambdas's
-						if (util_new < util)
-							lambda_u = lambda_mid;
-						else if (util_new > util)
-							lambda_l = lambda_mid;
-
-						lambda1 = (lambda_l + lambda_u) / 2;
-
-						if (fabs((lambda_l - lambda_u) / (lambda_l + lambda_u) * 0.5) < tol_l) break;
-					}
-
-				// Compute demands (using eq. 12 in Pinjari and Bhat)
-				for (m in 1:M)
-					X[m] = (pow(lambda1 / mu[m], inv(a[m] - 1)) - d[m]) * g[m];
-				exit = 1;
-
-				} else if (util_new < util && M+1 < nalts+1)
-					M += 1; // adds one to M
-			}
 		} else if (model_num == 5){
-			matrix[nalts+1, 4] parm_matrix = SortParmMatrix(MUzero, price, gamma, phi, nalts);
-			real alpha_1 = alpha[1];
-			vector[nalts+1] mu = col(parm_matrix, 1); // obtain mu = psi*phi/(gamma*price)
-			vector[nalts+1] g__phi = col(parm_matrix, 3) ./ col(parm_matrix, 4); // gamma/phi
-			vector[nalts+1] psi_ord = mu .* col(parm_matrix, 2) .* g__phi;
+			alpha_1 = alpha[1];
+			parm_matrix = SortParmMatrix(MUzero, price, gamma, phi, nalts);
+			mu = col(parm_matrix, 1); // obtain mu = psi*phi/(gamma*price)
+			g__phi = col(parm_matrix, 3) ./ col(parm_matrix, 4); // gamma/phi
+			psi_ord = mu .* col(parm_matrix, 2) .* g__phi;
+		}
 
-			while (exit == 0){
-				lambda1 = mu[M + 1];// Calculate lambda1 equal to MUzero(M+1)
+		while (exit == 0){
+			lambda1 = mu[M + 1];// Calculate lambda1 equal to MUzero(M+1)
 
-				// Calculate new utility
+			// Calculate new utility
+			if (model_num < 5)
+				util_new = ComputeUtilM(M, lambda1, g_psi_a, a_a_1, mu_a_a_1, psi_ord, g, price_ord, d, model_num);
+			else if (model_num == 5)
 				util_new = ComputeKtUtilM(M, lambda1, psi_ord, mu, alpha_1);
 
-				if (util_new >= util || M+1 == nalts+1){
-					if(util_new < util)
-						M += 1;
-					lambda_l = util_new < util ? 0 : lambda1;
-					lambda_u = mu[M];
-					lambda1 = (lambda_l + lambda_u) / 2;
+			if (util_new >= util || M+1 == nalts+1){
+				if(util_new < util)
+					M += 1;
+				lambda_l = util_new < util ? 0 : lambda1;
+				lambda_u = mu[M];
+				lambda1 = (lambda_l + lambda_u) / 2;
 
-					for (n in 1:max_loop){
-						real lambda_mid = (lambda_l + lambda_u) / 2;
+				for (n in 1:max_loop){
+					real lambda_mid = (lambda_l + lambda_u) / 2;
 
+					if (model_num < 5)
+						util_new = ComputeUtilM(M, lambda1, g_psi_a, a_a_1, mu_a_a_1, psi_ord, g, price_ord, d, model_num);
+					else if (model_num == 5)
 						util_new = ComputeKtUtilM(M, lambda1, psi_ord, mu, alpha_1);
 
-						// Update lambdas's
-						if (util_new < util)
-							lambda_u = lambda_mid;
-						else if (util_new > util)
-							lambda_l = lambda_mid;
+					// Update lambdas's
+					if (util_new < util)
+						lambda_u = lambda_mid;
+					else if (util_new > util)
+						lambda_l = lambda_mid;
 
-						lambda1 = (lambda_l + lambda_u) / 2;
+					lambda1 = (lambda_l + lambda_u) / 2;
 
-						if (fabs((lambda_l - lambda_u) / (lambda_l + lambda_u) * 0.5) < tol_l) break;
-					}
-				// Compute demands (using modified version of eq. 12 in Pinjari and Bhat)
-					X[1] = pow(lambda1, inv(alpha_1 - 1));
-					if(M > 1){
-						for (m in 2:M)
-							X[m] = (mu[m] / lambda1 - 1) * g__phi[m];
-					}
-				exit = 1;
+					if (fabs((lambda_l - lambda_u) / (lambda_l + lambda_u) * 0.5) < tol_l) break;
+				}
 
-				} else if (util_new < util && M+1 < nalts+1)
-					M += 1; // adds one to M
+			// Compute demands (using eq. 12 in Pinjari and Bhat)
+			if (model_num < 5){
+				for (m in 1:M)
+					X[m] = (pow(lambda1 / mu[m], inv(a[m] - 1)) - d[m]) * g[m];
+			} else if (model_num == 5){
+				X[1] = pow(lambda1 / mu[1], inv(alpha_1 - 1));
+				if(M > 1){
+					for (m in 2:M)
+						X[m] = (mu[m] / lambda1 - 1) * g__phi[m];
+				}
 			}
+			exit = 1;
+
+			} else if (util_new < util && M+1 < nalts+1)
+				M += 1; // adds one to M
 		}
 	}
 	// This code puts the choices back in their original order and exports demands
@@ -557,7 +545,7 @@ matrix CalcWTP_rng(real income, vector quant_j, vector price,
 											nalts, algo_gen, model_num, tol, max_loop);
 
 			util[err] = ComputeUtilJ(income, mdemand[2:nalts+1], price[2:nalts+1],
-									psi_b_err[2:nalts+1], phi[2:nalts+1], gamma[2:nalts+1], alpha,
+									psi_b_err, phi[2:nalts+1], gamma[2:nalts+1], alpha,
 									nalts, model_num);
 		}
 
@@ -640,7 +628,7 @@ matrix[] CalcMarshallianDemand_rng(real income, vector quant_j, vector price,
 											nalts, algo_gen, model_num, tol, max_loop);
 
 			util[err] = ComputeUtilJ(income, mdemand_util[2:nalts+1], price[2:nalts+1],
-									psi_b_err[2:nalts+1], phi[2:nalts+1], gamma[2:nalts+1], alpha,
+									psi_b_err, phi[2:nalts+1], gamma[2:nalts+1], alpha,
 									nalts, model_num); // add err to psi_b if no psi_p
 		}
 

@@ -145,22 +145,22 @@ BEGIN_RCPP
 END_RCPP
 }
 // ComputeUtilJ
-double ComputeUtilJ(const double& income, const Eigen::Matrix<double, Eigen::Dynamic, 1>& quant_j, const Eigen::Matrix<double, Eigen::Dynamic, 1>& price_j, const Eigen::Matrix<double, Eigen::Dynamic, 1>& psi_j, const Eigen::Matrix<double, Eigen::Dynamic, 1>& phi_j, const Eigen::Matrix<double, Eigen::Dynamic, 1>& gamma_j, const Eigen::Matrix<double, Eigen::Dynamic, 1>& alpha, const int& nalts, const int& model_num, std::ostream* pstream__);
-RcppExport SEXP _rmdcev_ComputeUtilJ(SEXP incomeSEXP, SEXP quant_jSEXP, SEXP price_jSEXP, SEXP psi_jSEXP, SEXP phi_jSEXP, SEXP gamma_jSEXP, SEXP alphaSEXP, SEXP naltsSEXP, SEXP model_numSEXP, SEXP pstream__SEXP) {
+double ComputeUtilJ(const double& income, const Eigen::Matrix<double, Eigen::Dynamic, 1>& quant_j, const Eigen::Matrix<double, Eigen::Dynamic, 1>& price_j, const Eigen::Matrix<double, Eigen::Dynamic, 1>& psi, const Eigen::Matrix<double, Eigen::Dynamic, 1>& phi_j, const Eigen::Matrix<double, Eigen::Dynamic, 1>& gamma_j, const Eigen::Matrix<double, Eigen::Dynamic, 1>& alpha, const int& nalts, const int& model_num, std::ostream* pstream__);
+RcppExport SEXP _rmdcev_ComputeUtilJ(SEXP incomeSEXP, SEXP quant_jSEXP, SEXP price_jSEXP, SEXP psiSEXP, SEXP phi_jSEXP, SEXP gamma_jSEXP, SEXP alphaSEXP, SEXP naltsSEXP, SEXP model_numSEXP, SEXP pstream__SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const double& >::type income(incomeSEXP);
     Rcpp::traits::input_parameter< const Eigen::Matrix<double, Eigen::Dynamic, 1>& >::type quant_j(quant_jSEXP);
     Rcpp::traits::input_parameter< const Eigen::Matrix<double, Eigen::Dynamic, 1>& >::type price_j(price_jSEXP);
-    Rcpp::traits::input_parameter< const Eigen::Matrix<double, Eigen::Dynamic, 1>& >::type psi_j(psi_jSEXP);
+    Rcpp::traits::input_parameter< const Eigen::Matrix<double, Eigen::Dynamic, 1>& >::type psi(psiSEXP);
     Rcpp::traits::input_parameter< const Eigen::Matrix<double, Eigen::Dynamic, 1>& >::type phi_j(phi_jSEXP);
     Rcpp::traits::input_parameter< const Eigen::Matrix<double, Eigen::Dynamic, 1>& >::type gamma_j(gamma_jSEXP);
     Rcpp::traits::input_parameter< const Eigen::Matrix<double, Eigen::Dynamic, 1>& >::type alpha(alphaSEXP);
     Rcpp::traits::input_parameter< const int& >::type nalts(naltsSEXP);
     Rcpp::traits::input_parameter< const int& >::type model_num(model_numSEXP);
     Rcpp::traits::input_parameter< std::ostream* >::type pstream__(pstream__SEXP);
-    rcpp_result_gen = Rcpp::wrap(ComputeUtilJ(income, quant_j, price_j, psi_j, phi_j, gamma_j, alpha, nalts, model_num, pstream__));
+    rcpp_result_gen = Rcpp::wrap(ComputeUtilJ(income, quant_j, price_j, psi, phi_j, gamma_j, alpha, nalts, model_num, pstream__));
     return rcpp_result_gen;
 END_RCPP
 }

@@ -80,7 +80,7 @@ mdemand <- MarshallianDemand(income, price, MUzero_b, c(1, phi_j), gamma, alpha,
 							 nalts, algo_gen = 0, model_num, tol_e = tol_e, max_loop = max_loop, o)
 
 	util <- ComputeUtilJ(income, mdemand[-1], price[-1],
-							 psi_b_err[-1], phi_j, gamma[-1], alpha,
+							 psi_b_err, phi_j, gamma[-1], alpha,
 							 nalts, model_num, o)
 
 	expect_true(abs(util - log(income)) < tol)
@@ -203,7 +203,7 @@ test_that("Conditional error hybrid draw", {
 								 nalts, algo_gen = 0, model_num, tol_e = tol_e, max_loop = max_loop, o)
 
 	util <- ComputeUtilJ(income, mdemand[-1], price[-1],
-						 psi_b_err[-1], phi_j, gamma[-1], alpha,
+						 psi_b_err, phi_j, gamma[-1], alpha,
 						 nalts, model_num, o)
 	print(util, digits =10)
 	expect_true(abs(util - 29.56664) < tol)

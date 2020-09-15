@@ -56,6 +56,9 @@ mdcev.sim <- function(df_indiv, df_common, sim_options,
 					  stan_seed = 3,
 					  ...){
 
+
+	if (!is.element(sim_type, c("welfare", "demand"))) stop("sim_type must be 'welfare' or 'demand'")
+
 	start.time <- proc.time()
 
 	# Checks on simulation options
