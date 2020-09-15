@@ -128,7 +128,7 @@ test_that("MLE kt_ee", {
 	df_sim <- PrepareSimulationData(output, policies, nsims = 1)
 
 	# Test welfare
-	wtp1 <- mdcev.sim(df_sim$df_indiv, df_common = df_sim$df_common, sim_options = df_sim$sim_options,
+	wtp <- mdcev.sim(df_sim$df_indiv, df_common = df_sim$df_common, sim_options = df_sim$sim_options,
 					 cond_err = 0, nerrs = 1, sim_type = "welfare")
 	sum_wtp <- summary(wtp)
 
