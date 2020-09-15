@@ -13,3 +13,4 @@ src/*.exe
 *.so
 *.o
 *.dll
+CRAN-RELEASE
