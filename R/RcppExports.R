@@ -21,12 +21,8 @@ SortParmMatrix <- function(MUzero, price, gamma, alpha_phi, nalts, pstream__ = g
     .Call(`_rmdcev_SortParmMatrix`, MUzero, price, gamma, alpha_phi, nalts, pstream__)
 }
 
-ComputeE <- function(M, lambda, g_price, b, c, d, pstream__ = get_stream()) {
+ComputeE <- function(M, lambda, g_price__phi, b, c, d, pstream__ = get_stream()) {
     .Call(`_rmdcev_ComputeE`, M, lambda, g_price, b, c, d, pstream__)
-}
-
-ComputeKtE <- function(M, lambda, mu, g_price__phi, alpha_1, pstream__ = get_stream()) {
-    .Call(`_rmdcev_ComputeKtE`, M, lambda, mu, g_price__phi, alpha_1, pstream__)
 }
 
 MarshallianDemand <- function(income, price, MUzero, phi, gamma, alpha, nalts, algo_gen, model_num, tol_e, max_loop, pstream__ = get_stream()) {
