@@ -17,16 +17,16 @@ test_that("MLE hybrid0 unconditional", {
 				   psi_ascs = 0,
 				   algorithm = "MLE",
 					 std_errors = "mvn",
-					 n_draws = 5,
+					 n_draws = 2,
 				   print_iterations = FALSE)
 
 	npols <- 1
 	policies <- CreateBlankPolicies(npols, output, price_change_only = TRUE)
-	df_sim <- PrepareSimulationData(output, policies, nsims = 5)
+	df_sim <- PrepareSimulationData(output, policies, nsims = 2)
 
 	# Test welfare
 	wtp <- mdcev.sim(df_sim$df_indiv, df_common = df_sim$df_common, sim_options = df_sim$sim_options,
-					 cond_err = 0, nerrs = 5, sim_type = "welfare")
+					 cond_err = 0, nerrs = 1, sim_type = "welfare")
 	sum_wtp <- summary(wtp)
 
 	expect_true(sum(abs(sum_wtp$CoefTable$mean)) < tol)
@@ -42,16 +42,16 @@ test_that("MLE hybrid unconditional", {
 					 psi_ascs = 0,
 					 algorithm = "MLE",
 					 std_errors = "mvn",
-					 n_draws = 5,
+					 n_draws = 2,
 					 print_iterations = FALSE)
 
 	npols <- 1
 	policies <- CreateBlankPolicies(npols, output, price_change_only = TRUE)
-	df_sim <- PrepareSimulationData(output, policies, nsims = 5)
+	df_sim <- PrepareSimulationData(output, policies, nsims = 2)
 
 	# Test welfare
 	wtp <- mdcev.sim(df_sim$df_indiv, df_common = df_sim$df_common, sim_options = df_sim$sim_options,
-					 cond_err = 0, nerrs = 5, sim_type = "welfare")
+					 cond_err = 0, nerrs = 1, sim_type = "welfare")
 	sum_wtp <- summary(wtp)
 
 	expect_true(sum(abs(sum_wtp$CoefTable$mean)) < tol)
@@ -67,16 +67,16 @@ test_that("MLE gamma unconditional", {
 				 psi_ascs = 0,
 				 algorithm = "MLE",
 				 std_errors = "mvn",
-				 n_draws = 5,
+				 n_draws = 2,
 				 print_iterations = FALSE)
 
 	npols <- 1
 	policies <- CreateBlankPolicies(npols, output, price_change_only = TRUE)
-	df_sim <- PrepareSimulationData(output, policies, nsims = 5)
+	df_sim <- PrepareSimulationData(output, policies, nsims = 2)
 
 	# Test welfare
 	wtp <- mdcev.sim(df_sim$df_indiv, df_common = df_sim$df_common, sim_options = df_sim$sim_options,
-				 cond_err = 0, nerrs = 5, sim_type = "welfare")
+				 cond_err = 0, nerrs = 1, sim_type = "welfare")
 	sum_wtp <- summary(wtp)
 
 	expect_true(sum(abs(sum_wtp$CoefTable$mean)) < tol)
@@ -93,16 +93,16 @@ output <- mdcev( ~ alt - 1,
 				 psi_ascs = 0,
 				 algorithm = "MLE",
 				 std_errors = "mvn",
-				 n_draws = 5,
+				 n_draws = 2,
 				 print_iterations = FALSE)
 
 npols <- 1
 policies <- CreateBlankPolicies(npols, output, price_change_only = TRUE)
-df_sim <- PrepareSimulationData(output, policies, nsims = 5)
+df_sim <- PrepareSimulationData(output, policies, nsims = 2)
 
 # Test welfare
 wtp <- mdcev.sim(df_sim$df_indiv, df_common = df_sim$df_common, sim_options = df_sim$sim_options,
-				 cond_err = 0, nerrs = 5, sim_type = "welfare")
+				 cond_err = 0, nerrs = 1, sim_type = "welfare")
 sum_wtp <- summary(wtp)
 
 expect_true(sum(abs(sum_wtp$CoefTable$mean)) < tol)
@@ -119,17 +119,17 @@ test_that("MLE kt_ee", {
 					 gamma_ascs = 0,
 					 model = "kt_ee",
 					 std_errors = "mvn",
-					 n_draws = 5,
+					 n_draws = 30,
 					 algorithm = "MLE",
 					 print_iterations = FALSE)
 
 	npols <- 1
 	policies <- CreateBlankPolicies(npols, output, price_change_only = TRUE)
-	df_sim <- PrepareSimulationData(output, policies, nsims = 5)
+	df_sim <- PrepareSimulationData(output, policies, nsims = 1)
 
 	# Test welfare
-	wtp <- mdcev.sim(df_sim$df_indiv, df_common = df_sim$df_common, sim_options = df_sim$sim_options,
-					 cond_err = 0, nerrs = 5, sim_type = "welfare")
+	wtp1 <- mdcev.sim(df_sim$df_indiv, df_common = df_sim$df_common, sim_options = df_sim$sim_options,
+					 cond_err = 0, nerrs = 1, sim_type = "welfare")
 	sum_wtp <- summary(wtp)
 
 	expect_true(sum(abs(sum_wtp$CoefTable$mean)) < tol)

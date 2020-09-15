@@ -327,7 +327,7 @@ vector HicksianDemand(real util, vector price,
 
 			c = g_psi .* b;
 
-		} if (model_num == 4){
+		} else if (model_num == 4){
 			c = g_psi .* log(mu);
 		}
 
@@ -347,7 +347,6 @@ vector HicksianDemand(real util, vector price,
 			// alternatives have zero demand.
 
 			if (lambda1 > mu[min(M + 1, nalts + 1)] || M == nalts+1){
-
 				// Compute demands (using eq. 12 in Pinjari and Bhat)
 				for (m in 1:M)
 					X[m] = (pow(lambda1 / mu[m], inv(alpha_1 - 1)) - d[m]) * g[m];
