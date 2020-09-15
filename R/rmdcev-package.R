@@ -27,7 +27,7 @@
 
 #' Pinjari, AR, Bhat, CR (2011). Computationally Efficient Forecasting Procedures for Kuhn-Tucker Consumer Demand Model Systems: Application to Residential Energy Consumption Analysis. Department of Civil and Environmental Engineering, University of South Florida. \href{https://repositories.lib.utexas.edu/handle/2152/23880}{(link)}
 
-#' Stan Development Team (2019). RStan: the R interface to Stan. R package version 2.19.2. \href{http://mc-stan.org}{(link)}
+#' Stan Development Team (2019). RStan: the R interface to Stan. R package version 2.19.2. \href{https://mc-stan.org/}{(link)}
 NULL
 
 ## quiets concerns of R CMD check re: the .'s that appear in pipelines

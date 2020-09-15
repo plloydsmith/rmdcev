@@ -355,9 +355,6 @@ vector HicksianDemand(real util, vector price,
 			} else if (M < nalts + 1)
 				M += 1; // adds one to M
 		}
-//					print("util_new = ", util);
-//					print("lambda1 = ", lambda1);
-//					print("parm_matrix = ", parm_matrix);
 	} else if (algo_gen == 1) {//General approach to demand simulation (het. alpha's)
 		real lambda_l;
 		real lambda_u;
