@@ -48,7 +48,12 @@ summary.mdcev.sim <- function(object, ci = 0.95, ...){
 						   paste0("ci_hi",(ci+(1-ci)/2)*100, "%"))
 	}
 	else{
-		out <- apply(simplify2array(object),1:2, mean)
+		out <- simplify2array(object)
+		if(is.vector(out))
+			out <- array(mean(out), dim = c(1,1))
+		else
+			out <- apply(out,1:2, mean)
+
 		colnames(out)<- paste0(rep("policy",ncol(out)), 1:ncol(out))
 
 		out <- as_tibble(out) %>%
