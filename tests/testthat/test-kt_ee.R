@@ -87,6 +87,7 @@ test_that("kt_ee model estimation using trunc_data", {
 })
 
 test_that("Conditional error draw", {
+	skip_on_os("solaris")
 
 output <- mdcev(formula = ~ ageindex| 0 | beach,
 				data = data_rec,
@@ -208,7 +209,7 @@ test_that("unconditional error draw", {
 
 	tol_e <- 1e-20
 	tol_l <- 1e-20
-	max_loop = 500
+	max_loop = 999
 
 	PRNG <-rstan::get_rng(seed = 5)
 	o <- rstan::get_stream() # Need for Expecting an external pointer error

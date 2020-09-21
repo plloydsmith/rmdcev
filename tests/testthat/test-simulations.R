@@ -43,6 +43,7 @@ alpha <- rep(0, nalts+1)
 scale <- result[["stan_fit"]][["par"]][["scale"]]
 
 test_that("Conditional error hybrid0 draw", {
+	skip_on_os("solaris")
 
 tol_e <- 1e-20
 tol_l <- 1e-20
@@ -96,6 +97,7 @@ mdemand <- MarshallianDemand(income, price, MUzero_b, c(1, phi_j), gamma, alpha,
 })
 
 test_that("Test demand simulation", {
+	skip_on_os("solaris")
 
 	# Test conditional errors
 	demand <- mdcev.sim(df_sim$df_indiv, df_common = df_sim$df_common, sim_options = df_sim$sim_options,
@@ -130,6 +132,7 @@ test_that("Test full simulation function", {
 
 
 test_that("Conditional error hybrid draw", {
+	skip_on_os("solaris")
 
 	data_rec <- mdcev.data(data_rec, subset = id < 100,
 						   id.var = "id",
