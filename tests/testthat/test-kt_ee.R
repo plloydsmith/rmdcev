@@ -1,9 +1,12 @@
 context("Test KT-EE version")
 
-# Create log(alpha version)
-# ensure Rp works
-# Need to update SimulationFunctions file....not the case right now
-# Email Ben about
+
+skip_if_r_4 <- function() {
+	if (as.numeric( sub("\\D*(\\d+).*", "\\1", R.version.string) ) < 4) {
+		skip("Using R version less than 4")
+	}
+}
+
 
 tol <- 0.01
 #library(tidyverse)
@@ -87,6 +90,8 @@ test_that("kt_ee model estimation using trunc_data", {
 })
 
 test_that("Conditional error draw", {
+	skip_on_os("solaris")
+	skip_if_r_4()
 
 output <- mdcev(formula = ~ ageindex| 0 | beach,
 				data = data_rec,
@@ -208,7 +213,7 @@ test_that("unconditional error draw", {
 
 	tol_e <- 1e-20
 	tol_l <- 1e-20
-	max_loop = 500
+	max_loop = 999
 
 	PRNG <-rstan::get_rng(seed = 5)
 	o <- rstan::get_stream() # Need for Expecting an external pointer error
