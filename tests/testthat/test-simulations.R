@@ -5,6 +5,12 @@ data(data_rec, package = "rmdcev")
 data_rec
 
 
+skip_if_r_4 <- function() {
+	if (as.numeric( sub("\\D*(\\d+).*", "\\1", R.version.string) ) < 4) {
+		skip("Using R version less than 4")
+	}
+}
+
 data_rec <- mdcev.data(data_rec, subset = id < 100,
 					   id.var = "id",
 					   alt.var = "alt",
@@ -44,6 +50,7 @@ scale <- result[["stan_fit"]][["par"]][["scale"]]
 
 test_that("Conditional error hybrid0 draw", {
 	skip_on_os("solaris")
+	skip_if_r_4()
 
 tol_e <- 1e-20
 tol_l <- 1e-20
@@ -133,7 +140,7 @@ test_that("Test full simulation function", {
 
 test_that("Conditional error hybrid draw", {
 	skip_on_os("solaris")
-
+	skip_if_r_4()
 	data_rec <- mdcev.data(data_rec, subset = id < 100,
 						   id.var = "id",
 						   alt.var = "alt",
