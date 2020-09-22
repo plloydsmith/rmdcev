@@ -28,6 +28,7 @@ num_price = NULL
 model = "hybrid0"
 n_classes = 1
 fixed_scale1 = 0
+single_scale = 0
 trunc_data = 0
 seed = "123"
 initial.parameters = NULL
@@ -37,8 +38,9 @@ max_iterations = 500
 print_iterations = TRUE
 hessian = TRUE
 prior_psi_sd = 10
+prior_phi_sd = 10
 prior_gamma_sd = 10
-prior_alpha_sd = 0.5
+prior_alpha_shape = 1
 prior_scale_sd = 1
 prior_delta_sd = 10
 gamma_nonrandom = 1
@@ -48,27 +50,33 @@ alpha_nonrandom = 1
 n_draws = 30
 keep_loglik = 0
 random_parameters = "fixed"
+jacobian_analytical_grad = 1
 
-mle_options <- list(fixed_scale1 = fixed_scale1,
-					model = model,
-					n_classes = n_classes,
-					trunc_data = trunc_data,
-					seed = seed,
+mle_options <- list(seed = seed,
 					max_iterations = max_iterations,
-					print_iterations = print_iterations,
 					hessian = hessian,
+					print_iterations = print_iterations,
 					n_draws = n_draws,
 					keep_loglik = keep_loglik,
-					flat_priors = flat_priors,
-					prior_psi_sd = prior_psi_sd,
-					prior_gamma_sd = prior_gamma_sd,
-					prior_alpha_sd = prior_alpha_sd,
-					prior_scale_sd = prior_scale_sd,
-					prior_delta_sd = prior_delta_sd,
-					psi_ascs = psi_ascs,
-					gamma_ascs = gamma_ascs,
-					gamma_nonrandom = gamma_nonrandom,
-					alpha_nonrandom = alpha_nonrandom)
+					n_classes = n_classes)
+
+stan_model_options <- list(fixed_scale1 = fixed_scale1,
+						   single_scale = single_scale,
+						   model = model,
+						   n_classes = n_classes,
+						   trunc_data = trunc_data,
+						   psi_ascs = psi_ascs,
+						   gamma_ascs = gamma_ascs,
+						   jacobian_analytical_grad = jacobian_analytical_grad,
+						   flat_priors = flat_priors,
+						   prior_psi_sd = prior_psi_sd,
+						   pior_phi_sd = prior_phi_sd,
+						   prior_gamma_sd = prior_gamma_sd,
+						   prior_alpha_shape = prior_alpha_shape,
+						   prior_scale_sd = prior_scale_sd,
+						   prior_delta_sd = prior_delta_sd,
+						   gamma_nonrandom = gamma_nonrandom,
+						   alpha_nonrandom = alpha_nonrandom)
 
 data_rec <- mdcev.data(data_rec,
 					   id.var = "id",
@@ -77,7 +85,7 @@ data_rec <- mdcev.data(data_rec,
 
 alt_names <- unique(data_rec$alt)
 
-stan_data <- processMDCEVdata(formula, data_rec, mle_options)
+stan_data <- processMDCEVdata(formula, data_rec, stan_model_options)
 parms_info <- rmdcev:::CreateParmInfo(stan_data, alt_names, algorithm, random_parameters)
 
 test_that("hybrid0 parm names", {
@@ -85,37 +93,37 @@ test_that("hybrid0 parm names", {
 })
 
 test_that("hybrid0 LC 2 parm names", {
-	mle_options$n_classes = 2
-	stan_data <- processMDCEVdata(formula, data_rec, mle_options)
+	stan_model_options$n_classes = 2
+	stan_data <- processMDCEVdata(formula, data_rec, stan_model_options)
 	parms_info <- CreateParmInfo(stan_data, alt_names, algorithm, random_parameters)
 	expect_equal(parms_info$n_vars$n_parms_total, length(parms_info$parm_names$all_names))
 })
 test_that("hybrid parm names", {
-	mle_options$model = "hybrid"
-	stan_data <- processMDCEVdata(formula, data_rec, mle_options)
+	stan_model_options$model = "hybrid"
+	stan_data <- processMDCEVdata(formula, data_rec, stan_model_options)
 	parms_info <- CreateParmInfo(stan_data, alt_names, algorithm, random_parameters)
 	expect_equal(parms_info$n_vars$n_parms_total, length(parms_info$parm_names$all_names))
 })
 
 
 test_that("alpha parm names", {
-	mle_options$model = "alpha"
-	stan_data <- processMDCEVdata(formula, data_rec, mle_options)
+	stan_model_options$model = "alpha"
+	stan_data <- processMDCEVdata(formula, data_rec, stan_model_options)
 	parms_info <- CreateParmInfo(stan_data, alt_names, algorithm, random_parameters)
 	expect_equal(parms_info$n_vars$n_parms_total, length(parms_info$parm_names$all_names))
 })
 
 test_that("gamma parm names", {
-	mle_options$model = "gamma"
-	stan_data <- processMDCEVdata(formula, data_rec, mle_options)
+	stan_model_options$model = "gamma"
+	stan_data <- processMDCEVdata(formula, data_rec, stan_model_options)
 	parms_info <- CreateParmInfo(stan_data, alt_names, algorithm, random_parameters)
 	expect_equal(parms_info$n_vars$n_parms_total, length(parms_info$parm_names$all_names))
 })
 
 test_that("kt_ee parm names", {
-	mle_options$model = "kt_ee"
+	stan_model_options$model = "kt_ee"
 	formula = ~ alt -1 | 0 | 0
-	stan_data <- processMDCEVdata(formula, data_rec, mle_options)
+	stan_data <- processMDCEVdata(formula, data_rec, stan_model_options)
 	parms_info <- CreateParmInfo(stan_data, alt_names, algorithm, random_parameters)
 	expect_equal(parms_info$n_vars$n_parms_total, length(parms_info$parm_names$all_names))
 })

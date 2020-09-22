@@ -44,7 +44,7 @@ parameters {
   	matrix[I, RP] z;                             // std normal draws
 	cholesky_factor_corr[corr == 1 ? RP : 0] L_Omega; // cholesky factors
   	vector<lower=0,upper=pi()/2>[RP] tau_unif;
-	vector<lower=0>[fixed_scale1 == 0 ? 1 : 0] scale;
+	vector<lower=0>[S] scale;
 }
 
 transformed parameters {
@@ -57,7 +57,12 @@ transformed parameters {
   	vector[I] alpha_individual_1;
   	matrix[I, J] alpha_individual_j;
   	matrix[I, J] gamma_individual;
-	real scale_full = fixed_scale1 == 0 ? scale[1] : 1.0;
+  	real scale_full;
+
+  	if (fixed_scale1 == 0)
+  		scale_full = scale[1];
+  	else
+  		scale_full = 1.0;
 
 	for (rp in 1:RP) tau[rp] = 2.5 * tan(tau_unif[rp]);
 

@@ -14,6 +14,7 @@ mdcev(
   model = c("alpha", "gamma", "hybrid", "hybrid0", "kt_ee"),
   n_classes = 1,
   fixed_scale1 = 0,
+  single_scale = 0,
   trunc_data = 0,
   psi_ascs = NULL,
   gamma_ascs = 1,
@@ -82,6 +83,8 @@ economics Kuhn-Tucker specification.}
 prespecified number of classes is set greater than 1.}
 
 \item{fixed_scale1}{Whether to fix scale at 1.}
+
+\item{single_scale}{For lc models, whether to estimate a single scale parameter}
 
 \item{trunc_data}{Whether the estimation should be adjusted for truncation of non-numeraire alternatives.
 This option is useful if the data only includes individuals with positive non-numeraire consumption levels

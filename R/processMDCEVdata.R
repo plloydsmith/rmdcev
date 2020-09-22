@@ -58,29 +58,17 @@ processMDCEVdata <- function(formula, data, model_options){
 	income <- as.vector(matrix(data[[income.name]], ncol = J, byrow = TRUE)[,1])
 
 	# Put data into one list for rstan
-	stan_data =
-		list(I = I, J = J, NPsi_ij = NPsi_ij, NPhi = NPhi,
+	stan_data = list(I = I, J = J, NPsi_ij = NPsi_ij, NPhi = NPhi,
 			 K = model_options$n_classes,
 			 dat_psi = as.matrix(dat_psi),
 			 dat_phi = as.matrix(dat_phi),
 			 price_j = price,
 			 quant_j = quant,
 			 income = income,
-			 flat_priors = model_options$flat_priors,
-			 prior_psi_sd = model_options$prior_psi_sd,
-			 prior_phi_sd = model_options$prior_phi_sd,
-			 prior_gamma_sd = model_options$prior_gamma_sd,
-			 prior_alpha_shape = model_options$prior_alpha_shape,
-			 prior_scale_sd = model_options$prior_scale_sd,
-			 prior_delta_sd = model_options$prior_delta_sd,
-			 model_num = model_num,
-			 fixed_scale1 = model_options$fixed_scale1,
-			 trunc_data = model_options$trunc_data,
-			 jacobian_analytical_grad = model_options$jacobian_analytical_grad,
-			 psi_ascs = model_options$psi_ascs,
-			 gamma_ascs = model_options$gamma_ascs,
-			 gamma_nonrandom = model_options$gamma_nonrandom,
-			 alpha_nonrandom = model_options$alpha_nonrandom)
+			 model_num = model_num)
+	stan_data = c(stan_data, model_options)
+	stan_data$n_classes = NULL
+	stan_data$model = NULL
 
 	if (model_options$n_classes > 1){
 		lc.vars <- formula(formula, rhs = 2, lhs = 0)

@@ -63,8 +63,10 @@ maxlikeMDCEV <- function(stan_data, initial.parameters,
 
 			init = list(psi = init.psi)
 
-			if (stan_data$fixed_scale1 == 0)
+			if (stan_data$fixed_scale1 == 0 && stan_data$single_scale == 0)
 				init$scale <- rep(stan_fit$par[["scale"]], stan_data$K)
+			else if (stan_data$fixed_scale1 == 0 && stan_data$single_scale == 1)
+				init$scale <- stan_fit$par[["scale"]]
 
 			if (stan_data$model_num == 1 || stan_data$model_num == 3 || stan_data$model_num == 5)
 				init$alpha <- matrix(rep(init.par$alpha, stan_data$K), nrow=stan_data$K, ncol=1)

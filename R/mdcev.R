@@ -18,6 +18,7 @@
 #' @param n_classes The number of latent classes. Note that the LC model is automatically estimated as long as the
 #' prespecified number of classes is set greater than 1.
 #' @param fixed_scale1 Whether to fix scale at 1.
+#' @param single_scale For lc models, whether to estimate a single scale parameter
 #' @param trunc_data Whether the estimation should be adjusted for truncation of non-numeraire alternatives.
 #' This option is useful if the data only includes individuals with positive non-numeraire consumption levels
 #' such as recreation data collected on-site. To account for the truncation of consumption, the likelihood is
@@ -93,6 +94,7 @@ mdcev <- function(formula = NULL, data,
 				 model = c("alpha", "gamma", "hybrid", "hybrid0", "kt_ee"),
 				 n_classes = 1,
 				 fixed_scale1 = 0,
+				 single_scale = 0,
 				 trunc_data = 0,
 				 psi_ascs = NULL,
 				 gamma_ascs = 1,
@@ -142,6 +144,8 @@ mdcev <- function(formula = NULL, data,
 
 	if (!inherits(data, "mdcev.data")) stop("Data must be of class mdcev.data")
 
+	if (fixed_scale1 == 1 && single_scale == 1) stop("Cannot set both fixed_scale1 and single_scale to 1")
+
 	if (algorithm == "MLE" && is.null(flat_priors)){
 		flat_priors <- 1
 	} else if (algorithm == "Bayes" && is.null(flat_priors))
@@ -156,19 +160,22 @@ mdcev <- function(formula = NULL, data,
 		n_draws <- 0
 
 		# Put model options in a list
-	mle_options <- list(fixed_scale1 = fixed_scale1,
-						model = model,
-						n_classes = n_classes,
-						trunc_data = trunc_data,
-						psi_ascs = psi_ascs,
-						gamma_ascs = gamma_ascs,
-						seed = seed,
-						jacobian_analytical_grad = jacobian_analytical_grad,
+	mle_options <- list(seed = seed,
 						max_iterations = max_iterations,
 						hessian = hessian,
 						print_iterations = print_iterations,
 						n_draws = n_draws,
 						keep_loglik = keep_loglik,
+						n_classes = n_classes)
+
+	stan_model_options <- list(fixed_scale1 = fixed_scale1,
+						single_scale = single_scale,
+						model = model,
+						n_classes = n_classes,
+						trunc_data = trunc_data,
+						psi_ascs = psi_ascs,
+						gamma_ascs = gamma_ascs,
+						jacobian_analytical_grad = jacobian_analytical_grad,
 						flat_priors = flat_priors,
 						prior_psi_sd = prior_psi_sd,
 						pior_phi_sd = prior_phi_sd,
@@ -193,7 +200,7 @@ mdcev <- function(formula = NULL, data,
 	# Need for naming gamma/alpha parameters
 	alt_names <- as.character(unlist(unique(attr(data, "index")["alt"])))
 
-	stan_data <- processMDCEVdata(formula, data, mle_options)
+	stan_data <- processMDCEVdata(formula, data, stan_model_options)
 
 	parms_info <- CreateParmInfo(stan_data, alt_names, algorithm, random_parameters)
 
