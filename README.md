@@ -35,24 +35,20 @@ Models can be estimated using
 
 ## Installation
 
+The **rmdcev** is not currently on CRAN and requires installation from source.
+
 I recommend you first install **rstan** by following these steps:
 
-<https://github.com/stan-dev/rstan/wiki/RStan-Getting-Started>
+https://github.com/stan-dev/rstan/wiki/RStan-Getting-Started
 
-Once **rstan** is installed, you can install **rmdcev** from CRAN using
-
-``` r
-install.packages("rmdcev")
-```
-
-Or install the latest version of **rmdcev** from GitHub using devtools
+Then install the latest version of **rmdcev** from GitHub using devtools
 
 ``` r
 if (!require(devtools)) {
   install.packages("devtools")
   library(devtools)
 }
-install_github("plloydsmith/rmdcev", build_vignettes = FALSE, INSTALL_opts="--no-multiarch")
+install_github("plloydsmith/rmdcev", dependencies = TRUE, INSTALL_opts="--no-multiarch")
 ```
 
 If you have any issues with installation or use of the package, please
