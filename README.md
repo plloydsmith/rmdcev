@@ -35,8 +35,6 @@ Models can be estimated using
 
 ## Installation
 
-*Note that currently the package only installs on linux and windows*
-
 I recommend you first install **rstan** by following these steps:
 
 <https://github.com/stan-dev/rstan/wiki/RStan-Getting-Started>
