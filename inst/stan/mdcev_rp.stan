@@ -69,7 +69,7 @@ transformed parameters {
 	}
 
 	if (alpha_nonrandom == 0 && model_num != 4){
-		alpha_individual_1 = inv_logit(beta[ , RP_a]);
+		alpha_individual_1 = inv_logit(col(beta, RP_a));
 		if (model_num == 1)
 		  	alpha_individual_j = rep_matrix(0, I, J);
 		else if (model_num == 2)
@@ -85,7 +85,7 @@ transformed parameters {
 		if (gamma_ascs == 1)
 			gamma_individual = exp(block(beta, 1, RP_g, I, Gamma));
 		else if (gamma_ascs == 0)
-			gamma_individual = rep_matrix(exp(beta[ , RP_g]), J);
+			gamma_individual = rep_matrix(exp(col(beta, RP_g)), J);
 	} else
 		gamma_individual = gamma_ll(gamma, I, J, Gamma);
 

@@ -275,7 +275,7 @@ mdcev_ll(const Eigen::Matrix<T0__, Eigen::Dynamic, Eigen::Dynamic>& quant_j,
             Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> like_trunc(I);
             stan::math::initialize(like_trunc, DUMMY_VAR__);
             stan::math::fill(like_trunc, DUMMY_VAR__);
-            stan::math::assign(like_trunc,elt_divide(stan::model::rvalue(v_1, stan::model::cons_list(stan::model::index_omni(), stan::model::cons_list(stan::model::index_uni(1), stan::model::nil_index_list())), "v_1"), multiply(v_1, rep_vector(1, (J + 1)))));
+            stan::math::assign(like_trunc,elt_divide(col(v_1, 1), multiply(v_1, rep_vector(1, (J + 1)))));
             current_statement_begin__ = 64;
             for (int i = 1; i <= I; ++i) {
                 current_statement_begin__ = 65;
@@ -1257,7 +1257,7 @@ public:
             current_statement_begin__ = 250;
             if (as_bool((primitive_value(logical_eq(alpha_nonrandom, 0)) && primitive_value(logical_neq(model_num, 4))))) {
                 current_statement_begin__ = 251;
-                stan::math::assign(alpha_individual_1, inv_logit(stan::model::rvalue(beta, stan::model::cons_list(stan::model::index_omni(), stan::model::cons_list(stan::model::index_uni(RP_a), stan::model::nil_index_list())), "beta")));
+                stan::math::assign(alpha_individual_1, inv_logit(col(beta, RP_a)));
                 current_statement_begin__ = 252;
                 if (as_bool(logical_eq(model_num, 1))) {
                     current_statement_begin__ = 253;
@@ -1283,7 +1283,7 @@ public:
                     stan::math::assign(gamma_individual, stan::math::exp(block(beta, 1, RP_g, I, Gamma)));
                 } else if (as_bool(logical_eq(gamma_ascs, 0))) {
                     current_statement_begin__ = 267;
-                    stan::math::assign(gamma_individual, rep_matrix(stan::math::exp(stan::model::rvalue(beta, stan::model::cons_list(stan::model::index_omni(), stan::model::cons_list(stan::model::index_uni(RP_g), stan::model::nil_index_list())), "beta")), J));
+                    stan::math::assign(gamma_individual, rep_matrix(stan::math::exp(col(beta, RP_g)), J));
                 }
             } else {
                 current_statement_begin__ = 269;
@@ -1588,7 +1588,7 @@ public:
             current_statement_begin__ = 250;
             if (as_bool((primitive_value(logical_eq(alpha_nonrandom, 0)) && primitive_value(logical_neq(model_num, 4))))) {
                 current_statement_begin__ = 251;
-                stan::math::assign(alpha_individual_1, inv_logit(stan::model::rvalue(beta, stan::model::cons_list(stan::model::index_omni(), stan::model::cons_list(stan::model::index_uni(RP_a), stan::model::nil_index_list())), "beta")));
+                stan::math::assign(alpha_individual_1, inv_logit(col(beta, RP_a)));
                 current_statement_begin__ = 252;
                 if (as_bool(logical_eq(model_num, 1))) {
                     current_statement_begin__ = 253;
@@ -1614,7 +1614,7 @@ public:
                     stan::math::assign(gamma_individual, stan::math::exp(block(beta, 1, RP_g, I, Gamma)));
                 } else if (as_bool(logical_eq(gamma_ascs, 0))) {
                     current_statement_begin__ = 267;
-                    stan::math::assign(gamma_individual, rep_matrix(stan::math::exp(stan::model::rvalue(beta, stan::model::cons_list(stan::model::index_omni(), stan::model::cons_list(stan::model::index_uni(RP_g), stan::model::nil_index_list())), "beta")), J));
+                    stan::math::assign(gamma_individual, rep_matrix(stan::math::exp(col(beta, RP_g)), J));
                 }
             } else {
                 current_statement_begin__ = 269;

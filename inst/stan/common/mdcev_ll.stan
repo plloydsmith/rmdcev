@@ -57,7 +57,7 @@ vector mdcev_ll(matrix quant_j, matrix price_j, vector log_num, vector income,
 
 	if (trunc_data == 1){
 		matrix[I, J+1] v_1 = exp(append_col((alpha1 - 1) .* log(income), lpsi - log(price_j)) / scale_full);
-		vector[I] like_trunc = v_1[ , 1] ./ (v_1 * rep_vector(1, J+1));
+		vector[I] like_trunc = col(v_1, 1) ./ (v_1 * rep_vector(1, J+1));
 
 		for(i in 1:I)
 			like_trunc[i] = like_trunc[i] < 1 ? like_trunc[i] : 1;
