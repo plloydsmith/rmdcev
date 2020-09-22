@@ -20,11 +20,13 @@ jobs:
       matrix:
         config:
 # rstan does not work          - {os: macOS-latest,   r: 'devel'}
-          - {os: macOS-latest,   r: '3.6'}
+#          - {os: macOS-latest,   r: '3.6'} # No C++14
+#[1] "Error in sampler$call_sampler(args_list[[i]]) : "
+#[2] "  c++ exception (unknown reason)"
           - {os: macOS-latest,   r: 'release'}
           - {os: windows-latest, r: 'devel'}
           - {os: windows-latest, r: 'release'}
-          - {os: windows-latest, r: 'oldrel'}
+#          - {os: windows-latest, r: 'oldrel'} # No C++14
           - {os: ubuntu-20.04,   r: 'devel'}
           - {os: ubuntu-20.04,   r: 'release'}
           - {os: ubuntu-20.04,   r: 'oldrel'}
