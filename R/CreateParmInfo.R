@@ -4,7 +4,7 @@
 #' @param alt_names name of alternatives.
 #' @inheritParams mdcev
 #' @return A list of parameter names and numbers
-#' @keywords internal
+#' @noRd
 CreateParmInfo <- function(stan_data, alt_names, algorithm, random_parameters){
 
 J <- stan_data$J
@@ -144,8 +144,7 @@ return(parms_info)
 #' @param parms_names list of parameter names
 #' @inheritParams mdcev
 #' @return A vector of LC names
-#' @keywords internal
-#' @export
+#' @noRd
 GenClassNames <- function(parms_names, n_classes){
 	if(length(parms_names) > 0){
 		classes <- paste0(rep('class', n_classes), sep = "",c(1:n_classes))

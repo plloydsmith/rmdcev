@@ -3,7 +3,7 @@
 #' @inheritParams mdcev
 #' @param alt_names name of alternatives.
 #' @param model_options list of model options
-#' @keywords internal
+#' @noRd
 processMDCEVdata <- function(formula, data, model_options){
 
 	formula <- Formula::Formula(formula)

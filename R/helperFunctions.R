@@ -2,13 +2,7 @@
 #' @description Convert matrix x to a list with each row as an element
 #' @param x matrix to be converted to list
 #' @return A list
-#' @keywords internal
-#' @export
-#' @examples
-#'
-#' tmp <- matrix(0, nrow = 10, ncol = 5)
-#' tmp_list <- CreateListsRow(tmp)
-#'
+#' @noRd
 CreateListsRow <- function(x){
 	out <- lapply(seq_len(nrow(x)), function(i) x[i,])
 	return(out)
@@ -17,15 +11,21 @@ CreateListsRow <- function(x){
 #' @title CleanInit
 #' @description Adds appropriate dimensions for initial values
 #' @param init_input cleaned version of inits
-#' @keywords internal
-#' @export
+#' @noRd
 CleanInit <- function(init_input){
+	if (!is.list(init_input)){
+		temp = init_input
+	} else{
+
+	temp = list(scale = NULL)
+
 	# Add dimension to starting values
 	temp <- lapply(init_input, function(x){
 		x <- matrix(x, nrow = 1, length(x))
 	})
 	if(!is.null(init_input$scale))
 		temp$scale <- array(init_input$scale, dim = 1)
+	}
 	return(temp)
 }
 
@@ -33,12 +33,7 @@ CleanInit <- function(init_input){
 #' @description Convert matrix x to a list with each row as an element
 #' @param x matrix to be converted to list
 #' @export
-#' @keywords internal
-#' @examples
-#'
-#' tmp <- matrix(0, nrow = 10, ncol = 5)
-#' tmp_list <- CreateListsCol(tmp)
-#'
+#' @noRd
 CreateListsCol <- function(x){
 	if (is.vector(x))
 		out <- as.list(x)
@@ -52,7 +47,7 @@ CreateListsCol <- function(x){
 #' @param x matrix B to be multiplied
 #' @param mat_temp matrix A to be multiplied
 #' @param n_rows number of rows for final matrix
-#' @keywords internal
+#' @noRd
 MultiplyMatrix <- function(mat_temp, x, n_rows){
 	out <- matrix(mat_temp %*% x , nrow = n_rows, byrow = TRUE)
 	return(out)
@@ -61,7 +56,7 @@ MultiplyMatrix <- function(mat_temp, x, n_rows){
 #' @title DoCbind
 #' @description Convert list to matrix
 #' @param x list to be converted
-#' @keywords internal
+#' @noRd
 DoCbind <- function(x){
 	out <- do.call(cbind, x)
 	return(out)
@@ -114,7 +109,7 @@ CreateBlankPolicies <- function(npols, model, price_change_only = TRUE){
 #' @param psi_j matrix (JXn_psi_j) of alt-specific attributes
 #' @param psi_i matrix (IXn_psi_i) of people-specific attributes
 #' @description Creates the Psi data matrix for use in mdcev model
-#' @keywords internal
+#' @noRd
 CreatePsiMatrix <- function(psi_j = NULL, psi_i = NULL){
 	if(!is.na(psi_i))
 		psi_i <- lapply(psi_i, function(x) {rep(x, each= nrow(psi_j))})
@@ -129,7 +124,7 @@ return(dat_psi)
 #' @param data est_par object from results
 #' @param parm_name name of parameter to get simulations
 #' @description Pulls out specific mdcev parameter simulations
-#' @keywords internal
+#' @noRd
 GrabParms <- function(data, parm_name){
 	out <- data %>%
 		dplyr::filter(grepl(parm_name, .data$parms)) %>%
@@ -144,7 +139,7 @@ GrabParms <- function(data, parm_name){
 #' @param est_sim est_sim from results
 #' @param parm_name name of parameter to get simulations
 #' @description Pulls out specific mdcev parameter simulations
-#' @keywords internal
+#' @noRd
 GrabIndividualParms <- function(est_sim, parm_name){
 	out <- est_sim %>%
 		dplyr::filter(grepl(c(parm_name), parms)) %>%
@@ -160,7 +155,7 @@ GrabIndividualParms <- function(est_sim, parm_name){
 #' @param est_pars_i psi parameter estimates for each person
 #' @description Works at individual level and creates the psi
 #' variables for each simulation, policy, alternative
-#' @keywords internal
+#' @noRd
 CreatePsi = function(dat_vars_i, est_pars_i, J, NPsi_ij, psi_ascs, npols){
 #	dat_vars_i = dat_vars[[3]]
 #	est_pars_i = psi_sim_temp[[3]]

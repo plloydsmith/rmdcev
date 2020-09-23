@@ -49,7 +49,7 @@ test_that("kt_ee model estimation", {
 					model = "kt_ee",
 					gamma_ascs = 0,
 					algorithm = "MLE",
-					initial.parameters = init,
+				#	initial.parameters = init,
 					print_iterations = F)
 
 	output.sum <- summary(output)
@@ -122,6 +122,7 @@ alpha <- c(output[["stan_fit"]][["par"]][["alpha"]], rep(0, nalts))
 #alpha <- rep(output[["stan_fit"]][["par"]][["alpha"]], nalts+1)
 #alpha <- c(output[["stan_fit"]][["par"]][["alpha"]], rep(0,nalts))
 scale <- output[["stan_fit"]][["par"]][["scale"]]
+expect_true(abs(scale - 0.8917881) < tol)
 
 
 #		rstan::expose_stan_functions("src/SimulationFunctions.stan")
@@ -171,7 +172,7 @@ scale <- output[["stan_fit"]][["par"]][["scale"]]
 							  nalts, algo_gen, model_num, tol_l = tol_l, max_loop = max_loop, o)
 	wtp_err <- income - t(price_p) %*% hdemand
 	print(wtp_err, digits =10)
-	expect_true(abs(wtp_err - (-375.0464)) < tol)
+	expect_true(abs(wtp_err - (-375.026)) < tol)
 })
 
 

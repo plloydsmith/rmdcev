@@ -174,6 +174,7 @@ test_that("Conditional error hybrid draw", {
 	gamma <- c(1, gamma_j)
 	alpha <- rep(result[["stan_fit"]][["par"]][["alpha"]], nalts+1)
 	scale <- result[["stan_fit"]][["par"]][["scale"]]
+	print(scale, digits =10)
 	expect_true(abs(scale - 0.6953965) < tol)
 
 	tol_e <- 1e-20

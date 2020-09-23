@@ -40,7 +40,7 @@
 #' @param keep_loglik Whether to keep the log_lik calculations
 #' @param hessian Whether to keep the Hessian matrix
 #' @param initial.parameters The default for fixed and random parameter specifications is to use random starting values.
-#' The exception to this is for the scale parameter which is set to 1.
+#' (except for the scale parameter whith a starting value set to 1).
 #' For LC models, the default is to use slightly adjusted MLE point estimates from the single class model.
 #' Initial parameter values should be included in a named list. For example, the LC "hybrid" specification
 #' initial parameters can be specified as:
@@ -102,7 +102,7 @@ mdcev <- function(formula = NULL, data,
 				 seed = "123",
 				 max_iterations = 2000,
 				 jacobian_analytical_grad = 1,
-				 initial.parameters = NULL,
+				 initial.parameters = "random",
 				 hessian = TRUE,
 				 algorithm = c("MLE", "Bayes"),
 				 flat_priors = NULL,
@@ -161,7 +161,8 @@ mdcev <- function(formula = NULL, data,
 		n_draws <- 0
 
 		# Put model options in a list
-	mle_options <- list(seed = seed,
+	mle_options <- list(initial.parameters = initial.parameters,
+						seed = seed,
 						max_iterations = max_iterations,
 						hessian = hessian,
 						print_iterations = print_iterations,
@@ -187,7 +188,8 @@ mdcev <- function(formula = NULL, data,
 						gamma_nonrandom = gamma_nonrandom,
 						alpha_nonrandom = alpha_nonrandom)
 
-	bayes_options <- list(n_iterations = n_iterations,
+	bayes_options <- list(initial.parameters = initial.parameters,
+						  n_iterations = n_iterations,
 						n_chains = n_chains,
 						n_cores = n_cores,
 						keep_loglik = keep_loglik,
@@ -205,22 +207,11 @@ mdcev <- function(formula = NULL, data,
 
 	parms_info <- CreateParmInfo(stan_data, alt_names, algorithm, random_parameters)
 
-	if(!is.null(initial.parameters) && n_classes == 1 & algorithm == "MLE")
-		initial.parameters <- CleanInit(initial.parameters)
-
-	# set starting values for scale to be 1
-	if(is.null(initial.parameters) && fixed_scale1 == 0)
-		if (algorithm == "Bayes")
-			initial.parameters <- rep(list(list(scale = array(1, dim = 1))), n_chains)
-		else if (algorithm == "MLE")
-			initial.parameters$scale <- array(1, dim = 1)
-
 		# If no user supplied weights, replace weights with vector of ones
 	if (is.null(weights))
 		weights <-  rep(1, stan_data$I)
 
 	stan_data$weights <- as.vector(weights)
-	bayes_options$initial.parameters <- initial.parameters
 
 	if (algorithm == "Bayes") {
 		result <- BayesMDCEV(stan_data,
@@ -231,7 +222,6 @@ mdcev <- function(formula = NULL, data,
 
 	} else if (algorithm == "MLE") {
 		result <- maxlikeMDCEV(stan_data,
-							   initial.parameters,
 							   mle_options,
 							   parms_info,
 							   ...)

@@ -1,7 +1,7 @@
 #' @title mdcev.datacheck
 #' @description Check mdcev data
 #' @inheritParams mdcev
-#' @keywords internal
+#' @noRd
 mdcev.datacheck <- function(data_input){
 
 	message("Checking data...")

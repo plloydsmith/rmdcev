@@ -102,7 +102,7 @@ return(output)
 #' @description Internal function for WTP simulation
 #' @inheritParams PrepareSimulationData
 #' @param est_sim Cleaned up parameter simulations from PrepareSimulationData
-#' @keywords internal
+#' @noRd
 ProcessSimulationData <- function(est_sim, object, policies, nsims){
 
 	J <- object$stan_data$J

@@ -7,7 +7,7 @@
 #' @param include.stanfit default isTRUE,
 #' @import dplyr
 #' @import rstan
-#' @keywords internal
+#' @noRd
 BayesMDCEV <- function(stan_data, bayes_options,
 								 keep.samples = FALSE,
 								 include.stanfit = TRUE, ...) {
@@ -81,22 +81,17 @@ return(result)
 #' @importFrom rstan stan sampling
 #' @import Rcpp
 #' @return A stanfit object.
-#' @keywords internal
+#' @noRd
 RunStanSampling <- function(stan_data, stan.model, bayes_options, ...) {
-	if (is.null(bayes_options$initial.parameters)){
-		sampling(stan.model, data = stan_data,
-				 chains = bayes_options$n_chains,
-				 cores = bayes_options$n_cores,
-				 iter = bayes_options$n_iterations, seed = bayes_options$seed,
-				 control = list(max_treedepth = bayes_options$max_tree_depth,
-				 			   adapt_delta = bayes_options$adapt_delta), ...)
-	} else {
-		sampling(stan.model, data = stan_data,
-				 chains = bayes_options$n_chains,
-				 cores = bayes_options$n_cores,
-				 init = bayes_options$initial.parameters,
-				 iter = bayes_options$n_iterations, seed = bayes_options$seed,
-				 control = list(max_treedepth = bayes_options$max_tree_depth,
-				 			   adapt_delta = bayes_options$adapt_delta), ...)
-	}
+
+	if (stan_data$fixed_scale1 == 0 && !is.list(bayes_options$initial.parameters))
+		bayes_options$initial.parameters <- rep(list(list(scale = array(1, dim = 1))), bayes_options$n_chains)
+
+	sampling(stan.model, data = stan_data,
+			 chains = bayes_options$n_chains,
+			 cores = bayes_options$n_cores,
+			 init = bayes_options$initial.parameters,
+			 iter = bayes_options$n_iterations, seed = bayes_options$seed,
+			 control = list(max_treedepth = bayes_options$max_tree_depth,
+			 			   adapt_delta = bayes_options$adapt_delta), ...)
 }
