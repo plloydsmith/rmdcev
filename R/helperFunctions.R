@@ -32,7 +32,6 @@ CleanInit <- function(init_input){
 #' @title CreateListsCol
 #' @description Convert matrix x to a list with each row as an element
 #' @param x matrix to be converted to list
-#' @export
 #' @noRd
 CreateListsCol <- function(x){
 	if (is.vector(x))
