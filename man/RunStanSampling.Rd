@@ -4,7 +4,7 @@
 \alias{RunStanSampling}
 \title{RunStanSampling}
 \usage{
-RunStanSampling(stan_data, stan.model, bayes_options, initial.parameters, ...)
+RunStanSampling(stan_data, stan.model, bayes_options, ...)
 }
 \arguments{
 \item{stan_data}{data for model}
@@ -12,18 +12,6 @@ RunStanSampling(stan_data, stan.model, bayes_options, initial.parameters, ...)
 \item{stan.model}{Complied Stan model}
 
 \item{bayes_options}{list of Bayes options}
-
-\item{initial.parameters}{The default for fixed and random parameter specifications is to use random starting values.
-The exception to this is for the scale parameter which is set to 1.
-For LC models, the default is to use slightly adjusted MLE point estimates from the single class model.
-Initial parameter values should be included in a named list. For example, the LC "hybrid" specification
-initial parameters can be specified as:
-initial.parameters = list(psi = array(0, dim = c(K, num_psi)),
-                            gamma = array(1, dim = c(K, num_alt)),
-                            alpha = array(0.5, dim = c(K, 0)),
-                            scale = array(1, dim = c(K)))
-where K is the number of classes (i.e. K = 1 is used for single class models),
-num_psi is number of psi parameters, and num_alt is number of non-numeraire alternatives.}
 
 \item{...}{Additional parameters to pass on to \code{rstan::stan} and
 \code{rstan::sampling}.}

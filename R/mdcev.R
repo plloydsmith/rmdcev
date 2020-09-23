@@ -209,7 +209,7 @@ mdcev <- function(formula = NULL, data,
 		initial.parameters <- CleanInit(initial.parameters)
 
 	# set starting values for scale to be 1
-	if(is.null(initial.parameters) && n_classes == 1 && fixed_scale1 == 0)
+	if(is.null(initial.parameters) && fixed_scale1 == 0)
 		if (algorithm == "Bayes")
 			initial.parameters <- rep(list(list(scale = array(1, dim = 1))), n_chains)
 		else if (algorithm == "MLE")

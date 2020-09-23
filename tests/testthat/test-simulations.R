@@ -174,7 +174,7 @@ test_that("Conditional error hybrid draw", {
 	gamma <- c(1, gamma_j)
 	alpha <- rep(result[["stan_fit"]][["par"]][["alpha"]], nalts+1)
 	scale <- result[["stan_fit"]][["par"]][["scale"]]
-
+	expect_true(abs(scale - 0.6953965) < tol)
 
 	tol_e <- 1e-20
 	tol_l <- 1e-20
@@ -216,7 +216,7 @@ test_that("Conditional error hybrid draw", {
 						 psi_b_err, phi_j, gamma[-1], alpha,
 						 nalts, model_num, o)
 	print(util, digits =10)
-	expect_true(abs(util - 29.56664) < tol)
+	expect_true(abs(util - 29.58674801) < tol)
 
 	price_p <- price + c(.001,rep(1,nalts))
 	MUzero_p <- psi_b_err / price_p
@@ -225,14 +225,14 @@ test_that("Conditional error hybrid draw", {
 							  nalts, algo_gen = 1, model_num, tol_l = tol_l, max_loop = max_loop, o)
 	wtp_err <- income - t(price_p) %*% hdemand
 	print(wtp_err, digits =10)
-	expect_true(abs(wtp_err - (-41.56801)) < tol)
+	expect_true(abs(wtp_err - (-41.57857841)) < tol)
 
 	# Test general form
 	hdemand <- HicksianDemand(util, price_p, MUzero_p,  c(1, phi_j), gamma, alpha,
 							  nalts, algo_gen = 0, model_num, tol_l = tol_l, max_loop = max_loop, o)
 	wtp_err <- income - t(price_p) %*% hdemand
 	print(wtp_err, digits =10)
-	expect_true(abs(wtp_err - (-41.56801)) < tol)
+	expect_true(abs(wtp_err - (-41.57857841)) < tol)
 
 })
 

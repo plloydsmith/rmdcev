@@ -150,7 +150,7 @@ scale <- output[["stan_fit"]][["par"]][["scale"]]
 	util <- ComputeUtilJ(income, mdemand[-1], price[-1],
 						 psi_b_err, phi_j, gamma[-1], alpha,
 						 nalts, model_num, o)
-	util
+	print(util, digits =10)
 	expect_true(abs(util - 253.1988) < tol)
 
 	price_p <- price + c(0,rep(0,nalts))
@@ -170,7 +170,7 @@ scale <- output[["stan_fit"]][["par"]][["scale"]]
 	hdemand <- HicksianDemand(util, price_p, MUzero_p, c(1, phi_j), gamma, alpha,
 							  nalts, algo_gen, model_num, tol_l = tol_l, max_loop = max_loop, o)
 	wtp_err <- income - t(price_p) %*% hdemand
-	wtp_err
+	print(wtp_err, digits =10)
 	expect_true(abs(wtp_err - (-375.0464)) < tol)
 })
 
