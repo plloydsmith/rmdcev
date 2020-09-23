@@ -1,7 +1,7 @@
 Package: rmdcev
 Type: Package
 Title: Kuhn-Tucker and Multiple Discrete-Continuous Extreme Value Models
-Version: 1.2.3
+Version: 1.2.4
 Authors@R: c(
     person(given = "Patrick",
            family = "Lloyd-Smith",
