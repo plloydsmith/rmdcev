@@ -35,13 +35,17 @@ Models can be estimated using
 
 ## Installation
 
-The **rmdcev** is not currently on CRAN and requires installation from source.
-
 I recommend you first install **rstan** by following these steps:
 
-https://github.com/stan-dev/rstan/wiki/RStan-Getting-Started
+<https://github.com/stan-dev/rstan/wiki/RStan-Getting-Started>
 
-Then install the latest version of **rmdcev** from GitHub using devtools
+Once **rstan** is installed, you can install **rmdcev** from CRAN using
+
+``` r
+install.packages("rmdcev")
+```
+
+Or install the latest version of **rmdcev** from GitHub using devtools
 
 ``` r
 if (!require(devtools)) {
@@ -141,7 +145,7 @@ Summarize results
 
 ``` r
 summary(mdcev_est)
-#> Model run using rmdcev for R, version 1.2.1 
+#> Model run using rmdcev for R, version 1.2.3 
 #> Estimation method                : MLE
 #> Model type                       : gamma specification
 #> Number of classes                : 1
@@ -153,7 +157,7 @@ summary(mdcev_est)
 #> BIC                              : 71583.52
 #> Standard errors calculated using : Delta method
 #> Exit of MLE                      : successful convergence
-#> Time taken (hh:mm:ss)            : 00:00:3.09
+#> Time taken (hh:mm:ss)            : 00:00:3.39
 #> 
 #> Average consumption of non-numeraire alternatives:
 #>     1     2     3     4     5     6     7     8     9    10 
@@ -250,7 +254,7 @@ wtp <- mdcev.sim(df_sim$df_indiv,
                  sim_type = "welfare")
 #> Using general approach in simulation...
 #> 
-#> 6.00e+04simulations finished in0.43minutes.(2350per second)
+#> 6.00e+04simulations finished in0.42minutes.(2389per second)
 summary(wtp)
 #> # A tibble: 2 x 5
 #>   policy       mean std.dev `ci_lo2.5%` `ci_hi97.5%`
@@ -258,3 +262,10 @@ summary(wtp)
 #> 1 policy1 -3.63e-11      NA   -3.63e-11    -3.63e-11
 #> 2 policy2 -3.63e-11      NA   -3.63e-11    -3.63e-11
 ```
+
+## Thanks
+
+This package was not developed in isolation and I gratefully acknowledge
+Joshua Abbott, Allen Klaiber, Lusi Xie, and the [apollo
+team](http://www.apollochoicemodelling.com/) whose codes or suggestions
+were helpful in putting this package together.

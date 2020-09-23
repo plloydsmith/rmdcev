@@ -29,7 +29,7 @@ jobs:
 #          - {os: windows-latest, r: 'oldrel'} # No C++14
           - {os: ubuntu-20.04,   r: 'devel'}
           - {os: ubuntu-20.04,   r: 'release'}
-          - {os: ubuntu-20.04,   r: 'oldrel'}
+#          - {os: ubuntu-20.04,   r: 'oldrel'}
     env:
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
       RSPM: ${{ matrix.config.rspm }}
