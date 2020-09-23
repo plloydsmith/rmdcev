@@ -118,6 +118,7 @@ return(result)
 #' @param stan_fit A stanfit object.
 #' @param parms_info information on parameters
 #' @return A stanfit object with a reduced size.
+#' @keywords internal
 ReduceStanFitSize <- function(stan_fit, parms_info) {
 	stan_fit[["par"]][["log_like"]] <- NULL
 	stan_fit[["theta_tilde"]] <- stan_fit[["theta_tilde"]][,1:parms_info$n_vars$n_parms_total]

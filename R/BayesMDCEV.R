@@ -9,7 +9,6 @@
 #' @import rstan
 #' @keywords internal
 BayesMDCEV <- function(stan_data, bayes_options,
-								 initial.parameters,
 								 keep.samples = FALSE,
 								 include.stanfit = TRUE, ...) {
 
@@ -83,46 +82,21 @@ return(result)
 #' @import Rcpp
 #' @return A stanfit object.
 #' @keywords internal
-RunStanSampling <- function(stan_data, stan.model, bayes_options, ...)
-{
-
-#	if (bayes_options$random_parameters == "fixed"){
-#		pars = c("psi", "gamma", "alpha", "scale", "log_like", "sum_log_lik", "lp__")
-#	}else
-#		pars = c("mu", "tau", "L_Omega", "scale", "log_like", "sum_log_lik" )
-#	if (is.null(pars))
-#		pars <- stanParameters(stan.dat, keep.beta, stan.model)
-#	init <- initialParameterValues(stan.dat)
-	sampling(stan.model, data = stan_data,
-					chains = bayes_options$n_chains,
-					cores = bayes_options$n_cores,
-#			 pars = pars,
-			 iter = bayes_options$n_iterations, seed = bayes_options$seed,
-			 control = list(max_treedepth = bayes_options$max_tree_depth,
-			 			   adapt_delta = bayes_options$adapt_delta), ...)
-#			 init = init,
+RunStanSampling <- function(stan_data, stan.model, bayes_options, ...) {
+	if (is.null(bayes_options$initial.parameters)){
+		sampling(stan.model, data = stan_data,
+				 chains = bayes_options$n_chains,
+				 cores = bayes_options$n_cores,
+				 iter = bayes_options$n_iterations, seed = bayes_options$seed,
+				 control = list(max_treedepth = bayes_options$max_tree_depth,
+				 			   adapt_delta = bayes_options$adapt_delta), ...)
+	} else {
+		sampling(stan.model, data = stan_data,
+				 chains = bayes_options$n_chains,
+				 cores = bayes_options$n_cores,
+				 init = bayes_options$initial.parameters,
+				 iter = bayes_options$n_iterations, seed = bayes_options$seed,
+				 control = list(max_treedepth = bayes_options$max_tree_depth,
+				 			   adapt_delta = bayes_options$adapt_delta), ...)
+	}
 }
-
-#stanParameters <- function(stan.dat, keep.beta, stan.model)
-#{
-#	full.covariance <- is.null(stan.dat$U)
-#	multiple.classes <- !is.null(stan.dat$P)
-#	has.covariates <- !is.null(stan.dat$covariates)
-#
-#	pars <- c("theta", "sigma")
-#
-#	if (multiple.classes)
-#	{
-#		if (has.covariates)
-#			pars <- c(pars, "covariates_beta")
-#		else
-#			pars <- c(pars, "class_weights")
-#	}else if (stan.model@model_name == "choicemodelRCdiag")
-#		pars <- c("resp_fixed_coef", "sigma", "sig_rc",
-#				  "log_likelihood")
-#	if (keep.beta)
-#		pars <- c(pars, "beta")
-#
-#	pars
-#}
-

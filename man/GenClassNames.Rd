@@ -18,3 +18,4 @@ A vector of LC names
 \description{
 Create names for LC
 }
+\keyword{internal}

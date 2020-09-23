@@ -17,3 +17,4 @@ A stanfit object with a reduced size.
 \description{
 This function reduces the size of the stan.fit object
 }
+\keyword{internal}

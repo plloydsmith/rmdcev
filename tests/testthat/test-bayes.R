@@ -118,13 +118,14 @@ output <- mdcev(formula = ~ 0,
 				   print_iterations = FALSE,
 				   n_cores = 1,
 				   n_chains = 1,
+				 fixed_scale1 = 1,
 				   n_iterations = 10,
 				   show_stan_warnings = FALSE)
 
 test_that("Bayes gamma corr specification", {
 
 	output_sum <- summary(output)
-	expect_equal(output$parms_info$n_vars$n_parms_total, 630)
+	expect_equal(output$parms_info$n_vars$n_parms_total, 629)
 
 	npols <- 2
 	policies <- CreateBlankPolicies(npols, output, price_change_only = TRUE)
@@ -149,7 +150,6 @@ output <- mdcev(formula = ~ 0,
 				print_iterations = FALSE,
 				gamma_nonrandom = 1,
 				alpha_nonrandom = 1,
-				fixed_scale1 = 1,
 				n_cores = 1,
 				n_chains = 1,
 				n_iterations = 10,
@@ -157,7 +157,7 @@ output <- mdcev(formula = ~ 0,
 
 test_that("Bayes gamma corr specification with fixed gamma/alpha", {
 	output_sum <- summary(output)
-	expect_equal(output$parms_info$n_vars$n_parms_total, 170)
+	expect_equal(output$parms_info$n_vars$n_parms_total, 171)
 
 	npols <- 2
 	policies <- CreateBlankPolicies(npols, output, price_change_only = TRUE)

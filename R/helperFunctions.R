@@ -2,6 +2,7 @@
 #' @description Convert matrix x to a list with each row as an element
 #' @param x matrix to be converted to list
 #' @return A list
+#' @keywords internal
 #' @export
 #' @examples
 #'
@@ -13,10 +14,26 @@ CreateListsRow <- function(x){
 	return(out)
 }
 
+#' @title CleanInit
+#' @description Adds appropriate dimensions for initial values
+#' @param init_input cleaned version of inits
+#' @keywords internal
+#' @export
+CleanInit <- function(init_input){
+	# Add dimension to starting values
+	temp <- lapply(init_input, function(x){
+		x <- matrix(x, nrow = 1, length(x))
+	})
+	if(!is.null(init_input$scale))
+		temp$scale <- array(init_input$scale, dim = 1)
+	return(temp)
+}
+
 #' @title CreateListsCol
 #' @description Convert matrix x to a list with each row as an element
 #' @param x matrix to be converted to list
 #' @export
+#' @keywords internal
 #' @examples
 #'
 #' tmp <- matrix(0, nrow = 10, ncol = 5)

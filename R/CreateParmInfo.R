@@ -144,6 +144,7 @@ return(parms_info)
 #' @param parms_names list of parameter names
 #' @inheritParams mdcev
 #' @return A vector of LC names
+#' @keywords internal
 #' @export
 GenClassNames <- function(parms_names, n_classes){
 	if(length(parms_names) > 0){

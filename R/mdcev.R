@@ -40,6 +40,7 @@
 #' @param keep_loglik Whether to keep the log_lik calculations
 #' @param hessian Whether to keep the Hessian matrix
 #' @param initial.parameters The default for fixed and random parameter specifications is to use random starting values.
+#' The exception to this is for the scale parameter which is set to 1.
 #' For LC models, the default is to use slightly adjusted MLE point estimates from the single class model.
 #' Initial parameter values should be included in a named list. For example, the LC "hybrid" specification
 #' initial parameters can be specified as:
@@ -204,29 +205,26 @@ mdcev <- function(formula = NULL, data,
 
 	parms_info <- CreateParmInfo(stan_data, alt_names, algorithm, random_parameters)
 
-	CleanInit <- function(init_input){
-		# Add dimension to starting values
-		temp <- lapply(init_input, function(x){
-				x <- matrix(x, nrow = 1, length(x))
-		})
-		if(!is.null(init_input$scale))
-			temp$scale <- array(init_input$scale, dim = 1)
-		return(temp)
-	}
-
-	if(!is.null(initial.parameters) && n_classes == 1)
+	if(!is.null(initial.parameters) && n_classes == 1 & algorithm == "MLE")
 		initial.parameters <- CleanInit(initial.parameters)
 
-	# If no user supplied weights, replace weights with vector of ones
+	# set starting values for scale to be 1
+	if(is.null(initial.parameters) && n_classes == 1 && fixed_scale1 == 0)
+		if (algorithm == "Bayes")
+			initial.parameters <- rep(list(list(scale = array(1, dim = 1))), n_chains)
+		else if (algorithm == "MLE")
+			initial.parameters$scale <- array(1, dim = 1)
+
+		# If no user supplied weights, replace weights with vector of ones
 	if (is.null(weights))
 		weights <-  rep(1, stan_data$I)
 
 	stan_data$weights <- as.vector(weights)
+	bayes_options$initial.parameters <- initial.parameters
 
 	if (algorithm == "Bayes") {
 		result <- BayesMDCEV(stan_data,
 							 bayes_options,
-							 initial.parameters,
 							 keep.samples = FALSE,
 							 include.stanfit = TRUE,
 				 			 ...)

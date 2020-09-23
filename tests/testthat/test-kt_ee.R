@@ -124,12 +124,11 @@ alpha <- c(output[["stan_fit"]][["par"]][["alpha"]], rep(0, nalts))
 scale <- output[["stan_fit"]][["par"]][["scale"]]
 
 
-#		library(rstan)
-#		expose_stan_functions("inst/stan/SimulationFunctions.stan")
+#		rstan::expose_stan_functions("src/SimulationFunctions.stan")
 
 	tol_e <- 1e-20
 	tol_l <- 1e-20
-	max_loop = 500
+	max_loop = 999
 
 	PRNG <-rstan::get_rng(seed = 3)
 	o <- rstan::get_stream() # Need for Expecting an external pointer error
@@ -171,7 +170,8 @@ scale <- output[["stan_fit"]][["par"]][["scale"]]
 	hdemand <- HicksianDemand(util, price_p, MUzero_p, c(1, phi_j), gamma, alpha,
 							  nalts, algo_gen, model_num, tol_l = tol_l, max_loop = max_loop, o)
 	wtp_err <- income - t(price_p) %*% hdemand
-	expect_true(abs(wtp_err - (-375.0262)) < tol)
+	wtp_err
+	expect_true(abs(wtp_err - (-375.0464)) < tol)
 })
 
 
