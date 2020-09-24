@@ -3,6 +3,7 @@ rmdcev v1.2.4 (Release date: 2020-09-23)
 
 - move to R 4.0 requirement
 - add single_scale option for lc models
+- Default to scale starting value as 1
 
 
 rmdcev v1.2.3 (Release date: 2020-09-15)

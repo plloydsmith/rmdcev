@@ -1,13 +1,5 @@
 context("Test KT-EE version")
 
-
-skip_if_r_4 <- function() {
-	if (as.numeric( sub("\\D*(\\d+).*", "\\1", R.version.string) ) < 4) {
-		skip("Using R version less than 4")
-	}
-}
-
-
 tol <- 0.01
 #library(tidyverse)
 #library(rmdcev)
@@ -91,7 +83,6 @@ test_that("kt_ee model estimation using trunc_data", {
 
 test_that("Conditional error draw", {
 	skip_on_os("solaris")
-	skip_if_r_4()
 
 output <- mdcev(formula = ~ ageindex| 0 | beach,
 				data = data_rec,
