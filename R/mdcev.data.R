@@ -6,7 +6,7 @@
 #' @name mdcev.data
 #' @param data a `data.frame`,
 #' @param id.var the name of the variable that contains the individual
-#'     index. Note that the id.var must be unique for each
+#'     index.
 #' @param alt.var the name of the variable that contains the
 #'     alternative index or the name under which the alternative index
 #'     will be stored (the default  name is `alt`),
@@ -30,7 +30,7 @@
 #'     (`alt`).
 #' @export
 mdcev.data <- function(data,
-					   id.var = NULL,
+					   id.var = "id",
 					   alt.var = NULL,
 					   choice = "choice",
 					   price = "price",
@@ -81,20 +81,18 @@ mdcev.data <- function(data,
 
 	if (! is.null(id.var)){
 		idpos <- which(names(data) == id.var)
-		id.var <- as.factor(data[[id.var]])
+		id <- as.factor(data[[id.var]])
 	}
 
 	message("Sorting data by id.var then alt...")
-	data <- data[order(id.var, alt), ]
+	data <- data[order(id, alt), ]
 
 
-	if (! is.null(choice)){
-		choice.name <- choice
-		choice <- data[[choice]]
-		data[[choice.name]] <- choice
-	}
+	choice.name <- choice
+	choice <- data[[choice.name]]
+	data[[choice.name]] <- choice
 
-	id <- as.factor(id.var)
+	id <- as.factor(id)
 	alt <- as.factor(alt)
 	row.names(data) <- paste(id, alt, sep = ".")
 
@@ -109,9 +107,10 @@ mdcev.data <- function(data,
 	rownames(index) <- row.names(data)
 	attr(data, "index") <- index
 	attr(data, "class") <- c("mdcev.data", "data.frame")
-	if (! is.null(choice)) attr(data, "choice") <- choice.name
+	attr(data, "choice") <- choice.name
 	attr(data, "price") <- price
 	attr(data, "income") <- income
+	attr(data, "id") <- id.var
 
 	mdcev.datacheck(data)
 	return(data)

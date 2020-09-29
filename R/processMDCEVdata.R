@@ -50,6 +50,7 @@ processMDCEVdata <- function(formula, data, model_options){
 
 	# convert quant/price to matrices and income to vector
 	price.name <- attr(data, "price")
+	id.name <- attr(data, "id")
 	quant.name <- attr(data, "choice")
 	income.name <- attr(data, "income")
 
@@ -74,7 +75,7 @@ processMDCEVdata <- function(formula, data, model_options){
 		lc.vars <- formula(formula, rhs = 2, lhs = 0)
 
 		data_class <- as_tibble(data) %>%
-			dplyr::distinct(id, .keep_all = T) %>%
+			dplyr::distinct(!!sym(id.name), .keep_all = T) %>%
 			stats::model.matrix(lc.vars, .)
 		stan_data$data_class <- as.matrix(data_class)
 		stan_data$L <- ncol(data_class) # number of membership variables

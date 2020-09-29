@@ -8,10 +8,6 @@ test_that("Data ok", {
 	expect_equal(data_rec$id[18], 2)
 })
 
-test_that("CheckMdcev data works", {
-	expect_error(mdcev.datacheck(data_rec[,-1]), regexp = "id column")
-})
-
 context("Test MLE names")
 
 test_that("MLE names", {
@@ -21,6 +17,32 @@ test_that("MLE names", {
 									 algorithm = "MLE",
 									 print_iterations = FALSE))
 })
+
+
+context("Test non-id names")
+
+test_that("non-id names", {
+	data_test = data_rec %>%
+		rename(id2 = id)
+
+	data_test <- mdcev.data(data_test, subset = id2 <= 100,
+						   id.var = "id2",
+						   alt.var = "alt",
+						   choice = "quant")
+
+
+	output <- mdcev( ~ 0,
+					 data = data_test,
+					 model = "hybrid0",
+					 psi_ascs = 0,
+					 algorithm = "MLE",
+					 print_iterations = FALSE)
+
+	output.sum <- summary(output)
+
+})
+
+
 
 formula = ~ 0 | university + ageindex
 weights = NULL

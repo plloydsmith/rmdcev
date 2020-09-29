@@ -6,7 +6,7 @@
 \usage{
 mdcev.data(
   data,
-  id.var = NULL,
+  id.var = "id",
   alt.var = NULL,
   choice = "choice",
   price = "price",
@@ -21,7 +21,7 @@ mdcev.data(
 \item{data}{a `data.frame`,}
 
 \item{id.var}{the name of the variable that contains the individual
-index. Note that the id.var must be unique for each}
+index.}
 
 \item{alt.var}{the name of the variable that contains the
 alternative index or the name under which the alternative index
