@@ -9,15 +9,6 @@ test_that("Data ok", {
 	expect_equal(data_rec$id[18], 2)
 })
 
-# sprintf("%.10f",output$log.likelihood)
-# sprintf("%.10f",output$bic)
-# sprintf("%.10f",output[["stan_fit"]][["par"]][["scale"]] )
-# sprintf("%.10f",output[["stan_fit"]][["par"]][["psi"]] )
-# sprintf("%.10f",output[["stan_fit"]][["par"]][["alpha"]] )
-# sprintf("%.10f",output[["stan_fit"]][["par"]][["gamma"]] )
-
-#skip_on_cran(
-
 data_rec <- mdcev.data(data_rec, subset = id <= 100,
 					  id.var = "id",
 					   alt.var = "alt",

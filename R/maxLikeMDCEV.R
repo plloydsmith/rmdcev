@@ -4,32 +4,32 @@
 #' @inheritParams mdcev
 #' @param mle_options modeling options for MLE
 #' @param parms_info information on parameters
-maxlikeMDCEV <- function(stan_data, initial.parameters,
+#' @noRd
+maxlikeMDCEV <- function(stan_data,
 						 mle_options,
 						 parms_info, ...) {
 
 	result <- list() # list to store results
 
-	if (is.null(initial.parameters) || mle_options$n_classes == 1){
+	if (!is.list(mle_options$initial.parameters) || mle_options$n_classes == 1){
 
 		message("Using MLE to estimate KT model")
-
 		# ensure single class used for base model
 		stan_data_temp <- stan_data
 		stan_data_temp$K <- 1
 		stan_data_temp$L <- 0
 		stan_data_temp$data_class <- matrix(0, stan_data$I, 0)
 
-		if (is.null(initial.parameters)){
+		mle_options$init <- CleanInit(mle_options$initial.parameters)
+
+		# set starting values for scale to be 1
+		if(stan_data$fixed_scale1 == 0 & is.null(mle_options$init["scale"]))
+			mle_options$init["scale"] <- array(1, dim = 1)
+
 			stan_fit <- rstan::optimizing(stanmodels$mdcev, data = stan_data_temp, as_vector = FALSE, seed = mle_options$seed,
 										  verbose = mle_options$print_iterations, iter = mle_options$max_iterations,
-								   			draws = mle_options$n_draws, hessian = mle_options$hessian, ...)
-		} else {
-			stan_fit <- rstan::optimizing(stanmodels$mdcev, data = stan_data_temp, as_vector = FALSE, seed = mle_options$seed,
-										  verbose = mle_options$print_iterations, iter = mle_options$max_iterations,
-										  init = initial.parameters,
+										  init = mle_options$init,
 							   				draws = mle_options$n_draws, hessian = mle_options$hessian, ...)
-		}
 
 		if (mle_options$keep_loglik == 0)
 			stan_fit <- ReduceStanFitSize(stan_fit, parms_info)
@@ -43,7 +43,7 @@ maxlikeMDCEV <- function(stan_data, initial.parameters,
 	}
 
 	if (mle_options$n_classes > 1){
-		if (is.null(initial.parameters)) {
+		if (!is.list(mle_options$initial.parameters)) {
 			result$mdcev_fit <- result$stan_fit
 			result$mdcev_log.likelihood <- result$log.likelihood
 
@@ -63,8 +63,10 @@ maxlikeMDCEV <- function(stan_data, initial.parameters,
 
 			init = list(psi = init.psi)
 
-			if (stan_data$fixed_scale1 == 0)
+			if (stan_data$fixed_scale1 == 0 && stan_data$single_scale == 0)
 				init$scale <- rep(stan_fit$par[["scale"]], stan_data$K)
+			else if (stan_data$fixed_scale1 == 0 && stan_data$single_scale == 1)
+				init$scale <- stan_fit$par[["scale"]]
 
 			if (stan_data$model_num == 1 || stan_data$model_num == 3 || stan_data$model_num == 5)
 				init$alpha <- matrix(rep(init.par$alpha, stan_data$K), nrow=stan_data$K, ncol=1)
@@ -89,9 +91,9 @@ maxlikeMDCEV <- function(stan_data, initial.parameters,
 				init$phi <- matrix(rep(init.par$phi, stan_data$K), nrow=stan_data$K, ncol=stan_data$NPhi)
 			}
 
-		} else if (!is.null(initial.parameters)){
-			init <- initial.parameters
-		}
+		} else
+			init <- mle_options$initial.parameters
+
 		message("Using MLE to estimate LC-KT")
 
 		stan_fit <- rstan::optimizing(stanmodels$mdcev, data = stan_data, as_vector = FALSE,
@@ -116,6 +118,7 @@ return(result)
 #' @param stan_fit A stanfit object.
 #' @param parms_info information on parameters
 #' @return A stanfit object with a reduced size.
+#' @noRd
 ReduceStanFitSize <- function(stan_fit, parms_info) {
 	stan_fit[["par"]][["log_like"]] <- NULL
 	stan_fit[["theta_tilde"]] <- stan_fit[["theta_tilde"]][,1:parms_info$n_vars$n_parms_total]

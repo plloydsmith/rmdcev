@@ -1,13 +1,5 @@
 context("Test KT-EE version")
 
-
-skip_if_r_4 <- function() {
-	if (as.numeric( sub("\\D*(\\d+).*", "\\1", R.version.string) ) < 4) {
-		skip("Using R version less than 4")
-	}
-}
-
-
 tol <- 0.01
 #library(tidyverse)
 #library(rmdcev)
@@ -49,7 +41,7 @@ test_that("kt_ee model estimation", {
 					model = "kt_ee",
 					gamma_ascs = 0,
 					algorithm = "MLE",
-					initial.parameters = init,
+				#	initial.parameters = init,
 					print_iterations = F)
 
 	output.sum <- summary(output)
@@ -91,7 +83,6 @@ test_that("kt_ee model estimation using trunc_data", {
 
 test_that("Conditional error draw", {
 	skip_on_os("solaris")
-	skip_if_r_4()
 
 output <- mdcev(formula = ~ ageindex| 0 | beach,
 				data = data_rec,
@@ -122,14 +113,14 @@ alpha <- c(output[["stan_fit"]][["par"]][["alpha"]], rep(0, nalts))
 #alpha <- rep(output[["stan_fit"]][["par"]][["alpha"]], nalts+1)
 #alpha <- c(output[["stan_fit"]][["par"]][["alpha"]], rep(0,nalts))
 scale <- output[["stan_fit"]][["par"]][["scale"]]
+expect_true(abs(scale - 0.8917881) < tol)
 
 
-#		library(rstan)
-#		expose_stan_functions("inst/stan/SimulationFunctions.stan")
+#		rstan::expose_stan_functions("src/SimulationFunctions.stan")
 
 	tol_e <- 1e-20
 	tol_l <- 1e-20
-	max_loop = 500
+	max_loop = 999
 
 	PRNG <-rstan::get_rng(seed = 3)
 	o <- rstan::get_stream() # Need for Expecting an external pointer error
@@ -151,7 +142,7 @@ scale <- output[["stan_fit"]][["par"]][["scale"]]
 	util <- ComputeUtilJ(income, mdemand[-1], price[-1],
 						 psi_b_err, phi_j, gamma[-1], alpha,
 						 nalts, model_num, o)
-	util
+	print(util, digits =10)
 	expect_true(abs(util - 253.1988) < tol)
 
 	price_p <- price + c(0,rep(0,nalts))
@@ -171,7 +162,8 @@ scale <- output[["stan_fit"]][["par"]][["scale"]]
 	hdemand <- HicksianDemand(util, price_p, MUzero_p, c(1, phi_j), gamma, alpha,
 							  nalts, algo_gen, model_num, tol_l = tol_l, max_loop = max_loop, o)
 	wtp_err <- income - t(price_p) %*% hdemand
-	expect_true(abs(wtp_err - (-375.0262)) < tol)
+	print(wtp_err, digits =10)
+	expect_true(abs(wtp_err - (-375.026)) < tol)
 })
 
 

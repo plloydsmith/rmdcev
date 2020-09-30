@@ -73,11 +73,12 @@ PrepareSimulationData <- function(object,
 		tibble::rowid_to_column("sim_id") %>%
 		tidyr::pivot_longer(-sim_id, names_to = "parms", values_to = "value")
 
-#object <- mdcev_corr
-#	if (object$random_parameters == "corr")
-#		stop("Demand and welfare simulation not set up for correlated RP-MDCEV models yet.", "\n")
 	if(object$n_classes > 1){
-		est_sim <- est_sim[grepl(class, est_sim$parms),]
+		if (object$stan_data$single_scale == 1){
+			est_scale <- GrabParms(est_sim, "scale")
+			est_sim <- cbind(est_sim[grepl(class, est_sim$parms),], est_scale)
+		} else
+			est_sim <- est_sim[grepl(class, est_sim$parms),]
 	}
 
 	sim_data <- ProcessSimulationData(est_sim, object, policies, nsims)
@@ -101,7 +102,7 @@ return(output)
 #' @description Internal function for WTP simulation
 #' @inheritParams PrepareSimulationData
 #' @param est_sim Cleaned up parameter simulations from PrepareSimulationData
-#' @keywords internal
+#' @noRd
 ProcessSimulationData <- function(est_sim, object, policies, nsims){
 
 	J <- object$stan_data$J

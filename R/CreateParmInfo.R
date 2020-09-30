@@ -4,7 +4,7 @@
 #' @param alt_names name of alternatives.
 #' @inheritParams mdcev
 #' @return A list of parameter names and numbers
-#' @keywords internal
+#' @noRd
 CreateParmInfo <- function(stan_data, alt_names, algorithm, random_parameters){
 
 J <- stan_data$J
@@ -90,10 +90,14 @@ n_vars = list(n_psi = n_psi, n_phi = n_phi, n_alpha = n_alpha, n_gamma = n_gamma
 
 if (stan_data$K > 1){
 	n_vars <- lapply(n_vars, function(x){x* stan_data$K})
-	n_vars$n_beta <- stan_data$L * (stan_data$K - 1)
-
 	all_names <- GenClassNames(parm_names$all_names, stan_data$K)
 
+	if (stan_data$single_scale == 1){
+		n_vars$n_scale = 1
+		all_names = c(all_names[1:(length(all_names)-stan_data$K)], scale_names)
+	}
+	# membership names
+	n_vars$n_beta <- stan_data$L * (stan_data$K - 1)
 	delta.names <- GenClassNames(colnames(stan_data[["data_class"]]), stan_data$K)
 	parm_names$delta.names <-	grep("class1", delta.names, invert=TRUE, value = TRUE)
 
@@ -140,7 +144,7 @@ return(parms_info)
 #' @param parms_names list of parameter names
 #' @inheritParams mdcev
 #' @return A vector of LC names
-#' @export
+#' @noRd
 GenClassNames <- function(parms_names, n_classes){
 	if(length(parms_names) > 0){
 		classes <- paste0(rep('class', n_classes), sep = "",c(1:n_classes))

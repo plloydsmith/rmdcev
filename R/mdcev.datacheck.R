@@ -1,16 +1,17 @@
 #' @title mdcev.datacheck
 #' @description Check mdcev data
 #' @inheritParams mdcev
-#' @keywords internal
+#' @noRd
 mdcev.datacheck <- function(data_input){
 
 	message("Checking data...")
 
+	id.name <- attr(data_input, "id")
 	quant.name <- attr(data_input, "choice")
 	price.name <- attr(data_input, "price")
 	income.name <- attr(data_input, "income")
 
-	if(!"id" %in% colnames(data_input))
+	if(!id.name %in% colnames(data_input))
 		stop("Data must have id column for individual")
 
 	if(!quant.name %in% colnames(data_input))
@@ -23,8 +24,8 @@ mdcev.datacheck <- function(data_input){
 		stop("Data must have income column for individual's income")
 
 	data_input$expend_alt <- data_input[[price.name]] * data_input[[quant.name]]
-	id.expend <- stats::aggregate(expend_alt ~ id, data = data_input, FUN = sum )
-	id.income <- data_input[!duplicated(data_input[,c('id',income.name)]),]
+	id.expend <- stats::aggregate(expend_alt ~ get(id.name), data = data_input, FUN = sum )
+	id.income <- data_input[!duplicated(data_input[,c(id.name,income.name)]),]
 	id.expend$expend_numeraire <- id.income[[income.name]] - id.expend$expend_alt
 	id.expend$expend_alt <- NULL
 

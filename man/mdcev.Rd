@@ -14,13 +14,14 @@ mdcev(
   model = c("alpha", "gamma", "hybrid", "hybrid0", "kt_ee"),
   n_classes = 1,
   fixed_scale1 = 0,
+  single_scale = 0,
   trunc_data = 0,
   psi_ascs = NULL,
   gamma_ascs = 1,
   seed = "123",
   max_iterations = 2000,
   jacobian_analytical_grad = 1,
-  initial.parameters = NULL,
+  initial.parameters = "random",
   hessian = TRUE,
   algorithm = c("MLE", "Bayes"),
   flat_priors = NULL,
@@ -83,6 +84,8 @@ prespecified number of classes is set greater than 1.}
 
 \item{fixed_scale1}{Whether to fix scale at 1.}
 
+\item{single_scale}{For lc models, whether to estimate a single scale parameter}
+
 \item{trunc_data}{Whether the estimation should be adjusted for truncation of non-numeraire alternatives.
 This option is useful if the data only includes individuals with positive non-numeraire consumption levels
 such as recreation data collected on-site. To account for the truncation of consumption, the likelihood is
@@ -102,6 +105,7 @@ the reference category. Only specify to 1 for MDCEV models.}
 gradient method (=0). For "kt_ee" model only,}
 
 \item{initial.parameters}{The default for fixed and random parameter specifications is to use random starting values.
+(except for the scale parameter whith a starting value set to 1).
 For LC models, the default is to use slightly adjusted MLE point estimates from the single class model.
 Initial parameter values should be included in a named list. For example, the LC "hybrid" specification
 initial parameters can be specified as:

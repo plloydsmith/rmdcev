@@ -18,6 +18,7 @@
 #' @param n_classes The number of latent classes. Note that the LC model is automatically estimated as long as the
 #' prespecified number of classes is set greater than 1.
 #' @param fixed_scale1 Whether to fix scale at 1.
+#' @param single_scale For lc models, whether to estimate a single scale parameter
 #' @param trunc_data Whether the estimation should be adjusted for truncation of non-numeraire alternatives.
 #' This option is useful if the data only includes individuals with positive non-numeraire consumption levels
 #' such as recreation data collected on-site. To account for the truncation of consumption, the likelihood is
@@ -39,6 +40,7 @@
 #' @param keep_loglik Whether to keep the log_lik calculations
 #' @param hessian Whether to keep the Hessian matrix
 #' @param initial.parameters The default for fixed and random parameter specifications is to use random starting values.
+#' (except for the scale parameter whith a starting value set to 1).
 #' For LC models, the default is to use slightly adjusted MLE point estimates from the single class model.
 #' Initial parameter values should be included in a named list. For example, the LC "hybrid" specification
 #' initial parameters can be specified as:
@@ -93,13 +95,14 @@ mdcev <- function(formula = NULL, data,
 				 model = c("alpha", "gamma", "hybrid", "hybrid0", "kt_ee"),
 				 n_classes = 1,
 				 fixed_scale1 = 0,
+				 single_scale = 0,
 				 trunc_data = 0,
 				 psi_ascs = NULL,
 				 gamma_ascs = 1,
 				 seed = "123",
 				 max_iterations = 2000,
 				 jacobian_analytical_grad = 1,
-				 initial.parameters = NULL,
+				 initial.parameters = "random",
 				 hessian = TRUE,
 				 algorithm = c("MLE", "Bayes"),
 				 flat_priors = NULL,
@@ -142,6 +145,8 @@ mdcev <- function(formula = NULL, data,
 
 	if (!inherits(data, "mdcev.data")) stop("Data must be of class mdcev.data")
 
+	if (fixed_scale1 == 1 && single_scale == 1) stop("Cannot set both fixed_scale1 and single_scale to 1")
+
 	if (algorithm == "MLE" && is.null(flat_priors)){
 		flat_priors <- 1
 	} else if (algorithm == "Bayes" && is.null(flat_priors))
@@ -156,19 +161,23 @@ mdcev <- function(formula = NULL, data,
 		n_draws <- 0
 
 		# Put model options in a list
-	mle_options <- list(fixed_scale1 = fixed_scale1,
-						model = model,
-						n_classes = n_classes,
-						trunc_data = trunc_data,
-						psi_ascs = psi_ascs,
-						gamma_ascs = gamma_ascs,
+	mle_options <- list(initial.parameters = initial.parameters,
 						seed = seed,
-						jacobian_analytical_grad = jacobian_analytical_grad,
 						max_iterations = max_iterations,
 						hessian = hessian,
 						print_iterations = print_iterations,
 						n_draws = n_draws,
 						keep_loglik = keep_loglik,
+						n_classes = n_classes)
+
+	stan_model_options <- list(fixed_scale1 = fixed_scale1,
+						single_scale = single_scale,
+						model = model,
+						n_classes = n_classes,
+						trunc_data = trunc_data,
+						psi_ascs = psi_ascs,
+						gamma_ascs = gamma_ascs,
+						jacobian_analytical_grad = jacobian_analytical_grad,
 						flat_priors = flat_priors,
 						prior_psi_sd = prior_psi_sd,
 						pior_phi_sd = prior_phi_sd,
@@ -179,7 +188,8 @@ mdcev <- function(formula = NULL, data,
 						gamma_nonrandom = gamma_nonrandom,
 						alpha_nonrandom = alpha_nonrandom)
 
-	bayes_options <- list(n_iterations = n_iterations,
+	bayes_options <- list(initial.parameters = initial.parameters,
+						  n_iterations = n_iterations,
 						n_chains = n_chains,
 						n_cores = n_cores,
 						keep_loglik = keep_loglik,
@@ -193,24 +203,11 @@ mdcev <- function(formula = NULL, data,
 	# Need for naming gamma/alpha parameters
 	alt_names <- as.character(unlist(unique(attr(data, "index")["alt"])))
 
-	stan_data <- processMDCEVdata(formula, data, mle_options)
+	stan_data <- processMDCEVdata(formula, data, stan_model_options)
 
 	parms_info <- CreateParmInfo(stan_data, alt_names, algorithm, random_parameters)
 
-	CleanInit <- function(init_input){
-		# Add dimension to starting values
-		temp <- lapply(init_input, function(x){
-				x <- matrix(x, nrow = 1, length(x))
-		})
-		if(!is.null(init_input$scale))
-			temp$scale <- array(init_input$scale, dim = 1)
-		return(temp)
-	}
-
-	if(!is.null(initial.parameters) && n_classes == 1)
-		initial.parameters <- CleanInit(initial.parameters)
-
-	# If no user supplied weights, replace weights with vector of ones
+		# If no user supplied weights, replace weights with vector of ones
 	if (is.null(weights))
 		weights <-  rep(1, stan_data$I)
 
@@ -219,14 +216,12 @@ mdcev <- function(formula = NULL, data,
 	if (algorithm == "Bayes") {
 		result <- BayesMDCEV(stan_data,
 							 bayes_options,
-							 initial.parameters,
 							 keep.samples = FALSE,
 							 include.stanfit = TRUE,
 				 			 ...)
 
 	} else if (algorithm == "MLE") {
 		result <- maxlikeMDCEV(stan_data,
-							   initial.parameters,
 							   mle_options,
 							   parms_info,
 							   ...)

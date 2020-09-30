@@ -2,6 +2,7 @@
 int A;
 int Gamma;
 int NPsi;
+int S;
 vector[I] log_num;
 matrix[I, J] nonzero;
 vector[I] M;	//  Number of consumed alts (including numeraire)
@@ -38,3 +39,9 @@ if (model_num == 1 || model_num == 3 || model_num == 5){
 if (model_num != 2 && gamma_ascs == 0){
  	Gamma = 1;
 }
+
+if (fixed_scale1 == 0)
+	S = 1;
+else if (fixed_scale1 == 1)
+	S = 0;
+

@@ -3,7 +3,7 @@
 #' @description Use Stan functions to simulate Welfare and Demand
 #' @inheritParams mdcev.sim
 #' @return out list
-#' @keywords internal
+#' @noRd
 StanSimulate <- function(df_indiv, df_common, sim_options, stan_seed){
 
 	PRNG <-rstan::get_rng(seed = stan_seed)
