@@ -6,7 +6,6 @@ rmdcev v1.2.4 (Release date: 2020-09-30)
 - Default to scale starting value as 1
 - fix issue with non-"id" id.var for data.check
 
-
 rmdcev v1.2.3 (Release date: 2020-09-15)
 ==============
 
