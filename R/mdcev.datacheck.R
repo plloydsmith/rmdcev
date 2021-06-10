@@ -23,9 +23,12 @@ mdcev.datacheck <- function(data_input){
 	if(!income.name %in% colnames(data_input))
 		stop("Data must have income column for individual's income")
 
+	if(isTRUE(any(duplicated(attr(data_input, "index")))))
+		stop("id and/or alt columns contains duplicates. Ensure that id is unique and the alt column is not duplciated for each id")
+
 	data_input$expend_alt <- data_input[[price.name]] * data_input[[quant.name]]
 	id.expend <- stats::aggregate(expend_alt ~ get(id.name), data = data_input, FUN = sum )
-	id.income <- data_input[!duplicated(data_input[,c(id.name,income.name)]),]
+	id.income <- data_input[!duplicated(data_input[,c(id.name, income.name)]),]
 	id.expend$expend_numeraire <- id.income[[income.name]] - id.expend$expend_alt
 	id.expend$expend_alt <- NULL
 

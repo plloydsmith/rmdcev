@@ -105,7 +105,7 @@ the reference category. Only specify to 1 for MDCEV models.}
 gradient method (=0). For "kt_ee" model only,}
 
 \item{initial.parameters}{The default for fixed and random parameter specifications is to use random starting values.
-(except for the scale parameter whith a starting value set to 1).
+(except for the scale parameter with a starting value set to 1).
 For LC models, the default is to use slightly adjusted MLE point estimates from the single class model.
 Initial parameter values should be included in a named list. For example, the LC "hybrid" specification
 initial parameters can be specified as:
