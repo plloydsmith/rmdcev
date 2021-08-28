@@ -58,6 +58,10 @@ If you have any issues with installation or use of the package, please let me kn
 
 ## References
 
+Background on the models, estimation, and simulation as well as a walk through of the package is provided in
+
+Lloyd-Smith, P (2021). ["Kuhn-Tucker and Multiple Discrete-Continuous Extreme Value Model Estimation and Simulation in R: The rmdcev Package"](https://doi.org/10.32614/RJ-2021-015) The R Journal, 12(2): 251-265.
+
 For more details on the model specification and estimation:
 
 Bhat, C.R. (2008) ["The Multiple Discrete-Continuous Extreme Value (MDCEV) Model: Role of Utility Function Parameters, Identification Considerations, and Model Extensions"](https://www.sciencedirect.com/science/article/pii/S0191261507000677) Transportation Research Part B, 42(3): 274-303.
@@ -145,5 +149,5 @@ summary(wtp)
 
 ## Thanks
 
-This package was not developed in isolation and I gratefully acknowledge Joshua Abbott, Allen Klaiber, Lusi Xie, and the [apollo team](http://www.apollochoicemodelling.com/) whose codes or suggestions were helpful in putting this package together.
+This package was not developed in isolation and I gratefully acknowledge Joshua Abbott, Allen Klaiber, Lusi Xie, the [apollo team](http://www.apollochoicemodelling.com/), and the Stan team, whose codes or suggestions were helpful in putting this package together.
 

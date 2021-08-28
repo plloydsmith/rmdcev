@@ -61,6 +61,14 @@ issue](https://github.com/plloydsmith/rmdcev/issues).
 
 ## References
 
+Background on the models, estimation, and simulation as well as a walk
+through of the package is provided in
+
+Lloyd-Smith, P (2021). [“Kuhn-Tucker and Multiple Discrete-Continuous
+Extreme Value Model Estimation and Simulation in R: The rmdcev
+Package”](https://doi.org/10.32614/RJ-2021-015) The R Journal, 12(2):
+251-265.
+
 For more details on the model specification and estimation:
 
 Bhat, C.R. (2008) [“The Multiple Discrete-Continuous Extreme Value
@@ -145,7 +153,7 @@ Summarize results
 
 ``` r
 summary(mdcev_est)
-#> Model run using rmdcev for R, version 1.2.3 
+#> Model run using rmdcev for R, version 1.2.5 
 #> Estimation method                : MLE
 #> Model type                       : gamma specification
 #> Number of classes                : 1
@@ -157,7 +165,7 @@ summary(mdcev_est)
 #> BIC                              : 71583.52
 #> Standard errors calculated using : Delta method
 #> Exit of MLE                      : successful convergence
-#> Time taken (hh:mm:ss)            : 00:00:3.39
+#> Time taken (hh:mm:ss)            : 00:00:3.16
 #> 
 #> Average consumption of non-numeraire alternatives:
 #>     1     2     3     4     5     6     7     8     9    10 
@@ -196,25 +204,25 @@ coefs <- as_tibble(sim.data$parms_true) %>%
            cl_hi = Estimate + 1.96 * Std.err)
 
 head(coefs, 200)
-#>      parms      true Estimate Std.err z.stat    cl_lo    cl_hi
-#> 1   psi_b1 -5.000000   -4.897   0.115 -42.58 -5.12240 -4.67160
-#> 2   psi_b2  0.500000    0.556   0.091   6.11  0.37764  0.73436
-#> 3   psi_b3  2.000000    2.010   0.062  32.42  1.88848  2.13152
-#> 4   psi_b4 -1.500000   -1.501   0.057 -26.33 -1.61272 -1.38928
-#> 5   psi_b5  2.000000    2.079   0.046  45.20  1.98884  2.16916
-#> 6   psi_b6 -1.000000   -1.089   0.055 -19.79 -1.19680 -0.98120
-#> 7   gamma1  7.488135    6.971   0.411  16.96  6.16544  7.77656
-#> 8   gamma2  8.881959    8.437   0.740  11.40  6.98660  9.88740
-#> 9   gamma3  7.848841    7.373   1.526   4.83  4.38204 10.36396
-#> 10  gamma4  8.975121    8.724   0.534  16.34  7.67736  9.77064
-#> 11  gamma5  5.108329    4.876   0.425  11.47  4.04300  5.70900
-#> 12  gamma6  2.497346    2.142   0.234   9.15  1.68336  2.60064
-#> 13  gamma7  3.925858    3.445   0.232  14.85  2.99028  3.89972
-#> 14  gamma8  5.583019    5.589   0.385  14.52  4.83440  6.34360
-#> 15  gamma9  7.549347    7.669   0.509  15.07  6.67136  8.66664
-#> 16 gamma10  9.907632    7.822   2.758   2.84  2.41632 13.22768
-#> 17  alpha1  0.500000    0.503   0.008  62.86  0.48732  0.51868
-#> 18   scale  1.000000    1.000   0.015  66.70  0.97060  1.02940
+#>             parms      true Estimate Std.err z.stat    cl_lo    cl_hi
+#> psi_b1     psi_b1 -5.000000   -4.897   0.115 -42.58 -5.12240 -4.67160
+#> psi_b2     psi_b2  0.500000    0.556   0.091   6.11  0.37764  0.73436
+#> psi_b3     psi_b3  2.000000    2.010   0.062  32.42  1.88848  2.13152
+#> psi_b4     psi_b4 -1.500000   -1.501   0.057 -26.33 -1.61272 -1.38928
+#> psi_b5     psi_b5  2.000000    2.079   0.046  45.20  1.98884  2.16916
+#> psi_b6     psi_b6 -1.000000   -1.089   0.055 -19.79 -1.19680 -0.98120
+#> gamma_1    gamma1  7.488135    6.971   0.411  16.96  6.16544  7.77656
+#> gamma_2    gamma2  8.881959    8.437   0.740  11.40  6.98660  9.88740
+#> gamma_3    gamma3  7.848841    7.373   1.526   4.83  4.38204 10.36396
+#> gamma_4    gamma4  8.975121    8.724   0.534  16.34  7.67736  9.77064
+#> gamma_5    gamma5  5.108329    4.876   0.425  11.47  4.04300  5.70900
+#> gamma_6    gamma6  2.497346    2.142   0.234   9.15  1.68336  2.60064
+#> gamma_7    gamma7  3.925858    3.445   0.232  14.85  2.99028  3.89972
+#> gamma_8    gamma8  5.583019    5.589   0.385  14.52  4.83440  6.34360
+#> gamma_9    gamma9  7.549347    7.669   0.509  15.07  6.67136  8.66664
+#> gamma_10  gamma10  9.907632    7.822   2.758   2.84  2.41632 13.22768
+#> alpha_num  alpha1  0.500000    0.503   0.008  62.86  0.48732  0.51868
+#> scale       scale  1.000000    1.000   0.015  66.70  0.97060  1.02940
 ```
 
 Compare outputs using a figure
@@ -254,7 +262,7 @@ wtp <- mdcev.sim(df_sim$df_indiv,
                  sim_type = "welfare")
 #> Using general approach in simulation...
 #> 
-#> 6.00e+04simulations finished in0.42minutes.(2389per second)
+#> 6.00e+04simulations finished in0.42minutes.(2398per second)
 summary(wtp)
 #> # A tibble: 2 x 5
 #>   policy       mean std.dev `ci_lo2.5%` `ci_hi97.5%`
@@ -266,6 +274,6 @@ summary(wtp)
 ## Thanks
 
 This package was not developed in isolation and I gratefully acknowledge
-Joshua Abbott, Allen Klaiber, Lusi Xie, and the [apollo
-team](http://www.apollochoicemodelling.com/) whose codes or suggestions
-were helpful in putting this package together.
+Joshua Abbott, Allen Klaiber, Lusi Xie, the [apollo
+team](http://www.apollochoicemodelling.com/), and the Stan team, whose
+codes or suggestions were helpful in putting this package together.
