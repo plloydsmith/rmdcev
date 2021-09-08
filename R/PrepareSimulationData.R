@@ -75,8 +75,8 @@ PrepareSimulationData <- function(object,
 
 	if(object$n_classes > 1){
 		if (object$stan_data$single_scale == 1){
-			est_scale <- GrabParms(est_sim, "scale")
-			est_sim <- cbind(est_sim[grepl(class, est_sim$parms),], est_scale)
+			est_sim$parms[est_sim$parms == "scale"] = paste0(class, ".scale")
+			est_sim <- est_sim[grepl(class, est_sim$parms),]
 		} else
 			est_sim <- est_sim[grepl(class, est_sim$parms),]
 	}
