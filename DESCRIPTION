@@ -7,7 +7,7 @@ Authors@R: c(
            family = "Lloyd-Smith",
            role = c("aut", "cre"),
            email = "patrick.lloydsmith@usask.ca"),
-    person("Trustees of", "Columbia University", 
+    person("Trustees of", "Columbia University",
          role = "cph"))
 Maintainer: Patrick Lloyd-Smith <patrick.lloydsmith@usask.ca>
 Description: Estimates and simulates Kuhn-Tucker demand models with individual heterogeneity. The package implements the multiple-discrete continuous extreme value (MDCEV) model and the Kuhn-Tucker specification common in the environmental economics literature on recreation demand. Latent class and random parameters specifications can be implemented and the models are fit using maximum likelihood estimation or Bayesian estimation. All models are implemented in Stan, which is a C++ package for performing full Bayesian inference (see Stan Development Team, 2019) <https://mc-stan.org/>. The package also implements demand forecasting (Pinjari and Bhat (2011) <https://repositories.lib.utexas.edu/handle/2152/23880>) and welfare calculation (Lloyd-Smith (2018) <doi:10.1016/j.jocm.2017.12.002>) for policy simulation.
@@ -38,6 +38,7 @@ Encoding: UTF-8
 LazyData: true
 Repository: CRAN
 SystemRequirements: GNU make
+NeedsCompilation: yes
 RoxygenNote: 7.1.1
 Biarch: true
 Suggests:
