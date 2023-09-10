@@ -22,7 +22,7 @@ vector DrawMlhs_rng(int nerrs, int draw_mlhs){
 	if(draw_mlhs == 0){
 		error = to_vector(uniform_rng(temp0, 1));
 	} else if(draw_mlhs == 1){
-		int temp1[nerrs];
+		array[nerrs] int temp1;
 		vector[nerrs] temp;
 
 		for (err in 1:nerrs)
@@ -34,11 +34,11 @@ vector DrawMlhs_rng(int nerrs, int draw_mlhs){
 return(error);
 }
 
-vector[] DrawError_rng(real quant_num, vector quant_j, vector price_j,
+array[] vector DrawError_rng(real quant_num, vector quant_j, vector price_j,
 					vector psi_j, vector phi_j, vector gamma_j, vector alpha, real scale,
 					int model_num, int nalts, int nerrs, int cond_error, int draw_mlhs){
 
-	vector[nalts+1] out[nerrs];
+	array[nerrs] vector[nalts+1] out;
 	matrix[nerrs, nalts+1] error;
 
 	if (cond_error == 0){	// Unconditional
@@ -75,11 +75,11 @@ return(out);
  * Returns an ranking vector of non-numeraire alts by MUzero
  * @return integer vector of ordered alts by MUzero
  */
-int[] CalcAltOrder(vector MUzero, int nalts) {
+array[] int CalcAltOrder(vector MUzero, int nalts) {
 
-	int order_x[nalts+1];
+	array[nalts+1] int order_x;
 	vector[nalts] ord_alts;
-	int order_MU[nalts] = sort_indices_desc(MUzero[2:nalts+1]);
+	array[nalts] int order_MU = sort_indices_desc(MUzero[2:nalts+1]);
 
 	for (j in 1:nalts)
 		ord_alts[j] = j;
@@ -98,7 +98,7 @@ matrix SortParmMatrix(vector MUzero, vector price, vector gamma, vector alpha_ph
 	vector[nalts] price_j = price[2:nalts+1];
 	vector[nalts] gamma_j = gamma[2:nalts+1];
 	vector[nalts] alpha_phi_j = alpha_phi[2:nalts+1];
-	int order_MU[nalts] = sort_indices_desc(MU_j);	// find ranking of non-numeraire alts by MUzero
+	array[nalts] int order_MU = sort_indices_desc(MU_j);	// find ranking of non-numeraire alts by MUzero
 
 	parm_matrix = append_col(append_row(MUzero[1], MU_j[order_MU]),
 	append_col(append_row(price[1], price_j[order_MU]),
@@ -127,7 +127,7 @@ vector MarshallianDemand(real income, vector price, vector MUzero, vector phi, v
 	int M = 1; // Indicator of which ordered alternatives (<=M) are being considered
 	int exit = 0;
 	real E;
-	int order_x[nalts+1] = CalcAltOrder(MUzero, nalts);
+	array[nalts+1] int order_x = CalcAltOrder(MUzero, nalts);
 	vector[nalts+1] X = rep_vector(0, nalts+1);
 	vector[nalts+1] d = append_row(0, rep_vector(1, nalts));
 
@@ -214,7 +214,7 @@ vector MarshallianDemand(real income, vector price, vector MUzero, vector phi, v
 
 					lambda = (lambda_l + lambda_u) / 2;
 
-					if (fabs((E - income) / (E + income) * 0.5) < tol_e) break;
+					if (abs((E - income) / (E + income) * 0.5) < tol_e) break;
 				}
 				// Compute demands (using eq. 12 in Pinjari and Bhat)
 				for (m in 1:M)
@@ -308,7 +308,7 @@ vector HicksianDemand(real util, vector price,
 	int exit = 0;
 	real lambda1;
 	real util_new;
-	int order_x[nalts+1] = CalcAltOrder(MUzero, nalts);
+	array[nalts+1] int order_x = CalcAltOrder(MUzero, nalts);
 	vector[nalts+1] X = rep_vector(0, nalts+1); // vector to hold zero demands
 	vector[nalts+1] d = append_row(0, rep_vector(1, nalts));
 
@@ -423,7 +423,7 @@ vector HicksianDemand(real util, vector price,
 
 					lambda1 = (lambda_l + lambda_u) / 2;
 
-					if (fabs((lambda_l - lambda_u) / (lambda_l + lambda_u) * 0.5) < tol_l) break;
+					if (abs((lambda_l - lambda_u) / (lambda_l + lambda_u) * 0.5) < tol_l) break;
 				}
 
 			// Compute demands (using eq. 12 in Pinjari and Bhat)
@@ -457,7 +457,7 @@ return(hdemand);
  * @return Matrix of nsims x npols wtp
  */
 matrix CalcWTP_rng(real income, vector quant_j, vector price,
-						vector[] price_p_policy, matrix[] psi_p_sims, matrix[] phi_p_sims,
+						array[] vector price_p_policy, array[] matrix psi_p_sims, array[] matrix phi_p_sims,
 						matrix psi_sims, matrix phi_sims, matrix gamma_sims, matrix alpha_sims, vector scale_sims,
 						int nerrs, int cond_error, int draw_mlhs,
 						int algo_gen, int model_num, int price_change_only, real tol, int max_loop){
@@ -475,7 +475,7 @@ matrix CalcWTP_rng(real income, vector quant_j, vector price,
 		vector[nalts + 1] gamma = append_row(1, gamma_sims[sim]');
 		vector[nalts + 1] alpha = alpha_sims[sim]';
 		real scale = scale_sims[sim];
-		vector[nalts + 1] error[nerrs];
+		array[nerrs] vector[nalts + 1] error;
 		vector[npols] wtp_policy;
 		vector[nerrs] util;
 
@@ -539,8 +539,8 @@ matrix CalcWTP_rng(real income, vector quant_j, vector price,
 return(wtp);
 }
 
-matrix[] CalcMarshallianDemand_rng(real income, vector quant_j, vector price,
-						vector[] price_p_policy, matrix[] psi_p_sims, matrix[] phi_p_sims,
+array[] matrix CalcMarshallianDemand_rng(real income, vector quant_j, vector price,
+						array[] vector price_p_policy, array[] matrix psi_p_sims, array[] matrix phi_p_sims,
 						matrix psi_sims, matrix phi_sims, matrix gamma_sims, matrix alpha_sims, vector scale_sims,
 						int nerrs, int cond_error, int draw_mlhs,
 						int algo_gen, int model_num, int price_change_only, real tol, int max_loop){
@@ -548,7 +548,7 @@ matrix[] CalcMarshallianDemand_rng(real income, vector quant_j, vector price,
 	int nalts = num_elements(quant_j);
 	int nsims = num_elements(scale_sims);
 	int npols = size(price_p_policy);
-	matrix[npols, nalts+1] mdemand_out[nsims];
+	array[nsims] matrix[npols, nalts+1] mdemand_out;
 	real quant_num = income - quant_j' * price[2:nalts+1];
 
 	for (sim in 1:nsims){
@@ -558,7 +558,7 @@ matrix[] CalcMarshallianDemand_rng(real income, vector quant_j, vector price,
 		vector[nalts + 1] gamma = append_row(1, gamma_sims[sim]');
 		vector[nalts + 1] alpha = alpha_sims[sim]';
 		real scale = scale_sims[sim];
-		vector[nalts + 1] error[nerrs];
+		array[nerrs] vector[nalts + 1] error;
 		matrix[npols, nalts + 1] mdemand_pols;
 		vector[nerrs] util;
 
@@ -630,7 +630,7 @@ vector CalcmdemandOne_rng(real income, vector price,
 	vector[nalts + 1] mdemand = rep_vector(0, nalts + 1);
 	vector[nalts + 1] gamma = append_row(1, gamma_j);
 	vector[nalts + 1] phi;
-	vector[nalts + 1] error[nerrs];
+	array[nerrs] vector[nalts + 1] error;
 
 	if (model_num < 5)
 		phi = rep_vector(1, nalts + 1);

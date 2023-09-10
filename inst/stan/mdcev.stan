@@ -13,7 +13,7 @@ data {
 
 // additional LC data that can be set to 0 if not used
 	int L; // number of predictors in membership equation
-//	vector[L] data_class[I];   // predictors for component membership
+//	array[I] vector[L] data_class;   // predictors for component membership
 	matrix[I, L] data_class;   // predictors for component membership
 	int<lower=0, upper=1> single_scale; // indicator to estimate one scale for lc
 	real prior_delta_sd;
@@ -27,10 +27,10 @@ if (single_scale == 0 && fixed_scale1 == 0)
 }
 
 parameters {
-	vector[NPsi] psi[K];
-	vector[NPhi] phi[K];
-	vector<lower=0 >[Gamma] gamma[K];
-	vector<lower=0, upper=1>[A] alpha[K];
+	array[K] vector[NPsi] psi;
+	array[K] vector[NPhi] phi;
+	array[K] vector<lower=0 >[Gamma] gamma;
+	array[K] vector<lower=0, upper=1>[A] alpha;
 	vector<lower=0>[S] scale;
   	matrix[K - 1, L] delta;  // mixture regression coeffs
 }
@@ -38,7 +38,7 @@ parameters {
 transformed parameters {
 	vector[I] log_like;
 	{
-	vector[I] log_like_util[K];
+	array[K] vector[I] log_like_util;
 	for (k in 1:K){
 		matrix[I, J] gamma_full = gamma_ll(gamma[k], I, J, Gamma);
 		real scale_full;

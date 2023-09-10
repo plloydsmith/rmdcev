@@ -7,10 +7,10 @@ functions {
 data {
 #include /common/mdcev_data.stan
   int<lower=0, upper=1> corr;
-  int task[I]; // index for tasks
-  int task_individual[I]; // index for individual
-  int start[I]; // the starting observation for each task
-  int end[I]; // the ending observation for each task
+  array[I] int task; // index for tasks
+  array[I] int task_individual; // index for individual
+  array[I] int start; // the starting observation for each task
+  array[I] int end; // the ending observation for each task
   real<lower=1> lkj_shape; // shape parameter for LKJ prior
 //  vector[NPsi] psi_ndx;
   int<lower=0, upper=1>  gamma_nonrandom;
