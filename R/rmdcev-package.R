@@ -7,7 +7,7 @@
 #' likelihood estimation or Bayesian estimation. All models are implemented in Stan, which is a C++ package
 #' for performing full Bayesian inference (see Stan Development Team, 2019) <https://mc-stan.org/>. The rmdcev package also implements
 #' demand forecasting (Pinjari and Bhat (2011) <https://repositories.lib.utexas.edu/handle/2152/23880>) and
-#' welfare calculation (Lloyd-Smith (2018) <doi.org/10.1016/j.jocm.2017.12.002>) for policy simulation.
+#' welfare calculation (Lloyd-Smith (2018) <doi:10.1016/j.jocm.2017.12.002>) for policy simulation.
 #'
 #' @docType package
 #' @name rmdcev
@@ -16,7 +16,6 @@
 #' @import methods
 #' @import Rcpp
 #' @import rstantools
-#' @importFrom rstan sampling get_rng get_stream
 #'
 #' @author Patrick Lloyd-Smith \email{patrick.lloydsmith@usask.ca}
 #'

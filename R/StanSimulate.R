@@ -6,8 +6,8 @@
 #' @noRd
 StanSimulate <- function(df_indiv, df_common, sim_options, stan_seed){
 
-	PRNG <-rstan::get_rng(seed = stan_seed)
-	o <- rstan::get_stream()
+	PRNG <- rmdcev_get_rng(seed = stan_seed)
+	o <- rmdcev_get_stream()
 
 	if(sim_options[["price_change_only"]] == TRUE)
 		sim_options[["price_change_only"]] <- 1

@@ -70,8 +70,8 @@ summary.mdcev <- function(object, printCI=FALSE, ...){
 		}
 	} else if (object$algorithm == "Bayes"){
 
-		# Get parameter estimates in matrix form
-		output <- as.data.frame(rstan::extract(object$stan_fit, permuted = TRUE, inc_warmup = FALSE))
+		# Get parameter estimates in matrix form (works for both rstan and cmdstanr)
+		output <- extract_bayes_draws(object)
 		output <- output[,!grepl(c("^log_like|^sum_log_lik|^tau_unif|^lp__"), colnames(output))]
 
 		if (object$random_parameters == "fixed")
@@ -82,8 +82,7 @@ summary.mdcev <- function(object, printCI=FALSE, ...){
 		output <- output %>%
 			tidyr::pivot_longer(-sim_id, names_to = "parms", values_to = "value")
 
-		bayes_extra <- as_tibble(rstan::summary(object$stan_fit)$summary) %>%
-			mutate(parms = row.names(rstan::summary(object$stan_fit)$summary)) %>%
+		bayes_extra <- get_bayes_summary(object) %>%
 				filter(!grepl(c("log_lik"), parms)) %>%
 				filter(!grepl(c("lp_"), parms))
 
@@ -205,9 +204,10 @@ print.summary.mdcev <- function(x,...){
 		if(x$random_parameters != "fixed"){
 			cat("Random parameters                : ", x$random_parameters,"elated random parameters","\n", sep="")
 		}
-		cat("Number of chains                 : ", x[["stan_fit"]]@sim[["chains"]],"\n", sep="")
-		cat("Number of warmup draws per chain : ", x[["stan_fit"]]@sim[["warmup"]],"\n", sep="")
-		cat("Total post-warmup sample         : ", x[["stan_fit"]]@sim[["chains"]]*(x[["stan_fit"]]@sim[["iter"]]-x[["stan_fit"]]@sim[["warmup"]]),"\n", sep="")
+		chain_info <- get_bayes_chain_info(x)
+		cat("Number of chains                 : ", chain_info$chains,"\n", sep="")
+		cat("Number of warmup draws per chain : ", chain_info$warmup,"\n", sep="")
+		cat("Total post-warmup sample         : ", chain_info$total,"\n", sep="")
 	}
 	tmpH <- floor(x$time.taken/60^2)
 	tmpM <- floor((x$time.taken-tmpH*60^2)/60)

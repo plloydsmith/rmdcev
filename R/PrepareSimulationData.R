@@ -33,7 +33,7 @@ PrepareSimulationData <- function(object,
 
 	# Get parameter estimates in matrix form
 	if (object$algorithm == "Bayes") {
-		est_pars <- as.data.frame(rstan::extract(object$stan_fit, permuted = TRUE, inc_warmup = FALSE))
+		est_pars <- extract_bayes_draws(object)
 	} else if (object$algorithm == "MLE") {
 		if(object$std_errors == "mvn") {
 			est_pars <- as_tibble(object[["stan_fit"]][["theta_tilde"]])
@@ -179,7 +179,12 @@ if (random_parameters == "fixed"){
 
 	if(random_parameters == "corr"){
 
-		num_rand <- object[["stan_fit"]]@par_dims[["mu"]]
+		if (isTRUE(object$backend == "rstan")) {
+			num_rand <- object[["stan_fit"]]@par_dims[["mu"]]
+		} else {
+			mu_vars  <- grep("^mu\\.\\d", names(est_pars), value = TRUE)
+			num_rand <- length(mu_vars)
+		}
 
 		est_sim_tau <- est_sim_mu_tau %>%
 			dplyr::select(sim_id, .data$parm_id, .data$tau) %>%

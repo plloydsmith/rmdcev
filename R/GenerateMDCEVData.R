@@ -146,8 +146,8 @@ GenerateMDCEVData <- function(model, nobs = 1000, nalts = 10,
 
 	df_indiv <- c(income_list, price_list, psi_j, phi_j)
 
-	PRNG <-rstan::get_rng(seed = 3)
-	o <- rstan::get_stream()
+	PRNG <- rmdcev_get_rng(seed = 3L)
+	o <- rmdcev_get_stream()
 
 	quant <- purrr::pmap(df_indiv, CalcmdemandOne_rng,
 						 gamma_j=gamma_parms,

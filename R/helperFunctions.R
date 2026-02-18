@@ -149,6 +149,77 @@ GrabIndividualParms <- function(est_sim, parm_name){
 	return(out)
 }
 
+#' @title extract_bayes_draws
+#' @description Extract posterior draws as a data.frame from a fitted Bayes
+#'   mdcev object, handling both the rstan and cmdstanr backends.
+#'   Column names are returned in rstan dot-notation (e.g. \code{psi.1})
+#'   so downstream code that was written for rstan works unchanged.
+#' @param object An mdcev object with \code{algorithm == "Bayes"}.
+#' @return A data.frame of posterior draws (rows = iterations, cols = parameters).
+#' @noRd
+extract_bayes_draws <- function(object) {
+    if (isTRUE(object$backend == "rstan")) {
+        if (!requireNamespace("rstan", quietly = TRUE))
+            stop("rstan is required when backend = 'rstan'.")
+        as.data.frame(rstan::extract(object$stan_fit, permuted = TRUE, inc_warmup = FALSE))
+    } else {
+        draws_df <- as.data.frame(posterior::as_draws_df(object$stan_fit$draws()))
+        draws_df <- draws_df[, !names(draws_df) %in% c(".chain", ".iteration", ".draw"),
+                             drop = FALSE]
+        # Normalize bracket notation (mu[1,2]) to rstan dot notation (mu.1.2)
+        names(draws_df) <- gsub("\\[", ".", gsub(",", ".", gsub("\\]", "", names(draws_df))))
+        draws_df
+    }
+}
+
+#' @title get_bayes_summary
+#' @description Return a tibble of posterior summary statistics for a fitted
+#'   Bayes mdcev object, with columns \code{parms}, \code{n_eff}, \code{Rhat}
+#'   (and others), working for both the rstan and cmdstanr backends.
+#' @param object An mdcev object with \code{algorithm == "Bayes"}.
+#' @return A tibble.
+#' @noRd
+get_bayes_summary <- function(object) {
+    if (isTRUE(object$backend == "rstan")) {
+        if (!requireNamespace("rstan", quietly = TRUE))
+            stop("rstan is required when backend = 'rstan'.")
+        summ_mat <- rstan::summary(object$stan_fit)$summary
+        tibble::as_tibble(summ_mat) %>%
+            dplyr::mutate(parms = row.names(summ_mat))
+    } else {
+        object$stan_fit$summary() %>%
+            dplyr::rename(parms = variable, n_eff = ess_bulk, Rhat = rhat)
+    }
+}
+
+#' @title get_bayes_chain_info
+#' @description Return a list with \code{chains}, \code{warmup}, and
+#'   \code{total} post-warmup draws for a fitted Bayes mdcev object,
+#'   working for both the rstan and cmdstanr backends.
+#' @param object An mdcev object with \code{algorithm == "Bayes"}.
+#' @return A named list.
+#' @noRd
+get_bayes_chain_info <- function(object) {
+    if (isTRUE(object$backend == "rstan")) {
+        if (!requireNamespace("rstan", quietly = TRUE))
+            stop("rstan is required when backend = 'rstan'.")
+        list(
+            chains = object$stan_fit@sim[["chains"]],
+            warmup = object$stan_fit@sim[["warmup"]],
+            total  = object$stan_fit@sim[["chains"]] *
+                     (object$stan_fit@sim[["iter"]] - object$stan_fit@sim[["warmup"]])
+        )
+    } else {
+        meta    <- object$stan_fit$metadata()
+        nchains <- object$stan_fit$num_chains()
+        list(
+            chains = nchains,
+            warmup = meta$iter_warmup,
+            total  = nchains * meta$iter_sampling
+        )
+    }
+}
+
 #' @title CreatePsi
 #' @param dat_vars_i psi data for each person
 #' @param est_pars_i psi parameter estimates for each person

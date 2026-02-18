@@ -1,4 +1,10 @@
 
+rmdcev v1.2.6 (Release date: 2024-03-01)
+==============
+
+- update array synatax with new rstan version
+- fix test error on linux
+
 rmdcev v1.2.5 (Release date: 2021-XX-XX)
 ==============
 
