@@ -5,9 +5,9 @@ data(data_rec, package = "rmdcev")
 data_rec
 
 data_rec <- mdcev.data(data_rec, subset = id <= 100,
-					  id.var = "id",
-					   alt.var = "alt",
-					   choice = "quant")
+				  id.var = "id",
+				   alt.var = "alt",
+				   choice = "quant")
 
 test_that("MLE hybrid0 unconditional", {
 
@@ -16,9 +16,10 @@ test_that("MLE hybrid0 unconditional", {
 				   model = "hybrid0",
 				   psi_ascs = 0,
 				   algorithm = "MLE",
-					 std_errors = "mvn",
-					 n_draws = 2,
-				   print_iterations = FALSE)
+				   std_errors = "mvn",
+				   n_draws = 2,
+				   print_iterations = FALSE,
+				   backend = "rstan")
 
 	npols <- 1
 	policies <- CreateBlankPolicies(npols, output, price_change_only = TRUE)
@@ -43,7 +44,8 @@ test_that("MLE hybrid unconditional", {
 					 algorithm = "MLE",
 					 std_errors = "mvn",
 					 n_draws = 2,
-					 print_iterations = FALSE)
+					 print_iterations = FALSE,
+					 backend = "rstan")
 
 	npols <- 1
 	policies <- CreateBlankPolicies(npols, output, price_change_only = TRUE)
@@ -68,7 +70,8 @@ test_that("MLE gamma unconditional", {
 				 algorithm = "MLE",
 				 std_errors = "mvn",
 				 n_draws = 2,
-				 print_iterations = FALSE)
+				 print_iterations = FALSE,
+				 backend = "rstan")
 
 	npols <- 1
 	policies <- CreateBlankPolicies(npols, output, price_change_only = TRUE)
@@ -94,7 +97,8 @@ output <- mdcev( ~ alt - 1,
 				 algorithm = "MLE",
 				 std_errors = "mvn",
 				 n_draws = 2,
-				 print_iterations = FALSE)
+				 print_iterations = FALSE,
+				 backend = "rstan")
 
 npols <- 1
 policies <- CreateBlankPolicies(npols, output, price_change_only = TRUE)
@@ -121,7 +125,8 @@ test_that("MLE kt_ee", {
 					 std_errors = "mvn",
 					 n_draws = 30,
 					 algorithm = "MLE",
-					 print_iterations = FALSE)
+					 print_iterations = FALSE,
+					 backend = "rstan")
 
 	npols <- 1
 	policies <- CreateBlankPolicies(npols, output, price_change_only = TRUE)

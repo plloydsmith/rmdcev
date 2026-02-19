@@ -5,9 +5,9 @@ data(data_rec, package = "rmdcev")
 data_rec
 
 data_rec <- mdcev.data(data_rec, subset = id < 100,
-					   id.var = "id",
-					   alt.var = "alt",
-					   choice = "quant")
+				   id.var = "id",
+				   alt.var = "alt",
+				   choice = "quant")
 
 result <- mdcev( ~ alt-1,
 				   data = data_rec,
@@ -15,7 +15,8 @@ result <- mdcev( ~ alt-1,
 				 psi_ascs = 0,
 				   algorithm = "MLE",
 				 std_errors = "mvn",
-				   print_iterations = FALSE)
+				   print_iterations = FALSE,
+				   backend = "rstan")
 
 nalts <- result$stan_data[["J"]]
 model_num <- result$stan_data[["model_num"]]
@@ -52,9 +53,9 @@ PRNG <-rmdcev_get_rng(seed = 3)
 o <- rmdcev_get_stream()
 
 error <- DrawError_rng(quant_num, quant_j, price[-1],
-				  psi_j, phi_j, gamma_j, alpha, scale,
-				  model_num = model_num, nalts = nalts, nerrs = 2, cond_error = 1, draw_mlhs = 1,
-				  PRNG, o)
+			  psi_j, phi_j, gamma_j, alpha, scale,
+			  model_num = model_num, nalts = nalts, nerrs = 2, cond_error = 1, draw_mlhs = 1,
+			  PRNG, o)
 
 	psi_b_err <- exp(c(0, psi_j) + error[[1]])
 	MUzero_b <- psi_b_err / price
@@ -142,7 +143,8 @@ test_that("Conditional error hybrid draw", {
 					 model = "hybrid",
 					 psi_ascs = 0,
 					 algorithm = "MLE",
-					 print_iterations = FALSE)
+					 print_iterations = FALSE,
+					 backend = "rstan")
 
 	nalts <- result$stan_data[["J"]]
 	model_num <- result$stan_data[["model_num"]]
@@ -227,4 +229,3 @@ test_that("Conditional error hybrid draw", {
 	expect_true(abs(wtp_err - (-41.57857841)) < tol)
 
 })
-

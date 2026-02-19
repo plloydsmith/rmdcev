@@ -127,7 +127,7 @@ return(dat_psi)
 GrabParms <- function(data, parm_name){
 	out <- data %>%
 		dplyr::filter(grepl(parm_name, .data$parms)) %>%
-		tidyr::pivot_wider(sim_id, names_from = "parms", values_from = "value") %>%
+		tidyr::pivot_wider(id_cols = sim_id, names_from = "parms", values_from = "value") %>%
 		dplyr::select(-sim_id) %>%
 		as.matrix(.)
 	return(out)

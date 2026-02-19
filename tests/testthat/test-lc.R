@@ -5,9 +5,9 @@ data(data_rec, package = "rmdcev")
 data_rec
 
 data_rec <- mdcev.data(data_rec, subset = id <= 200,
-					   id.var = "id",
-					   alt.var = "alt",
-					   choice = "quant")
+				   id.var = "id",
+				   alt.var = "alt",
+				   choice = "quant")
 
 result_test <- mdcev( ~ alt | university,
 				   data = data_rec,
@@ -15,7 +15,8 @@ result_test <- mdcev( ~ alt | university,
 				   psi_ascs = 0,
 				   algorithm = "MLE",
 				   n_classes = 2,
-				   print_iterations = FALSE)
+				   print_iterations = FALSE,
+				   backend = "rstan")
 
 test_that("LC 2-classes", {
 	print(result_test$log.likelihood, digits =10)
@@ -32,7 +33,8 @@ test_that("LC 2-classes with starting values", {
 					 model = "hybrid0",
 					 algorithm = "MLE",
 					 n_classes = 2,
-					 print_iterations = FALSE)
+					 print_iterations = FALSE,
+					 backend = "rstan")
 
 	result_test <- mdcev( ~ 0 | university,
 					 data = data_rec,
@@ -40,7 +42,8 @@ test_that("LC 2-classes with starting values", {
 					 initial.parameters = result_test$stan_fit$par,
 					 algorithm = "MLE",
 					 n_classes = 2,
-					 print_iterations = FALSE)
+					 print_iterations = FALSE,
+					 backend = "rstan")
 
 	expect_true(abs(result_test[["stan_fit"]][["par"]][["scale"]][[1]] - 0.7593204) < tol)
 
@@ -69,4 +72,3 @@ test_that("Test LC simulations", {
 	print(demand[[5]][[1]][1,-1], digits =10)
 	expect_equal(sum(demand[[5]][[1]][1,-1]), sum(result_test$stan_data$quant_j[5,]))
 })
-

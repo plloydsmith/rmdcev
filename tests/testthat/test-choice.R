@@ -10,16 +10,17 @@ test_that("Data ok", {
 })
 
 data_rec <- mdcev.data(data_rec, subset = id <= 100,
-					  id.var = "id",
-					   alt.var = "alt",
-					   choice = "quant")
+				  id.var = "id",
+				   alt.var = "alt",
+				   choice = "quant")
 
 test_that("MLE names", {
 	expect_error(mdcev( ~ 0,
-						 data = data_rec,
-						 model = "gamma77",
-						 algorithm = "MLE",
-						 print_iterations = FALSE))
+					 data = data_rec,
+					 model = "gamma77",
+					 algorithm = "MLE",
+					 print_iterations = FALSE,
+					 backend = "rstan"))
 })
 
 context("MLE hybrid0 specification")
@@ -31,7 +32,8 @@ test_that("MLE hybrid0", {
 				   model = "hybrid0",
 				   psi_ascs = 0,
 				   algorithm = "MLE",
-				   print_iterations = FALSE)
+				   print_iterations = FALSE,
+				   backend = "rstan")
 
 	output.sum <- summary(output)
 	expect_equal(length(output.sum[["CoefTable"]]$Std.err), 35)
@@ -55,7 +57,8 @@ test_that("MLE hybrid0 mvn draws", {
 					 psi_ascs = 0,
 					 algorithm = "MLE",
 					 std_errors = "mvn",
-					 print_iterations = FALSE)
+					 print_iterations = FALSE,
+					 backend = "rstan")
 
 	output.sum <- summary(output)
 	expect_equal(length(output.sum[["CoefTable"]]$Std.err), 35)
@@ -71,7 +74,8 @@ test_that("MLE hybrid", {
 					data = data_rec,
 					model = "hybrid",
 				    algorithm = "MLE",
-				    print_iterations = FALSE)
+				    print_iterations = FALSE,
+				    backend = "rstan")
 
 	output.sum <- summary(output)
 	expect_equal(length(output.sum[["CoefTable"]]$Std.err), 35)
@@ -85,7 +89,8 @@ test_that("MLE gamma", {
 					 data = data_rec,
 					 model = "gamma",
 					 algorithm = "MLE",
-					 print_iterations = FALSE)
+					 print_iterations = FALSE,
+					 backend = "rstan")
 
 	output.sum <- summary(output)
 	expect_equal(length(output.sum[["CoefTable"]]$Std.err), 35)
@@ -100,7 +105,8 @@ test_that("MLE alpha", {
 					 data = data_rec,
 					 model = "alpha",
 					 algorithm = "MLE",
-					 print_iterations = FALSE)
+					 print_iterations = FALSE,
+					 backend = "rstan")
 
 	output.sum <- summary(output)
 	expect_equal(length(output.sum[["CoefTable"]]$Std.err), 35)
@@ -118,7 +124,8 @@ test_that("MLE kt_ee", {
 					 gamma_ascs = 0,
 					 model = "kt_ee",
 					 algorithm = "MLE",
-					 print_iterations = FALSE)
+					 print_iterations = FALSE,
+					 backend = "rstan")
 
 	output.sum <- summary(output)
 	expect_equal(length(output.sum[["CoefTable"]]$Std.err), 5)

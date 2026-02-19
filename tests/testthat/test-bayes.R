@@ -7,21 +7,22 @@ tol <- 0.01
 data(data_rec, package = "rmdcev")
 
 data_rec <- mdcev.data(data_rec, subset = id <= 200,
-					   id.var = "id",
-					   alt.var = "alt",
-					   choice = "quant")
+				   id.var = "id",
+				   alt.var = "alt",
+				   choice = "quant")
 
 output <- mdcev(~ 0,
-				data = data_rec,
-				model = "hybrid0",
-				algorithm = "Bayes",
-				random_parameters = "fixed",
-				fixed_scale1 = 0,
-				print_iterations = FALSE,
-				n_cores = 1,
-				n_chains = 1,
-				n_iterations = 10,
-				show_stan_warnings = FALSE)
+			data = data_rec,
+			model = "hybrid0",
+			algorithm = "Bayes",
+			random_parameters = "fixed",
+			fixed_scale1 = 0,
+			print_iterations = FALSE,
+			n_cores = 1,
+			n_chains = 1,
+			n_iterations = 10,
+			show_stan_warnings = FALSE,
+			backend = "rstan")
 
 test_that("Bayes hybrid0 specification", {
 	expect_equal(output$parms_info$n_vars$n_parms_total, 34)
@@ -55,7 +56,8 @@ test_that("Bayes gamma specification no gamma/psi ascs", {
 					n_cores = 1,
 					n_chains = 1,
 					n_iterations = 10,
-					show_stan_warnings = FALSE)
+					show_stan_warnings = FALSE,
+					backend = "rstan")
 
 	expect_equal(output$parms_info$n_vars$n_parms_total, 2)
 
@@ -79,15 +81,16 @@ test_that("Bayes gamma specification no gamma/psi ascs", {
 context("Test Bayes rp uncorrelated")
 
 output <- mdcev(formula = ~ 0,
-				data = data_rec,
-				model = "gamma",
-				   algorithm = "Bayes",
-				   random_parameters = "uncorr",
-				   print_iterations = FALSE,
-				   n_cores = 1,
-				   n_chains = 1,
-				   n_iterations = 10,
-				   show_stan_warnings = FALSE)
+			data = data_rec,
+			model = "gamma",
+			   algorithm = "Bayes",
+			   random_parameters = "uncorr",
+			   print_iterations = FALSE,
+			   n_cores = 1,
+			   n_chains = 1,
+			   n_iterations = 10,
+			   show_stan_warnings = FALSE,
+			   backend = "rstan")
 
 test_that("Bayes gamma uncorr specification", {
 	expect_equal(output$parms_info$n_vars$n_parms_total, 69)
@@ -111,16 +114,17 @@ test_that("Bayes gamma uncorr specification", {
 context("Test Bayes rp correlated")
 
 output <- mdcev(formula = ~ 0,
-				data = data_rec,
-				model = "gamma",
-				   algorithm = "Bayes",
-				   random_parameters = "corr",
-				   print_iterations = FALSE,
-				   n_cores = 1,
-				   n_chains = 1,
-				 fixed_scale1 = 1,
-				   n_iterations = 10,
-				   show_stan_warnings = FALSE)
+			data = data_rec,
+			model = "gamma",
+			   algorithm = "Bayes",
+			   random_parameters = "corr",
+			   print_iterations = FALSE,
+			   n_cores = 1,
+			   n_chains = 1,
+			 fixed_scale1 = 1,
+			   n_iterations = 10,
+			   show_stan_warnings = FALSE,
+			   backend = "rstan")
 
 test_that("Bayes gamma corr specification", {
 
@@ -143,17 +147,18 @@ test_that("Bayes gamma corr specification", {
 context("Test Bayes rp correlated with fixed gamma/alpha")
 
 output <- mdcev(formula = ~ 0,
-				data = data_rec,
-				model = "gamma",
-				algorithm = "Bayes",
-				random_parameters = "corr",
-				print_iterations = FALSE,
-				gamma_nonrandom = 1,
-				alpha_nonrandom = 1,
-				n_cores = 1,
-				n_chains = 1,
-				n_iterations = 10,
-				show_stan_warnings = FALSE)
+			data = data_rec,
+			model = "gamma",
+			algorithm = "Bayes",
+			random_parameters = "corr",
+			print_iterations = FALSE,
+			gamma_nonrandom = 1,
+			alpha_nonrandom = 1,
+			n_cores = 1,
+			n_chains = 1,
+			n_iterations = 10,
+			show_stan_warnings = FALSE,
+			backend = "rstan")
 
 test_that("Bayes gamma corr specification with fixed gamma/alpha", {
 	output_sum <- summary(output)
@@ -175,18 +180,19 @@ test_that("Bayes gamma corr specification with fixed gamma/alpha", {
 context("Test Bayes kt_ee rp")
 
 output <- mdcev(formula = ~ ageindex|0|0,
-				data = data_rec,
-				model = "kt_ee",
-				algorithm = "Bayes",
-				random_parameters = "fixed",
-				print_iterations = FALSE,
-				gamma_nonrandom = 1,
-				alpha_nonrandom = 1,
-				fixed_scale1 = 1,
-				n_cores = 1,
-				n_chains = 1,
-				n_iterations = 10,
-				show_stan_warnings = FALSE)
+			data = data_rec,
+			model = "kt_ee",
+			algorithm = "Bayes",
+			random_parameters = "fixed",
+			print_iterations = FALSE,
+			gamma_nonrandom = 1,
+			alpha_nonrandom = 1,
+			fixed_scale1 = 1,
+			n_cores = 1,
+			n_chains = 1,
+			n_iterations = 10,
+			show_stan_warnings = FALSE,
+			backend = "rstan")
 
 test_that("Test Bayes kt_ee rp fixed", {
 	output_sum <- summary(output)
@@ -210,7 +216,8 @@ test_that("Test Bayes kt_ee rp uncorrelated", {
 					n_cores = 1,
 					n_chains = 1,
 					n_iterations = 10,
-					show_stan_warnings = FALSE)
+					show_stan_warnings = FALSE,
+					backend = "rstan")
 
 		output_sum <- summary(output)
 	expect_equal(output$parms_info$n_vars$n_parms_total, 6)

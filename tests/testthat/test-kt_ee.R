@@ -8,9 +8,9 @@ data(data_rec, package = "rmdcev")
 data_rec$beach = ifelse(data_rec$alt == "beach", 1, 0)
 
 data_rec <- mdcev.data(data_rec, subset = id < 100,
-					   id.var = "id",
-					   alt.var = "alt",
-					   choice = "quant")
+				   id.var = "id",
+				   alt.var = "alt",
+				   choice = "quant")
 
 # initial starting values
 init = list(psi = array(rep(0,2), dim=c(1,2)),
@@ -42,7 +42,8 @@ test_that("kt_ee model estimation", {
 					gamma_ascs = 0,
 					algorithm = "MLE",
 				#	initial.parameters = init,
-					print_iterations = F)
+					print_iterations = F,
+					backend = "rstan")
 
 	output.sum <- summary(output)
 	expect_equal(length(output.sum[["CoefTable"]]$Std.err), 5)
@@ -65,7 +66,8 @@ test_that("kt_ee model estimation using num grad", {
 					algorithm = "MLE",
 					initial.parameters = init,
 					jacobian_analytical_grad = 0,
-					print_iterations = F)
+					print_iterations = F,
+					backend = "rstan")
 	expect_true(abs(output$log.likelihood - (-2770.00194)) < tol)
 })
 
@@ -77,7 +79,8 @@ test_that("kt_ee model estimation using trunc_data", {
 					gamma_ascs = 0,
 					algorithm = "MLE",
 					trunc_data = 1,
-					print_iterations = F)
+					print_iterations = F,
+					backend = "rstan")
 	expect_true(abs(output$log.likelihood - (-2768.959809)) < tol)
 })
 
@@ -85,11 +88,12 @@ test_that("Conditional error draw", {
 	skip_on_os("solaris")
 
 output <- mdcev(formula = ~ ageindex| 0 | beach,
-				data = data_rec,
-				model = "kt_ee",
-				gamma_ascs = 0,
-				algorithm = "MLE",
-				print_iterations = F)
+			data = data_rec,
+			model = "kt_ee",
+			gamma_ascs = 0,
+			algorithm = "MLE",
+			print_iterations = F,
+			backend = "rstan")
 nalts <- output$stan_data[["J"]]
 model_num <- 5
 npols <- 2
@@ -174,7 +178,8 @@ test_that("unconditional error draw", {
 					model = "kt_ee",
 					gamma_ascs = 0,
 					algorithm = "MLE",
-					print_iterations = F)
+					print_iterations = F,
+					backend = "rstan")
 	nalts <- output$stan_data[["J"]]
 	model_num <- 5
 	npols <- 2
@@ -262,7 +267,8 @@ test_that("Test full simulation function", {
 					model = "kt_ee",
 					gamma_ascs = 0,
 					algorithm = "MLE",
-					print_iterations = F)
+					print_iterations = F,
+					backend = "rstan")
 	summary(output)
 	policies<-	CreateBlankPolicies(npols = 2, output, price_change_only = TRUE)
 
@@ -280,4 +286,3 @@ test_that("Test full simulation function", {
 	#	expect_true(sum(abs(sum_wtp$Mean)) < .01)
 
 })
-
