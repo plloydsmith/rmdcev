@@ -49,12 +49,13 @@ jobs:
         with:
           path: ~/.cmdstan
           key: ${{ runner.os }}-cmdstan
-          
+
       # Install CmdStanR and CmdStan
       - name: Install CmdStan
         run: |
           Rscript -e 'install.packages("cmdstanr", repos = c("https://mc-stan.org/r-packages/", getOption("repos")))' 
           Rscript -e 'if (!cmdstanr::cmdstan_path()) cmdstanr::install_cmdstan(cores = 2)'
+          Rscript -e 'cmdstanr::set_cmdstan_path(cmdstanr::cmdstan_path())'
 
       - uses: r-lib/actions/check-r-package@v2
         with:
