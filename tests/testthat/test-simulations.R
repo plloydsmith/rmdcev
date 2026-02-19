@@ -48,8 +48,8 @@ tol_e <- 1e-20
 tol_l <- 1e-20
 max_loop = 999
 
-PRNG <-rstan::get_rng(seed = 3)
-o <- rstan::get_stream()
+PRNG <-rmdcev_get_rng(seed = 3)
+o <- rmdcev_get_stream()
 
 error <- DrawError_rng(quant_num, quant_j, price[-1],
 				  psi_j, phi_j, gamma_j, alpha, scale,
@@ -172,8 +172,8 @@ test_that("Conditional error hybrid draw", {
 	tol_l <- 1e-20
 	max_loop = 999
 
-	PRNG <-rstan::get_rng(seed = 3)
-	o <- rstan::get_stream()
+	PRNG <-rmdcev_get_rng(seed = 3)
+	o <- rmdcev_get_stream()
 
 	error <- DrawError_rng(quant_num, quant_j, price[-1],
 						   psi_j, phi_j, gamma_j, alpha, scale,

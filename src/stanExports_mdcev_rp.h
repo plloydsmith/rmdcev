@@ -310,9 +310,9 @@ static constexpr std::array<const char*, 320> locations_array__ =
   " (in 'string', line 77, column 2 to column 17)",
   " (in 'string', line 78, column 9 to column 10)",
   " (in 'string', line 78, column 12 to column 13)",
-  " (in 'string', line 78, column 2 to column 98)",
-  " (in 'string', line 79, column 2 to column 74)",
-  " (in 'string', line 80, column 2 to column 40)",
+  " (in 'string', line 78, column 2 to column 97)",
+  " (in 'string', line 79, column 2 to column 72)",
+  " (in 'string', line 80, column 2 to column 39)",
   " (in 'string', line 82, column 0 to column 18)",
   " (in 'string', line 75, column 40 to line 83, column 1)",
   " (in 'string', line 89, column 11 to column 12)",
@@ -822,25 +822,25 @@ DeterminJacob(const T0__& phi_quant_term_arg__, const T1__& alpha,
   try {
     local_scalar_t__ log_j_det = DUMMY_VAR__;
     current_statement__ = 280;
-    stan::math::validate_non_negative_index("jacobian", "J", J);
+    stan::math::validate_non_negative_index("jac_mat", "J", J);
     current_statement__ = 281;
-    stan::math::validate_non_negative_index("jacobian", "J", J);
-    Eigen::Matrix<local_scalar_t__,-1,-1> jacobian =
+    stan::math::validate_non_negative_index("jac_mat", "J", J);
+    Eigen::Matrix<local_scalar_t__,-1,-1> jac_mat =
       Eigen::Matrix<local_scalar_t__,-1,-1>::Constant(J, J, DUMMY_VAR__);
     current_statement__ = 282;
-    stan::model::assign(jacobian,
+    stan::model::assign(jac_mat,
       stan::math::add_diag(
         stan::math::rep_matrix(
           stan::math::multiply((1 - alpha), price_j_num), J),
-        stan::math::inv(phi_quant_term)), "assigning variable jacobian");
+        stan::math::inv(phi_quant_term)), "assigning variable jac_mat");
     current_statement__ = 283;
-    stan::model::assign(jacobian,
+    stan::model::assign(jac_mat,
       stan::math::add_diag(
-        stan::math::diag_post_multiply(stan::model::deep_copy(jacobian),
+        stan::math::diag_post_multiply(stan::model::deep_copy(jac_mat),
           nonzero), stan::math::subtract(1, nonzero)),
-      "assigning variable jacobian");
+      "assigning variable jac_mat");
     current_statement__ = 284;
-    log_j_det = stan::math::log_determinant(jacobian);
+    log_j_det = stan::math::log_determinant(jac_mat);
     current_statement__ = 285;
     return log_j_det;
   } catch (const std::exception& e) {

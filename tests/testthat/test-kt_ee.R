@@ -122,8 +122,8 @@ expect_true(abs(scale - 0.8917881) < tol)
 	tol_l <- 1e-20
 	max_loop = 999
 
-	PRNG <-rstan::get_rng(seed = 3)
-	o <- rstan::get_stream() # Need for Expecting an external pointer error
+	PRNG <-rmdcev_get_rng(seed = 3)
+	o <- rmdcev_get_stream() # Need for Expecting an external pointer error
 
 	error <- DrawError_rng(quant_num, quant_j, price[-1],
 						   psi_j, phi_j, gamma_j, alpha, scale, model_num = 5,
@@ -207,8 +207,8 @@ test_that("unconditional error draw", {
 	tol_l <- 1e-20
 	max_loop = 999
 
-	PRNG <-rstan::get_rng(seed = 5)
-	o <- rstan::get_stream() # Need for Expecting an external pointer error
+	PRNG <-rmdcev_get_rng(seed = 5)
+	o <- rmdcev_get_stream() # Need for Expecting an external pointer error
 
 	error <- DrawError_rng(quant_num, quant_j, price[-1],
 						   psi_j, phi_j, gamma_j, alpha, scale, model_num = 5,

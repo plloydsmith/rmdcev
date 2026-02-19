@@ -9,8 +9,7 @@
 
 #include <stan/math/prim/fun/Eigen.hpp>
 #include <Rcpp.h>
-#include <boost/random/mersenne_twister.hpp>
-#include <boost/random/ecuyer1988.hpp>
+#include <boost/random/additive_combine.hpp>
 
 // [[Rcpp::export]]
 SEXP rmdcev_get_rng(int seed = 0) {

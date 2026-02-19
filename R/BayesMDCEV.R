@@ -107,16 +107,32 @@ RunCmdStanSampling <- function(stan_data, model_name, bayes_options, ...) {
     if (!nzchar(stan_file))
         stop("Stan model file not found: ", model_name, ".stan")
 
+    # Workaround: cmdstanr wraps include-paths with spaces in single quotes,
+    # which Windows does not interpret as quoting. Fall back to installed path.
+    if (.Platform$OS.type == "windows" && grepl(" ", stan_file)) {
+        lib_paths <- .libPaths()
+        installed_pkg <- file.path(lib_paths, "rmdcev")
+        installed_pkg <- installed_pkg[file.exists(installed_pkg)][1]
+        if (!is.na(installed_pkg)) {
+            candidate <- file.path(installed_pkg, "stan",
+                                   paste0(model_name, ".stan"))
+            if (file.exists(candidate))
+                stan_file <- candidate
+        }
+    }
+
     mod <- cmdstanr::cmdstan_model(stan_file)
 
     init_fn <- bayes_options$initial.parameters
-    if (!is.list(init_fn) && identical(init_fn, "random"))
-        init_fn <- "random"
-
-    if (stan_data$fixed_scale1 == 0 && !is.list(init_fn)) {
-        init_fn <- lapply(seq_len(bayes_options$n_chains), function(i) {
-            list(scale = array(1, dim = 1))
-        })
+    # cmdstanr init handling:
+    # - "random" / NULL  → use 0.5 (small radius; avoids large random starts
+    #   for the RP z-matrix while still giving non-zero gradients for HMC)
+    # - flat named list  → wrap as list of n_chains lists for cmdstanr sample
+    if (!is.list(init_fn) && (is.null(init_fn) || identical(init_fn, "random"))) {
+        init_fn <- 0.5
+    } else if (is.list(init_fn) && length(init_fn) > 0 &&
+               !is.list(init_fn[[1L]])) {
+        init_fn <- rep(list(init_fn), bayes_options$n_chains)
     }
 
     n_warmup  <- floor(bayes_options$n_iterations / 2)

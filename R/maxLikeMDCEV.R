@@ -26,7 +26,7 @@ maxlikeMDCEV <- function(stan_data,
         mle_options$init <- CleanInit(mle_options$initial.parameters)
 
         # Set starting values for scale to 1
-        if (stan_data$fixed_scale1 == 0 && is.null(mle_options$init[["scale"]]))
+        if (stan_data$fixed_scale1 == 0 && is.list(mle_options$init) && is.null(mle_options$init[["scale"]]))
             mle_options$init[["scale"]] <- array(1, dim = 1)
 
         if (backend == "cmdstanr") {
@@ -164,9 +164,35 @@ RunCmdStanOptimizing <- function(stan_data, model_name, mle_options, ...) {
     if (!nzchar(stan_file))
         stop("Stan model file not found: ", model_name, ".stan")
 
+    # Workaround: cmdstanr wraps include-paths with spaces in single quotes,
+    # which Windows does not interpret as quoting. If the source path has spaces
+    # (e.g. during devtools::test() from a path like "1 PROJECT/..."), fall back
+    # to the installed package path which is typically space-free.
+    if (.Platform$OS.type == "windows" && grepl(" ", stan_file)) {
+        lib_paths <- .libPaths()
+        installed_pkg <- file.path(lib_paths, "rmdcev")
+        installed_pkg <- installed_pkg[file.exists(installed_pkg)][1]
+        if (!is.na(installed_pkg)) {
+            candidate <- file.path(installed_pkg, "stan",
+                                   paste0(model_name, ".stan"))
+            if (file.exists(candidate))
+                stan_file <- candidate
+        }
+    }
+
     mod <- cmdstanr::cmdstan_model(stan_file)
 
-    init_val <- if (!is.null(mle_options$init)) mle_options$init else "random"
+    # cmdstanr init handling:
+    # - "random" / NULL  → use 0 (deterministic: 0 on unconstrained scale gives
+    #   exp(0)=1 for positive params, a numerically safe starting point)
+    # - flat named list  → must be wrapped as list-of-lists for cmdstanr optimize
+    init_val <- mle_options$init
+    if (is.null(init_val) || identical(init_val, "random")) {
+        init_val <- 0
+    } else if (is.list(init_val) && length(init_val) > 0 &&
+               !is.list(init_val[[1L]])) {
+        init_val <- list(init_val)
+    }
 
     fit <- mod$optimize(
         data         = stan_data,
@@ -181,8 +207,10 @@ RunCmdStanOptimizing <- function(stan_data, model_name, mle_options, ...) {
     draws <- fit$draws(format = "draws_df")
     par_names <- setdiff(colnames(draws), c(".chain", ".iteration", ".draw", "lp__"))
 
-    par_vec <- as.numeric(draws[1, par_names])
-    names(par_vec) <- par_names
+    # Use as.data.frame() to avoid "Dropping draws_df class" warning from
+    # posterior when subsetting removes the required metadata columns.
+    draws_plain <- as.data.frame(draws)
+    par_vec <- setNames(as.numeric(draws_plain[1L, par_names]), par_names)
 
     # Reconstruct named list with correct array dimensions (matching rstan::optimizing output)
     par_list <- cmdstan_pars_to_list(par_vec)
