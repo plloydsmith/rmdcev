@@ -1,13 +1,13 @@
 #' @title PrepareSimulationData
-#' @description Prepare Data for WTP simulation
-#' @param object an object of class `mdcev`
-#' @param policies list containing
-#' price_p with additive price increases, and
-#' dat_psi_p with new psi data
-#' @param nsims Number of simulation draws to use for parameter uncertainty
-#' @param class The class number for Latent Class models.
-#' @return A list with individual-specific data (df_indiv) and common data (df_common)
-#' and n_classes for number of classes and model_num for model type
+#' @description Prepare data for WTP/demand simulation from a fitted mdcev object.
+#' @param object An object of class \code{mdcev}.
+#' @param policies A list produced by \code{\link{CreateBlankPolicies}} containing
+#'   \code{price_p} (additive price changes) and optionally \code{dat_psi_p} /
+#'   \code{dat_phi_p} (alternative-attribute changes).
+#' @param nsims Number of parameter draws to use for uncertainty quantification.
+#' @param class Class label for Latent Class models (e.g. \code{"class1"}).
+#' @return A list with \code{df_indiv} (individual-level data), \code{df_common}
+#'   (shared simulation inputs), and \code{sim_options} (model metadata).
 #' @export
 #' @examples
 #' \donttest{
@@ -26,458 +26,68 @@
 #' df_sim <- PrepareSimulationData(mdcev_est, policies)
 #'
 #'}
-PrepareSimulationData <- function(
-	object,
-	policies,
-	nsims = 30,
-	class = "class1"
-) {
-	est_pars <- .psd_extract_parameter_draws(object, nsims)
-	est_sim <- .psd_prepare_simulation_matrix(est_pars, object, nsims, class)
-	sim_data <- ProcessSimulationData(est_sim, object, policies, nsims)
-	df_common <- sim_data
-	df_common$df_indiv <- NULL
-	df_indiv <- sim_data$df_indiv
-	sim_options <- list(
-		n_classes = object$n_classes,
-		model_num = object$stan_data$model_num,
-		price_change_only = policies$price_change_only
-	)
-	list(df_indiv = df_indiv, df_common = df_common, sim_options = sim_options)
-}
+PrepareSimulationData <- function(object, policies, nsims = 30, class = "class1") {
 
-# Helper: Extract parameter draws for simulation
-.psd_extract_parameter_draws <- function(object, nsims) {
-	if (object$algorithm == "Bayes") {
-		est_pars <- extract_bayes_draws(object)
-		if (nsims > nrow(est_pars)) {
-			nsims <- nrow(est_pars)
-			warning(
-				"Number of simulations > Number of posterior draws from mdcev object. nsims has been set to: ",
-				nsims
-			)
-		}
-	} else if (object$algorithm == "MLE") {
-		if (object$std_errors == "mvn") {
-			est_pars <- as_tibble(object[["stan_fit"]][["theta_tilde"]])
-			if (nsims > object$n_draws) {
-				nsims <- object$n_draws
-				warning(
-					"Number of simulations > Number of mvn draws from mdcev object. nsims has been set to: ",
-					nsims
-				)
-			}
-		} else if (object$std_errors == "deltamethod") {
-			est_pars <- object[["stan_fit"]][["par"]]
-			est_pars <- est_pars[
-				!grepl(
-					c("^log_like|^sum_log_lik|^tau_unif|^Sigma|^lp__|^theta"),
-					names(est_pars)
-				)
-			]
-			est_pars <- as_tibble(t(unlist(est_pars)))
-			if (nsims > 1) {
-				nsims <- 1
-				warning(
-					"Number of simulations > 1. Use mvn draws to incorporate parameter uncertainty nsims has been set to: ",
-					nsims
-				)
-			}
-		}
-	} else {
-		stop("Unknown algorithm in mdcev object.")
-	}
-	# Drop extra variables
-	est_pars <- est_pars[,
-		!grepl(
-			c("^log_like|^sum_log_lik|^tau_unif|^Sigma|^lp__"),
-			colnames(est_pars)
-		)
-	]
-	# Rename variables for fixed parameters
-	if (object$random_parameters == "fixed") {
-		names(est_pars)[
-			1:object$parms_info$n_vars$n_parms_total
-		] <- object$parms_info$parm_names$all_names
-	}
-	# Sample draws
-	est_pars[sample(nrow(est_pars), nsims), , drop = FALSE]
-}
-
-# Helper: Prepare simulation matrix for ProcessSimulationData
-.psd_prepare_simulation_matrix <- function(est_pars, object, nsims, class) {
-	est_sim <- est_pars %>%
-		tibble::rowid_to_column("sim_id") %>%
-		tidyr::pivot_longer(-sim_id, names_to = "parms", values_to = "value")
-	if (object$n_classes > 1) {
-		if (object$stan_data$single_scale == 1) {
-			est_sim$parms[est_sim$parms == "scale"] <- paste0(class, ".scale")
-			est_sim <- est_sim[grepl(class, est_sim$parms), ]
-		} else {
-			est_sim <- est_sim[grepl(class, est_sim$parms), ]
-		}
-	}
-	est_sim
-}
-
-#' @title ProcessSimulationData
-#' @description Internal function for WTP simulation
-#' @inheritParams PrepareSimulationData
-#' @param est_sim Cleaned up parameter simulations from PrepareSimulationData
-#' @noRd
-ProcessSimulationData <- function(est_sim, object, policies, nsims) {
-	J <- object$stan_data$J
-	I <- object$stan_data$I
-	NPsi_ij <- object$stan_data$NPsi_ij
-	model_num <- object$stan_data$model_num
-	random_parameters <- object$random_parameters
-	gamma_nonrandom <- object$stan_data$gamma_nonrandom
-	alpha_nonrandom <- object$stan_data$alpha_nonrandom
+	sd    <- object$stan_data
 	npols <- length(policies$price_p)
-	psi_ascs <- object$stan_data$psi_ascs
 
-	# Initialize individual-level random-parameter draws to NULL;
-	# overwritten below only when parameters are random
-	alpha_sim_rand <- NULL
-	gamma_sim_rand <- NULL
+	# Step 1: Extract and sample parameter draws.
+	# nsims may be silently capped to the number of available draws.
+	est_pars <- .extract_parameter_draws(object, nsims)
+	nsims    <- nrow(est_pars)
 
-	# Scale (always a fixed parameter)
-	if (object$stan_data$fixed_scale1 == 0) {
-		scale_sims <- t(GrabParms(est_sim, "scale"))
-	} else {
-		scale_sims <- matrix(1, nsims, 1)
-	}
+	# Step 2: Pivot draws wide-to-long; filter to one latent class if needed.
+	est_sim <- .pivot_draws_to_long(est_pars, object, class)
 
-	# Gamma: model_num == 2 fixes gamma at 1; otherwise estimated fixed or random
-	if (model_num == 2) {
-		gamma_sim_nonrandom <- matrix(1, nsims, J)
-	} else if (gamma_nonrandom == 1) {
-		gamma_sim_nonrandom <- GrabParms(est_sim, "gamma")
-		if (object$stan_data$gamma_ascs == 0) {
-			gamma_sim_nonrandom <- matrix(
-				rep(gamma_sim_nonrandom, each = J),
-				ncol = J,
-				byrow = TRUE
-			)
-		}
-	} else {
-		gamma_sim_nonrandom <- NULL
-	}
+	# Step 3: Common simulation matrices shared across all individuals.
+	scale_sims          <- .build_scale_sims(est_sim, sd$fixed_scale1, nsims)
+	gamma_sim_nonrandom <- .build_gamma_sims(est_sim, sd$model_num, sd$gamma_nonrandom,
+	                                          sd$gamma_ascs, nsims, sd$J)
+	alpha_sim_nonrandom <- .build_alpha_sims(est_sim, sd$model_num, sd$alpha_nonrandom,
+	                                          nsims, sd$J)
 
-	# Alpha: model_num == 4 fixes alpha at 0; otherwise estimated fixed or random
-	if (model_num == 4) {
-		alpha_sim_nonrandom <- matrix(0, nsims, J + 1)
-	} else if (alpha_nonrandom == 1) {
-		alpha_sim_nonrandom <- GrabParms(est_sim, "alpha")
-		if (model_num == 1 || model_num == 5) {
-			alpha_sim_nonrandom <- cbind(alpha_sim_nonrandom, matrix(0, nsims, J))
-		} else if (model_num == 3) {
-			alpha_sim_nonrandom <- matrix(
-				rep(alpha_sim_nonrandom, each = J + 1),
-				ncol = J + 1,
-				byrow = TRUE
-			)
-		}
-	} else {
-		alpha_sim_nonrandom <- NULL
-	}
+	# Step 4: Individual-level parameter draws (psi, phi, and random gamma/alpha).
+	indiv <- .build_individual_pars(est_sim, est_pars, object, nsims)
 
-	# Get individual-level parameters
-	if (random_parameters == "fixed") {
-		psi_sim_temp <- GrabParms(est_sim, "psi")
-		psi_sim_temp <- replicate(I, psi_sim_temp, simplify = FALSE)
+	# Step 5: Baseline psi and phi utility indices (nsims x J per individual).
+	psi_sims <- .build_psi_sims(indiv$psi_sim_temp, object, npols, nsims)
+	phi_sims <- .build_phi_sims(indiv$phi_sim_temp, object, nsims)
 
-		if (object[["parms_info"]][["n_vars"]][["n_phi"]] > 0) {
-			phi_sim_temp <- GrabParms(est_sim, "phi")
-			phi_sim_temp <- replicate(I, phi_sim_temp, simplify = FALSE)
-		}
-	} else {
-		est_sim_mu_tau <- est_sim %>%
-			dplyr::filter(grepl(c("mu|tau"), parms)) %>%
-			tidyr::separate(parms, into = c("parms", "parm_id"), sep = "\\.") %>%
-			dplyr::mutate(parm_id = as.numeric(.data$parm_id)) %>%
-			tidyr::spread(parms, value) %>%
-			dplyr::arrange(sim_id)
-
-		if (random_parameters == "corr") {
-			if (isTRUE(object$backend == "rstan")) {
-				num_rand <- object[["stan_fit"]]@par_dims[["mu"]]
-			} else {
-				mu_vars <- grep("^mu\\.\\d", names(est_pars), value = TRUE)
-				num_rand <- length(mu_vars)
-			}
-
-			est_sim_tau <- est_sim_mu_tau %>%
-				dplyr::select(sim_id, "parm_id", "tau") %>%
-				dplyr::group_split(sim_id)
-
-			est_sim_lomega <- est_sim %>%
-				dplyr::filter(grepl(c("L_Omega"), parms)) %>%
-				dplyr::arrange(sim_id) %>%
-				dplyr::group_split(sim_id)
-
-			sim_id <- est_sim %>%
-				dplyr::arrange(sim_id) %>%
-				dplyr::distinct(sim_id)
-
-			L <- mapply(
-				function(x, y) {
-					l_omega <- matrix(y$value, nrow = num_rand, byrow = FALSE)
-					L <- as.vector(x$tau %*% l_omega)
-					return(L)
-				},
-				est_sim_tau,
-				est_sim_lomega
-			)
-
-			L <- matrix(unlist(L), nrow = nrow(sim_id), byrow = TRUE)
-			colnames(L) <- c(paste0(rep("parm_id", num_rand), 1:num_rand))
-
-			est_sim_tau <- bind_cols(sim_id, as_tibble(L)) %>%
-				tidyr::gather(parm_id, tau, -sim_id) %>%
-				dplyr::mutate(
-					parm_id = as.numeric(gsub("[^0-9]", "", .data$parm_id))
-				) %>%
-				dplyr::arrange(sim_id)
-
-			est_sim_mu_tau <- est_sim_mu_tau %>%
-				dplyr::select(sim_id, "parm_id", "mu") %>%
-				dplyr::left_join(est_sim_tau, by = c("sim_id", "parm_id"))
-		}
-
-		est_sim <- est_sim %>%
-			dplyr::filter(grepl(c("^z|sim_id"), parms)) %>%
-			tidyr::separate(
-				parms,
-				into = c("parms", "id", "parm_id"),
-				sep = "\\."
-			) %>%
-			tidyr::spread(parms, value) %>%
-			dplyr::mutate(
-				parm_id = as.numeric(.data$parm_id),
-				id = as.numeric(id)
-			) %>%
-			dplyr::arrange(id, sim_id, .data$parm_id) %>%
-			dplyr::left_join(est_sim_mu_tau, by = c("sim_id", "parm_id")) %>%
-			dplyr::arrange(id, sim_id, .data$parm_id) %>%
-			dplyr::mutate(
-				beta = .data$mu + .data$z * .data$tau,
-				parms = rep(
-					object[["parms_info"]][["parm_names"]][["sd_names"]],
-					nsims * object[["n_individuals"]]
-				)
-			) %>%
-			dplyr::select(-"tau", -"mu", -"z")
-
-		# Transform gamma and alpha estimates (back from log / logit scale)
-		if (gamma_nonrandom == 0) {
-			est_sim <- est_sim %>%
-				dplyr::mutate(beta = ifelse(grepl(c("gamma"), parms), exp(beta), beta))
-		}
-		if (alpha_nonrandom == 0) {
-			est_sim <- est_sim %>%
-				dplyr::mutate(
-					beta = ifelse(grepl(c("alpha"), parms), 1 / (1 + exp(-beta)), beta)
-				)
-		}
-
-		if (gamma_nonrandom == 0) {
-			gamma_sim_rand <- GrabIndividualParms(est_sim, "gamma")
-			if (object$stan_data$gamma_ascs == 0) {
-				gamma_sim_rand <- lapply(gamma_sim_rand, function(x) {
-					matrix(rep(x, each = J), ncol = J, byrow = TRUE)
-				})
-			}
-			gamma_sim_rand <- list(lapply(gamma_sim_rand, as.matrix))
-			names(gamma_sim_rand) <- "gamma_sims"
-		}
-
-		if (alpha_nonrandom == 0) {
-			alpha_sim_rand <- GrabIndividualParms(est_sim, "alpha")
-			if (model_num == 1 || model_num == 5) {
-				alpha_sim_rand <- lapply(alpha_sim_rand, function(x) {
-					cbind(x, matrix(0, nsims, J))
-				})
-			} else if (model_num == 3) {
-				alpha_sim_rand <- lapply(alpha_sim_rand, function(x) {
-					matrix(rep(x, each = J + 1), ncol = J + 1, byrow = TRUE)
-				})
-			}
-			alpha_sim_rand <- list(lapply(alpha_sim_rand, as.matrix))
-			names(alpha_sim_rand) <- "alpha_sims"
-		}
-
-		psi_sim_temp <- GrabIndividualParms(est_sim, "psi")
-		psi_sim_temp <- lapply(psi_sim_temp, as.matrix)
-
-		# Phi parameters (model_num == 5 only)
-		if (model_num == 5) {
-			phi_sim_temp <- list(GrabIndividualParms(est_sim, "phi"))
-		} else {
-			phi_sim_temp <- list(array(0, dim = c(0, 0)))
-		}
-	}
-
-	# Create psi utility index variables
-	if (object[["parms_info"]][["n_vars"]][["n_psi"]] > 0) {
-		dat_vars <- tibble(id = rep(1:I, each = J))
-
-		if (NPsi_ij > 0) {
-			dat_vars <- bind_cols(dat_vars, as_tibble(object$stan_data$dat_psi))
-		}
-
-		dat_vars <- dat_vars %>%
-			group_split(id, .keep = F)
-
-		psi_sims <- mapply(
-			CreatePsi,
-			dat_vars,
-			psi_sim_temp,
-			J = J,
-			NPsi_ij = NPsi_ij,
-			psi_ascs = psi_ascs,
-			npols = npols,
-			SIMPLIFY = FALSE
-		)
-	} else {
-		psi_sims <- replicate(I, matrix(0, nsims, J), simplify = FALSE)
-	}
-
-	psi_sims <- list(psi_sims)
-	names(psi_sims) <- "psi_sims"
-
-	# Phi utility index variables (exponentiated to reverse the log transformation)
-	if (object[["parms_info"]][["n_vars"]][["n_phi"]] > 0) {
-		dat_id <- tibble(id = rep(1:I, each = J))
-		dat_vars <- bind_cols(dat_id, as_tibble(object$stan_data$dat_phi))
-
-		dat_vars <- dat_vars %>%
-			group_split(id, .keep = F)
-
-		phi_sims <- mapply(
-			function(x, y) {
-				phi_temp <- exp(as.matrix(x) %*% t(as.matrix(y)))
-				phi_temp <- t(phi_temp)
-			},
-			dat_vars,
-			phi_sim_temp,
-			SIMPLIFY = FALSE
-		)
-
-		phi_sims <- list(phi_sims)
-		names(phi_sims) <- "phi_sims"
-	} else {
-		phi_sims <- array(1, dim = c(nsims, J))
-		phi_sims <- replicate(I, phi_sims, simplify = FALSE)
-		phi_sims <- list(phi_sims)
-		names(phi_sims) <- "phi_sims"
-	}
-
-	# Set up policy psi_p and phi_p (empty when price_change_only = TRUE)
-	phi_p_sims <- replicate(I, matrix(0, 0, 0), simplify = FALSE)
-	psi_p_sims <- replicate(I, matrix(0, 0, 0), simplify = FALSE)
-
+	# Step 6: Policy-scenario psi/phi (zero-dimension matrices when price_change_only).
+	psi_p_sims <- replicate(sd$I, matrix(0, 0, 0), simplify = FALSE)
+	phi_p_sims <- replicate(sd$I, matrix(0, 0, 0), simplify = FALSE)
 	if (!policies$price_change_only) {
-		if (model_num < 5) {
-			dat_vars <- tibble(id = rep(1:I, each = J))
-
-			if (NPsi_ij > 0) {
-				dat_vars_temp <- mapply(
-					cbind,
-					policies[["dat_psi_p"]],
-					"policy" = 1:npols,
-					SIMPLIFY = FALSE
-				)
-				dat_vars_temp <- lapply(dat_vars_temp, function(x) {
-					bind_cols(dat_vars, as_tibble(x))
-				})
-
-				dat_vars <- do.call(rbind, dat_vars_temp)
-			}
-
-			dat_vars <- dat_vars %>%
-				group_split(id, .keep = F)
-
-			psi_p_sims <- mapply(
-				CreatePsi,
-				dat_vars,
-				psi_sim_temp,
-				J = J,
-				NPsi_ij = NPsi_ij,
-				psi_ascs = psi_ascs,
-				npols = npols,
-				SIMPLIFY = FALSE
-			)
-		} else {
-			dat_vars <- tibble(id = rep(1:I, each = J))
-
-			dat_vars_temp <- mapply(
-				cbind,
-				policies[["dat_phi_p"]],
-				"policy" = 1:npols,
-				SIMPLIFY = FALSE
-			)
-			dat_vars_temp <- lapply(dat_vars_temp, function(x) {
-				bind_cols(dat_vars, as_tibble(x))
-			})
-
-			dat_vars <- do.call(rbind, dat_vars_temp)
-
-			dat_vars <- dat_vars %>%
-				group_split(id, .keep = F)
-
-			phi_p_sims <- mapply(
-				function(x, y) {
-					x_i <- x %>%
-						group_split(policy, .keep = F)
-					phi_p_temp <- lapply(x_i, function(xx) {
-						phi_p_temp <- exp(as.matrix(xx) %*% t(as.matrix(y)))
-						phi_p_temp <- t(phi_p_temp)
-						return(phi_p_temp)
-					})
-				},
-				dat_vars,
-				phi_sim_temp,
-				SIMPLIFY = FALSE
-			)
-		}
+		if (sd$model_num < 5)
+			psi_p_sims <- .build_policy_psi_sims(indiv$psi_sim_temp, object, policies, npols)
+		else
+			phi_p_sims <- .build_policy_phi_sims(indiv$phi_sim_temp, object, policies, npols)
 	}
 
-	psi_p_sims <- list(psi_p_sims)
-	names(psi_p_sims) <- "psi_p_sims"
-	phi_p_sims <- list(phi_p_sims)
-	names(phi_p_sims) <- "phi_p_sims"
-
-	# Assemble baseline individual data
-	income <- list(as.list(object$stan_data$income))
-	names(income) <- "income"
-
-	quant_j <- list(CreateListsRow(object$stan_data$quant_j))
-	names(quant_j) <- "quant_j"
-
-	price <- cbind(1, object$stan_data$price_j) # prepend numeraire price (= 1)
-	price <- list(CreateListsRow(price))
-	names(price) <- "price"
-
-	# Pull individual-level data into one list
+	# Step 7: Assemble individual-level data (one element per individual, used by purrr::pmap).
 	df_indiv <- c(
-		income,
-		quant_j,
-		price,
-		psi_sims,
-		phi_sims,
-		psi_p_sims,
-		phi_p_sims,
-		gamma_sim_rand,
-		alpha_sim_rand
+		list(income     = as.list(sd$income)),
+		list(quant_j    = CreateListsRow(sd$quant_j)),
+		list(price      = CreateListsRow(cbind(1, sd$price_j))),
+		list(psi_sims   = psi_sims),
+		list(phi_sims   = phi_sims),
+		list(psi_p_sims = psi_p_sims),
+		list(phi_p_sims = phi_p_sims),
+		indiv$gamma_rand,   # NULL or list(gamma_sims = ...)
+		indiv$alpha_rand    # NULL or list(alpha_sims = ...)
 	)
 
-	out <- list(
-		df_indiv = df_indiv,
-		price_p_list = policies$price_p,
-		gamma_sim_nonrandom = gamma_sim_nonrandom,
-		alpha_sim_nonrandom = alpha_sim_nonrandom,
-		scale_sims = scale_sims
+	list(
+		df_indiv   = df_indiv,
+		df_common  = list(
+			price_p_list        = policies$price_p,
+			gamma_sim_nonrandom = gamma_sim_nonrandom,
+			alpha_sim_nonrandom = alpha_sim_nonrandom,
+			scale_sims          = scale_sims
+		),
+		sim_options = list(
+			n_classes         = object$n_classes,
+			model_num         = sd$model_num,
+			price_change_only = policies$price_change_only
+		)
 	)
-	return(out)
 }
