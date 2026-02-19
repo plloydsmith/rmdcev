@@ -4,6 +4,7 @@ functions {
 #include common/mdcev_ll.stan
 }
 
+
 data {
 // declares I J NPsi K dat_psi price_j quant_j income num_price M_factorial
 // prior_psi_sd prior_gamma_sd prior_alpha_sd prior_scale_sd
@@ -37,6 +38,7 @@ parameters {
 
 transformed parameters {
 	vector[I] log_like;
+	matrix[K > 1 ? I : 0, K > 1 ? K - 1 : 0] delta_data;
 	{
 	array[K] vector[I] log_like_util;
 	for (k in 1:K){
@@ -49,13 +51,13 @@ transformed parameters {
 		if (psi_ascs == 1){
 			if (NPsi_ij > 0){
 				lpsi = rep_matrix(append_row(0, head(psi_k, J-1))', I);
-				lpsi += to_matrix(dat_psi[] * segment(psi_k, J, NPsi_ij), I, J, 0);
+				lpsi += to_matrix(dat_psi * segment(psi_k, J, NPsi_ij), I, J, 0);
 			} else {
 				lpsi = rep_matrix(append_row(0, head(psi_k, J-1))', I);
 			}
 		} else if (psi_ascs == 0){
 			if (NPsi_ij > 0)
-    			lpsi = to_matrix(dat_psi[] * psi_k, I, J, 0);
+    			lpsi = to_matrix(dat_psi * psi_k, I, J, 0);
 			else
     			lpsi = rep_matrix(0, I, J);
 		}
@@ -75,7 +77,7 @@ transformed parameters {
 		} else if (model_num == 5){
 			matrix[I, J] phi_ij;
 			if(NPhi > 0)
-	    		phi_ij = exp(to_matrix(dat_phi[] * phi[k], I, J, 0));
+	    		phi_ij = exp(to_matrix(dat_phi * phi[k], I, J, 0));
 			else if(NPhi == 0)
 	    		phi_ij = rep_matrix(1, I, J);
 
@@ -92,7 +94,7 @@ transformed parameters {
 	}
 
 	if (K > 1){
-		matrix[I, K-1] delta_data = data_class * delta';
+		delta_data = data_class * delta';
 		for(i in 1:I){
 			vector[K] ltheta = log_softmax(append_row(0, delta_data[i]'));
 			vector[K] lps = ltheta + to_vector(log_like_util[,i]);
@@ -132,7 +134,6 @@ generated quantities{
 	matrix[K > 1 ? I : 0, K] theta;
 
 	if (K > 1){
-		matrix[I, K-1] delta_data = data_class * delta';
 		for(i in 1:I)
   			theta[i] = softmax(append_row(0, delta_data[i]'))';
 	}

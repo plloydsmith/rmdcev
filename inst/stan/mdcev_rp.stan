@@ -139,7 +139,7 @@ generated quantities{
 	   matrix[RP, RP] L;
 		if (corr == 1){
 			matrix[RP, RP] Omega;
-			Omega = multiply_lower_tri_self_transpose(L_Omega);  // correlation matrix
+			Omega = tcrossprod(L_Omega);  // correlation matrix: L * L'
 			Sigma = quad_form_diag(Omega, tau);               // var-covar matrix
 		} else {
 			Sigma = diag_matrix(tau);

@@ -47,15 +47,26 @@ vector mdcev_ll(matrix quant_j, matrix price_j, vector log_num, vector income,
 	vector[I] log_like;
 	real inv_scale = inv(scale_full);
 	real log_scale = log(scale_full);
-	matrix[I, J] v_j= (lpsi + (alpha_j - 1) .* log(quant_j ./ gamma_j + 1) - log(price_j)) * inv_scale;
-	vector[I] v1 = (alpha1 - 1) .* log_num * inv_scale;
-	matrix[I, J] logf = log1m(alpha_j) - log(quant_j + gamma_j);
+	vector[I] v1    = (alpha1 - 1) .* log_num * inv_scale;
 	vector[I] logf1 = log1m(alpha1) - log_num;
-	vector[I] sum_v_j = exp(v_j) * rep_vector(1, J);
 
-	log_like = (1 - M) * log_scale + logf1 + v1 + rows_dot_product(nonzero, logf + v_j) +
-		log(inv(exp(logf1)) + rows_dot_product(nonzero, price_j ./ exp(logf))) -
-		M .* log(exp(v1) + sum_v_j) + log_M_fact;
+	// logf and v_j share log(quant_j + gamma_j); local block frees log_qpg immediately
+	matrix[I, J] logf;
+	matrix[I, J] v_j;
+	{
+		matrix[I, J] log_qpg = log(quant_j + gamma_j);
+		logf = log1m(alpha_j) - log_qpg;
+		v_j  = (lpsi + (alpha_j - 1) .* (log_qpg - log(gamma_j)) - log(price_j)) * inv_scale;
+	}
+
+	// log_sum_exp per row: avoids I×J exp(v_j) temporary, numerically stable
+	vector[I] lse;
+	for (i in 1:I) lse[i] = log_sum_exp(append_row(v1[i], v_j[i]'));
+
+	log_like = (1 - M) * log_scale + logf1 + v1
+			 + rows_dot_product(nonzero, logf) + rows_dot_product(nonzero, v_j)
+			 + log(exp(-logf1) + rows_dot_product(nonzero, price_j .* exp(-logf)))
+			 - M .* lse + log_M_fact;
 
 	if (trunc_data == 1){
 		matrix[I, J+1] v_1 = exp(append_col((alpha1 - 1) .* log(income), lpsi - log(price_j)) * inv_scale);
@@ -106,8 +117,8 @@ vector kt_ll(matrix quant_j, matrix price_j, vector log_num, vector income,
 	 // Calculate the demand function, g
   	g =  (-lpsi + log(phi_quant_term .* price_j) - rep_matrix(alpha_comp .* log_num, J)) * inv_scale;
 
-  	// Calculate the liklihood log(j_det*exp(x))=log(j_det)+x
-  	log_like = log_j_det + (nonzero .*(-g - log_scale) + (-exp(-g))) * ones_j ;
+  	// Calculate the likelihood log(j_det*exp(x))=log(j_det)+x
+  	log_like = log_j_det + rows_dot_product(nonzero, -g - log_scale) - exp(-g) * ones_j;
 
 	// adjust for truncation
 	if(trunc_data == 1){

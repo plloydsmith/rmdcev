@@ -10,12 +10,10 @@ vector[I] log_M_fact;
 
 log_num = log(income - rows_dot_product(price_j, quant_j));
 
-for(i in 1:I){
-	for(j in 1:J){
+for(i in 1:I)
+	for(j in 1:J)
 		nonzero[i,j] = quant_j[i,j] > 0 ? 1 : 0;
-	}
-  	M[i] = sum(nonzero[i])+1; // add 1 for numeraire
-}
+M = nonzero * rep_vector(1, J) + 1;
 
 log_M_fact = lgamma(M); // lgamma(M) = log((M-1)!)
 
@@ -41,8 +39,5 @@ if (model_num != 2 && gamma_ascs == 0){
  	Gamma = 1;
 }
 
-if (fixed_scale1 == 0)
-	S = 1;
-else if (fixed_scale1 == 1)
-	S = 0;
+S = 1 - fixed_scale1;
 
