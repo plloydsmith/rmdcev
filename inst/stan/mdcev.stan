@@ -41,26 +41,22 @@ transformed parameters {
 	array[K] vector[I] log_like_util;
 	for (k in 1:K){
 		matrix[I, J] gamma_full = gamma_ll(gamma[k], I, J, Gamma);
-		real scale_full;
 		matrix[I, J] lpsi;
 		vector[I] alpha_1 = alpha_1_ll(alpha[k], I, model_num);
+		real scale_full = (S == 1) ? scale[1] : ((S == K) ? scale[k] : 1.0);
 		vector[NPsi] psi_k = psi[k];
 
-		if (S == 1)
-  			scale_full = scale[1];
-  		else if (S == K)
-   			scale_full = scale[k];
-  		else
-  			scale_full = 1.0;
-
 		if (psi_ascs == 1){
-			lpsi = rep_matrix(append_row(0, head(psi_k, J-1))', I); //  alternative specific constants
-			if (NPsi_ij > 0)
-    			lpsi = lpsi + to_matrix(dat_psi[] * segment(psi_k, J, NPsi_ij), I, J, 0);
+			if (NPsi_ij > 0){
+				lpsi = rep_matrix(append_row(0, head(psi_k, J-1))', I);
+				lpsi += to_matrix(dat_psi[] * segment(psi_k, J, NPsi_ij), I, J, 0);
+			} else {
+				lpsi = rep_matrix(append_row(0, head(psi_k, J-1))', I);
+			}
 		} else if (psi_ascs == 0){
 			if (NPsi_ij > 0)
     			lpsi = to_matrix(dat_psi[] * psi_k, I, J, 0);
-			else if (NPsi_ij == 0)
+			else
     			lpsi = rep_matrix(0, I, J);
 		}
 
@@ -96,16 +92,10 @@ transformed parameters {
 	}
 
 	if (K > 1){
-//		matrix[I, K] theta = append_col(rep_vector(0, I), data_class * delta'); // class membership equation
+		matrix[I, K-1] delta_data = data_class * delta';
 		for(i in 1:I){
-			//vector[K] theta = softmax(append_row(0, delta * data_class[i]')); // class membership equation
-//			vector[K] theta_temp = softmax(theta[i]); // class membership equation
-		//	log_like[i] = log_mix(theta, log_like_util[i]);
-			vector[K] ltheta = log_softmax(append_row(0, delta * data_class[i]')); // class membership equation
-			vector[K] lps;
-			for (k in 1:K){
-				lps[k] = ltheta[k] + log_like_util[k,i];
-			}
+			vector[K] ltheta = log_softmax(append_row(0, delta_data[i]'));
+			vector[K] lps = ltheta + to_vector(log_like_util[,i]);
 			log_like[i] = log_sum_exp(lps);
 		}
 	}
@@ -138,12 +128,12 @@ target += dot_product(log_like, weights);//objective to target
 }
 
 generated quantities{
-	real sum_log_lik = 0;
+	real sum_log_lik = dot_product(log_like, weights);
 	matrix[K > 1 ? I : 0, K] theta;
 
-	for(i in 1:I){
-		sum_log_lik = sum_log_lik + log_like[i] * weights[i];
-		if (K > 1)
-  			theta[i] = softmax(append_row(0, delta * data_class[i]'))';
+	if (K > 1){
+		matrix[I, K-1] delta_data = data_class * delta';
+		for(i in 1:I)
+  			theta[i] = softmax(append_row(0, delta_data[i]'))';
 	}
 }

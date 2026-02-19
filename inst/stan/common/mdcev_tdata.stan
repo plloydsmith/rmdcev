@@ -8,8 +8,9 @@ matrix[I, J] nonzero;
 vector[I] M;	//  Number of consumed alts (including numeraire)
 vector[I] log_M_fact;
 
+log_num = log(income - rows_dot_product(price_j, quant_j));
+
 for(i in 1:I){
-	log_num[i] = log(income[i] - price_j[i] * quant_j[i]');
 	for(j in 1:J){
 		nonzero[i,j] = quant_j[i,j] > 0 ? 1 : 0;
 	}
