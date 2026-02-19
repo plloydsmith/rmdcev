@@ -234,6 +234,30 @@ get_rstan_model <- function(model_name) {
     stanmodels[[model_name]]
 }
 
+#' @title rmdcev_get_rng
+#' @description Create a boost::ecuyer1988 RNG seeded with \code{seed},
+#'   returned as an external pointer suitable for passing to the compiled
+#'   Stan simulation functions.  Defined here (not in RcppExports.R) so it
+#'   survives \code{Rcpp::compileAttributes()} regeneration.
+#' @noRd
+rmdcev_get_rng <- function(seed = 0L) {
+    if (!requireNamespace("rstan", quietly = TRUE))
+        stop("Package 'rstan' is required for simulation. Please install it.")
+    rstan::get_rng(seed = seed)
+}
+
+#' @title rmdcev_get_stream
+#' @description Return an external pointer to \code{Rcpp::Rcout} for use as
+#'   the \code{pstream__} argument in compiled Stan simulation functions.
+#'   Defined here (not in RcppExports.R) so it survives
+#'   \code{Rcpp::compileAttributes()} regeneration.
+#' @noRd
+rmdcev_get_stream <- function() {
+    if (!requireNamespace("rstan", quietly = TRUE))
+        stop("Package 'rstan' is required for simulation. Please install it.")
+    rstan::get_stream()
+}
+
 #' @title CreatePsi
 #' @param dat_vars_i psi data for each person
 #' @param est_pars_i psi parameter estimates for each person

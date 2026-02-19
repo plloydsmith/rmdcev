@@ -121,7 +121,7 @@ RunCmdStanSampling <- function(stan_data, model_name, bayes_options, ...) {
         }
     }
 
-    mod <- cmdstanr::cmdstan_model(stan_file)
+    mod <- cmdstanr::cmdstan_model(stan_file, include_paths = dirname(stan_file))
 
     init_fn <- bayes_options$initial.parameters
     # cmdstanr init handling:

@@ -180,7 +180,7 @@ RunCmdStanOptimizing <- function(stan_data, model_name, mle_options, ...) {
         }
     }
 
-    mod <- cmdstanr::cmdstan_model(stan_file)
+    mod <- cmdstanr::cmdstan_model(stan_file, include_paths = dirname(stan_file))
 
     # cmdstanr init handling:
     # - "random" / NULL  → use 0 (deterministic: 0 on unconstrained scale gives

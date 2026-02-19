@@ -4,7 +4,7 @@ namespace mdcev_model_namespace {
 using stan::model::model_base_crtp;
 using namespace stan::math;
 stan::math::profile_map profiles__;
-static constexpr std::array<const char*, 303> locations_array__ =
+static constexpr std::array<const char*, 306> locations_array__ =
   {" (found before start of program)",
   " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 30, column 1 to column 27)",
   " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 31, column 1 to column 27)",
@@ -13,103 +13,102 @@ static constexpr std::array<const char*, 303> locations_array__ =
   " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 34, column 1 to column 26)",
   " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 35, column 3 to column 26)",
   " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 39, column 1 to column 20)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 141, column 1 to column 22)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 142, column 1 to column 32)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 131, column 1 to column 51)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 132, column 1 to column 32)",
   " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 41, column 7 to column 8)",
   " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 41, column 17 to column 18)",
   " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 41, column 1 to column 34)",
   " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 43, column 9 to column 10)",
   " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 43, column 12 to column 13)",
   " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 43, column 2 to column 60)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 44, column 2 to column 18)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 44, column 9 to column 10)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 44, column 12 to column 13)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 44, column 2 to column 20)",
   " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 45, column 9 to column 10)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 45, column 12 to column 13)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 45, column 2 to column 20)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 46, column 9 to column 10)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 46, column 2 to column 57)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 45, column 2 to column 57)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 46, column 2 to column 70)",
   " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 47, column 9 to column 13)",
   " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 47, column 2 to column 30)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 54, column 5 to column 22)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 52, column 6 to column 28)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 51, column 9 to line 54, column 22)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 50, column 5 to column 27)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 49, column 2 to line 54, column 22)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 64, column 7 to column 34)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 63, column 8 to line 64, column 34)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 62, column 7 to column 52)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 61, column 3 to line 64, column 34)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 60, column 27 to line 65, column 3)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 60, column 9 to line 65, column 3)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 57, column 3 to column 58)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 59, column 7 to column 80)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 58, column 3 to line 59, column 80)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 56, column 20 to line 60, column 3)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 56, column 2 to line 65, column 3)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 80, column 10 to column 11)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 80, column 13 to column 14)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 80, column 3 to column 23)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 84, column 7 to column 36)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 83, column 8 to line 84, column 36)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 82, column 7 to column 60)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 81, column 3 to line 84, column 36)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 91, column 3 to line 93, column 59)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 90, column 20 to line 94, column 4)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 90, column 10 to line 94, column 4)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 60, column 7 to column 34)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 58, column 7 to column 52)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 57, column 3 to line 60, column 34)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 56, column 27 to line 61, column 3)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 56, column 9 to line 61, column 3)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 54, column 4 to column 59)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 53, column 10 to line 55, column 4)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 51, column 4 to column 59)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 52, column 4 to column 71)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 50, column 19 to line 53, column 4)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 50, column 3 to line 55, column 4)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 49, column 20 to line 56, column 3)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 49, column 2 to line 61, column 3)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 76, column 10 to column 11)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 76, column 13 to column 14)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 76, column 3 to column 23)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 80, column 7 to column 36)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 79, column 8 to line 80, column 36)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 78, column 7 to column 60)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 77, column 3 to line 80, column 36)",
   " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 87, column 3 to line 89, column 59)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 86, column 14 to line 90, column 4)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 86, column 3 to line 94, column 4)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 79, column 28 to line 95, column 3)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 79, column 9 to line 95, column 3)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 68, column 10 to column 11)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 68, column 13 to column 14)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 68, column 3 to column 64)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 75, column 3 to line 77, column 31)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 74, column 20 to line 78, column 4)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 74, column 10 to line 78, column 4)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 86, column 20 to line 90, column 4)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 86, column 10 to line 90, column 4)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 83, column 3 to line 85, column 59)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 82, column 14 to line 86, column 4)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 82, column 3 to line 90, column 4)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 75, column 28 to line 91, column 3)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 75, column 9 to line 91, column 3)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 64, column 10 to column 11)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 64, column 13 to column 14)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 64, column 3 to column 64)",
   " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 71, column 3 to line 73, column 31)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 70, column 14 to line 74, column 4)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 70, column 3 to line 78, column 4)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 67, column 19 to line 79, column 3)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 67, column 2 to line 95, column 3)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 42, column 15 to line 96, column 2)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 42, column 1 to line 96, column 2)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 104, column 10 to column 11)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 104, column 3 to column 73)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 105, column 10 to column 11)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 105, column 3 to column 17)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 107, column 4 to column 44)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 106, column 17 to line 108, column 4)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 106, column 3 to line 108, column 4)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 109, column 3 to column 34)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 100, column 15 to line 110, column 3)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 100, column 2 to line 110, column 3)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 98, column 11 to line 111, column 2)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 98, column 1 to line 111, column 2)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 40, column 1 to line 112, column 2)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 145, column 2 to column 55)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 147, column 5 to column 64)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 146, column 2 to line 147, column 64)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 144, column 14 to line 148, column 2)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 144, column 1 to line 148, column 2)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 118, column 1 to column 35)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 127, column 2 to column 47)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 129, column 3 to column 47)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 130, column 3 to column 47)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 131, column 3 to column 51)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 132, column 3 to column 68)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 128, column 16 to line 133, column 3)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 128, column 2 to line 133, column 3)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 126, column 18 to line 134, column 2)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 126, column 8 to line 134, column 2)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 121, column 3 to column 36)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 122, column 3 to column 36)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 123, column 3 to column 40)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 124, column 3 to column 57)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 120, column 13 to line 126, column 2)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 120, column 3 to line 134, column 2)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 117, column 22 to line 135, column 3)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 117, column 2 to line 135, column 3)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 137, column 0 to column 41)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 70, column 20 to line 74, column 4)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 70, column 10 to line 74, column 4)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 67, column 3 to line 69, column 31)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 66, column 14 to line 70, column 4)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 66, column 3 to line 74, column 4)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 63, column 19 to line 75, column 3)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 63, column 2 to line 91, column 3)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 42, column 15 to line 92, column 2)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 42, column 1 to line 92, column 2)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 95, column 9 to column 10)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 95, column 12 to column 15)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 95, column 2 to column 50)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 97, column 10 to column 11)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 97, column 3 to column 65)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 98, column 10 to column 11)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 98, column 3 to column 57)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 99, column 3 to column 34)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 96, column 15 to line 100, column 3)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 96, column 2 to line 100, column 3)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 94, column 11 to line 101, column 2)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 94, column 1 to line 101, column 2)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 40, column 1 to line 102, column 2)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 135, column 9 to column 10)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 135, column 12 to column 15)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 135, column 2 to column 50)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 137, column 5 to column 56)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 136, column 2 to line 137, column 56)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 134, column 11 to line 138, column 2)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 134, column 1 to line 138, column 2)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 108, column 1 to column 35)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 117, column 2 to column 47)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 119, column 3 to column 47)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 120, column 3 to column 47)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 121, column 3 to column 51)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 122, column 3 to column 68)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 118, column 16 to line 123, column 3)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 118, column 2 to line 123, column 3)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 116, column 18 to line 124, column 2)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 116, column 8 to line 124, column 2)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 111, column 3 to column 36)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 112, column 3 to column 36)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 113, column 3 to column 40)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 114, column 3 to column 57)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 110, column 13 to line 116, column 2)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 110, column 3 to line 124, column 2)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 107, column 22 to line 125, column 3)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 107, column 2 to line 125, column 3)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 127, column 0 to column 41)",
   " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_data.stan', line 2, column 0, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 11, column 0)",
   " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_data.stan', line 3, column 0, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 11, column 0)",
   " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_data.stan', line 4, column 0, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 11, column 0)",
@@ -162,39 +161,39 @@ static constexpr std::array<const char*, 303> locations_array__ =
   " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_tdata.stan', line 8, column 0, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 23, column 0)",
   " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_tdata.stan', line 9, column 7, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 23, column 0)",
   " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_tdata.stan', line 9, column 0, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 23, column 0)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_tdata.stan', line 12, column 1, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 23, column 0)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_tdata.stan', line 14, column 2, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 23, column 0)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_tdata.stan', line 13, column 14, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 23, column 0)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_tdata.stan', line 13, column 1, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 23, column 0)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_tdata.stan', line 16, column 3, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 23, column 0)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_tdata.stan', line 11, column 13, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 23, column 0)",
   " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_tdata.stan', line 11, column 0, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 23, column 0)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_tdata.stan', line 19, column 0, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 23, column 0)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_tdata.stan', line 25, column 2, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 23, column 0)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_tdata.stan', line 24, column 25, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 23, column 0)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_tdata.stan', line 24, column 7, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 23, column 0)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_tdata.stan', line 23, column 2, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 23, column 0)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_tdata.stan', line 22, column 18, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 23, column 0)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_tdata.stan', line 22, column 0, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 23, column 0)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_tdata.stan', line 35, column 1, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 23, column 0)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_tdata.stan', line 36, column 2, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 23, column 0)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_tdata.stan', line 34, column 26, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 23, column 0)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_tdata.stan', line 34, column 7, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 23, column 0)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_tdata.stan', line 32, column 2, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 23, column 0)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_tdata.stan', line 15, column 2, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 23, column 0)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_tdata.stan', line 14, column 14, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 23, column 0)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_tdata.stan', line 14, column 1, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 23, column 0)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_tdata.stan', line 17, column 3, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 23, column 0)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_tdata.stan', line 13, column 13, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 23, column 0)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_tdata.stan', line 13, column 0, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 23, column 0)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_tdata.stan', line 20, column 0, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 23, column 0)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_tdata.stan', line 26, column 2, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 23, column 0)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_tdata.stan', line 25, column 25, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 23, column 0)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_tdata.stan', line 25, column 7, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 23, column 0)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_tdata.stan', line 24, column 2, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 23, column 0)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_tdata.stan', line 23, column 18, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 23, column 0)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_tdata.stan', line 23, column 0, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 23, column 0)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_tdata.stan', line 36, column 1, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 23, column 0)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_tdata.stan', line 37, column 2, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 23, column 0)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_tdata.stan', line 35, column 26, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 23, column 0)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_tdata.stan', line 35, column 7, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 23, column 0)",
   " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_tdata.stan', line 33, column 2, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 23, column 0)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_tdata.stan', line 31, column 26, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 23, column 0)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_tdata.stan', line 31, column 7, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 23, column 0)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_tdata.stan', line 29, column 2, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 23, column 0)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_tdata.stan', line 34, column 2, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 23, column 0)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_tdata.stan', line 32, column 26, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 23, column 0)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_tdata.stan', line 32, column 7, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 23, column 0)",
   " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_tdata.stan', line 30, column 2, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 23, column 0)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_tdata.stan', line 28, column 55, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 23, column 0)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_tdata.stan', line 28, column 0, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 23, column 0)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_tdata.stan', line 40, column 2, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 23, column 0)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_tdata.stan', line 39, column 38, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 23, column 0)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_tdata.stan', line 39, column 0, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 23, column 0)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_tdata.stan', line 46, column 1, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 23, column 0)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_tdata.stan', line 45, column 5, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 23, column 0)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_tdata.stan', line 44, column 1, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 23, column 0)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_tdata.stan', line 43, column 0, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 23, column 0)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_tdata.stan', line 31, column 2, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 23, column 0)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_tdata.stan', line 29, column 55, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 23, column 0)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_tdata.stan', line 29, column 0, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 23, column 0)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_tdata.stan', line 41, column 2, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 23, column 0)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_tdata.stan', line 40, column 38, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 23, column 0)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_tdata.stan', line 40, column 0, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 23, column 0)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_tdata.stan', line 47, column 1, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 23, column 0)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_tdata.stan', line 46, column 5, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 23, column 0)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_tdata.stan', line 45, column 1, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 23, column 0)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_tdata.stan', line 44, column 0, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 23, column 0)",
   " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 26, column 1 to column 7)",
   " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 24, column 32 to line 26, column 7)",
   " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 30, column 7 to column 8)",
@@ -209,8 +208,8 @@ static constexpr std::array<const char*, 303> locations_array__ =
   " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 35, column 10 to column 15)",
   " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 35, column 17 to column 18)",
   " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 39, column 8 to column 9)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 142, column 8 to column 21)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 142, column 23 to column 24)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 132, column 8 to column 21)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 132, column 23 to column 24)",
   " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 4, column 8, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
   " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 4, column 11, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
   " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 4, column 1, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
@@ -242,72 +241,76 @@ static constexpr std::array<const char*, 303> locations_array__ =
   " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 30, column 54, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
   " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 47, column 8, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
   " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 47, column 1, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 48, column 8, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
   " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 48, column 1, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 49, column 8, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 49, column 11, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
   " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 49, column 1, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
   " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 50, column 8, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 50, column 11, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
   " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 50, column 1, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
   " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 51, column 8, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 51, column 11, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
   " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 51, column 1, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
   " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 52, column 8, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 52, column 11, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
   " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 52, column 1, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 53, column 8, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 53, column 1, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 54, column 8, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
   " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 54, column 1, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 59, column 9, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 59, column 12, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 59, column 2, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 60, column 9, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 60, column 2, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 63, column 3, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 56, column 1, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 61, column 9, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 61, column 12, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 61, column 2, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 62, column 9, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
   " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 62, column 2, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 65, column 2, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 58, column 21, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 58, column 1, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 68, column 0, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 64, column 2, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 66, column 2, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 60, column 21, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 60, column 1, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 69, column 0, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
   " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 45, column 51, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 74, column 2, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 75, column 9, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 75, column 12, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
   " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 75, column 2, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 76, column 9, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 76, column 12, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
   " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 76, column 2, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
   " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 77, column 2, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 79, column 0, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 72, column 40, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 86, column 11, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 86, column 4, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 78, column 2, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 80, column 0, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 73, column 40, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
   " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 87, column 11, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
   " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 87, column 4, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
   " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 88, column 11, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 88, column 14, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
   " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 88, column 4, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 89, column 11, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 89, column 14, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
   " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 89, column 4, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 90, column 11, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
   " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 90, column 4, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 99, column 2, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 98, column 42, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 98, column 8, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 94, column 9, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 94, column 2, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 95, column 9, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 93, column 16, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 93, column 3, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 92, column 35, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 92, column 1, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 103, column 3, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 106, column 3, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 110, column 10, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 91, column 11, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 91, column 14, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 91, column 4, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 92, column 11, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 92, column 14, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 92, column 4, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 93, column 11, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 93, column 4, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 94, column 11, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 94, column 4, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 103, column 2, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 102, column 42, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 102, column 8, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 98, column 9, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 98, column 2, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 99, column 9, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 97, column 16, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 97, column 3, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 96, column 35, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 96, column 1, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 107, column 3, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
   " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 110, column 3, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 113, column 4, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 112, column 6, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 115, column 10, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 109, column 20, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 109, column 1, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 118, column 0, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
-  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 84, column 85, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)"};
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 114, column 10, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 114, column 3, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 117, column 6, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 119, column 6, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 113, column 20, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 113, column 1, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 122, column 0, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)",
+  " (in 'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/common/mdcev_ll.stan', line 85, column 85, included from\n'C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan/mdcev.stan', line 4, column 0)"};
 template <typename T0__, typename T1__, typename T2__, typename T3__,
           stan::require_all_t<stan::is_col_vector<T0__>,
                               stan::is_vt_not_complex<T0__>,
@@ -453,28 +456,28 @@ gamma_ll(const T0__& gamma_arg__, const T1__& I, const T2__& J, const T3__&
   // suppress unused var warning
   (void) DUMMY_VAR__;
   try {
-    current_statement__ = 206;
+    current_statement__ = 205;
     stan::math::validate_non_negative_index("gamma_j", "I", I);
-    current_statement__ = 207;
+    current_statement__ = 206;
     stan::math::validate_non_negative_index("gamma_j", "J", J);
     Eigen::Matrix<local_scalar_t__,-1,-1> gamma_j =
       Eigen::Matrix<local_scalar_t__,-1,-1>::Constant(I, J, DUMMY_VAR__);
-    current_statement__ = 214;
+    current_statement__ = 213;
     if (stan::math::logical_eq(Gamma, 0)) {
-      current_statement__ = 213;
+      current_statement__ = 212;
       stan::model::assign(gamma_j, stan::math::rep_matrix(1, I, J),
         "assigning variable gamma_j");
     } else {
-      current_statement__ = 212;
+      current_statement__ = 211;
       if (stan::math::logical_eq(Gamma, J)) {
-        current_statement__ = 211;
+        current_statement__ = 210;
         stan::model::assign(gamma_j,
           stan::math::rep_matrix(stan::math::transpose(gamma), I),
           "assigning variable gamma_j");
       } else {
-        current_statement__ = 210;
+        current_statement__ = 209;
         if (stan::math::logical_eq(Gamma, 1)) {
-          current_statement__ = 209;
+          current_statement__ = 208;
           stan::model::assign(gamma_j,
             stan::math::rep_matrix(
               stan::model::rvalue(gamma, "gamma", stan::model::index_uni(1)),
@@ -482,7 +485,7 @@ gamma_ll(const T0__& gamma_arg__, const T1__& I, const T2__& J, const T3__&
         }
       }
     }
-    current_statement__ = 215;
+    current_statement__ = 214;
     return gamma_j;
   } catch (const std::exception& e) {
     stan::lang::rethrow_located(e, locations_array__[current_statement__]);
@@ -509,25 +512,25 @@ alpha_j_ll(const T0__& alpha_arg__, const T1__& I, const T2__& J, const T3__&
   // suppress unused var warning
   (void) DUMMY_VAR__;
   try {
-    current_statement__ = 217;
+    current_statement__ = 216;
     stan::math::validate_non_negative_index("alpha_j", "I", I);
-    current_statement__ = 218;
+    current_statement__ = 217;
     stan::math::validate_non_negative_index("alpha_j", "J", J);
     Eigen::Matrix<local_scalar_t__,-1,-1> alpha_j =
       Eigen::Matrix<local_scalar_t__,-1,-1>::Constant(I, J, DUMMY_VAR__);
-    current_statement__ = 225;
+    current_statement__ = 224;
     if ((stan::math::primitive_value(
            (stan::math::primitive_value(stan::math::logical_eq(model_num, 1))
            ||
            stan::math::primitive_value(stan::math::logical_eq(model_num, 4))))
         || stan::math::primitive_value(stan::math::logical_eq(model_num, 5)))) {
-      current_statement__ = 224;
+      current_statement__ = 223;
       stan::model::assign(alpha_j, stan::math::rep_matrix(0, I, J),
         "assigning variable alpha_j");
     } else {
-      current_statement__ = 223;
+      current_statement__ = 222;
       if (stan::math::logical_eq(model_num, 2)) {
-        current_statement__ = 222;
+        current_statement__ = 221;
         stan::model::assign(alpha_j,
           stan::math::rep_matrix(
             stan::math::transpose(
@@ -535,9 +538,9 @@ alpha_j_ll(const T0__& alpha_arg__, const T1__& I, const T2__& J, const T3__&
                 stan::model::index_min_max(2, (J + 1)))), I),
           "assigning variable alpha_j");
       } else {
-        current_statement__ = 221;
+        current_statement__ = 220;
         if (stan::math::logical_eq(model_num, 3)) {
-          current_statement__ = 220;
+          current_statement__ = 219;
           stan::model::assign(alpha_j,
             stan::math::rep_matrix(
               stan::model::rvalue(alpha, "alpha", stan::model::index_uni(1)),
@@ -545,7 +548,7 @@ alpha_j_ll(const T0__& alpha_arg__, const T1__& I, const T2__& J, const T3__&
         }
       }
     }
-    current_statement__ = 226;
+    current_statement__ = 225;
     return alpha_j;
   } catch (const std::exception& e) {
     stan::lang::rethrow_located(e, locations_array__[current_statement__]);
@@ -571,23 +574,23 @@ alpha_1_ll(const T0__& alpha_arg__, const T1__& I, const T2__& model_num,
   // suppress unused var warning
   (void) DUMMY_VAR__;
   try {
-    current_statement__ = 228;
+    current_statement__ = 227;
     stan::math::validate_non_negative_index("alpha_1", "I", I);
     Eigen::Matrix<local_scalar_t__,-1,1> alpha_1 =
       Eigen::Matrix<local_scalar_t__,-1,1>::Constant(I, DUMMY_VAR__);
-    current_statement__ = 232;
+    current_statement__ = 231;
     if (stan::math::logical_eq(model_num, 4)) {
-      current_statement__ = 231;
+      current_statement__ = 230;
       stan::model::assign(alpha_1, stan::math::rep_vector(0, I),
         "assigning variable alpha_1");
     } else {
-      current_statement__ = 230;
+      current_statement__ = 229;
       stan::model::assign(alpha_1,
         stan::math::rep_vector(
           stan::model::rvalue(alpha, "alpha", stan::model::index_uni(1)), I),
         "assigning variable alpha_1");
     }
-    current_statement__ = 233;
+    current_statement__ = 232;
     return alpha_1;
   } catch (const std::exception& e) {
     stan::lang::rethrow_located(e, locations_array__[current_statement__]);
@@ -675,61 +678,68 @@ mdcev_ll(const T0__& quant_j_arg__, const T1__& price_j_arg__, const T2__&
   // suppress unused var warning
   (void) DUMMY_VAR__;
   try {
-    current_statement__ = 235;
+    current_statement__ = 234;
     stan::math::validate_non_negative_index("log_like", "I", I);
     Eigen::Matrix<local_scalar_t__,-1,1> log_like =
       Eigen::Matrix<local_scalar_t__,-1,1>::Constant(I, DUMMY_VAR__);
+    local_scalar_t__ inv_scale = DUMMY_VAR__;
+    current_statement__ = 236;
+    inv_scale = stan::math::inv(scale_full);
+    local_scalar_t__ log_scale = DUMMY_VAR__;
     current_statement__ = 237;
-    stan::math::validate_non_negative_index("ones_j", "J", J);
-    Eigen::Matrix<local_scalar_t__,-1,1> ones_j =
-      Eigen::Matrix<local_scalar_t__,-1,1>::Constant(J, DUMMY_VAR__);
+    log_scale = stan::math::log(scale_full);
     current_statement__ = 238;
-    stan::model::assign(ones_j, stan::math::rep_vector(1, J),
-      "assigning variable ones_j");
-    current_statement__ = 239;
     stan::math::validate_non_negative_index("v_j", "I", I);
-    current_statement__ = 240;
+    current_statement__ = 239;
     stan::math::validate_non_negative_index("v_j", "J", J);
     Eigen::Matrix<local_scalar_t__,-1,-1> v_j =
       Eigen::Matrix<local_scalar_t__,-1,-1>::Constant(I, J, DUMMY_VAR__);
-    current_statement__ = 241;
+    current_statement__ = 240;
     stan::model::assign(v_j,
-      stan::math::divide(
+      stan::math::multiply(
         stan::math::subtract(
           stan::math::add(lpsi,
             stan::math::elt_multiply(stan::math::subtract(alpha_j, 1),
               stan::math::log(
                 stan::math::add(stan::math::elt_divide(quant_j, gamma_j), 1)))),
-          stan::math::log(price_j)), scale_full), "assigning variable v_j");
-    current_statement__ = 242;
+          stan::math::log(price_j)), inv_scale), "assigning variable v_j");
+    current_statement__ = 241;
     stan::math::validate_non_negative_index("v1", "I", I);
     Eigen::Matrix<local_scalar_t__,-1,1> v1 =
       Eigen::Matrix<local_scalar_t__,-1,1>::Constant(I, DUMMY_VAR__);
-    current_statement__ = 243;
+    current_statement__ = 242;
     stan::model::assign(v1,
-      stan::math::divide(
+      stan::math::multiply(
         stan::math::elt_multiply(stan::math::subtract(alpha1, 1), log_num),
-        scale_full), "assigning variable v1");
-    current_statement__ = 244;
+        inv_scale), "assigning variable v1");
+    current_statement__ = 243;
     stan::math::validate_non_negative_index("logf", "I", I);
-    current_statement__ = 245;
+    current_statement__ = 244;
     stan::math::validate_non_negative_index("logf", "J", J);
     Eigen::Matrix<local_scalar_t__,-1,-1> logf =
       Eigen::Matrix<local_scalar_t__,-1,-1>::Constant(I, J, DUMMY_VAR__);
-    current_statement__ = 246;
+    current_statement__ = 245;
     stan::model::assign(logf,
       stan::math::subtract(stan::math::log1m(alpha_j),
         stan::math::log(stan::math::add(quant_j, gamma_j))),
       "assigning variable logf");
-    current_statement__ = 247;
+    current_statement__ = 246;
     stan::math::validate_non_negative_index("logf1", "I", I);
     Eigen::Matrix<local_scalar_t__,-1,1> logf1 =
       Eigen::Matrix<local_scalar_t__,-1,1>::Constant(I, DUMMY_VAR__);
-    current_statement__ = 248;
+    current_statement__ = 247;
     stan::model::assign(logf1,
       stan::math::subtract(stan::math::log1m(alpha1), log_num),
       "assigning variable logf1");
+    current_statement__ = 248;
+    stan::math::validate_non_negative_index("sum_v_j", "I", I);
+    Eigen::Matrix<local_scalar_t__,-1,1> sum_v_j =
+      Eigen::Matrix<local_scalar_t__,-1,1>::Constant(I, DUMMY_VAR__);
     current_statement__ = 249;
+    stan::model::assign(sum_v_j,
+      stan::math::multiply(stan::math::exp(v_j), stan::math::rep_vector(1, J)),
+      "assigning variable sum_v_j");
+    current_statement__ = 250;
     stan::model::assign(log_like,
       stan::math::add(
         stan::math::subtract(
@@ -737,8 +747,8 @@ mdcev_ll(const T0__& quant_j_arg__, const T1__& price_j_arg__, const T2__&
             stan::math::add(
               stan::math::add(
                 stan::math::add(
-                  stan::math::multiply(stan::math::subtract(1, M),
-                    stan::math::log(scale_full)), logf1), v1),
+                  stan::math::multiply(stan::math::subtract(1, M), log_scale),
+                  logf1), v1),
               stan::math::rows_dot_product(nonzero,
                 stan::math::add(logf, v_j))),
             stan::math::log(
@@ -746,48 +756,39 @@ mdcev_ll(const T0__& quant_j_arg__, const T1__& price_j_arg__, const T2__&
                 stan::math::rows_dot_product(nonzero,
                   stan::math::elt_divide(price_j, stan::math::exp(logf)))))),
           stan::math::elt_multiply(M,
-            stan::math::log(
-              stan::math::add(stan::math::exp(v1),
-                stan::math::multiply(stan::math::exp(v_j), ones_j))))),
+            stan::math::log(stan::math::add(stan::math::exp(v1), sum_v_j)))),
         log_M_fact), "assigning variable log_like");
     current_statement__ = 259;
     if (stan::math::logical_eq(trunc_data, 1)) {
-      current_statement__ = 250;
-      stan::math::validate_non_negative_index("v_1", "I", I);
       current_statement__ = 251;
+      stan::math::validate_non_negative_index("v_1", "I", I);
+      current_statement__ = 252;
       stan::math::validate_non_negative_index("v_1", "J + 1", (J + 1));
       Eigen::Matrix<local_scalar_t__,-1,-1> v_1 =
         Eigen::Matrix<local_scalar_t__,-1,-1>::Constant(I, (J + 1),
           DUMMY_VAR__);
-      current_statement__ = 252;
+      current_statement__ = 253;
       stan::model::assign(v_1,
         stan::math::exp(
-          stan::math::divide(
+          stan::math::multiply(
             stan::math::append_col(
               stan::math::elt_multiply(stan::math::subtract(alpha1, 1),
                 stan::math::log(income)),
               stan::math::subtract(lpsi, stan::math::log(price_j))),
-            scale_full)), "assigning variable v_1");
-      current_statement__ = 253;
+            inv_scale)), "assigning variable v_1");
+      current_statement__ = 254;
       stan::math::validate_non_negative_index("like_trunc", "I", I);
       Eigen::Matrix<local_scalar_t__,-1,1> like_trunc =
         Eigen::Matrix<local_scalar_t__,-1,1>::Constant(I, DUMMY_VAR__);
-      current_statement__ = 254;
+      current_statement__ = 255;
       stan::model::assign(like_trunc,
         stan::math::elt_divide(stan::math::col(v_1, 1),
           stan::math::multiply(v_1, stan::math::rep_vector(1, (J + 1)))),
         "assigning variable like_trunc");
       current_statement__ = 256;
-      for (int i = 1; i <= I; ++i) {
-        current_statement__ = 255;
-        stan::model::assign(like_trunc,
-          (stan::math::logical_lt(
-             stan::model::rvalue(like_trunc, "like_trunc",
-               stan::model::index_uni(i)), 1) ? stan::model::rvalue(
-                                                  like_trunc, "like_trunc",
-                                                  stan::model::index_uni(i)) : 1),
-          "assigning variable like_trunc", stan::model::index_uni(i));
-      }
+      stan::model::assign(like_trunc,
+        stan::math::fmin(stan::model::deep_copy(like_trunc), 1),
+        "assigning variable like_trunc");
       current_statement__ = 257;
       stan::model::assign(log_like,
         stan::math::subtract(stan::model::deep_copy(log_like),
@@ -942,36 +943,49 @@ kt_ll(const T0__& quant_j_arg__, const T1__& price_j_arg__, const T2__&
     current_statement__ = 273;
     stan::model::assign(ones_j, stan::math::rep_vector(1, J),
       "assigning variable ones_j");
+    local_scalar_t__ inv_scale = DUMMY_VAR__;
     current_statement__ = 274;
-    stan::math::validate_non_negative_index("g", "I", I);
+    inv_scale = stan::math::inv(scale_full);
+    local_scalar_t__ log_scale = DUMMY_VAR__;
     current_statement__ = 275;
+    log_scale = stan::math::log(scale_full);
+    current_statement__ = 276;
+    stan::math::validate_non_negative_index("g", "I", I);
+    current_statement__ = 277;
     stan::math::validate_non_negative_index("g", "J", J);
     Eigen::Matrix<local_scalar_t__,-1,-1> g =
       Eigen::Matrix<local_scalar_t__,-1,-1>::Constant(I, J, DUMMY_VAR__);
-    current_statement__ = 277;
+    current_statement__ = 279;
     stan::math::validate_non_negative_index("phi_quant_term", "I", I);
-    current_statement__ = 278;
+    current_statement__ = 280;
     stan::math::validate_non_negative_index("phi_quant_term", "J", J);
     Eigen::Matrix<local_scalar_t__,-1,-1> phi_quant_term =
       Eigen::Matrix<local_scalar_t__,-1,-1>::Constant(I, J, DUMMY_VAR__);
-    current_statement__ = 279;
+    current_statement__ = 281;
     stan::model::assign(phi_quant_term,
       stan::math::elt_divide(
         stan::math::add(stan::math::elt_multiply(phi_ij, quant_j), gamma),
         phi_ij), "assigning variable phi_quant_term");
-    current_statement__ = 280;
+    current_statement__ = 282;
     stan::math::validate_non_negative_index("log_j_det", "I", I);
     Eigen::Matrix<local_scalar_t__,-1,1> log_j_det =
       Eigen::Matrix<local_scalar_t__,-1,1>::Constant(I, DUMMY_VAR__);
-    current_statement__ = 291;
+    current_statement__ = 284;
+    stan::math::validate_non_negative_index("alpha_comp", "I", I);
+    Eigen::Matrix<local_scalar_t__,-1,1> alpha_comp =
+      Eigen::Matrix<local_scalar_t__,-1,1>::Constant(I, DUMMY_VAR__);
+    current_statement__ = 285;
+    stan::model::assign(alpha_comp, stan::math::subtract(1, alpha),
+      "assigning variable alpha_comp");
+    current_statement__ = 295;
     if (stan::math::logical_eq(jacobian_analytical_grad, 0)) {
-      current_statement__ = 289;
+      current_statement__ = 293;
       for (int i = 1; i <= I; ++i) {
-        current_statement__ = 285;
+        current_statement__ = 289;
         stan::math::validate_non_negative_index("price_j_num", "J", J);
         Eigen::Matrix<local_scalar_t__,-1,1> price_j_num =
           Eigen::Matrix<local_scalar_t__,-1,1>::Constant(J, DUMMY_VAR__);
-        current_statement__ = 286;
+        current_statement__ = 290;
         stan::model::assign(price_j_num,
           stan::math::elt_divide(
             stan::math::transpose(
@@ -981,7 +995,7 @@ kt_ll(const T0__& quant_j_arg__, const T1__& price_j_arg__, const T2__&
               stan::model::rvalue(log_num, "log_num",
                 stan::model::index_uni(i)))),
           "assigning variable price_j_num");
-        current_statement__ = 287;
+        current_statement__ = 291;
         stan::model::assign(log_j_det,
           DeterminJacob(
             stan::math::transpose(
@@ -995,56 +1009,54 @@ kt_ll(const T0__& quant_j_arg__, const T1__& price_j_arg__, const T2__&
           "assigning variable log_j_det", stan::model::index_uni(i));
       }
     } else {
-      current_statement__ = 284;
+      current_statement__ = 288;
       if (stan::math::logical_eq(jacobian_analytical_grad, 1)) {
-        current_statement__ = 282;
+        current_statement__ = 286;
         stan::model::assign(log_j_det,
           stan::math::add(
             stan::math::add(
-              stan::math::subtract(stan::math::log1m(alpha), log_num),
+              stan::math::subtract(stan::math::log(alpha_comp), log_num),
               stan::math::rows_dot_product(nonzero,
                 stan::math::log(stan::math::inv(phi_quant_term)))),
             stan::math::log(
               stan::math::add(
-                stan::math::elt_divide(stan::math::exp(log_num),
-                  stan::math::subtract(1, alpha)),
+                stan::math::elt_divide(stan::math::exp(log_num), alpha_comp),
                 stan::math::rows_dot_product(nonzero,
                   stan::math::elt_multiply(phi_quant_term, price_j))))),
           "assigning variable log_j_det");
       }
     }
-    current_statement__ = 292;
+    current_statement__ = 296;
     stan::model::assign(g,
-      stan::math::divide(
+      stan::math::multiply(
         stan::math::subtract(
           stan::math::add(stan::math::minus(lpsi),
             stan::math::log(stan::math::elt_multiply(phi_quant_term, price_j))),
           stan::math::rep_matrix(
-            stan::math::elt_multiply(stan::math::subtract(1, alpha), log_num),
-            J)), scale_full), "assigning variable g");
-    current_statement__ = 293;
+            stan::math::elt_multiply(alpha_comp, log_num), J)), inv_scale),
+      "assigning variable g");
+    current_statement__ = 297;
     stan::model::assign(log_like,
       stan::math::add(log_j_det,
         stan::math::multiply(
           stan::math::add(
             stan::math::elt_multiply(nonzero,
-              stan::math::subtract(stan::math::minus(g),
-                stan::math::log(scale_full))),
+              stan::math::subtract(stan::math::minus(g), log_scale)),
             stan::math::minus(stan::math::exp(stan::math::minus(g)))), ones_j)),
       "assigning variable log_like");
-    current_statement__ = 300;
+    current_statement__ = 303;
     if (stan::math::logical_eq(trunc_data, 1)) {
-      current_statement__ = 294;
+      current_statement__ = 298;
       stan::math::validate_non_negative_index("like_trunc", "I", I);
       Eigen::Matrix<local_scalar_t__,-1,1> like_trunc =
         Eigen::Matrix<local_scalar_t__,-1,1>::Constant(I, DUMMY_VAR__);
-      current_statement__ = 295;
+      current_statement__ = 299;
       stan::model::assign(like_trunc,
         stan::math::exp(
           stan::math::multiply(
             stan::math::minus(
               stan::math::exp(
-                stan::math::divide(
+                stan::math::multiply(
                   stan::math::minus(
                     stan::math::subtract(
                       stan::math::add(
@@ -1053,27 +1065,19 @@ kt_ll(const T0__& quant_j_arg__, const T1__& price_j_arg__, const T2__&
                             stan::math::log(price_j)),
                           stan::math::log(phi_ij)), stan::math::log(gamma)),
                       stan::math::rep_matrix(
-                        stan::math::elt_multiply(
-                          stan::math::subtract(1, alpha),
-                          stan::math::log(income)), J))), scale_full))),
+                        stan::math::elt_multiply(alpha_comp,
+                          stan::math::log(income)), J))), inv_scale))),
             ones_j)), "assigning variable like_trunc");
-      current_statement__ = 297;
-      for (int i = 1; i <= I; ++i) {
-        current_statement__ = 296;
-        stan::model::assign(like_trunc,
-          (stan::math::logical_lt(
-             stan::model::rvalue(like_trunc, "like_trunc",
-               stan::model::index_uni(i)), 1) ? stan::model::rvalue(
-                                                  like_trunc, "like_trunc",
-                                                  stan::model::index_uni(i)) : 1),
-          "assigning variable like_trunc", stan::model::index_uni(i));
-      }
-      current_statement__ = 298;
+      current_statement__ = 300;
+      stan::model::assign(like_trunc,
+        stan::math::fmin(stan::model::deep_copy(like_trunc), 1),
+        "assigning variable like_trunc");
+      current_statement__ = 301;
       stan::model::assign(log_like,
         stan::math::subtract(stan::model::deep_copy(log_like),
           stan::math::log1m(like_trunc)), "assigning variable log_like");
     }
-    current_statement__ = 301;
+    current_statement__ = 304;
     return log_like;
   } catch (const std::exception& e) {
     stan::lang::rethrow_located(e, locations_array__[current_statement__]);
@@ -1151,48 +1155,48 @@ class mdcev_model final : public model_base_crtp<mdcev_model> {
     try {
       int pos__ = std::numeric_limits<int>::min();
       pos__ = 1;
-      current_statement__ = 105;
+      current_statement__ = 104;
       context__.validate_dims("data initialization", "I", "int",
         std::vector<size_t>{});
       I = std::numeric_limits<int>::min();
-      current_statement__ = 105;
+      current_statement__ = 104;
       I = context__.vals_i("I")[(1 - 1)];
-      current_statement__ = 106;
+      current_statement__ = 105;
       context__.validate_dims("data initialization", "J", "int",
         std::vector<size_t>{});
       J = std::numeric_limits<int>::min();
-      current_statement__ = 106;
+      current_statement__ = 105;
       J = context__.vals_i("J")[(1 - 1)];
-      current_statement__ = 107;
+      current_statement__ = 106;
       context__.validate_dims("data initialization", "NPsi_ij", "int",
         std::vector<size_t>{});
       NPsi_ij = std::numeric_limits<int>::min();
-      current_statement__ = 107;
+      current_statement__ = 106;
       NPsi_ij = context__.vals_i("NPsi_ij")[(1 - 1)];
-      current_statement__ = 108;
+      current_statement__ = 107;
       context__.validate_dims("data initialization", "NPhi", "int",
         std::vector<size_t>{});
       NPhi = std::numeric_limits<int>::min();
-      current_statement__ = 108;
+      current_statement__ = 107;
       NPhi = context__.vals_i("NPhi")[(1 - 1)];
-      current_statement__ = 109;
+      current_statement__ = 108;
       context__.validate_dims("data initialization", "model_num", "int",
         std::vector<size_t>{});
       model_num = std::numeric_limits<int>::min();
-      current_statement__ = 109;
+      current_statement__ = 108;
       model_num = context__.vals_i("model_num")[(1 - 1)];
-      current_statement__ = 109;
+      current_statement__ = 108;
       stan::math::check_greater_or_equal(function__, "model_num", model_num,
         1);
-      current_statement__ = 109;
+      current_statement__ = 108;
       stan::math::check_less_or_equal(function__, "model_num", model_num, 5);
-      current_statement__ = 110;
+      current_statement__ = 109;
       stan::math::validate_non_negative_index("dat_psi",
         "(NPsi_ij > 0 ? I * J : 0)", (stan::math::logical_gt(NPsi_ij, 0) ? (I
         * J) : 0));
-      current_statement__ = 111;
+      current_statement__ = 110;
       stan::math::validate_non_negative_index("dat_psi", "NPsi_ij", NPsi_ij);
-      current_statement__ = 112;
+      current_statement__ = 111;
       context__.validate_dims("data initialization", "dat_psi", "double",
         std::vector<size_t>{static_cast<size_t>(
                               (stan::math::logical_gt(NPsi_ij, 0) ? (I *
@@ -1206,7 +1210,7 @@ class mdcev_model final : public model_base_crtp<mdcev_model> {
         (stan::math::logical_gt(NPsi_ij, 0) ? (I * J) : 0), NPsi_ij);
       {
         std::vector<local_scalar_t__> dat_psi_flat__;
-        current_statement__ = 112;
+        current_statement__ = 111;
         dat_psi_flat__ = context__.vals_r("dat_psi");
         pos__ = 1;
         for (int sym1__ = 1; sym1__ <= NPsi_ij; ++sym1__) {
@@ -1219,13 +1223,13 @@ class mdcev_model final : public model_base_crtp<mdcev_model> {
           }
         }
       }
-      current_statement__ = 113;
+      current_statement__ = 112;
       stan::math::validate_non_negative_index("dat_phi",
         "(model_num == 5 ? I * J : 0)",
         (stan::math::logical_eq(model_num, 5) ? (I * J) : 0));
-      current_statement__ = 114;
+      current_statement__ = 113;
       stan::math::validate_non_negative_index("dat_phi", "NPhi", NPhi);
-      current_statement__ = 115;
+      current_statement__ = 114;
       context__.validate_dims("data initialization", "dat_phi", "double",
         std::vector<size_t>{static_cast<size_t>(
                               (stan::math::logical_eq(model_num, 5) ? (I *
@@ -1239,7 +1243,7 @@ class mdcev_model final : public model_base_crtp<mdcev_model> {
         (stan::math::logical_eq(model_num, 5) ? (I * J) : 0), NPhi);
       {
         std::vector<local_scalar_t__> dat_phi_flat__;
-        current_statement__ = 115;
+        current_statement__ = 114;
         dat_phi_flat__ = context__.vals_r("dat_phi");
         pos__ = 1;
         for (int sym1__ = 1; sym1__ <= NPhi; ++sym1__) {
@@ -1252,11 +1256,11 @@ class mdcev_model final : public model_base_crtp<mdcev_model> {
           }
         }
       }
-      current_statement__ = 116;
+      current_statement__ = 115;
       stan::math::validate_non_negative_index("price_j", "I", I);
-      current_statement__ = 117;
+      current_statement__ = 116;
       stan::math::validate_non_negative_index("price_j", "J", J);
-      current_statement__ = 118;
+      current_statement__ = 117;
       context__.validate_dims("data initialization", "price_j", "double",
         std::vector<size_t>{static_cast<size_t>(I), static_cast<size_t>(J)});
       price_j_data__ = Eigen::Matrix<double,-1,-1>::Constant(I, J,
@@ -1265,7 +1269,7 @@ class mdcev_model final : public model_base_crtp<mdcev_model> {
         Eigen::Map<Eigen::Matrix<double,-1,-1>>(price_j_data__.data(), I, J);
       {
         std::vector<local_scalar_t__> price_j_flat__;
-        current_statement__ = 118;
+        current_statement__ = 117;
         price_j_flat__ = context__.vals_r("price_j");
         pos__ = 1;
         for (int sym1__ = 1; sym1__ <= J; ++sym1__) {
@@ -1277,11 +1281,11 @@ class mdcev_model final : public model_base_crtp<mdcev_model> {
           }
         }
       }
-      current_statement__ = 119;
+      current_statement__ = 118;
       stan::math::validate_non_negative_index("quant_j", "I", I);
-      current_statement__ = 120;
+      current_statement__ = 119;
       stan::math::validate_non_negative_index("quant_j", "J", J);
-      current_statement__ = 121;
+      current_statement__ = 120;
       context__.validate_dims("data initialization", "quant_j", "double",
         std::vector<size_t>{static_cast<size_t>(I), static_cast<size_t>(J)});
       quant_j_data__ = Eigen::Matrix<double,-1,-1>::Constant(I, J,
@@ -1290,7 +1294,7 @@ class mdcev_model final : public model_base_crtp<mdcev_model> {
         Eigen::Map<Eigen::Matrix<double,-1,-1>>(quant_j_data__.data(), I, J);
       {
         std::vector<local_scalar_t__> quant_j_flat__;
-        current_statement__ = 121;
+        current_statement__ = 120;
         quant_j_flat__ = context__.vals_r("quant_j");
         pos__ = 1;
         for (int sym1__ = 1; sym1__ <= J; ++sym1__) {
@@ -1302,9 +1306,9 @@ class mdcev_model final : public model_base_crtp<mdcev_model> {
           }
         }
       }
-      current_statement__ = 122;
+      current_statement__ = 121;
       stan::math::validate_non_negative_index("income", "I", I);
-      current_statement__ = 123;
+      current_statement__ = 122;
       context__.validate_dims("data initialization", "income", "double",
         std::vector<size_t>{static_cast<size_t>(I)});
       income_data__ = Eigen::Matrix<double,-1,1>::Constant(I,
@@ -1313,7 +1317,7 @@ class mdcev_model final : public model_base_crtp<mdcev_model> {
         Eigen::Map<Eigen::Matrix<double,-1,1>>(income_data__.data(), I);
       {
         std::vector<local_scalar_t__> income_flat__;
-        current_statement__ = 123;
+        current_statement__ = 122;
         income_flat__ = context__.vals_r("income");
         pos__ = 1;
         for (int sym1__ = 1; sym1__ <= I; ++sym1__) {
@@ -1322,108 +1326,108 @@ class mdcev_model final : public model_base_crtp<mdcev_model> {
           pos__ = (pos__ + 1);
         }
       }
-      current_statement__ = 124;
+      current_statement__ = 123;
       context__.validate_dims("data initialization", "flat_priors", "int",
         std::vector<size_t>{});
       flat_priors = std::numeric_limits<int>::min();
-      current_statement__ = 124;
+      current_statement__ = 123;
       flat_priors = context__.vals_i("flat_priors")[(1 - 1)];
-      current_statement__ = 124;
+      current_statement__ = 123;
       stan::math::check_greater_or_equal(function__, "flat_priors",
         flat_priors, 0);
-      current_statement__ = 124;
+      current_statement__ = 123;
       stan::math::check_less_or_equal(function__, "flat_priors", flat_priors,
         1);
-      current_statement__ = 125;
+      current_statement__ = 124;
       context__.validate_dims("data initialization", "prior_psi_sd",
         "double", std::vector<size_t>{});
       prior_psi_sd = std::numeric_limits<double>::quiet_NaN();
-      current_statement__ = 125;
+      current_statement__ = 124;
       prior_psi_sd = context__.vals_r("prior_psi_sd")[(1 - 1)];
-      current_statement__ = 126;
+      current_statement__ = 125;
       context__.validate_dims("data initialization", "prior_phi_sd",
         "double", std::vector<size_t>{});
       prior_phi_sd = std::numeric_limits<double>::quiet_NaN();
-      current_statement__ = 126;
+      current_statement__ = 125;
       prior_phi_sd = context__.vals_r("prior_phi_sd")[(1 - 1)];
-      current_statement__ = 127;
+      current_statement__ = 126;
       context__.validate_dims("data initialization", "prior_gamma_sd",
         "double", std::vector<size_t>{});
       prior_gamma_sd = std::numeric_limits<double>::quiet_NaN();
-      current_statement__ = 127;
+      current_statement__ = 126;
       prior_gamma_sd = context__.vals_r("prior_gamma_sd")[(1 - 1)];
-      current_statement__ = 128;
+      current_statement__ = 127;
       context__.validate_dims("data initialization", "prior_alpha_shape",
         "double", std::vector<size_t>{});
       prior_alpha_shape = std::numeric_limits<double>::quiet_NaN();
-      current_statement__ = 128;
+      current_statement__ = 127;
       prior_alpha_shape = context__.vals_r("prior_alpha_shape")[(1 - 1)];
-      current_statement__ = 129;
+      current_statement__ = 128;
       context__.validate_dims("data initialization", "prior_scale_sd",
         "double", std::vector<size_t>{});
       prior_scale_sd = std::numeric_limits<double>::quiet_NaN();
-      current_statement__ = 129;
+      current_statement__ = 128;
       prior_scale_sd = context__.vals_r("prior_scale_sd")[(1 - 1)];
-      current_statement__ = 130;
+      current_statement__ = 129;
       context__.validate_dims("data initialization", "fixed_scale1", "int",
         std::vector<size_t>{});
       fixed_scale1 = std::numeric_limits<int>::min();
-      current_statement__ = 130;
+      current_statement__ = 129;
       fixed_scale1 = context__.vals_i("fixed_scale1")[(1 - 1)];
-      current_statement__ = 130;
+      current_statement__ = 129;
       stan::math::check_greater_or_equal(function__, "fixed_scale1",
         fixed_scale1, 0);
-      current_statement__ = 130;
+      current_statement__ = 129;
       stan::math::check_less_or_equal(function__, "fixed_scale1",
         fixed_scale1, 1);
-      current_statement__ = 131;
+      current_statement__ = 130;
       context__.validate_dims("data initialization", "trunc_data", "int",
         std::vector<size_t>{});
       trunc_data = std::numeric_limits<int>::min();
-      current_statement__ = 131;
+      current_statement__ = 130;
       trunc_data = context__.vals_i("trunc_data")[(1 - 1)];
-      current_statement__ = 131;
+      current_statement__ = 130;
       stan::math::check_greater_or_equal(function__, "trunc_data",
         trunc_data, 0);
-      current_statement__ = 131;
+      current_statement__ = 130;
       stan::math::check_less_or_equal(function__, "trunc_data", trunc_data, 1);
-      current_statement__ = 132;
+      current_statement__ = 131;
       context__.validate_dims("data initialization",
         "jacobian_analytical_grad", "int", std::vector<size_t>{});
       jacobian_analytical_grad = std::numeric_limits<int>::min();
-      current_statement__ = 132;
+      current_statement__ = 131;
       jacobian_analytical_grad = context__.vals_i("jacobian_analytical_grad")[(1
         - 1)];
-      current_statement__ = 132;
+      current_statement__ = 131;
       stan::math::check_greater_or_equal(function__,
         "jacobian_analytical_grad", jacobian_analytical_grad, 0);
-      current_statement__ = 132;
+      current_statement__ = 131;
       stan::math::check_less_or_equal(function__, "jacobian_analytical_grad",
         jacobian_analytical_grad, 1);
-      current_statement__ = 133;
+      current_statement__ = 132;
       context__.validate_dims("data initialization", "gamma_ascs", "int",
         std::vector<size_t>{});
       gamma_ascs = std::numeric_limits<int>::min();
-      current_statement__ = 133;
+      current_statement__ = 132;
       gamma_ascs = context__.vals_i("gamma_ascs")[(1 - 1)];
-      current_statement__ = 133;
+      current_statement__ = 132;
       stan::math::check_greater_or_equal(function__, "gamma_ascs",
         gamma_ascs, 0);
-      current_statement__ = 133;
+      current_statement__ = 132;
       stan::math::check_less_or_equal(function__, "gamma_ascs", gamma_ascs, 1);
-      current_statement__ = 134;
+      current_statement__ = 133;
       context__.validate_dims("data initialization", "psi_ascs", "int",
         std::vector<size_t>{});
       psi_ascs = std::numeric_limits<int>::min();
-      current_statement__ = 134;
+      current_statement__ = 133;
       psi_ascs = context__.vals_i("psi_ascs")[(1 - 1)];
-      current_statement__ = 134;
+      current_statement__ = 133;
       stan::math::check_greater_or_equal(function__, "psi_ascs", psi_ascs, 0);
-      current_statement__ = 134;
+      current_statement__ = 133;
       stan::math::check_less_or_equal(function__, "psi_ascs", psi_ascs, 1);
-      current_statement__ = 135;
+      current_statement__ = 134;
       stan::math::validate_non_negative_index("weights", "I", I);
-      current_statement__ = 136;
+      current_statement__ = 135;
       context__.validate_dims("data initialization", "weights", "double",
         std::vector<size_t>{static_cast<size_t>(I)});
       weights_data__ = Eigen::Matrix<double,-1,1>::Constant(I,
@@ -1432,7 +1436,7 @@ class mdcev_model final : public model_base_crtp<mdcev_model> {
         Eigen::Map<Eigen::Matrix<double,-1,1>>(weights_data__.data(), I);
       {
         std::vector<local_scalar_t__> weights_flat__;
-        current_statement__ = 136;
+        current_statement__ = 135;
         weights_flat__ = context__.vals_r("weights");
         pos__ = 1;
         for (int sym1__ = 1; sym1__ <= I; ++sym1__) {
@@ -1441,23 +1445,23 @@ class mdcev_model final : public model_base_crtp<mdcev_model> {
           pos__ = (pos__ + 1);
         }
       }
-      current_statement__ = 137;
+      current_statement__ = 136;
       context__.validate_dims("data initialization", "K", "int",
         std::vector<size_t>{});
       K = std::numeric_limits<int>::min();
-      current_statement__ = 137;
+      current_statement__ = 136;
       K = context__.vals_i("K")[(1 - 1)];
-      current_statement__ = 138;
+      current_statement__ = 137;
       context__.validate_dims("data initialization", "L", "int",
         std::vector<size_t>{});
       L = std::numeric_limits<int>::min();
-      current_statement__ = 138;
+      current_statement__ = 137;
       L = context__.vals_i("L")[(1 - 1)];
-      current_statement__ = 139;
+      current_statement__ = 138;
       stan::math::validate_non_negative_index("data_class", "I", I);
-      current_statement__ = 140;
+      current_statement__ = 139;
       stan::math::validate_non_negative_index("data_class", "L", L);
-      current_statement__ = 141;
+      current_statement__ = 140;
       context__.validate_dims("data initialization", "data_class", "double",
         std::vector<size_t>{static_cast<size_t>(I), static_cast<size_t>(L)});
       data_class_data__ = Eigen::Matrix<double,-1,-1>::Constant(I, L,
@@ -1467,7 +1471,7 @@ class mdcev_model final : public model_base_crtp<mdcev_model> {
         L);
       {
         std::vector<local_scalar_t__> data_class_flat__;
-        current_statement__ = 141;
+        current_statement__ = 140;
         data_class_flat__ = context__.vals_r("data_class");
         pos__ = 1;
         for (int sym1__ = 1; sym1__ <= L; ++sym1__) {
@@ -1479,78 +1483,72 @@ class mdcev_model final : public model_base_crtp<mdcev_model> {
           }
         }
       }
-      current_statement__ = 142;
+      current_statement__ = 141;
       context__.validate_dims("data initialization", "single_scale", "int",
         std::vector<size_t>{});
       single_scale = std::numeric_limits<int>::min();
-      current_statement__ = 142;
+      current_statement__ = 141;
       single_scale = context__.vals_i("single_scale")[(1 - 1)];
-      current_statement__ = 142;
+      current_statement__ = 141;
       stan::math::check_greater_or_equal(function__, "single_scale",
         single_scale, 0);
-      current_statement__ = 142;
+      current_statement__ = 141;
       stan::math::check_less_or_equal(function__, "single_scale",
         single_scale, 1);
-      current_statement__ = 143;
+      current_statement__ = 142;
       context__.validate_dims("data initialization", "prior_delta_sd",
         "double", std::vector<size_t>{});
       prior_delta_sd = std::numeric_limits<double>::quiet_NaN();
-      current_statement__ = 143;
+      current_statement__ = 142;
       prior_delta_sd = context__.vals_r("prior_delta_sd")[(1 - 1)];
-      current_statement__ = 144;
+      current_statement__ = 143;
       A = std::numeric_limits<int>::min();
-      current_statement__ = 145;
+      current_statement__ = 144;
       Gamma = std::numeric_limits<int>::min();
-      current_statement__ = 146;
+      current_statement__ = 145;
       NPsi = std::numeric_limits<int>::min();
-      current_statement__ = 147;
+      current_statement__ = 146;
       S = std::numeric_limits<int>::min();
-      current_statement__ = 148;
+      current_statement__ = 147;
       stan::math::validate_non_negative_index("log_num", "I", I);
-      current_statement__ = 149;
+      current_statement__ = 148;
       log_num_data__ = Eigen::Matrix<double,-1,1>::Constant(I,
                          std::numeric_limits<double>::quiet_NaN());
       new (&log_num)
         Eigen::Map<Eigen::Matrix<double,-1,1>>(log_num_data__.data(), I);
-      current_statement__ = 150;
+      current_statement__ = 149;
       stan::math::validate_non_negative_index("nonzero", "I", I);
-      current_statement__ = 151;
+      current_statement__ = 150;
       stan::math::validate_non_negative_index("nonzero", "J", J);
-      current_statement__ = 152;
+      current_statement__ = 151;
       nonzero_data__ = Eigen::Matrix<double,-1,-1>::Constant(I, J,
                          std::numeric_limits<double>::quiet_NaN());
       new (&nonzero)
         Eigen::Map<Eigen::Matrix<double,-1,-1>>(nonzero_data__.data(), I, J);
-      current_statement__ = 153;
+      current_statement__ = 152;
       stan::math::validate_non_negative_index("M", "I", I);
-      current_statement__ = 154;
+      current_statement__ = 153;
       M_data__ = Eigen::Matrix<double,-1,1>::Constant(I,
                    std::numeric_limits<double>::quiet_NaN());
       new (&M) Eigen::Map<Eigen::Matrix<double,-1,1>>(M_data__.data(), I);
-      current_statement__ = 155;
+      current_statement__ = 154;
       stan::math::validate_non_negative_index("log_M_fact", "I", I);
-      current_statement__ = 156;
+      current_statement__ = 155;
       log_M_fact_data__ = Eigen::Matrix<double,-1,1>::Constant(I,
                             std::numeric_limits<double>::quiet_NaN());
       new (&log_M_fact)
         Eigen::Map<Eigen::Matrix<double,-1,1>>(log_M_fact_data__.data(), I);
-      current_statement__ = 163;
+      current_statement__ = 156;
+      stan::model::assign(log_num,
+        stan::math::log(
+          stan::math::subtract(income,
+            stan::math::rows_dot_product(price_j, quant_j))),
+        "assigning variable log_num");
+      current_statement__ = 162;
       for (int i = 1; i <= I; ++i) {
-        current_statement__ = 157;
-        stan::model::assign(log_num,
-          stan::math::log(
-            (stan::model::rvalue(income, "income", stan::model::index_uni(i))
-            -
-            stan::math::multiply(
-              stan::model::rvalue(price_j, "price_j",
-                stan::model::index_uni(i)),
-              stan::math::transpose(
-                stan::model::rvalue(quant_j, "quant_j",
-                  stan::model::index_uni(i)))))),
-          "assigning variable log_num", stan::model::index_uni(i));
-        current_statement__ = 160;
+        current_statement__ = 159;
         for (int j = 1; j <= J; ++j) {
-          current_statement__ = 158;
+          current_statement__ = 157;
           stan::model::assign(nonzero,
             (stan::math::logical_gt(
                stan::model::rvalue(quant_j, "quant_j",
@@ -1558,117 +1556,117 @@ class mdcev_model final : public model_base_crtp<mdcev_model> {
             "assigning variable nonzero", stan::model::index_uni(i),
             stan::model::index_uni(j));
         }
-        current_statement__ = 161;
+        current_statement__ = 160;
         stan::model::assign(M,
           (stan::math::sum(
              stan::model::rvalue(nonzero, "nonzero",
                stan::model::index_uni(i))) + 1), "assigning variable M",
           stan::model::index_uni(i));
       }
-      current_statement__ = 164;
+      current_statement__ = 163;
       stan::model::assign(log_M_fact, stan::math::lgamma(M),
         "assigning variable log_M_fact");
-      current_statement__ = 170;
+      current_statement__ = 169;
       if (stan::math::logical_eq(psi_ascs, 1)) {
-        current_statement__ = 168;
+        current_statement__ = 167;
         NPsi = ((J - 1) + NPsi_ij);
       } else {
-        current_statement__ = 167;
+        current_statement__ = 166;
         if (stan::math::logical_eq(psi_ascs, 0)) {
-          current_statement__ = 165;
+          current_statement__ = 164;
           NPsi = NPsi_ij;
         }
       }
-      current_statement__ = 182;
+      current_statement__ = 181;
       if ((stan::math::primitive_value(
              (stan::math::primitive_value(
                 stan::math::logical_eq(model_num, 1)) ||
              stan::math::primitive_value(stan::math::logical_eq(model_num, 3))))
           ||
           stan::math::primitive_value(stan::math::logical_eq(model_num, 5)))) {
-        current_statement__ = 179;
+        current_statement__ = 178;
         A = 1;
-        current_statement__ = 180;
+        current_statement__ = 179;
         Gamma = J;
       } else {
-        current_statement__ = 178;
+        current_statement__ = 177;
         if (stan::math::logical_eq(model_num, 2)) {
-          current_statement__ = 175;
+          current_statement__ = 174;
           A = (J + 1);
-          current_statement__ = 176;
+          current_statement__ = 175;
           Gamma = 0;
         } else {
-          current_statement__ = 174;
+          current_statement__ = 173;
           if (stan::math::logical_eq(model_num, 4)) {
-            current_statement__ = 171;
+            current_statement__ = 170;
             A = 0;
-            current_statement__ = 172;
+            current_statement__ = 171;
             Gamma = J;
           }
         }
       }
-      current_statement__ = 185;
+      current_statement__ = 184;
       if ((stan::math::primitive_value(stan::math::logical_neq(model_num, 2))
           &&
           stan::math::primitive_value(stan::math::logical_eq(gamma_ascs, 0)))) {
-        current_statement__ = 183;
+        current_statement__ = 182;
         Gamma = 1;
       }
-      current_statement__ = 189;
+      current_statement__ = 188;
       if (stan::math::logical_eq(fixed_scale1, 0)) {
-        current_statement__ = 188;
+        current_statement__ = 187;
         S = 1;
       } else {
-        current_statement__ = 187;
+        current_statement__ = 186;
         if (stan::math::logical_eq(fixed_scale1, 1)) {
-          current_statement__ = 186;
+          current_statement__ = 185;
           S = 0;
         }
       }
-      current_statement__ = 191;
+      current_statement__ = 190;
       if ((stan::math::primitive_value(
              stan::math::logical_eq(single_scale, 0))
           &&
           stan::math::primitive_value(stan::math::logical_eq(fixed_scale1, 0)))) {
-        current_statement__ = 190;
+        current_statement__ = 189;
         S = K;
       }
-      current_statement__ = 192;
+      current_statement__ = 191;
       stan::math::validate_non_negative_index("psi", "K", K);
-      current_statement__ = 193;
+      current_statement__ = 192;
       stan::math::validate_non_negative_index("psi", "NPsi", NPsi);
-      current_statement__ = 194;
+      current_statement__ = 193;
       stan::math::validate_non_negative_index("phi", "K", K);
-      current_statement__ = 195;
+      current_statement__ = 194;
       stan::math::validate_non_negative_index("phi", "NPhi", NPhi);
-      current_statement__ = 196;
+      current_statement__ = 195;
       stan::math::validate_non_negative_index("gamma", "K", K);
-      current_statement__ = 197;
+      current_statement__ = 196;
       stan::math::validate_non_negative_index("gamma", "Gamma", Gamma);
-      current_statement__ = 198;
+      current_statement__ = 197;
       stan::math::validate_non_negative_index("alpha", "K", K);
-      current_statement__ = 199;
+      current_statement__ = 198;
       stan::math::validate_non_negative_index("alpha", "A", A);
-      current_statement__ = 200;
+      current_statement__ = 199;
       stan::math::validate_non_negative_index("scale", "S", S);
-      current_statement__ = 201;
+      current_statement__ = 200;
       delta_1dim__ = std::numeric_limits<int>::min();
-      current_statement__ = 201;
+      current_statement__ = 200;
       delta_1dim__ = (K - 1);
-      current_statement__ = 201;
+      current_statement__ = 200;
       stan::math::validate_non_negative_index("delta", "K - 1", delta_1dim__);
-      current_statement__ = 202;
+      current_statement__ = 201;
       stan::math::validate_non_negative_index("delta", "L", L);
-      current_statement__ = 203;
+      current_statement__ = 202;
       stan::math::validate_non_negative_index("log_like", "I", I);
-      current_statement__ = 204;
+      current_statement__ = 203;
       theta_1dim__ = std::numeric_limits<int>::min();
-      current_statement__ = 204;
+      current_statement__ = 203;
       theta_1dim__ = (stan::math::logical_gt(K, 1) ? I : 0);
-      current_statement__ = 204;
+      current_statement__ = 203;
       stan::math::validate_non_negative_index("theta", "K > 1 ? I : 0",
         theta_1dim__);
-      current_statement__ = 205;
+      current_statement__ = 204;
       stan::math::validate_non_negative_index("theta", "K", K);
     } catch (const std::exception& e) {
       stan::lang::rethrow_located(e, locations_array__[current_statement__]);
@@ -1681,7 +1679,7 @@ class mdcev_model final : public model_base_crtp<mdcev_model> {
   }
   inline std::vector<std::string> model_compile_info() const noexcept {
     return std::vector<std::string>{"stanc_version = stanc3 v2.36.0",
-             "stancflags = --include-paths=C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan --warn-pedantic"};
+             "stancflags = --include-paths=C:/Users/plloy/Dropbox/1 PROJECT/rmdcev/inst/stan"};
   }
   // Base log prob
   template <bool propto__, bool jacobian__, typename VecR, typename VecI,
@@ -1743,7 +1741,7 @@ class mdcev_model final : public model_base_crtp<mdcev_model> {
         std::vector<Eigen::Matrix<local_scalar_t__,-1,1>> log_like_util =
           std::vector<Eigen::Matrix<local_scalar_t__,-1,1>>(K,
             Eigen::Matrix<local_scalar_t__,-1,1>::Constant(I, DUMMY_VAR__));
-        current_statement__ = 67;
+        current_statement__ = 64;
         for (int k = 1; k <= K; ++k) {
           current_statement__ = 13;
           stan::math::validate_non_negative_index("gamma_full", "I", I);
@@ -1757,23 +1755,30 @@ class mdcev_model final : public model_base_crtp<mdcev_model> {
             gamma_ll(
               stan::model::rvalue(gamma, "gamma", stan::model::index_uni(k)),
               I, J, Gamma, pstream__), "assigning variable gamma_full");
-          local_scalar_t__ scale_full = DUMMY_VAR__;
-          current_statement__ = 17;
+          current_statement__ = 16;
           stan::math::validate_non_negative_index("lpsi", "I", I);
-          current_statement__ = 18;
+          current_statement__ = 17;
           stan::math::validate_non_negative_index("lpsi", "J", J);
           Eigen::Matrix<local_scalar_t__,-1,-1> lpsi =
             Eigen::Matrix<local_scalar_t__,-1,-1>::Constant(I, J,
               DUMMY_VAR__);
-          current_statement__ = 20;
+          current_statement__ = 19;
           stan::math::validate_non_negative_index("alpha_1", "I", I);
           Eigen::Matrix<local_scalar_t__,-1,1> alpha_1 =
             Eigen::Matrix<local_scalar_t__,-1,1>::Constant(I, DUMMY_VAR__);
-          current_statement__ = 21;
+          current_statement__ = 20;
           stan::model::assign(alpha_1,
             alpha_1_ll(
               stan::model::rvalue(alpha, "alpha", stan::model::index_uni(k)),
               I, model_num, pstream__), "assigning variable alpha_1");
+          local_scalar_t__ scale_full = DUMMY_VAR__;
+          current_statement__ = 21;
+          scale_full = (stan::math::logical_eq(S, 1) ? stan::model::rvalue(
+                                                         scale, "scale",
+                                                         stan::model::index_uni(
+                                                           1)) : (stan::math::logical_eq(
+                                                                    S, K) ? 
+            stan::model::rvalue(scale, "scale", stan::model::index_uni(k)) : 1.0));
           current_statement__ = 22;
           stan::math::validate_non_negative_index("psi_k", "NPsi", NPsi);
           Eigen::Matrix<local_scalar_t__,-1,1> psi_k =
@@ -1782,33 +1787,18 @@ class mdcev_model final : public model_base_crtp<mdcev_model> {
           stan::model::assign(psi_k,
             stan::model::rvalue(psi, "psi", stan::model::index_uni(k)),
             "assigning variable psi_k");
-          current_statement__ = 28;
-          if (stan::math::logical_eq(S, 1)) {
-            current_statement__ = 27;
-            scale_full = stan::model::rvalue(scale, "scale",
-                           stan::model::index_uni(1));
-          } else {
-            current_statement__ = 26;
-            if (stan::math::logical_eq(S, K)) {
-              current_statement__ = 25;
-              scale_full = stan::model::rvalue(scale, "scale",
-                             stan::model::index_uni(k));
-            } else {
-              current_statement__ = 24;
-              scale_full = 1.0;
-            }
-          }
-          current_statement__ = 39;
+          current_statement__ = 36;
           if (stan::math::logical_eq(psi_ascs, 1)) {
-            current_statement__ = 35;
-            stan::model::assign(lpsi,
-              stan::math::rep_matrix(
-                stan::math::transpose(
-                  stan::math::append_row(0, stan::math::head(psi_k, (J - 1)))),
-                I), "assigning variable lpsi");
-            current_statement__ = 37;
+            current_statement__ = 34;
             if (stan::math::logical_gt(NPsi_ij, 0)) {
-              current_statement__ = 36;
+              current_statement__ = 31;
+              stan::model::assign(lpsi,
+                stan::math::rep_matrix(
+                  stan::math::transpose(
+                    stan::math::append_row(0,
+                      stan::math::head(psi_k, (J - 1)))), I),
+                "assigning variable lpsi");
+              current_statement__ = 32;
               stan::model::assign(lpsi,
                 stan::math::add(stan::model::deep_copy(lpsi),
                   stan::math::to_matrix(
@@ -1817,13 +1807,21 @@ class mdcev_model final : public model_base_crtp<mdcev_model> {
                         stan::model::index_omni()),
                       stan::math::segment(psi_k, J, NPsi_ij)), I, J, 0)),
                 "assigning variable lpsi");
+            } else {
+              current_statement__ = 29;
+              stan::model::assign(lpsi,
+                stan::math::rep_matrix(
+                  stan::math::transpose(
+                    stan::math::append_row(0,
+                      stan::math::head(psi_k, (J - 1)))), I),
+                "assigning variable lpsi");
             }
           } else {
-            current_statement__ = 34;
+            current_statement__ = 28;
             if (stan::math::logical_eq(psi_ascs, 0)) {
-              current_statement__ = 32;
+              current_statement__ = 26;
               if (stan::math::logical_gt(NPsi_ij, 0)) {
-                current_statement__ = 31;
+                current_statement__ = 25;
                 stan::model::assign(lpsi,
                   stan::math::to_matrix(
                     stan::math::multiply(
@@ -1831,41 +1829,38 @@ class mdcev_model final : public model_base_crtp<mdcev_model> {
                         stan::model::index_omni()), psi_k), I, J, 0),
                   "assigning variable lpsi");
               } else {
-                current_statement__ = 30;
-                if (stan::math::logical_eq(NPsi_ij, 0)) {
-                  current_statement__ = 29;
-                  stan::model::assign(lpsi, stan::math::rep_matrix(0, I, J),
-                    "assigning variable lpsi");
-                }
+                current_statement__ = 24;
+                stan::model::assign(lpsi, stan::math::rep_matrix(0, I, J),
+                  "assigning variable lpsi");
               }
             }
           }
-          current_statement__ = 65;
+          current_statement__ = 62;
           if (stan::math::logical_lt(model_num, 5)) {
-            current_statement__ = 55;
+            current_statement__ = 52;
             stan::math::validate_non_negative_index("alpha_j", "I", I);
-            current_statement__ = 56;
+            current_statement__ = 53;
             stan::math::validate_non_negative_index("alpha_j", "J", J);
             Eigen::Matrix<local_scalar_t__,-1,-1> alpha_j =
               Eigen::Matrix<local_scalar_t__,-1,-1>::Constant(I, J,
                 DUMMY_VAR__);
-            current_statement__ = 57;
+            current_statement__ = 54;
             stan::model::assign(alpha_j,
               alpha_j_ll(
                 stan::model::rvalue(alpha, "alpha", stan::model::index_uni(k)),
                 I, J, model_num, pstream__), "assigning variable alpha_j");
-            current_statement__ = 63;
+            current_statement__ = 60;
             if (stan::math::logical_eq(K, 1)) {
-              current_statement__ = 61;
+              current_statement__ = 58;
               stan::model::assign(log_like,
                 mdcev_ll(quant_j, price_j, log_num, income, M, log_M_fact,
                   lpsi, gamma_full, alpha_1, alpha_j, scale_full, I, J,
                   nonzero, trunc_data, pstream__),
                 "assigning variable log_like");
             } else {
-              current_statement__ = 60;
+              current_statement__ = 57;
               if (stan::math::logical_gt(K, 1)) {
-                current_statement__ = 58;
+                current_statement__ = 55;
                 stan::model::assign(log_like_util,
                   mdcev_ll(quant_j, price_j, log_num, income, M, log_M_fact,
                     lpsi, gamma_full, alpha_1, alpha_j, scale_full, I, J,
@@ -1875,18 +1870,18 @@ class mdcev_model final : public model_base_crtp<mdcev_model> {
               }
             }
           } else {
-            current_statement__ = 54;
+            current_statement__ = 51;
             if (stan::math::logical_eq(model_num, 5)) {
-              current_statement__ = 40;
+              current_statement__ = 37;
               stan::math::validate_non_negative_index("phi_ij", "I", I);
-              current_statement__ = 41;
+              current_statement__ = 38;
               stan::math::validate_non_negative_index("phi_ij", "J", J);
               Eigen::Matrix<local_scalar_t__,-1,-1> phi_ij =
                 Eigen::Matrix<local_scalar_t__,-1,-1>::Constant(I, J,
                   DUMMY_VAR__);
-              current_statement__ = 46;
+              current_statement__ = 43;
               if (stan::math::logical_gt(NPhi, 0)) {
-                current_statement__ = 45;
+                current_statement__ = 42;
                 stan::model::assign(phi_ij,
                   stan::math::exp(
                     stan::math::to_matrix(
@@ -1897,26 +1892,26 @@ class mdcev_model final : public model_base_crtp<mdcev_model> {
                           stan::model::index_uni(k))), I, J, 0)),
                   "assigning variable phi_ij");
               } else {
-                current_statement__ = 44;
+                current_statement__ = 41;
                 if (stan::math::logical_eq(NPhi, 0)) {
-                  current_statement__ = 43;
+                  current_statement__ = 40;
                   stan::model::assign(phi_ij,
                     stan::math::rep_matrix(1, I, J),
                     "assigning variable phi_ij");
                 }
               }
-              current_statement__ = 52;
+              current_statement__ = 49;
               if (stan::math::logical_eq(K, 1)) {
-                current_statement__ = 50;
+                current_statement__ = 47;
                 stan::model::assign(log_like,
                   kt_ll(quant_j, price_j, log_num, income, lpsi, phi_ij,
                     gamma_full, alpha_1, scale_full, I, J, nonzero,
                     trunc_data, jacobian_analytical_grad, pstream__),
                   "assigning variable log_like");
               } else {
-                current_statement__ = 49;
+                current_statement__ = 46;
                 if (stan::math::logical_gt(K, 1)) {
-                  current_statement__ = 47;
+                  current_statement__ = 44;
                   stan::model::assign(log_like_util,
                     kt_ll(quant_j, price_j, log_num, income, lpsi, phi_ij,
                       gamma_full, alpha_1, scale_full, I, J, nonzero,
@@ -1928,9 +1923,21 @@ class mdcev_model final : public model_base_crtp<mdcev_model> {
             }
           }
         }
-        current_statement__ = 79;
+        current_statement__ = 76;
         if (stan::math::logical_gt(K, 1)) {
-          current_statement__ = 77;
+          current_statement__ = 65;
+          stan::math::validate_non_negative_index("delta_data", "I", I);
+          current_statement__ = 66;
+          stan::math::validate_non_negative_index("delta_data", "K - 1", (K -
+            1));
+          Eigen::Matrix<local_scalar_t__,-1,-1> delta_data =
+            Eigen::Matrix<local_scalar_t__,-1,-1>::Constant(I, (K - 1),
+              DUMMY_VAR__);
+          current_statement__ = 67;
+          stan::model::assign(delta_data,
+            stan::math::multiply(data_class, stan::math::transpose(delta)),
+            "assigning variable delta_data");
+          current_statement__ = 74;
           for (int i = 1; i <= I; ++i) {
             current_statement__ = 68;
             stan::math::validate_non_negative_index("ltheta", "K", K);
@@ -1940,84 +1947,80 @@ class mdcev_model final : public model_base_crtp<mdcev_model> {
             stan::model::assign(ltheta,
               stan::math::log_softmax(
                 stan::math::append_row(0,
-                  stan::math::multiply(delta,
-                    stan::math::transpose(
-                      stan::model::rvalue(data_class, "data_class",
-                        stan::model::index_uni(i)))))),
+                  stan::math::transpose(
+                    stan::model::rvalue(delta_data, "delta_data",
+                      stan::model::index_uni(i))))),
               "assigning variable ltheta");
             current_statement__ = 70;
             stan::math::validate_non_negative_index("lps", "K", K);
             Eigen::Matrix<local_scalar_t__,-1,1> lps =
               Eigen::Matrix<local_scalar_t__,-1,1>::Constant(K, DUMMY_VAR__);
-            current_statement__ = 74;
-            for (int k = 1; k <= K; ++k) {
-              current_statement__ = 72;
-              stan::model::assign(lps,
-                (stan::model::rvalue(ltheta, "ltheta",
-                   stan::model::index_uni(k)) +
-                stan::model::rvalue(log_like_util, "log_like_util",
-                  stan::model::index_uni(k), stan::model::index_uni(i))),
-                "assigning variable lps", stan::model::index_uni(k));
-            }
-            current_statement__ = 75;
+            current_statement__ = 71;
+            stan::model::assign(lps,
+              stan::math::add(ltheta,
+                stan::math::to_vector(
+                  stan::model::rvalue(log_like_util, "log_like_util",
+                    stan::model::index_omni(), stan::model::index_uni(i)))),
+              "assigning variable lps");
+            current_statement__ = 72;
             stan::model::assign(log_like, stan::math::log_sum_exp(lps),
               "assigning variable log_like", stan::model::index_uni(i));
           }
         }
       }
       {
-        current_statement__ = 103;
+        current_statement__ = 102;
         if (stan::math::logical_eq(flat_priors, 0)) {
-          current_statement__ = 86;
+          current_statement__ = 85;
           lp_accum__.add(stan::math::normal_lpdf<propto__>(scale, 0,
                            prior_scale_sd));
-          current_statement__ = 101;
+          current_statement__ = 100;
           if (stan::math::logical_eq(K, 1)) {
-            current_statement__ = 96;
+            current_statement__ = 95;
             lp_accum__.add(stan::math::normal_lpdf<propto__>(
                              stan::model::rvalue(psi, "psi",
                                stan::model::index_uni(1)), 0, prior_psi_sd));
-            current_statement__ = 97;
+            current_statement__ = 96;
             lp_accum__.add(stan::math::normal_lpdf<propto__>(
                              stan::model::rvalue(phi, "phi",
                                stan::model::index_uni(1)), 0, prior_phi_sd));
-            current_statement__ = 98;
+            current_statement__ = 97;
             lp_accum__.add(stan::math::normal_lpdf<propto__>(
                              stan::model::rvalue(gamma, "gamma",
                                stan::model::index_uni(1)), 1, prior_gamma_sd));
-            current_statement__ = 99;
+            current_statement__ = 98;
             lp_accum__.add(stan::math::beta_lpdf<propto__>(
                              stan::model::rvalue(alpha, "alpha",
                                stan::model::index_uni(1)), prior_alpha_shape,
                              prior_alpha_shape));
           } else {
-            current_statement__ = 95;
+            current_statement__ = 94;
             if (stan::math::logical_gt(K, 1)) {
-              current_statement__ = 87;
+              current_statement__ = 86;
               lp_accum__.add(stan::math::normal_lpdf<propto__>(
                                stan::math::to_vector(delta), 0,
                                prior_delta_sd));
-              current_statement__ = 93;
+              current_statement__ = 92;
               for (int k = 1; k <= K; ++k) {
-                current_statement__ = 88;
+                current_statement__ = 87;
                 lp_accum__.add(stan::math::normal_lpdf<propto__>(
                                  stan::math::to_vector(
                                    stan::model::rvalue(psi, "psi",
                                      stan::model::index_uni(k))), 0,
                                  prior_psi_sd));
-                current_statement__ = 89;
+                current_statement__ = 88;
                 lp_accum__.add(stan::math::normal_lpdf<propto__>(
                                  stan::math::to_vector(
                                    stan::model::rvalue(phi, "phi",
                                      stan::model::index_uni(k))), 0,
                                  prior_phi_sd));
-                current_statement__ = 90;
+                current_statement__ = 89;
                 lp_accum__.add(stan::math::normal_lpdf<propto__>(
                                  stan::math::to_vector(
                                    stan::model::rvalue(gamma, "gamma",
                                      stan::model::index_uni(k))), 1,
                                  prior_gamma_sd));
-                current_statement__ = 91;
+                current_statement__ = 90;
                 lp_accum__.add(stan::math::beta_lpdf<propto__>(
                                  stan::math::to_vector(
                                    stan::model::rvalue(alpha, "alpha",
@@ -2027,7 +2030,7 @@ class mdcev_model final : public model_base_crtp<mdcev_model> {
             }
           }
         }
-        current_statement__ = 104;
+        current_statement__ = 103;
         lp_accum__.add(stan::math::dot_product(log_like, weights));
       }
     } catch (const std::exception& e) {
@@ -2096,7 +2099,7 @@ class mdcev_model final : public model_base_crtp<mdcev_model> {
         std::vector<Eigen::Matrix<local_scalar_t__,-1,1>> log_like_util =
           std::vector<Eigen::Matrix<local_scalar_t__,-1,1>>(K,
             Eigen::Matrix<local_scalar_t__,-1,1>::Constant(I, DUMMY_VAR__));
-        current_statement__ = 67;
+        current_statement__ = 64;
         for (int k = 1; k <= K; ++k) {
           current_statement__ = 13;
           stan::math::validate_non_negative_index("gamma_full", "I", I);
@@ -2110,23 +2113,30 @@ class mdcev_model final : public model_base_crtp<mdcev_model> {
             gamma_ll(
               stan::model::rvalue(gamma, "gamma", stan::model::index_uni(k)),
               I, J, Gamma, pstream__), "assigning variable gamma_full");
-          local_scalar_t__ scale_full = DUMMY_VAR__;
-          current_statement__ = 17;
+          current_statement__ = 16;
           stan::math::validate_non_negative_index("lpsi", "I", I);
-          current_statement__ = 18;
+          current_statement__ = 17;
           stan::math::validate_non_negative_index("lpsi", "J", J);
           Eigen::Matrix<local_scalar_t__,-1,-1> lpsi =
             Eigen::Matrix<local_scalar_t__,-1,-1>::Constant(I, J,
               DUMMY_VAR__);
-          current_statement__ = 20;
+          current_statement__ = 19;
           stan::math::validate_non_negative_index("alpha_1", "I", I);
           Eigen::Matrix<local_scalar_t__,-1,1> alpha_1 =
             Eigen::Matrix<local_scalar_t__,-1,1>::Constant(I, DUMMY_VAR__);
-          current_statement__ = 21;
+          current_statement__ = 20;
           stan::model::assign(alpha_1,
             alpha_1_ll(
               stan::model::rvalue(alpha, "alpha", stan::model::index_uni(k)),
               I, model_num, pstream__), "assigning variable alpha_1");
+          local_scalar_t__ scale_full = DUMMY_VAR__;
+          current_statement__ = 21;
+          scale_full = (stan::math::logical_eq(S, 1) ? stan::model::rvalue(
+                                                         scale, "scale",
+                                                         stan::model::index_uni(
+                                                           1)) : (stan::math::logical_eq(
+                                                                    S, K) ? 
+            stan::model::rvalue(scale, "scale", stan::model::index_uni(k)) : 1.0));
           current_statement__ = 22;
           stan::math::validate_non_negative_index("psi_k", "NPsi", NPsi);
           Eigen::Matrix<local_scalar_t__,-1,1> psi_k =
@@ -2135,33 +2145,18 @@ class mdcev_model final : public model_base_crtp<mdcev_model> {
           stan::model::assign(psi_k,
             stan::model::rvalue(psi, "psi", stan::model::index_uni(k)),
             "assigning variable psi_k");
-          current_statement__ = 28;
-          if (stan::math::logical_eq(S, 1)) {
-            current_statement__ = 27;
-            scale_full = stan::model::rvalue(scale, "scale",
-                           stan::model::index_uni(1));
-          } else {
-            current_statement__ = 26;
-            if (stan::math::logical_eq(S, K)) {
-              current_statement__ = 25;
-              scale_full = stan::model::rvalue(scale, "scale",
-                             stan::model::index_uni(k));
-            } else {
-              current_statement__ = 24;
-              scale_full = 1.0;
-            }
-          }
-          current_statement__ = 39;
+          current_statement__ = 36;
           if (stan::math::logical_eq(psi_ascs, 1)) {
-            current_statement__ = 35;
-            stan::model::assign(lpsi,
-              stan::math::rep_matrix(
-                stan::math::transpose(
-                  stan::math::append_row(0, stan::math::head(psi_k, (J - 1)))),
-                I), "assigning variable lpsi");
-            current_statement__ = 37;
+            current_statement__ = 34;
             if (stan::math::logical_gt(NPsi_ij, 0)) {
-              current_statement__ = 36;
+              current_statement__ = 31;
+              stan::model::assign(lpsi,
+                stan::math::rep_matrix(
+                  stan::math::transpose(
+                    stan::math::append_row(0,
+                      stan::math::head(psi_k, (J - 1)))), I),
+                "assigning variable lpsi");
+              current_statement__ = 32;
               stan::model::assign(lpsi,
                 stan::math::add(stan::model::deep_copy(lpsi),
                   stan::math::to_matrix(
@@ -2170,13 +2165,21 @@ class mdcev_model final : public model_base_crtp<mdcev_model> {
                         stan::model::index_omni()),
                       stan::math::segment(psi_k, J, NPsi_ij)), I, J, 0)),
                 "assigning variable lpsi");
+            } else {
+              current_statement__ = 29;
+              stan::model::assign(lpsi,
+                stan::math::rep_matrix(
+                  stan::math::transpose(
+                    stan::math::append_row(0,
+                      stan::math::head(psi_k, (J - 1)))), I),
+                "assigning variable lpsi");
             }
           } else {
-            current_statement__ = 34;
+            current_statement__ = 28;
             if (stan::math::logical_eq(psi_ascs, 0)) {
-              current_statement__ = 32;
+              current_statement__ = 26;
               if (stan::math::logical_gt(NPsi_ij, 0)) {
-                current_statement__ = 31;
+                current_statement__ = 25;
                 stan::model::assign(lpsi,
                   stan::math::to_matrix(
                     stan::math::multiply(
@@ -2184,41 +2187,38 @@ class mdcev_model final : public model_base_crtp<mdcev_model> {
                         stan::model::index_omni()), psi_k), I, J, 0),
                   "assigning variable lpsi");
               } else {
-                current_statement__ = 30;
-                if (stan::math::logical_eq(NPsi_ij, 0)) {
-                  current_statement__ = 29;
-                  stan::model::assign(lpsi, stan::math::rep_matrix(0, I, J),
-                    "assigning variable lpsi");
-                }
+                current_statement__ = 24;
+                stan::model::assign(lpsi, stan::math::rep_matrix(0, I, J),
+                  "assigning variable lpsi");
               }
             }
           }
-          current_statement__ = 65;
+          current_statement__ = 62;
           if (stan::math::logical_lt(model_num, 5)) {
-            current_statement__ = 55;
+            current_statement__ = 52;
             stan::math::validate_non_negative_index("alpha_j", "I", I);
-            current_statement__ = 56;
+            current_statement__ = 53;
             stan::math::validate_non_negative_index("alpha_j", "J", J);
             Eigen::Matrix<local_scalar_t__,-1,-1> alpha_j =
               Eigen::Matrix<local_scalar_t__,-1,-1>::Constant(I, J,
                 DUMMY_VAR__);
-            current_statement__ = 57;
+            current_statement__ = 54;
             stan::model::assign(alpha_j,
               alpha_j_ll(
                 stan::model::rvalue(alpha, "alpha", stan::model::index_uni(k)),
                 I, J, model_num, pstream__), "assigning variable alpha_j");
-            current_statement__ = 63;
+            current_statement__ = 60;
             if (stan::math::logical_eq(K, 1)) {
-              current_statement__ = 61;
+              current_statement__ = 58;
               stan::model::assign(log_like,
                 mdcev_ll(quant_j, price_j, log_num, income, M, log_M_fact,
                   lpsi, gamma_full, alpha_1, alpha_j, scale_full, I, J,
                   nonzero, trunc_data, pstream__),
                 "assigning variable log_like");
             } else {
-              current_statement__ = 60;
+              current_statement__ = 57;
               if (stan::math::logical_gt(K, 1)) {
-                current_statement__ = 58;
+                current_statement__ = 55;
                 stan::model::assign(log_like_util,
                   mdcev_ll(quant_j, price_j, log_num, income, M, log_M_fact,
                     lpsi, gamma_full, alpha_1, alpha_j, scale_full, I, J,
@@ -2228,18 +2228,18 @@ class mdcev_model final : public model_base_crtp<mdcev_model> {
               }
             }
           } else {
-            current_statement__ = 54;
+            current_statement__ = 51;
             if (stan::math::logical_eq(model_num, 5)) {
-              current_statement__ = 40;
+              current_statement__ = 37;
               stan::math::validate_non_negative_index("phi_ij", "I", I);
-              current_statement__ = 41;
+              current_statement__ = 38;
               stan::math::validate_non_negative_index("phi_ij", "J", J);
               Eigen::Matrix<local_scalar_t__,-1,-1> phi_ij =
                 Eigen::Matrix<local_scalar_t__,-1,-1>::Constant(I, J,
                   DUMMY_VAR__);
-              current_statement__ = 46;
+              current_statement__ = 43;
               if (stan::math::logical_gt(NPhi, 0)) {
-                current_statement__ = 45;
+                current_statement__ = 42;
                 stan::model::assign(phi_ij,
                   stan::math::exp(
                     stan::math::to_matrix(
@@ -2250,26 +2250,26 @@ class mdcev_model final : public model_base_crtp<mdcev_model> {
                           stan::model::index_uni(k))), I, J, 0)),
                   "assigning variable phi_ij");
               } else {
-                current_statement__ = 44;
+                current_statement__ = 41;
                 if (stan::math::logical_eq(NPhi, 0)) {
-                  current_statement__ = 43;
+                  current_statement__ = 40;
                   stan::model::assign(phi_ij,
                     stan::math::rep_matrix(1, I, J),
                     "assigning variable phi_ij");
                 }
               }
-              current_statement__ = 52;
+              current_statement__ = 49;
               if (stan::math::logical_eq(K, 1)) {
-                current_statement__ = 50;
+                current_statement__ = 47;
                 stan::model::assign(log_like,
                   kt_ll(quant_j, price_j, log_num, income, lpsi, phi_ij,
                     gamma_full, alpha_1, scale_full, I, J, nonzero,
                     trunc_data, jacobian_analytical_grad, pstream__),
                   "assigning variable log_like");
               } else {
-                current_statement__ = 49;
+                current_statement__ = 46;
                 if (stan::math::logical_gt(K, 1)) {
-                  current_statement__ = 47;
+                  current_statement__ = 44;
                   stan::model::assign(log_like_util,
                     kt_ll(quant_j, price_j, log_num, income, lpsi, phi_ij,
                       gamma_full, alpha_1, scale_full, I, J, nonzero,
@@ -2281,9 +2281,21 @@ class mdcev_model final : public model_base_crtp<mdcev_model> {
             }
           }
         }
-        current_statement__ = 79;
+        current_statement__ = 76;
         if (stan::math::logical_gt(K, 1)) {
-          current_statement__ = 77;
+          current_statement__ = 65;
+          stan::math::validate_non_negative_index("delta_data", "I", I);
+          current_statement__ = 66;
+          stan::math::validate_non_negative_index("delta_data", "K - 1", (K -
+            1));
+          Eigen::Matrix<local_scalar_t__,-1,-1> delta_data =
+            Eigen::Matrix<local_scalar_t__,-1,-1>::Constant(I, (K - 1),
+              DUMMY_VAR__);
+          current_statement__ = 67;
+          stan::model::assign(delta_data,
+            stan::math::multiply(data_class, stan::math::transpose(delta)),
+            "assigning variable delta_data");
+          current_statement__ = 74;
           for (int i = 1; i <= I; ++i) {
             current_statement__ = 68;
             stan::math::validate_non_negative_index("ltheta", "K", K);
@@ -2293,84 +2305,80 @@ class mdcev_model final : public model_base_crtp<mdcev_model> {
             stan::model::assign(ltheta,
               stan::math::log_softmax(
                 stan::math::append_row(0,
-                  stan::math::multiply(delta,
-                    stan::math::transpose(
-                      stan::model::rvalue(data_class, "data_class",
-                        stan::model::index_uni(i)))))),
+                  stan::math::transpose(
+                    stan::model::rvalue(delta_data, "delta_data",
+                      stan::model::index_uni(i))))),
               "assigning variable ltheta");
             current_statement__ = 70;
             stan::math::validate_non_negative_index("lps", "K", K);
             Eigen::Matrix<local_scalar_t__,-1,1> lps =
               Eigen::Matrix<local_scalar_t__,-1,1>::Constant(K, DUMMY_VAR__);
-            current_statement__ = 74;
-            for (int k = 1; k <= K; ++k) {
-              current_statement__ = 72;
-              stan::model::assign(lps,
-                (stan::model::rvalue(ltheta, "ltheta",
-                   stan::model::index_uni(k)) +
-                stan::model::rvalue(log_like_util, "log_like_util",
-                  stan::model::index_uni(k), stan::model::index_uni(i))),
-                "assigning variable lps", stan::model::index_uni(k));
-            }
-            current_statement__ = 75;
+            current_statement__ = 71;
+            stan::model::assign(lps,
+              stan::math::add(ltheta,
+                stan::math::to_vector(
+                  stan::model::rvalue(log_like_util, "log_like_util",
+                    stan::model::index_omni(), stan::model::index_uni(i)))),
+              "assigning variable lps");
+            current_statement__ = 72;
             stan::model::assign(log_like, stan::math::log_sum_exp(lps),
               "assigning variable log_like", stan::model::index_uni(i));
           }
         }
       }
       {
-        current_statement__ = 103;
+        current_statement__ = 102;
         if (stan::math::logical_eq(flat_priors, 0)) {
-          current_statement__ = 86;
+          current_statement__ = 85;
           lp_accum__.add(stan::math::normal_lpdf<propto__>(scale, 0,
                            prior_scale_sd));
-          current_statement__ = 101;
+          current_statement__ = 100;
           if (stan::math::logical_eq(K, 1)) {
-            current_statement__ = 96;
+            current_statement__ = 95;
             lp_accum__.add(stan::math::normal_lpdf<propto__>(
                              stan::model::rvalue(psi, "psi",
                                stan::model::index_uni(1)), 0, prior_psi_sd));
-            current_statement__ = 97;
+            current_statement__ = 96;
             lp_accum__.add(stan::math::normal_lpdf<propto__>(
                              stan::model::rvalue(phi, "phi",
                                stan::model::index_uni(1)), 0, prior_phi_sd));
-            current_statement__ = 98;
+            current_statement__ = 97;
             lp_accum__.add(stan::math::normal_lpdf<propto__>(
                              stan::model::rvalue(gamma, "gamma",
                                stan::model::index_uni(1)), 1, prior_gamma_sd));
-            current_statement__ = 99;
+            current_statement__ = 98;
             lp_accum__.add(stan::math::beta_lpdf<propto__>(
                              stan::model::rvalue(alpha, "alpha",
                                stan::model::index_uni(1)), prior_alpha_shape,
                              prior_alpha_shape));
           } else {
-            current_statement__ = 95;
+            current_statement__ = 94;
             if (stan::math::logical_gt(K, 1)) {
-              current_statement__ = 87;
+              current_statement__ = 86;
               lp_accum__.add(stan::math::normal_lpdf<propto__>(
                                stan::math::to_vector(delta), 0,
                                prior_delta_sd));
-              current_statement__ = 93;
+              current_statement__ = 92;
               for (int k = 1; k <= K; ++k) {
-                current_statement__ = 88;
+                current_statement__ = 87;
                 lp_accum__.add(stan::math::normal_lpdf<propto__>(
                                  stan::math::to_vector(
                                    stan::model::rvalue(psi, "psi",
                                      stan::model::index_uni(k))), 0,
                                  prior_psi_sd));
-                current_statement__ = 89;
+                current_statement__ = 88;
                 lp_accum__.add(stan::math::normal_lpdf<propto__>(
                                  stan::math::to_vector(
                                    stan::model::rvalue(phi, "phi",
                                      stan::model::index_uni(k))), 0,
                                  prior_phi_sd));
-                current_statement__ = 90;
+                current_statement__ = 89;
                 lp_accum__.add(stan::math::normal_lpdf<propto__>(
                                  stan::math::to_vector(
                                    stan::model::rvalue(gamma, "gamma",
                                      stan::model::index_uni(k))), 1,
                                  prior_gamma_sd));
-                current_statement__ = 91;
+                current_statement__ = 90;
                 lp_accum__.add(stan::math::beta_lpdf<propto__>(
                                  stan::math::to_vector(
                                    stan::model::rvalue(alpha, "alpha",
@@ -2380,7 +2388,7 @@ class mdcev_model final : public model_base_crtp<mdcev_model> {
             }
           }
         }
-        current_statement__ = 104;
+        current_statement__ = 103;
         lp_accum__.add(stan::math::dot_product(log_like, weights));
       }
     } catch (const std::exception& e) {
@@ -2493,7 +2501,7 @@ class mdcev_model final : public model_base_crtp<mdcev_model> {
           std::vector<Eigen::Matrix<double,-1,1>>(K,
             Eigen::Matrix<double,-1,1>::Constant(I,
               std::numeric_limits<double>::quiet_NaN()));
-        current_statement__ = 67;
+        current_statement__ = 64;
         for (int k = 1; k <= K; ++k) {
           current_statement__ = 13;
           stan::math::validate_non_negative_index("gamma_full", "I", I);
@@ -2507,24 +2515,31 @@ class mdcev_model final : public model_base_crtp<mdcev_model> {
             gamma_ll(
               stan::model::rvalue(gamma, "gamma", stan::model::index_uni(k)),
               I, J, Gamma, pstream__), "assigning variable gamma_full");
-          double scale_full = std::numeric_limits<double>::quiet_NaN();
-          current_statement__ = 17;
+          current_statement__ = 16;
           stan::math::validate_non_negative_index("lpsi", "I", I);
-          current_statement__ = 18;
+          current_statement__ = 17;
           stan::math::validate_non_negative_index("lpsi", "J", J);
           Eigen::Matrix<double,-1,-1> lpsi =
             Eigen::Matrix<double,-1,-1>::Constant(I, J,
               std::numeric_limits<double>::quiet_NaN());
-          current_statement__ = 20;
+          current_statement__ = 19;
           stan::math::validate_non_negative_index("alpha_1", "I", I);
           Eigen::Matrix<double,-1,1> alpha_1 =
             Eigen::Matrix<double,-1,1>::Constant(I,
               std::numeric_limits<double>::quiet_NaN());
-          current_statement__ = 21;
+          current_statement__ = 20;
           stan::model::assign(alpha_1,
             alpha_1_ll(
               stan::model::rvalue(alpha, "alpha", stan::model::index_uni(k)),
               I, model_num, pstream__), "assigning variable alpha_1");
+          double scale_full = std::numeric_limits<double>::quiet_NaN();
+          current_statement__ = 21;
+          scale_full = (stan::math::logical_eq(S, 1) ? stan::model::rvalue(
+                                                         scale, "scale",
+                                                         stan::model::index_uni(
+                                                           1)) : (stan::math::logical_eq(
+                                                                    S, K) ? 
+            stan::model::rvalue(scale, "scale", stan::model::index_uni(k)) : 1.0));
           current_statement__ = 22;
           stan::math::validate_non_negative_index("psi_k", "NPsi", NPsi);
           Eigen::Matrix<double,-1,1> psi_k =
@@ -2534,33 +2549,18 @@ class mdcev_model final : public model_base_crtp<mdcev_model> {
           stan::model::assign(psi_k,
             stan::model::rvalue(psi, "psi", stan::model::index_uni(k)),
             "assigning variable psi_k");
-          current_statement__ = 28;
-          if (stan::math::logical_eq(S, 1)) {
-            current_statement__ = 27;
-            scale_full = stan::model::rvalue(scale, "scale",
-                           stan::model::index_uni(1));
-          } else {
-            current_statement__ = 26;
-            if (stan::math::logical_eq(S, K)) {
-              current_statement__ = 25;
-              scale_full = stan::model::rvalue(scale, "scale",
-                             stan::model::index_uni(k));
-            } else {
-              current_statement__ = 24;
-              scale_full = 1.0;
-            }
-          }
-          current_statement__ = 39;
+          current_statement__ = 36;
           if (stan::math::logical_eq(psi_ascs, 1)) {
-            current_statement__ = 35;
-            stan::model::assign(lpsi,
-              stan::math::rep_matrix(
-                stan::math::transpose(
-                  stan::math::append_row(0, stan::math::head(psi_k, (J - 1)))),
-                I), "assigning variable lpsi");
-            current_statement__ = 37;
+            current_statement__ = 34;
             if (stan::math::logical_gt(NPsi_ij, 0)) {
-              current_statement__ = 36;
+              current_statement__ = 31;
+              stan::model::assign(lpsi,
+                stan::math::rep_matrix(
+                  stan::math::transpose(
+                    stan::math::append_row(0,
+                      stan::math::head(psi_k, (J - 1)))), I),
+                "assigning variable lpsi");
+              current_statement__ = 32;
               stan::model::assign(lpsi,
                 stan::math::add(stan::model::deep_copy(lpsi),
                   stan::math::to_matrix(
@@ -2569,13 +2569,21 @@ class mdcev_model final : public model_base_crtp<mdcev_model> {
                         stan::model::index_omni()),
                       stan::math::segment(psi_k, J, NPsi_ij)), I, J, 0)),
                 "assigning variable lpsi");
+            } else {
+              current_statement__ = 29;
+              stan::model::assign(lpsi,
+                stan::math::rep_matrix(
+                  stan::math::transpose(
+                    stan::math::append_row(0,
+                      stan::math::head(psi_k, (J - 1)))), I),
+                "assigning variable lpsi");
             }
           } else {
-            current_statement__ = 34;
+            current_statement__ = 28;
             if (stan::math::logical_eq(psi_ascs, 0)) {
-              current_statement__ = 32;
+              current_statement__ = 26;
               if (stan::math::logical_gt(NPsi_ij, 0)) {
-                current_statement__ = 31;
+                current_statement__ = 25;
                 stan::model::assign(lpsi,
                   stan::math::to_matrix(
                     stan::math::multiply(
@@ -2583,41 +2591,38 @@ class mdcev_model final : public model_base_crtp<mdcev_model> {
                         stan::model::index_omni()), psi_k), I, J, 0),
                   "assigning variable lpsi");
               } else {
-                current_statement__ = 30;
-                if (stan::math::logical_eq(NPsi_ij, 0)) {
-                  current_statement__ = 29;
-                  stan::model::assign(lpsi, stan::math::rep_matrix(0, I, J),
-                    "assigning variable lpsi");
-                }
+                current_statement__ = 24;
+                stan::model::assign(lpsi, stan::math::rep_matrix(0, I, J),
+                  "assigning variable lpsi");
               }
             }
           }
-          current_statement__ = 65;
+          current_statement__ = 62;
           if (stan::math::logical_lt(model_num, 5)) {
-            current_statement__ = 55;
+            current_statement__ = 52;
             stan::math::validate_non_negative_index("alpha_j", "I", I);
-            current_statement__ = 56;
+            current_statement__ = 53;
             stan::math::validate_non_negative_index("alpha_j", "J", J);
             Eigen::Matrix<double,-1,-1> alpha_j =
               Eigen::Matrix<double,-1,-1>::Constant(I, J,
                 std::numeric_limits<double>::quiet_NaN());
-            current_statement__ = 57;
+            current_statement__ = 54;
             stan::model::assign(alpha_j,
               alpha_j_ll(
                 stan::model::rvalue(alpha, "alpha", stan::model::index_uni(k)),
                 I, J, model_num, pstream__), "assigning variable alpha_j");
-            current_statement__ = 63;
+            current_statement__ = 60;
             if (stan::math::logical_eq(K, 1)) {
-              current_statement__ = 61;
+              current_statement__ = 58;
               stan::model::assign(log_like,
                 mdcev_ll(quant_j, price_j, log_num, income, M, log_M_fact,
                   lpsi, gamma_full, alpha_1, alpha_j, scale_full, I, J,
                   nonzero, trunc_data, pstream__),
                 "assigning variable log_like");
             } else {
-              current_statement__ = 60;
+              current_statement__ = 57;
               if (stan::math::logical_gt(K, 1)) {
-                current_statement__ = 58;
+                current_statement__ = 55;
                 stan::model::assign(log_like_util,
                   mdcev_ll(quant_j, price_j, log_num, income, M, log_M_fact,
                     lpsi, gamma_full, alpha_1, alpha_j, scale_full, I, J,
@@ -2627,18 +2632,18 @@ class mdcev_model final : public model_base_crtp<mdcev_model> {
               }
             }
           } else {
-            current_statement__ = 54;
+            current_statement__ = 51;
             if (stan::math::logical_eq(model_num, 5)) {
-              current_statement__ = 40;
+              current_statement__ = 37;
               stan::math::validate_non_negative_index("phi_ij", "I", I);
-              current_statement__ = 41;
+              current_statement__ = 38;
               stan::math::validate_non_negative_index("phi_ij", "J", J);
               Eigen::Matrix<double,-1,-1> phi_ij =
                 Eigen::Matrix<double,-1,-1>::Constant(I, J,
                   std::numeric_limits<double>::quiet_NaN());
-              current_statement__ = 46;
+              current_statement__ = 43;
               if (stan::math::logical_gt(NPhi, 0)) {
-                current_statement__ = 45;
+                current_statement__ = 42;
                 stan::model::assign(phi_ij,
                   stan::math::exp(
                     stan::math::to_matrix(
@@ -2649,26 +2654,26 @@ class mdcev_model final : public model_base_crtp<mdcev_model> {
                           stan::model::index_uni(k))), I, J, 0)),
                   "assigning variable phi_ij");
               } else {
-                current_statement__ = 44;
+                current_statement__ = 41;
                 if (stan::math::logical_eq(NPhi, 0)) {
-                  current_statement__ = 43;
+                  current_statement__ = 40;
                   stan::model::assign(phi_ij,
                     stan::math::rep_matrix(1, I, J),
                     "assigning variable phi_ij");
                 }
               }
-              current_statement__ = 52;
+              current_statement__ = 49;
               if (stan::math::logical_eq(K, 1)) {
-                current_statement__ = 50;
+                current_statement__ = 47;
                 stan::model::assign(log_like,
                   kt_ll(quant_j, price_j, log_num, income, lpsi, phi_ij,
                     gamma_full, alpha_1, scale_full, I, J, nonzero,
                     trunc_data, jacobian_analytical_grad, pstream__),
                   "assigning variable log_like");
               } else {
-                current_statement__ = 49;
+                current_statement__ = 46;
                 if (stan::math::logical_gt(K, 1)) {
-                  current_statement__ = 47;
+                  current_statement__ = 44;
                   stan::model::assign(log_like_util,
                     kt_ll(quant_j, price_j, log_num, income, lpsi, phi_ij,
                       gamma_full, alpha_1, scale_full, I, J, nonzero,
@@ -2680,9 +2685,21 @@ class mdcev_model final : public model_base_crtp<mdcev_model> {
             }
           }
         }
-        current_statement__ = 79;
+        current_statement__ = 76;
         if (stan::math::logical_gt(K, 1)) {
-          current_statement__ = 77;
+          current_statement__ = 65;
+          stan::math::validate_non_negative_index("delta_data", "I", I);
+          current_statement__ = 66;
+          stan::math::validate_non_negative_index("delta_data", "K - 1", (K -
+            1));
+          Eigen::Matrix<double,-1,-1> delta_data =
+            Eigen::Matrix<double,-1,-1>::Constant(I, (K - 1),
+              std::numeric_limits<double>::quiet_NaN());
+          current_statement__ = 67;
+          stan::model::assign(delta_data,
+            stan::math::multiply(data_class, stan::math::transpose(delta)),
+            "assigning variable delta_data");
+          current_statement__ = 74;
           for (int i = 1; i <= I; ++i) {
             current_statement__ = 68;
             stan::math::validate_non_negative_index("ltheta", "K", K);
@@ -2693,27 +2710,23 @@ class mdcev_model final : public model_base_crtp<mdcev_model> {
             stan::model::assign(ltheta,
               stan::math::log_softmax(
                 stan::math::append_row(0,
-                  stan::math::multiply(delta,
-                    stan::math::transpose(
-                      stan::model::rvalue(data_class, "data_class",
-                        stan::model::index_uni(i)))))),
+                  stan::math::transpose(
+                    stan::model::rvalue(delta_data, "delta_data",
+                      stan::model::index_uni(i))))),
               "assigning variable ltheta");
             current_statement__ = 70;
             stan::math::validate_non_negative_index("lps", "K", K);
             Eigen::Matrix<double,-1,1> lps =
               Eigen::Matrix<double,-1,1>::Constant(K,
                 std::numeric_limits<double>::quiet_NaN());
-            current_statement__ = 74;
-            for (int k = 1; k <= K; ++k) {
-              current_statement__ = 72;
-              stan::model::assign(lps,
-                (stan::model::rvalue(ltheta, "ltheta",
-                   stan::model::index_uni(k)) +
-                stan::model::rvalue(log_like_util, "log_like_util",
-                  stan::model::index_uni(k), stan::model::index_uni(i))),
-                "assigning variable lps", stan::model::index_uni(k));
-            }
-            current_statement__ = 75;
+            current_statement__ = 71;
+            stan::model::assign(lps,
+              stan::math::add(ltheta,
+                stan::math::to_vector(
+                  stan::model::rvalue(log_like_util, "log_like_util",
+                    stan::model::index_omni(), stan::model::index_uni(i)))),
+              "assigning variable lps");
+            current_statement__ = 72;
             stan::model::assign(log_like, stan::math::log_sum_exp(lps),
               "assigning variable log_like", stan::model::index_uni(i));
           }
@@ -2727,29 +2740,34 @@ class mdcev_model final : public model_base_crtp<mdcev_model> {
       }
       double sum_log_lik = std::numeric_limits<double>::quiet_NaN();
       current_statement__ = 8;
-      sum_log_lik = 0;
+      sum_log_lik = stan::math::dot_product(log_like, weights);
       Eigen::Matrix<double,-1,-1> theta =
         Eigen::Matrix<double,-1,-1>::Constant(theta_1dim__, K,
           std::numeric_limits<double>::quiet_NaN());
-      current_statement__ = 85;
-      for (int i = 1; i <= I; ++i) {
-        current_statement__ = 81;
-        sum_log_lik = (sum_log_lik +
-          (stan::model::rvalue(log_like, "log_like",
-             stan::model::index_uni(i))
-          *
-          stan::model::rvalue(weights, "weights", stan::model::index_uni(i))));
-        current_statement__ = 83;
-        if (stan::math::logical_gt(K, 1)) {
-          current_statement__ = 82;
+      current_statement__ = 84;
+      if (stan::math::logical_gt(K, 1)) {
+        current_statement__ = 78;
+        stan::math::validate_non_negative_index("delta_data", "I", I);
+        current_statement__ = 79;
+        stan::math::validate_non_negative_index("delta_data", "K - 1", (K -
+          1));
+        Eigen::Matrix<double,-1,-1> delta_data =
+          Eigen::Matrix<double,-1,-1>::Constant(I, (K - 1),
+            std::numeric_limits<double>::quiet_NaN());
+        current_statement__ = 80;
+        stan::model::assign(delta_data,
+          stan::math::multiply(data_class, stan::math::transpose(delta)),
+          "assigning variable delta_data");
+        current_statement__ = 82;
+        for (int i = 1; i <= I; ++i) {
+          current_statement__ = 81;
           stan::model::assign(theta,
             stan::math::transpose(
               stan::math::softmax(
                 stan::math::append_row(0,
-                  stan::math::multiply(delta,
-                    stan::math::transpose(
-                      stan::model::rvalue(data_class, "data_class",
-                        stan::model::index_uni(i))))))),
+                  stan::math::transpose(
+                    stan::model::rvalue(delta_data, "delta_data",
+                      stan::model::index_uni(i)))))),
             "assigning variable theta", stan::model::index_uni(i));
         }
       }

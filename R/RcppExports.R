@@ -57,11 +57,3 @@ CalcmdemandOne_rng <- function(income, price, psi_j, phi_j, gamma_j, alpha, scal
     .Call(`_rmdcev_CalcmdemandOne_rng`, income, price, psi_j, phi_j, gamma_j, alpha, scale, nerrs, model_num, algo_gen, tol, max_loop, base_rng__, pstream__)
 }
 
-rmdcev_get_rng <- function(seed = 0L) {
-    .Call(`_rmdcev_rmdcev_get_rng`, seed)
-}
-
-rmdcev_get_stream <- function() {
-    .Call(`_rmdcev_rmdcev_get_stream`)
-}
-

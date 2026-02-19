@@ -298,27 +298,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// rmdcev_get_rng
-SEXP rmdcev_get_rng(int seed);
-RcppExport SEXP _rmdcev_rmdcev_get_rng(SEXP seedSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< int >::type seed(seedSEXP);
-    rcpp_result_gen = Rcpp::wrap(rmdcev_get_rng(seed));
-    return rcpp_result_gen;
-END_RCPP
-}
-// rmdcev_get_stream
-SEXP rmdcev_get_stream();
-RcppExport SEXP _rmdcev_rmdcev_get_stream() {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    rcpp_result_gen = Rcpp::wrap(rmdcev_get_stream());
-    return rcpp_result_gen;
-END_RCPP
-}
 
 RcppExport SEXP _rcpp_module_boot_stan_fit4mdcev_mod();
 RcppExport SEXP _rcpp_module_boot_stan_fit4mdcev_rp_mod();
@@ -338,8 +317,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_rmdcev_CalcWTP_rng", (DL_FUNC) &_rmdcev_CalcWTP_rng, 21},
     {"_rmdcev_CalcMarshallianDemand_rng", (DL_FUNC) &_rmdcev_CalcMarshallianDemand_rng, 21},
     {"_rmdcev_CalcmdemandOne_rng", (DL_FUNC) &_rmdcev_CalcmdemandOne_rng, 14},
-    {"_rmdcev_rmdcev_get_rng", (DL_FUNC) &_rmdcev_rmdcev_get_rng, 1},
-    {"_rmdcev_rmdcev_get_stream", (DL_FUNC) &_rmdcev_rmdcev_get_stream, 0},
     {"_rcpp_module_boot_stan_fit4mdcev_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4mdcev_mod, 0},
     {"_rcpp_module_boot_stan_fit4mdcev_rp_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4mdcev_rp_mod, 0},
     {NULL, NULL, 0}
