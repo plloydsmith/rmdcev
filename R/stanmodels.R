@@ -36,16 +36,3 @@ if (requireNamespace("rstan", quietly = TRUE)) {
     stanmodels <- list()
 }
 
-#' @title get_rstan_model
-#' @description Return the pre-compiled rstan stanmodel object for a named model.
-#' @param model_name Character string, either "mdcev" or "mdcev_rp".
-#' @return A stanmodel object.
-#' @noRd
-get_rstan_model <- function(model_name) {
-    if (!requireNamespace("rstan", quietly = TRUE))
-        stop("Package 'rstan' is required for the rstan backend and hessian computation.")
-    if (!is.list(stanmodels) || is.null(stanmodels[[model_name]]))
-        stop("Stan model '", model_name, "' is not available. ",
-             "Ensure rstan is installed and the package was loaded correctly.")
-    stanmodels[[model_name]]
-}
