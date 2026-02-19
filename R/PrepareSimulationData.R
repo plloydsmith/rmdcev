@@ -187,7 +187,7 @@ if (random_parameters == "fixed"){
 		}
 
 		est_sim_tau <- est_sim_mu_tau %>%
-			dplyr::select(sim_id, .data$parm_id, .data$tau) %>%
+			dplyr::select(sim_id, "parm_id", "tau") %>%
 			dplyr::group_split(sim_id)
 
 		est_sim_lomega <- est_sim %>%
