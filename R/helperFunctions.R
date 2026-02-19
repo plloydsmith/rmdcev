@@ -14,10 +14,10 @@ CreateListsRow <- function(x){
 #' @noRd
 CleanInit <- function(init_input){
 	if (!is.list(init_input)){
-		temp = init_input
+		temp <- init_input
 	} else{
 
-	temp = list(scale = NULL)
+	temp <- list(scale = NULL)
 
 	# Add dimension to starting values
 	temp <- lapply(init_input, function(x){
@@ -110,9 +110,9 @@ CreateBlankPolicies <- function(npols, model, price_change_only = TRUE){
 #' @description Creates the Psi data matrix for use in mdcev model
 #' @noRd
 CreatePsiMatrix <- function(psi_j = NULL, psi_i = NULL){
-	if(!is.na(psi_i))
+	if(!is.null(psi_i))
 		psi_i <- lapply(psi_i, function(x) {rep(x, each= nrow(psi_j))})
-	if(!is.na(psi_j))
+	if(!is.null(psi_j))
 		psi_j <- lapply(psi_j, function(x) {rep(x, times=nrow(psi_i))})
 
 	dat_psi <- c(psi_j, psi_i)
@@ -240,45 +240,43 @@ get_rstan_model <- function(model_name) {
 #' @description Works at individual level and creates the psi
 #' variables for each simulation, policy, alternative
 #' @noRd
-CreatePsi = function(dat_vars_i, est_pars_i, J, NPsi_ij, psi_ascs, npols){
-#	dat_vars_i = dat_vars[[3]]
-#	est_pars_i = psi_sim_temp[[3]]
-	lpsi = matrix(0, nrow(est_pars_i), J)
+CreatePsi <- function(dat_vars_i, est_pars_i, J, NPsi_ij, psi_ascs, npols){
+	lpsi <- matrix(0, nrow(est_pars_i), J)
 	if (psi_ascs == 1){
-		psi_non_ascs_start = J
-		psi_non_ascs_end = J+NPsi_ij-1
+		psi_non_ascs_start <- J
+		psi_non_ascs_end <- J+NPsi_ij-1
 		if (nrow(est_pars_i) == 1)
-			lpsi = lpsi + c(0, est_pars_i[,1:(J-1)])
+			lpsi <- lpsi + c(0, est_pars_i[,1:(J-1)])
 		else
-			lpsi = lpsi + cbind(0, est_pars_i[,1:(J-1)]) ##  alternative specific constants
+			lpsi <- lpsi + cbind(0, est_pars_i[,1:(J-1)]) ##  alternative specific constants
 	} else if (psi_ascs == 0){
-		psi_non_ascs_start = 1
-		psi_non_ascs_end = NPsi_ij
+		psi_non_ascs_start <- 1
+		psi_non_ascs_end <- NPsi_ij
 	}
 
 	if ((NPsi_ij > 0) && (nrow(dat_vars_i) == J)){
-		psi_non_ascs = est_pars_i[,psi_non_ascs_start:psi_non_ascs_end, drop=FALSE]
-		lpsi = lpsi + as.matrix(psi_non_ascs) %*% t(as.matrix(dat_vars_i))
+		psi_non_ascs <- est_pars_i[,psi_non_ascs_start:psi_non_ascs_end, drop=FALSE]
+		lpsi <- lpsi + as.matrix(psi_non_ascs) %*% t(as.matrix(dat_vars_i))
 	}
 
 	if (nrow(dat_vars_i) > J){
 		if (NPsi_ij == 0){
-			lpsi = CreateListsRow(lpsi)
-			lpsi = lapply(lpsi, function(x){
-				lpsi= matrix(x,nrow=npols,ncol=length(x),byrow=TRUE)
+			lpsi <- CreateListsRow(lpsi)
+			lpsi <- lapply(lpsi, function(x){
+				lpsi <- matrix(x,nrow=npols,ncol=length(x),byrow=TRUE)
 			})
 		} else if (NPsi_ij > 0){
-			dat_vars_i = dat_vars_i %>%
+			dat_vars_i <- dat_vars_i %>%
 				group_split(policy, .keep = F)
 			psi_non_ascs <- est_pars_i[,psi_non_ascs_start:psi_non_ascs_end, drop=FALSE]
 			lpsi <- lapply(dat_vars_i, function(xx){
-				lpsi = lpsi + as.matrix(psi_non_ascs) %*% t(as.matrix(xx))
+				lpsi <- lpsi + as.matrix(psi_non_ascs) %*% t(as.matrix(xx))
 				return(lpsi)
 			})
-			lpsi = aperm(array(unlist(lpsi),
+			lpsi <- aperm(array(unlist(lpsi),
 							   dim = c(nrow(lpsi[[1]]), ncol(lpsi[[1]]), length(lpsi))),
 						 perm=c(1,3,2))
-			lpsi = lapply(seq(dim(lpsi)[1]), function(x) lpsi[ x, , ])
+			lpsi <- lapply(seq(dim(lpsi)[1]), function(x) lpsi[ x, , ])
 		}
 	}
 	return(lpsi)

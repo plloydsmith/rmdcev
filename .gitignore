@@ -14,3 +14,6 @@ src/*.exe
 *.o
 *.dll
 CRAN-RELEASE
+inst/benchmarks/results/
+CLAUDE.md
+.claude/

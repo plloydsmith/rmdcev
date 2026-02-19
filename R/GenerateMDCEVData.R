@@ -41,7 +41,7 @@ GenerateMDCEVData <- function(model, nobs = 1000, nalts = 10,
 							  max_loop = 999){
 
 	true <- gamma_parms
-	parms <- c(paste(rep('gamma', nalts), 1:nalts, sep=""))
+	parms <- c(paste(rep('gamma', nalts), 1:nalts, sep = ""))
 	gamma_true <- cbind(parms, true)
 
 	true <- scale_parms
@@ -52,8 +52,8 @@ GenerateMDCEVData <- function(model, nobs = 1000, nalts = 10,
 	# Create psi variables that vary over alternatives
 		dat_psi_j <-  rep(1, nobs) %x% dat_psi_j
 		dat_phi <- NULL
-		phi_sims <- replicate(nobs, rep(0, nalts), simplify=FALSE)
-	} else if (model == "kt_ee"){
+		phi_sims <- replicate(nobs, rep(0, nalts), simplify = FALSE)
+	} else {
 		psi_j_parms <- NULL
 		dat_psi_j <- NULL
 		dat_phi <-  rep(1, nobs) %x% dat_phi

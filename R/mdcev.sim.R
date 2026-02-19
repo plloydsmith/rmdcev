@@ -83,9 +83,6 @@ mdcev.sim <- function(df_indiv, df_common, sim_options,
 		message("Using hybrid approach in simulation...")
 	}
 
-#	if (model_num == 5)
-#		message("Using numerical bisection approach in simulation...")
-
 	# Organize options in list
 	sim_options[["nerrs"]] <- nerrs
 	sim_options[["cond_error"]] <- cond_error
@@ -97,7 +94,7 @@ mdcev.sim <- function(df_indiv, df_common, sim_options,
 
 	out <- StanSimulate(df_indiv, df_common, sim_options, stan_seed)
 
-	if(suppressTime == FALSE){
+	if (!suppressTime){
 		time <- proc.time() - start.time
 		n_simulations <- length(unlist(out)) * nerrs
 		message("\n", formatC(n_simulations, format = "e", digits = 2),

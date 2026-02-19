@@ -24,7 +24,6 @@ print.mdcev <- function(x, digits = max(3, getOption("digits") - 3),
 #' @param printCI set to TRUE to print 95\% confidence intervals
 #' @export
 summary.mdcev <- function(object, printCI=FALSE, ...){
-#object <- output
 	if(object$algorithm == "MLE"){
 
 		if(object$std_errors == "deltamethod"){
@@ -96,7 +95,7 @@ summary.mdcev <- function(object, printCI=FALSE, ...){
 					   n_eff = round(as.numeric(n_eff), 0),
 					   Rhat = round(as.numeric(Rhat), 2))
 
-		} else if (object$random_parameters != "fixed"){
+		} else {
 
 			output_non_mu <- output[grepl("gamma|alpha|tau|scale", output$parms),]
 
@@ -152,10 +151,10 @@ summary.mdcev <- function(object, printCI=FALSE, ...){
 
 	rownames(output) <- c(as.character(output$parms))
 
-	dropcolumns=NULL
-	if(printCI==FALSE) dropcolumns = c(dropcolumns,5,6)
-	dropcolumns = unique(dropcolumns)
-	if(length(dropcolumns)>0) output = output[,-dropcolumns, drop=FALSE]
+	dropcolumns <- NULL
+	if (!printCI) dropcolumns <- c(dropcolumns, 5, 6)
+	dropcolumns <- unique(dropcolumns)
+	if (length(dropcolumns) > 0) output <- output[, -dropcolumns, drop = FALSE]
 
 	output$parms <- NULL
 
@@ -168,8 +167,6 @@ summary.mdcev <- function(object, printCI=FALSE, ...){
 #' @method print summary.mdcev
 #' @export
 print.summary.mdcev <- function(x,...){
-	#	x <- output
-
 	rmdcevVersion <- tryCatch(utils::packageDescription("rmdcev", fields = "Version"),
 							  warning=function(w) return("rmdcev"),
 							  error=function(e) return("rmdcev"))
@@ -193,10 +190,12 @@ print.summary.mdcev <- function(x,...){
 			cat("Standard errors calculated using : ", x$n_draws," MVN draws", "\n", sep="")
 		}
 
-		if(x$stan_fit$return_code==0){
+		if (x$stan_fit$return_code == 0){
 			converge <- "successful convergence"
-		} else if(x$stan_fit$return_code==1){
+		} else if (x$stan_fit$return_code == 1){
 			converge <- "unsuccessful convergence"
+		} else {
+			converge <- paste("unknown return code:", x$stan_fit$return_code)
 		}
 		cat("Exit of MLE                      : ", converge,"\n", sep="")
 
@@ -222,9 +221,6 @@ print.summary.mdcev <- function(x,...){
 	names(mean_consumption) <-x$parms_info$alt_names
 	print(mean_consumption )
 	cat("\n")
-
-	#	cat("\nPsi specification:\n")
-	#	cat(paste(x$psi_formula, sep = "\n", collapse = "\n"), "\n", sep = "")
 
 	if (x$n_classes > 1){
 		cat("\nClass average probabilities:\n")
@@ -275,7 +271,5 @@ coef.mdcev <- function(object, ...){
 	# first remove the fixed coefficients if required
 	result$theta <- NULL
 	result$sum_log_lik <- NULL
-	ncoefs <- names(result)
-	selcoef <- 1:length(result)
-	result[selcoef]
+	result
 }

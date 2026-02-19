@@ -19,14 +19,39 @@ npols     <- 2
 policies  <- CreateBlankPolicies(npols, result, price_change_only = TRUE)
 df_sim    <- PrepareSimulationData(result, policies, nsims = 1)
 
+# Aliases for non-exported internal C++ functions
+rmdcev_get_rng        <- rmdcev:::rmdcev_get_rng
+rmdcev_get_stream     <- rmdcev:::rmdcev_get_stream
+DrawError_rng         <- rmdcev:::DrawError_rng
+MarshallianDemand     <- rmdcev:::MarshallianDemand
+HicksianDemand        <- rmdcev:::HicksianDemand
+ComputeUtilJ          <- rmdcev:::ComputeUtilJ
+CalcWTP_rng           <- rmdcev:::CalcWTP_rng
+CalcmdemandOne_rng    <- rmdcev:::CalcmdemandOne_rng
+
 income  <- df_sim[["df_indiv"]][["income"]][[1]]
 quant_j <- df_sim[["df_indiv"]][["quant_j"]][[1]]
 price   <- df_sim[["df_indiv"]][["price"]][[1]]
 
 quant_num <- as.numeric(income - quant_j %*% price[-1])
 
-psi_j   <- result[["stan_data"]][["dat_psi"]][1:nalts, , drop = FALSE] %*%
-            t(result[["stan_fit"]][["par"]][["psi"]])
+# Compute psi_j for one individual (handles ASC-only, attribute-only, or mixed)
+psi_ascs <- result[["stan_data"]][["psi_ascs"]]
+NPsi_ij  <- result[["stan_data"]][["NPsi_ij"]]
+par_psi  <- result[["stan_fit"]][["par"]][["psi"]]
+
+if (psi_ascs == 1 && NPsi_ij == 0) {
+    # ASC-only: par_psi has J-1 values; reference alternative gets 0
+    psi_j <- c(0, par_psi)
+} else if (NPsi_ij > 0) {
+    # Attribute-based psi (may include leading J-1 ASC values when psi_ascs == 1)
+    attr_psi <- if (psi_ascs == 1) par_psi[nalts:length(par_psi)] else par_psi
+    asc_part <- if (psi_ascs == 1) c(0, par_psi[1:(nalts - 1)]) else rep(0, nalts)
+    psi_j <- asc_part + result[["stan_data"]][["dat_psi"]][1:nalts, , drop = FALSE] %*% attr_psi
+} else {
+    psi_j <- rep(0, nalts)
+}
+
 phi_j   <- rep(0, nalts)
 gamma_j <- result[["stan_fit"]][["par"]][["gamma"]]
 gamma   <- c(1, gamma_j)
@@ -40,7 +65,7 @@ max_loop <- 999
 rng <- rmdcev_get_rng(seed = 42)
 o   <- rmdcev_get_stream()
 
-# Draw errors once for a fixed input to Marshallian/Hicskian benchmarks
+# Draw errors once for a fixed input to Marshallian/Hicksian benchmarks
 error <- DrawError_rng(quant_num, quant_j, price[-1],
                        psi_j, phi_j, gamma_j, alpha, scale,
                        model_num = model_num, nalts = nalts,
@@ -96,37 +121,60 @@ results_draw <- bench::press(
 )
 print(results_draw[, c("nerrs", "median", "mem_alloc")])
 
-# ---- CalcWTP_rng and CalcMarshallianDemand_rng: varying nerrs ----
-cat("\n--- CalcWTP_rng: nerrs grid ---\n")
-results_wtp <- bench::press(
+# ---- CalcmdemandOne_rng: varying nerrs ----
+# Benchmarks the full demand pipeline for a single individual
+cat("\n--- CalcmdemandOne_rng: nerrs grid ---\n")
+results_cmd <- bench::press(
   nerrs = c(1, 10, 50),
   {
     rng3 <- rmdcev_get_rng(seed = 2)
     bench::mark(
-      CalcWTP_rng(income, price, price_p, psi_j, phi_j, gamma_j, alpha, scale,
-                  model_num = model_num, nalts = nalts, nerrs = nerrs,
-                  cond_error = 1, draw_mlhs = 1, algo_gen = 0,
-                  tol_e = tol_e, tol_l = tol_l, max_loop = max_loop,
-                  rng3, o),
-      iterations = 10, check = FALSE
-    )
-  }
-)
-print(results_wtp[, c("nerrs", "median", "mem_alloc")])
-
-cat("\n--- CalcMarshallianDemand_rng: nerrs grid ---\n")
-results_cmd <- bench::press(
-  nerrs = c(1, 10, 50),
-  {
-    rng4 <- rmdcev_get_rng(seed = 3)
-    bench::mark(
-      CalcMarshallianDemand_rng(income, price, psi_j, phi_j, gamma_j, alpha, scale,
-                                model_num = model_num, nalts = nalts, nerrs = nerrs,
-                                cond_error = 0, draw_mlhs = 1, algo_gen = 0,
-                                tol_e = tol_e, max_loop = max_loop,
-                                rng4, o),
+      CalcmdemandOne_rng(income, price, psi_j, phi_j, gamma_j, alpha, scale,
+                         nerrs = nerrs, model_num = model_num,
+                         algo_gen = 0, tol = tol_e, max_loop = max_loop,
+                         rng3, o),
       iterations = 10, check = FALSE
     )
   }
 )
 print(results_cmd[, c("nerrs", "median", "mem_alloc")])
+
+# ---- CalcWTP_rng: varying nerrs using simulation-prepared data ----
+cat("\n--- CalcWTP_rng: nerrs grid ---\n")
+indiv1_psi_sims   <- df_sim[["df_indiv"]][["psi_sims"]][[1]]
+indiv1_phi_sims   <- df_sim[["df_indiv"]][["phi_sims"]][[1]]
+indiv1_psi_p_sims <- df_sim[["df_indiv"]][["psi_p_sims"]][[1]]
+indiv1_phi_p_sims <- df_sim[["df_indiv"]][["phi_p_sims"]][[1]]
+
+results_wtp <- bench::press(
+  nerrs = c(1, 10, 50),
+  {
+    rng4 <- rmdcev_get_rng(seed = 3)
+    bench::mark(
+      CalcWTP_rng(
+        income            = income,
+        quant_j           = quant_j,
+        price             = price,
+        price_p_policy    = df_sim[["df_common"]][["price_p_list"]],
+        psi_p_sims        = indiv1_psi_p_sims,
+        phi_p_sims        = indiv1_phi_p_sims,
+        psi_sims          = indiv1_psi_sims,
+        phi_sims          = indiv1_phi_sims,
+        gamma_sims        = df_sim[["df_common"]][["gamma_sim_nonrandom"]],
+        alpha_sims        = df_sim[["df_common"]][["alpha_sim_nonrandom"]],
+        scale_sims        = df_sim[["df_common"]][["scale_sims"]],
+        nerrs             = nerrs,
+        cond_error        = 1L,
+        draw_mlhs         = 1L,
+        algo_gen          = 0L,
+        model_num         = model_num,
+        price_change_only = 1L,
+        tol               = tol_e,
+        max_loop          = max_loop,
+        rng4, o
+      ),
+      iterations = 10, check = FALSE
+    )
+  }
+)
+print(results_wtp[, c("nerrs", "median", "mem_alloc")])

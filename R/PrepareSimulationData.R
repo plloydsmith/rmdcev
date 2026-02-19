@@ -107,27 +107,25 @@ ProcessSimulationData <- function(est_sim, object, policies, nsims){
 
 	J <- object$stan_data$J
 	I <- object$stan_data$I
-	NPsi_ij = object$stan_data$NPsi_ij
+	NPsi_ij <- object$stan_data$NPsi_ij
 	model_num <- object$stan_data$model_num
 	random_parameters <- object$random_parameters
 	gamma_nonrandom <- object$stan_data$gamma_nonrandom
 	alpha_nonrandom <- object$stan_data$alpha_nonrandom
 	npols <- length(policies$price_p)
-	psi_ascs = object$stan_data$psi_ascs
+	psi_ascs <- object$stan_data$psi_ascs
 
 	# scales (always fixed parameter)
 	if (object$stan_data$fixed_scale1 == 0){
-#		scale_sim = est_sim$scale
 		scale_sims <- t(GrabParms(est_sim, "scale"))
 	} else if (object$stan_data$fixed_scale1 == 1){
-		scale_sims = matrix(1, nsims, 1)
+		scale_sims <- matrix(1, nsims, 1)
 	}
 
 	# Get fixed parameters for gammas
 	if (model_num == 2){
 		gamma_sim_nonrandom <- matrix(1, nsims, J)
 	} else if (model_num != 2 & gamma_nonrandom == 1){
-#		gamma_sim_nonrandom = est_sim$gamma
 		gamma_sim_nonrandom <- GrabParms(est_sim, "gamma")
 		if (object$stan_data$gamma_ascs == 0){
 			gamma_sim_nonrandom <- matrix(rep(gamma_sim_nonrandom, each=J), ncol=J, byrow=TRUE)
@@ -139,7 +137,6 @@ ProcessSimulationData <- function(est_sim, object, policies, nsims){
 	if (model_num == 4){
 		alpha_sim_nonrandom <- matrix(0, nsims, J+1)
 	} else if (model_num != 4 & alpha_nonrandom == 1){
-#		alpha_sim_nonrandom = est_sim$alpha
 		alpha_sim_nonrandom <- GrabParms(est_sim, "alpha")
 
 		if (model_num == 1 || model_num == 5) {
@@ -162,13 +159,13 @@ ProcessSimulationData <- function(est_sim, object, policies, nsims){
 # ensure psi variables in same form as psi_sim_rand
 if (random_parameters == "fixed"){
 	psi_sim_temp <- GrabParms(est_sim, "psi") # change back to est_sim
-	psi_sim_temp = replicate(I, psi_sim_temp, simplify=FALSE)
+	psi_sim_temp <- replicate(I, psi_sim_temp, simplify=FALSE)
 
 	if (object[["parms_info"]][["n_vars"]][["n_phi"]] > 0){
 		phi_sim_temp <- GrabParms(est_sim, "phi") # change back to est_sim
-		phi_sim_temp = replicate(I, phi_sim_temp, simplify=FALSE)
+		phi_sim_temp <- replicate(I, phi_sim_temp, simplify=FALSE)
 	}
-} else if (random_parameters != "fixed"){
+} else {
 
 	est_sim_mu_tau <- est_sim %>%
 		dplyr::filter(grepl(c("mu|tau"), parms)) %>%
@@ -287,10 +284,10 @@ if (object[["parms_info"]][["n_vars"]][["n_psi"]] > 0){
 		group_split(id, .keep = F)
 
 		psi_sims <- mapply(CreatePsi, dat_vars, psi_sim_temp,
-					  J = J, NPsi_ij=NPsi_ij, psi_ascs=psi_ascs, npols = npols,
+					  J = J, NPsi_ij = NPsi_ij, psi_ascs = psi_ascs, npols = npols,
 					  SIMPLIFY = FALSE)
 } else {
-	psi_sims = replicate(I, matrix(0, nsims, J), simplify=FALSE)
+	psi_sims <- replicate(I, matrix(0, nsims, J), simplify=FALSE)
 }
 
 psi_sims <- list(psi_sims)
@@ -317,7 +314,7 @@ if (object[["parms_info"]][["n_vars"]][["n_phi"]] > 0){
 
 } else if (object[["parms_info"]][["n_vars"]][["n_phi"]] == 0){
 	phi_sims <- array(1, dim = c(nsims,J))
-	phi_sims = replicate(I, phi_sims, simplify=FALSE)
+	phi_sims <- replicate(I, phi_sims, simplify=FALSE)
 	phi_sims <- list(phi_sims)
 	names(phi_sims) <- "phi_sims"
 }
@@ -344,7 +341,7 @@ if (policies$price_change_only == FALSE) {
 			group_split(id, .keep = F)
 
 		psi_p_sims <- mapply(CreatePsi, dat_vars, psi_sim_temp,
-							J = J, NPsi_ij=NPsi_ij, psi_ascs=psi_ascs,npols = npols,
+							J = J, NPsi_ij = NPsi_ij, psi_ascs = psi_ascs, npols = npols,
 							SIMPLIFY = FALSE)
 
 

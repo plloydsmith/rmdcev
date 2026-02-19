@@ -33,16 +33,14 @@ mdcev.datacheck <- function(data_input){
 	id.expend$expend_alt <- NULL
 
 	if (sum(id.expend$expend_numeraire < 0) > 0){
-		print(paste0("The outside good is not chosen for individuals: ",
-					 toString(id.expend[which(id.expend$expend_numeraire < 0), ]),
-			  "\n Ensure that the total expenditure on the alternatives is less than income."))
-		stop()
+		stop(paste0("The outside good is not chosen for individuals: ",
+					toString(id.expend[which(id.expend$expend_numeraire < 0), ]),
+					"\n Ensure that the total expenditure on the alternatives is less than income."))
 	}
 
 	if (sum(data_input$price <= 0) > 0){
-		print(paste0("Price is less than or equal to 0 for at least one individual alt in rows: ",
-					 toString(as.character(which(data_input$price <= 0)))))
-		stop()
+		stop(paste0("Price is less than or equal to 0 for at least one individual alt in rows: ",
+					toString(as.character(which(data_input$price <= 0)))))
 	}
 	message("Data is good")
 }

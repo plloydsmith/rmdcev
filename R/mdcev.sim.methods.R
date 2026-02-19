@@ -69,7 +69,7 @@ summary.mdcev.sim <- function(object, ci = 0.95, ...){
 						   paste0("ci_hi",(ci+(1-ci)/2)*100, "%"))
 
 	}
-	out_summary = list()
+	out_summary <- list()
 	out_summary$CoefTable    <- out
 	class(out_summary)       <- c("summary.mdcev.sim", "mdcev.sim")
 	return(out_summary)

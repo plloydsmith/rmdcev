@@ -18,7 +18,7 @@ prep_data <- function(n) {
 
 # ---- Standard models (hybrid0, gamma, alpha) ----
 results_mle <- bench::press(
-  nobs = c(100, 500, 1000),
+  nobs = c(500, 1000),
   model = c("hybrid0", "gamma", "alpha"),
   {
     d <- prep_data(nobs)
@@ -60,7 +60,7 @@ prep_data_ktee <- function(n) {
 }
 
 results_ktee <- bench::press(
-  nobs = c(100, 500, 1000),
+  nobs = c(500, 1000),
   {
     d <- prep_data_ktee(nobs)
     bench::mark(
