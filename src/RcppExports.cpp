@@ -13,7 +13,7 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
 // Shuffle_rng
-Eigen::Matrix<stan::promote_args_t<stan::base_type_t<double>>,-1,1> Shuffle_rng(const Eigen::Matrix<double,-1,1>& inv_temp, const int& nerrs, boost::ecuyer1988& base_rng__, std::ostream* pstream__);
+Eigen::Matrix<double,-1,1> Shuffle_rng(const Eigen::Matrix<double,-1,1>& inv_temp, const int& nerrs, boost::ecuyer1988& base_rng__, std::ostream* pstream__);
 RcppExport SEXP _rmdcev_Shuffle_rng(SEXP inv_tempSEXP, SEXP nerrsSEXP, SEXP base_rng__SEXP, SEXP pstream__SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -41,7 +41,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // DrawError_rng
-std::vector<   Eigen::Matrix<stan::promote_args_t<double, stan::base_type_t<double>,                   stan::base_type_t<double>, stan::base_type_t<double>,                   stan::base_type_t<double>,                   stan::promote_args_t<stan::base_type_t<double>,                     stan::base_type_t<double>, double>>,-1,1>> DrawError_rng(const double& quant_num, const Eigen::Matrix<double,-1,1>& quant_j, const Eigen::Matrix<double,-1,1>& price_j, const Eigen::Matrix<double,-1,1>& psi_j, const Eigen::Matrix<double,-1,1>& phi_j, const Eigen::Matrix<double,-1,1>& gamma_j, const Eigen::Matrix<double,-1,1>& alpha, const double& scale, const int& model_num, const int& nalts, const int& nerrs, const int& cond_error, const int& draw_mlhs, boost::ecuyer1988& base_rng__, std::ostream* pstream__);
+std::vector<Eigen::Matrix<double,-1,1>> DrawError_rng(const double& quant_num, const Eigen::Matrix<double,-1,1>& quant_j, const Eigen::Matrix<double,-1,1>& price_j, const Eigen::Matrix<double,-1,1>& psi_j, const Eigen::Matrix<double,-1,1>& phi_j, const Eigen::Matrix<double,-1,1>& gamma_j, const Eigen::Matrix<double,-1,1>& alpha, const double& scale, const int& model_num, const int& nalts, const int& nerrs, const int& cond_error, const int& draw_mlhs, boost::ecuyer1988& base_rng__, std::ostream* pstream__);
 RcppExport SEXP _rmdcev_DrawError_rng(SEXP quant_numSEXP, SEXP quant_jSEXP, SEXP price_jSEXP, SEXP psi_jSEXP, SEXP phi_jSEXP, SEXP gamma_jSEXP, SEXP alphaSEXP, SEXP scaleSEXP, SEXP model_numSEXP, SEXP naltsSEXP, SEXP nerrsSEXP, SEXP cond_errorSEXP, SEXP draw_mlhsSEXP, SEXP base_rng__SEXP, SEXP pstream__SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -79,7 +79,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // SortParmMatrix
-Eigen::Matrix<stan::promote_args_t<stan::base_type_t<double>,                 stan::base_type_t<double>, stan::base_type_t<double>,                 stan::base_type_t<double>>,-1,-1> SortParmMatrix(const Eigen::Matrix<double,-1,1>& MUzero, const Eigen::Matrix<double,-1,1>& price, const Eigen::Matrix<double,-1,1>& gamma, const Eigen::Matrix<double,-1,1>& alpha_phi, const int& nalts, std::ostream* pstream__);
+Eigen::Matrix<double,-1,-1> SortParmMatrix(const Eigen::Matrix<double,-1,1>& MUzero, const Eigen::Matrix<double,-1,1>& price, const Eigen::Matrix<double,-1,1>& gamma, const Eigen::Matrix<double,-1,1>& alpha_phi, const int& nalts, std::ostream* pstream__);
 RcppExport SEXP _rmdcev_SortParmMatrix(SEXP MUzeroSEXP, SEXP priceSEXP, SEXP gammaSEXP, SEXP alpha_phiSEXP, SEXP naltsSEXP, SEXP pstream__SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -95,7 +95,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // ComputeE
-stan::promote_args_t<double, stan::base_type_t<double>, stan::base_type_t<double>,   stan::base_type_t<double>, stan::base_type_t<double>> ComputeE(const int& M, const double& lambda, const Eigen::Matrix<double,-1,1>& g_price__phi, const Eigen::Matrix<double,-1,1>& b, const Eigen::Matrix<double,-1,1>& c, const Eigen::Matrix<double,-1,1>& d, std::ostream* pstream__);
+double ComputeE(const int& M, const double& lambda, const Eigen::Matrix<double,-1,1>& g_price__phi, const Eigen::Matrix<double,-1,1>& b, const Eigen::Matrix<double,-1,1>& c, const Eigen::Matrix<double,-1,1>& d, std::ostream* pstream__);
 RcppExport SEXP _rmdcev_ComputeE(SEXP MSEXP, SEXP lambdaSEXP, SEXP g_price__phiSEXP, SEXP bSEXP, SEXP cSEXP, SEXP dSEXP, SEXP pstream__SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -112,7 +112,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // MarshallianDemand
-Eigen::Matrix<stan::promote_args_t<double, stan::base_type_t<double>,                 stan::base_type_t<double>, stan::base_type_t<double>,                 stan::base_type_t<double>,                 stan::promote_args_t<stan::base_type_t<double>, double>>,-1,1> MarshallianDemand(const double& income, const Eigen::Matrix<double,-1,1>& price, const Eigen::Matrix<double,-1,1>& MUzero, const Eigen::Matrix<double,-1,1>& phi, const Eigen::Matrix<double,-1,1>& gamma, const Eigen::Matrix<double,-1,1>& alpha, const int& nalts, const int& algo_gen, const int& model_num, const double& tol_e, const int& max_loop, std::ostream* pstream__);
+Eigen::Matrix<double,-1,1> MarshallianDemand(const double& income, const Eigen::Matrix<double,-1,1>& price, const Eigen::Matrix<double,-1,1>& MUzero, const Eigen::Matrix<double,-1,1>& phi, const Eigen::Matrix<double,-1,1>& gamma, const Eigen::Matrix<double,-1,1>& alpha, const int& nalts, const int& algo_gen, const int& model_num, const double& tol_e, const int& max_loop, std::ostream* pstream__);
 RcppExport SEXP _rmdcev_MarshallianDemand(SEXP incomeSEXP, SEXP priceSEXP, SEXP MUzeroSEXP, SEXP phiSEXP, SEXP gammaSEXP, SEXP alphaSEXP, SEXP naltsSEXP, SEXP algo_genSEXP, SEXP model_numSEXP, SEXP tol_eSEXP, SEXP max_loopSEXP, SEXP pstream__SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -134,7 +134,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // ComputeUtilJ
-stan::promote_args_t<double, stan::base_type_t<double>, stan::base_type_t<double>,   stan::base_type_t<double>, stan::base_type_t<double>,   stan::promote_args_t<stan::base_type_t<double>, stan::base_type_t<double>>> ComputeUtilJ(const double& income, const Eigen::Matrix<double,-1,1>& quant_j, const Eigen::Matrix<double,-1,1>& price_j, const Eigen::Matrix<double,-1,1>& psi, const Eigen::Matrix<double,-1,1>& phi_j, const Eigen::Matrix<double,-1,1>& gamma_j, const Eigen::Matrix<double,-1,1>& alpha, const int& nalts, const int& model_num, std::ostream* pstream__);
+double ComputeUtilJ(const double& income, const Eigen::Matrix<double,-1,1>& quant_j, const Eigen::Matrix<double,-1,1>& price_j, const Eigen::Matrix<double,-1,1>& psi, const Eigen::Matrix<double,-1,1>& phi_j, const Eigen::Matrix<double,-1,1>& gamma_j, const Eigen::Matrix<double,-1,1>& alpha, const int& nalts, const int& model_num, std::ostream* pstream__);
 RcppExport SEXP _rmdcev_ComputeUtilJ(SEXP incomeSEXP, SEXP quant_jSEXP, SEXP price_jSEXP, SEXP psiSEXP, SEXP phi_jSEXP, SEXP gamma_jSEXP, SEXP alphaSEXP, SEXP naltsSEXP, SEXP model_numSEXP, SEXP pstream__SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -154,7 +154,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // ComputeUtilM
-stan::promote_args_t<double, stan::base_type_t<double>, stan::base_type_t<double>,   stan::base_type_t<double>, stan::base_type_t<double>,   stan::promote_args_t<stan::base_type_t<double>, stan::base_type_t<double>,     stan::base_type_t<double>>> ComputeUtilM(const int& M, const double& lambda1, const Eigen::Matrix<double,-1,1>& g_psi_a, const Eigen::Matrix<double,-1,1>& a_a_1, const Eigen::Matrix<double,-1,1>& mu_a_a_1, const Eigen::Matrix<double,-1,1>& psi, const Eigen::Matrix<double,-1,1>& g, const Eigen::Matrix<double,-1,1>& price, const Eigen::Matrix<double,-1,1>& d, const int& model_num, std::ostream* pstream__);
+double ComputeUtilM(const int& M, const double& lambda1, const Eigen::Matrix<double,-1,1>& g_psi_a, const Eigen::Matrix<double,-1,1>& a_a_1, const Eigen::Matrix<double,-1,1>& mu_a_a_1, const Eigen::Matrix<double,-1,1>& psi, const Eigen::Matrix<double,-1,1>& g, const Eigen::Matrix<double,-1,1>& price, const Eigen::Matrix<double,-1,1>& d, const int& model_num, std::ostream* pstream__);
 RcppExport SEXP _rmdcev_ComputeUtilM(SEXP MSEXP, SEXP lambda1SEXP, SEXP g_psi_aSEXP, SEXP a_a_1SEXP, SEXP mu_a_a_1SEXP, SEXP psiSEXP, SEXP gSEXP, SEXP priceSEXP, SEXP dSEXP, SEXP model_numSEXP, SEXP pstream__SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -175,7 +175,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // ComputeKtUtilM
-stan::promote_args_t<double, stan::base_type_t<double>, stan::base_type_t<double>,   double> ComputeKtUtilM(const int& M, const double& lambda1, const Eigen::Matrix<double,-1,1>& psi, const Eigen::Matrix<double,-1,1>& mu, const double& alpha_1, std::ostream* pstream__);
+double ComputeKtUtilM(const int& M, const double& lambda1, const Eigen::Matrix<double,-1,1>& psi, const Eigen::Matrix<double,-1,1>& mu, const double& alpha_1, std::ostream* pstream__);
 RcppExport SEXP _rmdcev_ComputeKtUtilM(SEXP MSEXP, SEXP lambda1SEXP, SEXP psiSEXP, SEXP muSEXP, SEXP alpha_1SEXP, SEXP pstream__SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -191,7 +191,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // HicksianDemand
-Eigen::Matrix<stan::promote_args_t<double, stan::base_type_t<double>,                 stan::base_type_t<double>, stan::base_type_t<double>,                 stan::base_type_t<double>,                 stan::promote_args_t<stan::base_type_t<double>, double>>,-1,1> HicksianDemand(const double& util, const Eigen::Matrix<double,-1,1>& price, const Eigen::Matrix<double,-1,1>& MUzero, const Eigen::Matrix<double,-1,1>& phi, const Eigen::Matrix<double,-1,1>& gamma, const Eigen::Matrix<double,-1,1>& alpha, const int& nalts, const int& algo_gen, const int& model_num, const double& tol_l, const int& max_loop, std::ostream* pstream__);
+Eigen::Matrix<double,-1,1> HicksianDemand(const double& util, const Eigen::Matrix<double,-1,1>& price, const Eigen::Matrix<double,-1,1>& MUzero, const Eigen::Matrix<double,-1,1>& phi, const Eigen::Matrix<double,-1,1>& gamma, const Eigen::Matrix<double,-1,1>& alpha, const int& nalts, const int& algo_gen, const int& model_num, const double& tol_l, const int& max_loop, std::ostream* pstream__);
 RcppExport SEXP _rmdcev_HicksianDemand(SEXP utilSEXP, SEXP priceSEXP, SEXP MUzeroSEXP, SEXP phiSEXP, SEXP gammaSEXP, SEXP alphaSEXP, SEXP naltsSEXP, SEXP algo_genSEXP, SEXP model_numSEXP, SEXP tol_lSEXP, SEXP max_loopSEXP, SEXP pstream__SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -213,7 +213,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // CalcWTP_rng
-Eigen::Matrix<stan::promote_args_t<double, stan::base_type_t<double>,                 stan::base_type_t<double>, double, double,                 stan::promote_args_t<double, stan::base_type_t<double>,                   stan::base_type_t<double>, stan::base_type_t<double>,                   stan::base_type_t<double>,                   stan::promote_args_t<stan::base_type_t<double>, double>>>,-1,-1> CalcWTP_rng(const double& income, const Eigen::Matrix<double,-1,1>& quant_j, const Eigen::Matrix<double,-1,1>& price, const std::vector<Eigen::Matrix<double,-1,1>>& price_p_policy, const std::vector<Eigen::Matrix<double,-1,-1>>& psi_p_sims, const std::vector<Eigen::Matrix<double,-1,-1>>& phi_p_sims, const Eigen::Matrix<double,-1,-1>& psi_sims, const Eigen::Matrix<double,-1,-1>& phi_sims, const Eigen::Matrix<double,-1,-1>& gamma_sims, const Eigen::Matrix<double,-1,-1>& alpha_sims, const Eigen::Matrix<double,-1,1>& scale_sims, const int& nerrs, const int& cond_error, const int& draw_mlhs, const int& algo_gen, const int& model_num, const int& price_change_only, const double& tol, const int& max_loop, boost::ecuyer1988& base_rng__, std::ostream* pstream__);
+Eigen::Matrix<double,-1,-1> CalcWTP_rng(const double& income, const Eigen::Matrix<double,-1,1>& quant_j, const Eigen::Matrix<double,-1,1>& price, const std::vector<Eigen::Matrix<double,-1,1>>& price_p_policy, const std::vector<Eigen::Matrix<double,-1,-1>>& psi_p_sims, const std::vector<Eigen::Matrix<double,-1,-1>>& phi_p_sims, const Eigen::Matrix<double,-1,-1>& psi_sims, const Eigen::Matrix<double,-1,-1>& phi_sims, const Eigen::Matrix<double,-1,-1>& gamma_sims, const Eigen::Matrix<double,-1,-1>& alpha_sims, const Eigen::Matrix<double,-1,1>& scale_sims, const int& nerrs, const int& cond_error, const int& draw_mlhs, const int& algo_gen, const int& model_num, const int& price_change_only, const double& tol, const int& max_loop, boost::ecuyer1988& base_rng__, std::ostream* pstream__);
 RcppExport SEXP _rmdcev_CalcWTP_rng(SEXP incomeSEXP, SEXP quant_jSEXP, SEXP priceSEXP, SEXP price_p_policySEXP, SEXP psi_p_simsSEXP, SEXP phi_p_simsSEXP, SEXP psi_simsSEXP, SEXP phi_simsSEXP, SEXP gamma_simsSEXP, SEXP alpha_simsSEXP, SEXP scale_simsSEXP, SEXP nerrsSEXP, SEXP cond_errorSEXP, SEXP draw_mlhsSEXP, SEXP algo_genSEXP, SEXP model_numSEXP, SEXP price_change_onlySEXP, SEXP tolSEXP, SEXP max_loopSEXP, SEXP base_rng__SEXP, SEXP pstream__SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -244,7 +244,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // CalcMarshallianDemand_rng
-std::vector<   Eigen::Matrix<stan::promote_args_t<double, stan::base_type_t<double>,                   stan::base_type_t<double>, double, double,                   stan::promote_args_t<double, stan::base_type_t<double>,                     stan::base_type_t<double>, stan::base_type_t<double>,                     stan::base_type_t<double>,                     stan::promote_args_t<stan::base_type_t<double>, double>>>,-1,-1>> CalcMarshallianDemand_rng(const double& income, const Eigen::Matrix<double,-1,1>& quant_j, const Eigen::Matrix<double,-1,1>& price, const std::vector<Eigen::Matrix<double,-1,1>>& price_p_policy, const std::vector<Eigen::Matrix<double,-1,-1>>& psi_p_sims, const std::vector<Eigen::Matrix<double,-1,-1>>& phi_p_sims, const Eigen::Matrix<double,-1,-1>& psi_sims, const Eigen::Matrix<double,-1,-1>& phi_sims, const Eigen::Matrix<double,-1,-1>& gamma_sims, const Eigen::Matrix<double,-1,-1>& alpha_sims, const Eigen::Matrix<double,-1,1>& scale_sims, const int& nerrs, const int& cond_error, const int& draw_mlhs, const int& algo_gen, const int& model_num, const int& price_change_only, const double& tol, const int& max_loop, boost::ecuyer1988& base_rng__, std::ostream* pstream__);
+std::vector<Eigen::Matrix<double,-1,-1>> CalcMarshallianDemand_rng(const double& income, const Eigen::Matrix<double,-1,1>& quant_j, const Eigen::Matrix<double,-1,1>& price, const std::vector<Eigen::Matrix<double,-1,1>>& price_p_policy, const std::vector<Eigen::Matrix<double,-1,-1>>& psi_p_sims, const std::vector<Eigen::Matrix<double,-1,-1>>& phi_p_sims, const Eigen::Matrix<double,-1,-1>& psi_sims, const Eigen::Matrix<double,-1,-1>& phi_sims, const Eigen::Matrix<double,-1,-1>& gamma_sims, const Eigen::Matrix<double,-1,-1>& alpha_sims, const Eigen::Matrix<double,-1,1>& scale_sims, const int& nerrs, const int& cond_error, const int& draw_mlhs, const int& algo_gen, const int& model_num, const int& price_change_only, const double& tol, const int& max_loop, boost::ecuyer1988& base_rng__, std::ostream* pstream__);
 RcppExport SEXP _rmdcev_CalcMarshallianDemand_rng(SEXP incomeSEXP, SEXP quant_jSEXP, SEXP priceSEXP, SEXP price_p_policySEXP, SEXP psi_p_simsSEXP, SEXP phi_p_simsSEXP, SEXP psi_simsSEXP, SEXP phi_simsSEXP, SEXP gamma_simsSEXP, SEXP alpha_simsSEXP, SEXP scale_simsSEXP, SEXP nerrsSEXP, SEXP cond_errorSEXP, SEXP draw_mlhsSEXP, SEXP algo_genSEXP, SEXP model_numSEXP, SEXP price_change_onlySEXP, SEXP tolSEXP, SEXP max_loopSEXP, SEXP base_rng__SEXP, SEXP pstream__SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -275,7 +275,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // CalcmdemandOne_rng
-Eigen::Matrix<stan::promote_args_t<double, stan::base_type_t<double>,                 stan::base_type_t<double>, stan::base_type_t<double>,                 stan::base_type_t<double>,                 stan::promote_args_t<stan::base_type_t<double>, double, double>>,-1,1> CalcmdemandOne_rng(const double& income, const Eigen::Matrix<double,-1,1>& price, const Eigen::Matrix<double,-1,1>& psi_j, const Eigen::Matrix<double,-1,1>& phi_j, const Eigen::Matrix<double,-1,1>& gamma_j, const Eigen::Matrix<double,-1,1>& alpha, const double& scale, const int& nerrs, const int& model_num, const int& algo_gen, const double& tol, const int& max_loop, boost::ecuyer1988& base_rng__, std::ostream* pstream__);
+Eigen::Matrix<double,-1,1> CalcmdemandOne_rng(const double& income, const Eigen::Matrix<double,-1,1>& price, const Eigen::Matrix<double,-1,1>& psi_j, const Eigen::Matrix<double,-1,1>& phi_j, const Eigen::Matrix<double,-1,1>& gamma_j, const Eigen::Matrix<double,-1,1>& alpha, const double& scale, const int& nerrs, const int& model_num, const int& algo_gen, const double& tol, const int& max_loop, boost::ecuyer1988& base_rng__, std::ostream* pstream__);
 RcppExport SEXP _rmdcev_CalcmdemandOne_rng(SEXP incomeSEXP, SEXP priceSEXP, SEXP psi_jSEXP, SEXP phi_jSEXP, SEXP gamma_jSEXP, SEXP alphaSEXP, SEXP scaleSEXP, SEXP nerrsSEXP, SEXP model_numSEXP, SEXP algo_genSEXP, SEXP tolSEXP, SEXP max_loopSEXP, SEXP base_rng__SEXP, SEXP pstream__SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
