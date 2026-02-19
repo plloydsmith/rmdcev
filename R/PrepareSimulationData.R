@@ -214,7 +214,7 @@ if (random_parameters == "fixed"){
 			dplyr::arrange(sim_id)
 
 		est_sim_mu_tau <- est_sim_mu_tau %>%
-			dplyr::select(sim_id, .data$parm_id, .data$mu) %>%
+			dplyr::select(sim_id, "parm_id", "mu") %>%
 			dplyr::left_join(est_sim_tau, by = c("sim_id", "parm_id"))
 	}
 
@@ -230,7 +230,7 @@ if (random_parameters == "fixed"){
 		dplyr::mutate(beta = .data$mu + .data$z *.data$tau,
 			   parms = rep(object[["parms_info"]][["parm_names"]][["sd_names"]],
 			   			nsims*object[["n_individuals"]] )) %>%
-		dplyr::select(-.data$tau, -.data$mu, -.data$z)
+		dplyr::select(-"tau", -"mu", -"z")
 
 	# Transform gamma and alpha estimates
 	if(gamma_nonrandom == 0){

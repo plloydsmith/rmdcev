@@ -142,8 +142,8 @@ GrabParms <- function(data, parm_name){
 GrabIndividualParms <- function(est_sim, parm_name){
 	out <- est_sim %>%
 		dplyr::filter(grepl(c(parm_name), parms)) %>%
-		dplyr::select(id, sim_id, .data$parm_id, beta) %>%
-		tidyr::spread(.data$parm_id, beta) %>%
+		dplyr::select(id, sim_id, "parm_id", beta) %>%
+		tidyr::spread("parm_id", beta) %>%
 		dplyr::select(-sim_id) %>%
 		dplyr::group_split(id, .keep = F)
 	return(out)
