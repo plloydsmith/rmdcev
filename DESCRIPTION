@@ -19,7 +19,6 @@ Depends:
 Imports:
     posterior (>= 1.0.0),
     rstantools (>= 2.3.0),
-    RcppParallel (>= 5.0.1),
     dplyr (>= 1.0.0),
     purrr,
     tibble,

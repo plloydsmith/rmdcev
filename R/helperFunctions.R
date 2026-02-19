@@ -162,7 +162,7 @@ get_bayes_summary <- function(object) {
 			dplyr::mutate(parms = row.names(summ_mat))
 	} else {
 		object$stan_fit$summary() %>%
-			dplyr::rename(parms = variable, n_eff = ess_bulk, Rhat = rhat)
+			dplyr::rename(parms = "variable", n_eff = "ess_bulk", Rhat = "rhat")
 	}
 }
 

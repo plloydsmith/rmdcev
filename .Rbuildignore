@@ -7,3 +7,6 @@
 ^\.github$
 ^CRAN-RELEASE$
 ^cran-comments\.md$
+^\.claude$
+^CLAUDE\.md$
+^inst/benchmarks$
