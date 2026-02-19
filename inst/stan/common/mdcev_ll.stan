@@ -72,9 +72,9 @@ real DeterminJacob(vector phi_quant_term, real alpha, vector price_j_num,
                   vector nonzero, int J){
 // older version, use Bhat (2008) form below
   real log_j_det;
-  matrix[J, J] jacobian = add_diag(rep_matrix((1 - alpha) * price_j_num, J), inv(phi_quant_term));
-  jacobian = add_diag(diag_post_multiply(jacobian, nonzero), 1 - nonzero);
-  log_j_det = log_determinant(jacobian);
+  matrix[J, J] jac_mat = add_diag(rep_matrix((1 - alpha) * price_j_num, J), inv(phi_quant_term));
+  jac_mat = add_diag(diag_post_multiply(jac_mat, nonzero), 1 - nonzero);
+  log_j_det = log_determinant(jac_mat);
 
 return(log_j_det);
 }
