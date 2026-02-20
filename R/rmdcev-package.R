@@ -29,4 +29,3 @@
 
 #' Stan Development Team (2019). RStan: the R interface to Stan. R package version 2.19.2. \href{https://mc-stan.org/}{(link)}
 NULL
-
