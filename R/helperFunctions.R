@@ -57,7 +57,7 @@ DoCbind <- function(x) {
 #'
 #' mdcev_est <- mdcev( ~ 0, data = data_rec,
 #'                model = "hybrid0", algorithm = "MLE",
-#'                std_errors = "mvn")
+#'                std_errors = "mvn", backend = "rstan")
 #' CreateBlankPolicies(npols = 2, mdcev_est)
 #'}
 CreateBlankPolicies <- function(npols, model, price_change_only = TRUE) {

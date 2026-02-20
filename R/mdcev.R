@@ -88,7 +88,8 @@
 #' mdcev_est <- mdcev( ~ 0,
 #' data = data_rec,
 #' model = "hybrid0",
-#' algorithm = "MLE")
+#' algorithm = "MLE",
+#' backend = "rstan")
 #'}
 mdcev <- function(formula = NULL, data,
 				 weights = NULL,

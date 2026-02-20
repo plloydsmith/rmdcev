@@ -31,7 +31,7 @@
 #'
 #' mdcev_est <- mdcev( ~ 0, data = data_rec,
 #'                model = "hybrid0", algorithm = "MLE",
-#'                std_errors = "mvn")
+#'                std_errors = "mvn", backend = "rstan")
 #'
 #' policies <- CreateBlankPolicies(npols = 2,
 #'              mdcev_est,
