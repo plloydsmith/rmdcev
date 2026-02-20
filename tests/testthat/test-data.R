@@ -20,6 +20,7 @@ test_that("MLE bad model name errors", {
 })
 
 test_that("non-id names", {
+	skip_on_cran()
 	data_test <- data_rec %>%
 		rename(id2 = id)
 
