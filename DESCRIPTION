@@ -45,7 +45,6 @@ Suggests:
     knitr,
     rmarkdown,
     testthat (>= 3.0.0),
-    rstan (>= 2.29.0),
     cmdstanr
 URL: https://github.com/plloydsmith/rmdcev
 BugReports: https://github.com/plloydsmith/rmdcev/issues

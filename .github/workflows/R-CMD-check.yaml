@@ -25,8 +25,7 @@ jobs:
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
       R_KEEP_PKG_SOURCE: yes
-      LANG: C
-      R_COMPILE_AND_INSTALL_PACKAGES: always
+      LC_ALL: C
       _R_CHECK_CRAN_INCOMING_REMOTE_: true
 
     steps:
@@ -39,36 +38,22 @@ jobs:
           r-version: ${{ matrix.config.r }}
           use-public-rspm: true
 
-      # Install Ubuntu system dependencies
+      # Ubuntu system dependencies
       - name: Install system libraries (Ubuntu)
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y --no-install-recommends \
-            libcurl4-openssl-dev \
-            libssl-dev \
-            libxml2-dev \
-            libgit2-dev \
-            libfontconfig1-dev \
-            libcairo2-dev \
-            libxt-dev \
-            libpng-dev \
-            libjpeg-dev \
-            libtiff5-dev \
-            libfribidi-dev \
-            libharfbuzz-dev \
-            libgdal-dev \
-            libgeos-dev \
-            libproj-dev \
-            unixodbc-dev \
-            default-jdk \
-            cmake \
-            make \
-            g++
+            libcurl4-openssl-dev libssl-dev libxml2-dev libgit2-dev \
+            libfontconfig1-dev libcairo2-dev libxt-dev libpng-dev \
+            libjpeg-dev libtiff5-dev libfribidi-dev libharfbuzz-dev \
+            libgdal-dev libgeos-dev libproj-dev unixodbc-dev \
+            default-jdk cmake make g++
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          extra-packages: any::rcmdcheck
+          dependencies: '"hard"'
+          extra-packages: rcmdcheck
 
       - name: Run R CMD check (CRAN emulation)
         uses: r-lib/actions/check-r-package@v2
@@ -79,5 +64,3 @@ jobs:
             --as-cran
             --run-donttest
             --install-args="--no-manual"
-            --force
-            
