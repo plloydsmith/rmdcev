@@ -7,14 +7,22 @@ test_that("Data ok", {
 })
 
 test_that("MLE bad model name errors", {
-	data_small <- mdcev.data(data_rec, subset = id <= 50,
-							 id.var = "id", alt.var = "alt", choice = "quant")
+	data_small <- mdcev.data(
+		data_rec,
+		subset = id <= 50,
+		id.var = "id",
+		alt.var = "alt",
+		choice = "quant"
+	)
 	expect_error(
-		mdcev(~ alt - 1,
-			  data = data_small,
-			  model = "gamma77",
-			  algorithm = "MLE",
-			  print_iterations = FALSE),
+		mdcev(
+			~ alt - 1,
+			data = data_small,
+			model = "gamma77",
+			algorithm = "MLE",
+			backend = "rstan",
+			print_iterations = FALSE
+		),
 		regexp = "model"
 	)
 })
@@ -24,17 +32,23 @@ test_that("non-id names", {
 	data_test <- data_rec %>%
 		rename(id2 = id)
 
-	data_test <- mdcev.data(data_test, subset = id2 <= 100,
-							id.var = "id2",
-							alt.var = "alt",
-							choice = "quant")
+	data_test <- mdcev.data(
+		data_test,
+		subset = id2 <= 100,
+		id.var = "id2",
+		alt.var = "alt",
+		choice = "quant"
+	)
 
-	output <- mdcev(~ 0,
-					data = data_test,
-					model = "hybrid0",
-					psi_ascs = 0,
-					algorithm = "MLE",
-					print_iterations = FALSE)
+	output <- mdcev(
+		~0,
+		data = data_test,
+		model = "hybrid0",
+		psi_ascs = 0,
+		algorithm = "MLE",
+		backend = "rstan",
+		print_iterations = FALSE
+	)
 
 	output.sum <- summary(output)
 	expect_s3_class(output, "mdcev")
@@ -71,46 +85,60 @@ keep_loglik <- 0
 random_parameters <- "fixed"
 jacobian_analytical_grad <- 1
 
-mle_options <- list(seed = seed,
-					max_iterations = max_iterations,
-					hessian = hessian,
-					print_iterations = print_iterations,
-					n_draws = n_draws,
-					keep_loglik = keep_loglik,
-					n_classes = n_classes)
+mle_options <- list(
+	seed = seed,
+	max_iterations = max_iterations,
+	hessian = hessian,
+	print_iterations = print_iterations,
+	n_draws = n_draws,
+	keep_loglik = keep_loglik,
+	n_classes = n_classes
+)
 
-stan_model_options <- list(fixed_scale1 = fixed_scale1,
-						   single_scale = single_scale,
-						   model = model,
-						   n_classes = n_classes,
-						   trunc_data = trunc_data,
-						   psi_ascs = psi_ascs,
-						   gamma_ascs = gamma_ascs,
-						   jacobian_analytical_grad = jacobian_analytical_grad,
-						   flat_priors = flat_priors,
-						   prior_psi_sd = prior_psi_sd,
-						   pior_phi_sd = prior_phi_sd,
-						   prior_gamma_sd = prior_gamma_sd,
-						   prior_alpha_shape = prior_alpha_shape,
-						   prior_scale_sd = prior_scale_sd,
-						   prior_delta_sd = prior_delta_sd,
-						   gamma_nonrandom = gamma_nonrandom,
-						   alpha_nonrandom = alpha_nonrandom)
+stan_model_options <- list(
+	fixed_scale1 = fixed_scale1,
+	single_scale = single_scale,
+	model = model,
+	n_classes = n_classes,
+	trunc_data = trunc_data,
+	psi_ascs = psi_ascs,
+	gamma_ascs = gamma_ascs,
+	jacobian_analytical_grad = jacobian_analytical_grad,
+	flat_priors = flat_priors,
+	prior_psi_sd = prior_psi_sd,
+	pior_phi_sd = prior_phi_sd,
+	prior_gamma_sd = prior_gamma_sd,
+	prior_alpha_shape = prior_alpha_shape,
+	prior_scale_sd = prior_scale_sd,
+	prior_delta_sd = prior_delta_sd,
+	gamma_nonrandom = gamma_nonrandom,
+	alpha_nonrandom = alpha_nonrandom
+)
 
-data_rec <- mdcev.data(data_rec,
-					   id.var = "id",
-					   alt.var = "alt",
-					   choice = "quant")
+data_rec <- mdcev.data(
+	data_rec,
+	id.var = "id",
+	alt.var = "alt",
+	choice = "quant"
+)
 
 alt_names <- unique(data_rec$alt)
 
 stan_data <- processMDCEVdata(formula, data_rec, stan_model_options)
-parms_info <- rmdcev:::CreateParmInfo(stan_data, alt_names, algorithm, random_parameters)
+parms_info <- rmdcev:::CreateParmInfo(
+	stan_data,
+	alt_names,
+	algorithm,
+	random_parameters
+)
 
 # ── Parameter-count tests ─────────────────────────────────────────────────
 
 test_that("hybrid0 parm names", {
-	expect_equal(parms_info$n_vars$n_parms_total, length(parms_info$parm_names$all_names))
+	expect_equal(
+		parms_info$n_vars$n_parms_total,
+		length(parms_info$parm_names$all_names)
+	)
 })
 
 test_that("hybrid0 LC 2 parm names", {
