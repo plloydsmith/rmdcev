@@ -1,4 +1,3 @@
-# Full CRAN-emulation R CMD check workflow with system deps
 on:
   push:
     branches: [main, master]
@@ -53,14 +52,14 @@ jobs:
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
           dependencies: '"hard"'
-          extra-packages: rcmdcheck
 
       - name: Run R CMD check (CRAN emulation)
         uses: r-lib/actions/check-r-package@v2
         with:
           upload-snapshots: true
-          error-on: '"error","warning"'
+          error-on: warning
           args: >
             --as-cran
             --run-donttest
-            --install-args="--no-manual"
+            --no-manual
+            
