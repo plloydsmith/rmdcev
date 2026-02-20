@@ -27,7 +27,6 @@ jobs:
       R_KEEP_PKG_SOURCE: yes
       LANG: C
       R_COMPILE_AND_INSTALL_PACKAGES: always
-      _R_CHECK_FORCE_SUGGESTS_: true
       _R_CHECK_CRAN_INCOMING_REMOTE_: true
 
     steps:
