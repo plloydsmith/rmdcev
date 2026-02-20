@@ -52,7 +52,8 @@ jobs:
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
           dependencies: '"hard"'
-
+          extra-packages: rcmdcheck
+          
       - name: Run R CMD check (CRAN emulation)
         uses: r-lib/actions/check-r-package@v2
         with:
@@ -62,4 +63,3 @@ jobs:
             --as-cran
             --run-donttest
             --no-manual
-            
