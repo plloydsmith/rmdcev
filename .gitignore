@@ -17,3 +17,5 @@ CRAN-RELEASE
 inst/benchmarks/results/
 CLAUDE.md
 .claude/
+
+.quarto/
