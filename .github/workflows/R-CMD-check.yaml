@@ -51,7 +51,4 @@ jobs:
         with:
           upload-snapshots: true
           error-on: "warning"
-          args: >-
-            --as-cran
-            --run-donttest
-            --no-manual
+          args: "--as-cran --run-donttest --no-manual"
