@@ -1,14 +1,12 @@
-citHeader("To cite the 'rmdcev' package in publications use:")
-
-year = 2020
-vers = paste('R package version', meta$Version)
-
-citEntry(
-  entry = 'manual',
-  title = paste('rmdcev:', meta$Title),
-  author = Filter(function(p) 'aut' %in% p$role, as.person(meta$Author)),
-  year = year,
-  note = vers,
-  url = meta$URL,
-  textVersion = paste('Patrick Lloyd-Smith (', year, '). rmdcev: ', meta$Title, '. ', vers, '.', sep = '')
+bibentry(
+  bibtype  = "Manual",
+  title    = paste("rmdcev:", meta$Title),
+  author   = Filter(function(p) "aut" %in% p$role, as.person(meta$Author)),
+  year     = "2020",
+  note     = paste("R package version", meta$Version),
+  url      = meta$URL,
+  textVersion = paste0(
+    "Patrick Lloyd-Smith (2020). rmdcev: ", meta$Title, ". ",
+    "R package version ", meta$Version, "."
+  )
 )

@@ -74,7 +74,7 @@ von Haefen, R. and Phaneuf D. (2005) ["Kuhn-Tucker Demand System Approaches to N
 
 For more details on the demand and welfare simulation:
 
-Pinjari, A.R. and Bhat , C.R. (2011) ["Computationally Efficient Forecasting Procedures for Kuhn-Tucker Consumer Demand Model Systems: Application to Residential Energy Consumption Analysis."](https://www.caee.utexas.edu/prof/bhat/MDCEV_Forecasting.html) Technical paper, Department of Civil & Environmental Engineering, University of South Florida.
+Pinjari, A.R. and Bhat , C.R. (2011) ["Computationally Efficient Forecasting Procedures for Kuhn-Tucker Consumer Demand Model Systems: Application to Residential Energy Consumption Analysis."](http://caee.webhost.utexas.edu/prof/bhat/MDCEV_Forecasting.html) Technical paper, Department of Civil & Environmental Engineering, University of South Florida.
 
 Lloyd-Smith, P (2018). ["A New Approach to Calculating Welfare Measures in Kuhn-Tucker Demand Models."](https://www.sciencedirect.com/science/article/pii/S1755534517300994) Journal of Choice Modeling, 26: 19-27
 
