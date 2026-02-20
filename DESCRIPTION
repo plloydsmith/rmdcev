@@ -37,7 +37,7 @@ Encoding: UTF-8
 LazyData: true
 SystemRequirements: GNU make, CmdStan (>= 2.29.0)
 NeedsCompilation: yes
-RoxygenNote: 7.3.1
+RoxygenNote: 7.3.3
 Biarch: true
 Suggests:
     bench,

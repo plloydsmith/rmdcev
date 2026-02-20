@@ -103,8 +103,8 @@ CreatePsiMatrix <- function(psi_j = NULL, psi_i = NULL) {
 GrabParms <- function(data, parm_name) {
 	data %>%
 		dplyr::filter(grepl(parm_name, .data$parms)) %>%
-		tidyr::pivot_wider(id_cols = sim_id, names_from = "parms", values_from = "value") %>%
-		dplyr::select(-sim_id) %>%
+		tidyr::pivot_wider(id_cols = "sim_id", names_from = "parms", values_from = "value") %>%
+		dplyr::select(-"sim_id") %>%
 		as.matrix()
 }
 
@@ -116,11 +116,11 @@ GrabParms <- function(data, parm_name) {
 #' @noRd
 GrabIndividualParms <- function(est_sim, parm_name) {
 	est_sim %>%
-		dplyr::filter(grepl(parm_name, parms)) %>%
-		dplyr::select(id, sim_id, parm_id, beta) %>%
-		tidyr::pivot_wider(names_from = parm_id, values_from = beta) %>%
-		dplyr::select(-sim_id) %>%
-		dplyr::group_split(id, .keep = FALSE)
+		dplyr::filter(grepl(parm_name, .data$parms)) %>%
+		dplyr::select("id", "sim_id", "parm_id", "beta") %>%
+		tidyr::pivot_wider(names_from = "parm_id", values_from = "beta") %>%
+		dplyr::select(-"sim_id") %>%
+		dplyr::group_split(.data$id, .keep = FALSE)
 }
 
 #' @title extract_bayes_draws
@@ -267,7 +267,7 @@ CreatePsi <- function(dat_vars_i, est_pars_i, J, NPsi_ij, psi_ascs, npols) {
 		} else {
 			# Covariates: compute lpsi separately for each policy, then rearrange
 			covar_draws <- est_pars_i[, covar_cols, drop = FALSE]
-			pol_data    <- dplyr::group_split(dat_vars_i, policy, .keep = FALSE)
+			pol_data    <- dplyr::group_split(dat_vars_i, .data$policy, .keep = FALSE)
 			lpsi_by_pol <- lapply(pol_data, function(d)
 				lpsi + as.matrix(covar_draws) %*% t(as.matrix(d)))
 			# lpsi_by_pol: list of npols matrices (nsims x J)
@@ -332,7 +332,7 @@ CreatePsi <- function(dat_vars_i, est_pars_i, J, NPsi_ij, psi_ascs, npols) {
 .pivot_draws_to_long <- function(est_pars, object, class) {
 	est_sim <- est_pars %>%
 		tibble::rowid_to_column("sim_id") %>%
-		tidyr::pivot_longer(-sim_id, names_to = "parms", values_to = "value")
+		tidyr::pivot_longer(-"sim_id", names_to = "parms", values_to = "value")
 
 	if (object$n_classes > 1) {
 		if (object$stan_data$single_scale == 1)
@@ -424,24 +424,24 @@ CreatePsi <- function(dat_vars_i, est_pars_i, J, NPsi_ij, psi_ascs, npols) {
 
 	# Step A: Build a (sim_id x parm_id) table of mu and tau draws
 	est_sim_mu_tau <- est_sim %>%
-		dplyr::filter(grepl("mu|tau", parms)) %>%
-		tidyr::separate(parms, into = c("parms", "parm_id"), sep = "\\.") %>%
+		dplyr::filter(grepl("mu|tau", .data$parms)) %>%
+		tidyr::separate("parms", into = c("parms", "parm_id"), sep = "\\.") %>%
 		dplyr::mutate(parm_id = as.numeric(.data$parm_id)) %>%
-		tidyr::pivot_wider(names_from = parms, values_from = value) %>%
-		dplyr::arrange(sim_id)
+		tidyr::pivot_wider(names_from = "parms", values_from = "value") %>%
+		dplyr::arrange(.data$sim_id)
 
 	if (object$random_parameters == "corr")
 		est_sim_mu_tau <- .compute_corr_tau(est_sim, est_sim_mu_tau, object)
 
 	# Step B: Compute individual betas: beta_i = mu + z_i * tau, then name them
 	est_sim <- est_sim %>%
-		dplyr::filter(grepl("^z\\.", parms)) %>%
-		tidyr::separate(parms, into = c("parms", "id", "parm_id"), sep = "\\.") %>%
-		tidyr::pivot_wider(names_from = parms, values_from = value) %>%
-		dplyr::mutate(parm_id = as.numeric(.data$parm_id), id = as.numeric(id)) %>%
-		dplyr::arrange(id, sim_id, .data$parm_id) %>%
+		dplyr::filter(grepl("^z\\.", .data$parms)) %>%
+		tidyr::separate("parms", into = c("parms", "id", "parm_id"), sep = "\\.") %>%
+		tidyr::pivot_wider(names_from = "parms", values_from = "value") %>%
+		dplyr::mutate(parm_id = as.numeric(.data$parm_id), id = as.numeric(.data$id)) %>%
+		dplyr::arrange(.data$id, .data$sim_id, .data$parm_id) %>%
 		dplyr::left_join(est_sim_mu_tau, by = c("sim_id", "parm_id")) %>%
-		dplyr::arrange(id, sim_id, .data$parm_id) %>%
+		dplyr::arrange(.data$id, .data$sim_id, .data$parm_id) %>%
 		dplyr::mutate(
 			beta  = .data$mu + .data$z * .data$tau,
 			parms = rep(object$parms_info$parm_names$sd_names, nsims * object$n_individuals)
@@ -450,9 +450,9 @@ CreatePsi <- function(dat_vars_i, est_pars_i, J, NPsi_ij, psi_ascs, npols) {
 
 	# Step C: Back-transform: gamma was estimated on log scale, alpha on logit scale
 	est_sim <- dplyr::mutate(est_sim, beta = dplyr::case_when(
-		gamma_nonrandom == 0 & grepl("gamma", parms) ~ exp(beta),
-		alpha_nonrandom == 0 & grepl("alpha", parms) ~ plogis(beta),
-		TRUE ~ beta
+		gamma_nonrandom == 0 & grepl("gamma", .data$parms) ~ exp(.data$beta),
+		alpha_nonrandom == 0 & grepl("alpha", .data$parms) ~ plogis(.data$beta),
+		TRUE ~ .data$beta
 	))
 
 	# Step D: Extract random gamma and alpha draws, shaped for the C++ simulation functions
@@ -493,13 +493,13 @@ CreatePsi <- function(dat_vars_i, est_pars_i, J, NPsi_ij, psi_ascs, npols) {
 
 	# Split tau and L_Omega draws by sim_id for parallel mapply
 	tau_by_sim    <- est_sim_mu_tau %>%
-		dplyr::select(sim_id, "parm_id", "tau") %>%
-		dplyr::group_split(sim_id)
+		dplyr::select("sim_id", "parm_id", "tau") %>%
+		dplyr::group_split(.data$sim_id)
 	lomega_by_sim <- est_sim %>%
-		dplyr::filter(grepl("L_Omega", parms)) %>%
-		dplyr::arrange(sim_id) %>%
-		dplyr::group_split(sim_id)
-	sim_ids <- dplyr::distinct(dplyr::arrange(est_sim, sim_id), sim_id)
+		dplyr::filter(grepl("L_Omega", .data$parms)) %>%
+		dplyr::arrange(.data$sim_id) %>%
+		dplyr::group_split(.data$sim_id)
+	sim_ids <- dplyr::distinct(dplyr::arrange(est_sim, .data$sim_id), .data$sim_id)
 
 	# For each draw: scaled_tau (row vector) = tau (row vector) %*% L_Omega
 	L <- mapply(
@@ -513,13 +513,13 @@ CreatePsi <- function(dat_vars_i, est_pars_i, J, NPsi_ij, psi_ascs, npols) {
 	colnames(L) <- paste0("parm_id", seq_len(num_rand))
 
 	scaled_tau <- dplyr::bind_cols(sim_ids, tibble::as_tibble(L)) %>%
-		tidyr::pivot_longer(-sim_id, names_to = "parm_id", values_to = "tau") %>%
-		dplyr::mutate(parm_id = as.numeric(gsub("[^0-9]", "", parm_id))) %>%
-		dplyr::arrange(sim_id)
+		tidyr::pivot_longer(-"sim_id", names_to = "parm_id", values_to = "tau") %>%
+		dplyr::mutate(parm_id = as.numeric(gsub("[^0-9]", "", .data$parm_id))) %>%
+		dplyr::arrange(.data$sim_id)
 
 	# Return updated est_sim_mu_tau with scaled tau
 	est_sim_mu_tau %>%
-		dplyr::select(sim_id, "parm_id", "mu") %>%
+		dplyr::select("sim_id", "parm_id", "mu") %>%
 		dplyr::left_join(scaled_tau, by = c("sim_id", "parm_id"))
 }
 
@@ -533,7 +533,7 @@ CreatePsi <- function(dat_vars_i, est_pars_i, J, NPsi_ij, psi_ascs, npols) {
 		dat_vars <- tibble::tibble(id = rep(seq_len(sd$I), each = sd$J))
 		if (sd$NPsi_ij > 0)
 			dat_vars <- dplyr::bind_cols(dat_vars, tibble::as_tibble(sd$dat_psi))
-		dat_vars <- dplyr::group_split(dat_vars, id, .keep = FALSE)
+		dat_vars <- dplyr::group_split(dat_vars, .data$id, .keep = FALSE)
 		mapply(CreatePsi, dat_vars, psi_sim_temp,
 		       J = sd$J, NPsi_ij = sd$NPsi_ij, psi_ascs = sd$psi_ascs, npols = npols,
 		       SIMPLIFY = FALSE)
@@ -551,7 +551,7 @@ CreatePsi <- function(dat_vars_i, est_pars_i, J, NPsi_ij, psi_ascs, npols) {
 	if (object$parms_info$n_vars$n_phi > 0) {
 		dat_vars <- tibble::tibble(id = rep(seq_len(sd$I), each = sd$J))
 		dat_vars <- dplyr::bind_cols(dat_vars, tibble::as_tibble(sd$dat_phi))
-		dat_vars <- dplyr::group_split(dat_vars, id, .keep = FALSE)
+		dat_vars <- dplyr::group_split(dat_vars, .data$id, .keep = FALSE)
 		# phi = exp(dat_phi %*% phi_draws'): J x nsims, then transposed to nsims x J
 		mapply(function(x, y) t(exp(as.matrix(x) %*% t(as.matrix(y)))),
 		       dat_vars, phi_sim_temp, SIMPLIFY = FALSE)
@@ -575,7 +575,7 @@ CreatePsi <- function(dat_vars_i, est_pars_i, J, NPsi_ij, psi_ascs, npols) {
 		pol_data <- lapply(pol_data, function(x) dplyr::bind_cols(dat_vars, tibble::as_tibble(x)))
 		dat_vars <- do.call(rbind, pol_data)
 	}
-	dat_vars <- dplyr::group_split(dat_vars, id, .keep = FALSE)
+	dat_vars <- dplyr::group_split(dat_vars, .data$id, .keep = FALSE)
 	mapply(CreatePsi, dat_vars, psi_sim_temp,
 	       J = sd$J, NPsi_ij = sd$NPsi_ij, psi_ascs = sd$psi_ascs, npols = npols,
 	       SIMPLIFY = FALSE)
@@ -592,11 +592,11 @@ CreatePsi <- function(dat_vars_i, est_pars_i, J, NPsi_ij, psi_ascs, npols) {
 	pol_data <- mapply(cbind, policies[["dat_phi_p"]], "policy" = seq_len(npols),
 	                   SIMPLIFY = FALSE)
 	pol_data <- lapply(pol_data, function(x) dplyr::bind_cols(dat_vars, tibble::as_tibble(x)))
-	dat_vars <- dplyr::group_split(do.call(rbind, pol_data), id, .keep = FALSE)
+	dat_vars <- dplyr::group_split(do.call(rbind, pol_data), .data$id, .keep = FALSE)
 
 	mapply(
 		function(x, y) {
-			lapply(dplyr::group_split(x, policy, .keep = FALSE), function(xx)
+			lapply(dplyr::group_split(x, .data$policy, .keep = FALSE), function(xx)
 				t(exp(as.matrix(xx) %*% t(as.matrix(y)))))
 		},
 		dat_vars, phi_sim_temp,

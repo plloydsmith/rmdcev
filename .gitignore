@@ -9,12 +9,13 @@ src/*.o
 src/*.so
 src/*.dll
 src/*.exe
+inst/stan/*.exe
 *.exe
 *.so
 *.o
 *.dll
 CRAN-RELEASE
-inst/benchmarks/results/
+inst/benchmarks
 CLAUDE.md
 .claude/
 

@@ -1,4 +1,6 @@
-^README\.Rmd$
+^README\.qmd$
+^_quarto\.yml$
+^\.quarto$
 ^rmdcev\.Rproj$
 ^\.Rproj\.user$
 ^\.travis\.yml$

@@ -36,12 +36,13 @@ summary.mdcev.sim <- function(object, ci = 0.95, ...){
 							  policy = rep(paste0(rep("policy",npols), 1:npols), times =nobs*nsims*nalts ),
 							  sim_id = rep(1:nsims, each = nalts*npols, times = nobs)) %>%
 			dplyr::group_by(.data$alt, .data$policy, .data$sim_id) %>%
-			dplyr::summarise(demand = mean(demand)) %>%
+			dplyr::summarise(demand = mean(.data$demand), .groups = "drop") %>%
 			dplyr::group_by(.data$policy, .data$alt) %>%
-			dplyr::summarise(mean = round(mean(demand),2),
-							 std_dev = round(stats::sd(demand),2),
-							 ci_lo = round(stats::quantile(demand, (1-ci)/2),2),
-							 ci_hi = round(stats::quantile(demand, ci+(1-ci)/2),2))
+			dplyr::summarise(mean    = round(mean(.data$demand), 2),
+							 std_dev = round(stats::sd(.data$demand), 2),
+							 ci_lo   = round(stats::quantile(.data$demand, (1-ci)/2), 2),
+							 ci_hi   = round(stats::quantile(.data$demand, ci+(1-ci)/2), 2),
+							 .groups = "drop")
 
 		colnames(out) <- c("policy", "alt", "mean", "std.dev",
 						   paste0("ci_lo",(1-ci)/2*100, "%"),
@@ -59,10 +60,11 @@ summary.mdcev.sim <- function(object, ci = 0.95, ...){
 		out <- as_tibble(out) %>%
 			tidyr::pivot_longer(everything(), names_to = "policy", values_to = "wtp") %>%
 			dplyr::group_by(.data$policy) %>%
-			dplyr::summarise(mean = mean(wtp),
-							 std_dev = stats::sd(wtp),
-							 ci_lo = stats::quantile(wtp, (1-ci)/2),
-							 ci_hi = stats::quantile(wtp, ci+(1-ci)/2))
+			dplyr::summarise(mean    = mean(.data$wtp),
+							 std_dev = stats::sd(.data$wtp),
+							 ci_lo   = stats::quantile(.data$wtp, (1-ci)/2),
+							 ci_hi   = stats::quantile(.data$wtp, ci+(1-ci)/2),
+							 .groups = "drop")
 
 		colnames(out) <- c("policy", "mean", "std.dev",
 						   paste0("ci_lo",(1-ci)/2*100, "%"),

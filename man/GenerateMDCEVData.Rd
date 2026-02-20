@@ -20,8 +20,7 @@ GenerateMDCEVData(
     length(psi_i_parms)),
   dat_psi_j = cbind(matrix(stats::runif(nalts * (length(psi_j_parms)), 0, 1), nrow =
     nalts)),
-  dat_phi = cbind(matrix(stats::runif(nalts * (length(phi_parms)), 0, 1), nrow =
-    nalts)),
+  dat_phi = cbind(matrix(stats::runif(nalts * (length(phi_parms)), 0, 1), nrow = nalts)),
   nerrs = 1,
   tol = 1e-20,
   max_loop = 999

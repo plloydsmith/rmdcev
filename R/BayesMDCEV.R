@@ -22,11 +22,11 @@ BayesMDCEV <- function(stan_data, bayes_options,
         task = rep(1:stan_data$I, each = stan_data$J),
         row = 1:(stan_data$I * stan_data$J)
     ) %>%
-        dplyr::group_by(task) %>%
+        dplyr::group_by(.data$task) %>%
         dplyr::summarise(
-            task_individual = dplyr::first(individual),
-            start = dplyr::first(row),
-            end = dplyr::last(row)
+            task_individual = dplyr::first(.data$individual),
+            start = dplyr::first(.data$row),
+            end = dplyr::last(.data$row)
         )
 
     stan_data$start         <- indexes$start

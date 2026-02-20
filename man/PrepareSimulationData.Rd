@@ -7,22 +7,22 @@
 PrepareSimulationData(object, policies, nsims = 30, class = "class1")
 }
 \arguments{
-\item{object}{an object of class `mdcev`}
+\item{object}{An object of class \code{mdcev}.}
 
-\item{policies}{list containing
-price_p with additive price increases, and
-dat_psi_p with new psi data}
+\item{policies}{A list produced by \code{\link{CreateBlankPolicies}} containing
+\code{price_p} (additive price changes) and optionally \code{dat_psi_p} /
+\code{dat_phi_p} (alternative-attribute changes).}
 
-\item{nsims}{Number of simulation draws to use for parameter uncertainty}
+\item{nsims}{Number of parameter draws to use for uncertainty quantification.}
 
-\item{class}{The class number for Latent Class models.}
+\item{class}{Class label for Latent Class models (e.g. \code{"class1"}).}
 }
 \value{
-A list with individual-specific data (df_indiv) and common data (df_common)
-and n_classes for number of classes and model_num for model type
+A list with \code{df_indiv} (individual-level data), \code{df_common}
+  (shared simulation inputs), and \code{sim_options} (model metadata).
 }
 \description{
-Prepare Data for WTP simulation
+Prepare data for WTP/demand simulation from a fitted mdcev object.
 }
 \examples{
 \donttest{

@@ -9,7 +9,6 @@
 #' demand forecasting (Pinjari and Bhat (2011) <https://repositories.lib.utexas.edu/handle/2152/23880>) and
 #' welfare calculation (Lloyd-Smith (2018) <doi:10.1016/j.jocm.2017.12.002>) for policy simulation.
 #'
-#' @docType package
 #' @name rmdcev
 #' @aliases rmdcev
 #' @useDynLib rmdcev, .registration = TRUE
@@ -17,6 +16,8 @@
 #' @import Rcpp
 #' @import rstantools
 #'
+#' @keywords internal
+"_PACKAGE"
 #' @author Patrick Lloyd-Smith \email{patrick.lloydsmith@usask.ca}
 #'
 #' @references
@@ -29,17 +30,3 @@
 #' Stan Development Team (2019). RStan: the R interface to Stan. R package version 2.19.2. \href{https://mc-stan.org/}{(link)}
 NULL
 
-## quiets concerns of R CMD check re: the .'s that appear in pipelines
-if(getRversion() >= "2.15.1")
-	utils::globalVariables(c(".", "quant", "lp__", "good", "task", "individual", "CalcWTP_rng",
-							 "CalcMarshallianDemand_rng", "CalcWTPPriceOnly_rng", "CalcMarshallianDemandPriceOnly_rng",
-							 "CalcmdemandOne_rng", "parms", "sim_id","parm_id", "tau", "value", "policy", "std_dev",
-							 "names_b", "parm_num", "n_eff", "Rhat", "wtp", "demand",
-							 "dat_phi", "dat_psi",
-							 "Estimate", "Std.err", "z.stat", "ci_lo95", "ci_hi95",
-							 "_rmdcev_CalcAltOrder", "_rmdcev_CalcMarshallianDemandPriceOnly_rng",
-							 "_rmdcev_CalcMarshallianDemand_rng", "_rmdcev_CalcWTPPriceOnly_rng",
-							 "_rmdcev_CalcWTP_rng", "_rmdcev_CalcmdemandOne_rng", "_rmdcev_ComputeE",
-							 "_rmdcev_ComputeUtilJ", "_rmdcev_ComputeUtilM", "_rmdcev_DrawError_rng",
-							 "_rmdcev_DrawMlhs_rng", "_rmdcev_HicksianDemand", "_rmdcev_MarshallianDemand",
-							 "_rmdcev_Shuffle_rng", "_rmdcev_SortParmMatrix"))

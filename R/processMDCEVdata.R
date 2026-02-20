@@ -74,9 +74,9 @@ processMDCEVdata <- function(formula, data, model_options){
 	if (model_options$n_classes > 1){
 		lc.vars <- formula(formula, rhs = 2, lhs = 0)
 
-		data_class <- as_tibble(data) %>%
-			dplyr::distinct(!!sym(id.name), .keep_all = T) %>%
-			stats::model.matrix(lc.vars, .)
+		data_class_df <- as_tibble(data) %>%
+			dplyr::distinct(!!sym(id.name), .keep_all = TRUE)
+		data_class <- stats::model.matrix(lc.vars, data_class_df)
 		stan_data$data_class <- as.matrix(data_class)
 		stan_data$L <- ncol(data_class) # number of membership variables
 	}
