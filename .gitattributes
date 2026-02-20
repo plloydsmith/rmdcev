@@ -1,0 +1,3 @@
+# Force LF line endings for C/C++ source files (required by some Unix compilers)
+src/*.h   text eol=lf
+src/*.cpp text eol=lf
