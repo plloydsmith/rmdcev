@@ -91,7 +91,7 @@ For more details on the demand and welfare simulation:
 Pinjari, A.R. and Bhat , C.R. (2011) [“Computationally Efficient
 Forecasting Procedures for Kuhn-Tucker Consumer Demand Model Systems:
 Application to Residential Energy Consumption
-Analysis.”](https://www.caee.utexas.edu/prof/bhat/MDCEV_Forecasting.html)
+Analysis.”](http://caee.webhost.utexas.edu/prof/bhat/MDCEV_Forecasting.html)
 Technical paper, Department of Civil & Environmental Engineering,
 University of South Florida.
 
@@ -268,5 +268,5 @@ summary(wtp)
 
 This package was not developed in isolation and I gratefully acknowledge
 Joshua Abbott, Allen Klaiber, Lusi Xie, the [apollo
-team](http://www.apollochoicemodelling.com/), and the Stan team, whose
+team](https://www.apollochoicemodelling.com/), and the Stan team, whose
 codes or suggestions were helpful in putting this package together.
