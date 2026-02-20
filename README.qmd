@@ -153,5 +153,5 @@ summary(wtp)
 
 ## Thanks
 
-This package was not developed in isolation and I gratefully acknowledge Joshua Abbott, Allen Klaiber, Lusi Xie, the [apollo team](http://www.apollochoicemodelling.com/), and the Stan team, whose codes or suggestions were helpful in putting this package together.
+This package was not developed in isolation and I gratefully acknowledge Joshua Abbott, Allen Klaiber, Lusi Xie, the [apollo team](https://www.apollochoicemodelling.com/), and the Stan team, whose codes or suggestions were helpful in putting this package together.
 
