@@ -13,6 +13,7 @@ data_rec_small <- mdcev.data(data_rec, subset = id <= 100,
 
 test_that("cmdstanr MLE hybrid0 smoke test", {
 	skip_on_cran()
+	skip_if_not_installed("cmdstanr")
 
 	output <- mdcev(~ alt - 1,
 					data = data_rec_small,
@@ -32,6 +33,7 @@ test_that("cmdstanr MLE hybrid0 smoke test", {
 
 test_that("cmdstanr MLE gamma smoke test", {
 	skip_on_cran()
+	skip_if_not_installed("cmdstanr")
 
 	output <- mdcev(~ 0,
 					data = data_rec_small,
@@ -46,6 +48,7 @@ test_that("cmdstanr MLE gamma smoke test", {
 
 test_that("cmdstanr MLE hybrid0 coef and logLik", {
 	skip_on_cran()
+	skip_if_not_installed("cmdstanr")
 
 	output <- mdcev(~ alt - 1,
 					data = data_rec_small,
@@ -65,6 +68,7 @@ test_that("cmdstanr MLE hybrid0 coef and logLik", {
 
 test_that("cmdstanr MLE hybrid0 + welfare simulation", {
 	skip_on_cran()
+	skip_if_not_installed("cmdstanr")
 
 	output <- mdcev(~ alt - 1,
 					data = data_rec_small,
@@ -89,6 +93,7 @@ test_that("cmdstanr MLE hybrid0 + welfare simulation", {
 
 test_that("cmdstanr Bayes hybrid0 fixed smoke test", {
 	skip_on_cran()
+	skip_if_not_installed("cmdstanr")
 
 	data_rec_bayes <- mdcev.data(data_rec, subset = id <= 200,
 								 id.var = "id",
