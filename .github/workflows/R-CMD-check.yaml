@@ -45,7 +45,6 @@ jobs:
         with:
           dependencies: '"hard"'
           extra-packages: rcmdcheck
-        needs: check
         
       - name: Run R CMD check
         uses: r-lib/actions/check-r-package@v2
