@@ -40,16 +40,28 @@ jobs:
           r-version: ${{ matrix.config.r }}
           use-public-rspm: true
 
+      # Install all hard deps + Suggests (testthat, cmdstanr, bench, etc.)
       - name: Install dependencies
         uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          dependencies: '"hard"'
-          extra-packages: rcmdcheck
-        
+          extra-packages: any::rcmdcheck
+          needs: check
+
+      # CmdStan is an external binary required by cmdstanr; install separately.
+      - name: Install CmdStan
+        run: |
+          cmdstanr::check_cmdstan_toolchain(fix = TRUE, quiet = TRUE)
+          cmdstanr::install_cmdstan(cores = 2, quiet = TRUE)
+        shell: Rscript {0}
+
       - name: Run R CMD check
         uses: r-lib/actions/check-r-package@v2
         with:
           upload-snapshots: true
-          error-on: '"note"'
+          # Inner quotes required: YAML passes a bare word; R needs a string.
+          # "warning" not "note": 2 expected CRAN notes (size, GNU make).
+          error-on: '"warning"'
           build_args: 'c("--no-manual", "--compact-vignettes=gs+qpdf")'
-          check_args: 'c("--as-cran", "--run-donttest")'
+          # --run-donttest omitted: donttest examples need CmdStan / rstan
+          # which CRAN check machines do not guarantee.
+          args: 'c("--no-manual", "--as-cran")'
