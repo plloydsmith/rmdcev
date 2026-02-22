@@ -40,19 +40,14 @@ jobs:
           r-version: ${{ matrix.config.r }}
           use-public-rspm: true
 
-      # Install all hard deps + Suggests (testthat, cmdstanr, bench, etc.)
+      # Install hard deps (Imports/Depends/LinkingTo) + testthat for running
+      # tests. Suggests are otherwise excluded because cmdstanr is not on CRAN
+      # and pak cannot resolve it without a special repository.
       - name: Install dependencies
         uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          extra-packages: any::rcmdcheck
-          needs: check
-
-      # CmdStan is an external binary required by cmdstanr; install separately.
-      - name: Install CmdStan
-        run: |
-          cmdstanr::check_cmdstan_toolchain(fix = TRUE, quiet = TRUE)
-          cmdstanr::install_cmdstan(cores = 2, quiet = TRUE)
-        shell: Rscript {0}
+          extra-packages: any::rcmdcheck, any::testthat
+          dependencies: '"hard"'
 
       - name: Run R CMD check
         uses: r-lib/actions/check-r-package@v2
