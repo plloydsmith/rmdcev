@@ -50,5 +50,6 @@ jobs:
         uses: r-lib/actions/check-r-package@v2
         with:
           upload-snapshots: true
-          error-on: "warning"
-          args: "--as-cran --run-donttest --no-manual"
+          error-on: '"note"'
+          build_args: 'c("--no-manual", "--compact-vignettes=gs+qpdf")'
+          check_args: 'c("--as-cran", "--run-donttest")'
