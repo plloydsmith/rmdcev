@@ -49,6 +49,18 @@ jobs:
           extra-packages: any::rcmdcheck, any::testthat
           dependencies: '"hard"'
 
+      # compileAttributes() is called by rstantools::rstan_config() during
+      # R CMD INSTALL (via configure/configure.win). Run it explicitly here so
+      # any "Unable to parse C++ default value" warnings surface as CI failures
+      # rather than only appearing on the CRAN submission server.
+      - name: Check Rcpp attributes (no parse warnings)
+        shell: Rscript {0}
+        run: |
+          withCallingHandlers(
+            Rcpp::compileAttributes("."),
+            warning = function(w) stop("compileAttributes() warning: ", conditionMessage(w))
+          )
+
       - name: Run R CMD check
         uses: r-lib/actions/check-r-package@v2
         with:

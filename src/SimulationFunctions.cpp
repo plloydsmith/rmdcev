@@ -3387,14 +3387,14 @@ CalcmdemandOne_rng(const T0__& income, const T1__& price_arg__, const T2__&
 // [[Rcpp::export]]
 Eigen::Matrix<double,-1,1>
 Shuffle_rng(const Eigen::Matrix<double,-1,1>& inv_temp, const int& nerrs,
-            boost::ecuyer1988& base_rng__, std::ostream* pstream__ = nullptr) {
+            boost::ecuyer1988& base_rng__, std::ostream* pstream__) {
   return SimulationFunctions_model_namespace::Shuffle_rng(inv_temp, nerrs,
            base_rng__, pstream__);
 }
 // [[Rcpp::export]]
 Eigen::Matrix<double,-1,1>
 DrawMlhs_rng(const int& nerrs, const int& draw_mlhs, boost::ecuyer1988& base_rng__,
-             std::ostream* pstream__ = nullptr) {
+             std::ostream* pstream__) {
   return SimulationFunctions_model_namespace::DrawMlhs_rng(nerrs, draw_mlhs,
            base_rng__, pstream__);
 }
@@ -3408,7 +3408,7 @@ DrawError_rng(const double& quant_num, const Eigen::Matrix<double,-1,1>&
               const Eigen::Matrix<double,-1,1>& alpha, const double& scale,
               const int& model_num, const int& nalts, const int& nerrs,
               const int& cond_error, const int& draw_mlhs, boost::ecuyer1988&
-              base_rng__, std::ostream* pstream__ = nullptr) {
+              base_rng__, std::ostream* pstream__) {
   return SimulationFunctions_model_namespace::DrawError_rng(quant_num,
            quant_j, price_j, psi_j, phi_j, gamma_j, alpha, scale, model_num,
            nalts, nerrs, cond_error, draw_mlhs, base_rng__, pstream__);
@@ -3416,7 +3416,7 @@ DrawError_rng(const double& quant_num, const Eigen::Matrix<double,-1,1>&
 // [[Rcpp::export]]
 std::vector<int>
 CalcAltOrder(const Eigen::Matrix<double,-1,1>& MUzero, const int& nalts,
-             std::ostream* pstream__ = nullptr) {
+             std::ostream* pstream__) {
   return SimulationFunctions_model_namespace::CalcAltOrder(MUzero, nalts,
            pstream__);
 }
@@ -3426,7 +3426,7 @@ SortParmMatrix(const Eigen::Matrix<double,-1,1>& MUzero,
                const Eigen::Matrix<double,-1,1>& price,
                const Eigen::Matrix<double,-1,1>& gamma,
                const Eigen::Matrix<double,-1,1>& alpha_phi, const int& nalts,
-               std::ostream* pstream__ = nullptr) {
+               std::ostream* pstream__) {
   return SimulationFunctions_model_namespace::SortParmMatrix(MUzero, price,
            gamma, alpha_phi, nalts, pstream__);
 }
@@ -3437,7 +3437,7 @@ ComputeE(const int& M, const double& lambda,
          const Eigen::Matrix<double,-1,1>& b,
          const Eigen::Matrix<double,-1,1>& c,
          const Eigen::Matrix<double,-1,1>& d, std::ostream*
-         pstream__ = nullptr) {
+         pstream__) {
   return SimulationFunctions_model_namespace::ComputeE(M, lambda,
            g_price__phi, b, c, d, pstream__);
 }
@@ -3450,7 +3450,7 @@ MarshallianDemand(const double& income, const Eigen::Matrix<double,-1,1>&
                   const Eigen::Matrix<double,-1,1>& alpha, const int& nalts,
                   const int& algo_gen, const int& model_num, const double&
                   tol_e, const int& max_loop, std::ostream*
-                  pstream__ = nullptr) {
+                  pstream__) {
   return SimulationFunctions_model_namespace::MarshallianDemand(income,
            price, MUzero, phi, gamma, alpha, nalts, algo_gen, model_num,
            tol_e, max_loop, pstream__);
@@ -3463,7 +3463,7 @@ ComputeUtilJ(const double& income, const Eigen::Matrix<double,-1,1>& quant_j,
              const Eigen::Matrix<double,-1,1>& phi_j,
              const Eigen::Matrix<double,-1,1>& gamma_j,
              const Eigen::Matrix<double,-1,1>& alpha, const int& nalts,
-             const int& model_num, std::ostream* pstream__ = nullptr) {
+             const int& model_num, std::ostream* pstream__) {
   return SimulationFunctions_model_namespace::ComputeUtilJ(income, quant_j,
            price_j, psi, phi_j, gamma_j, alpha, nalts, model_num, pstream__);
 }
@@ -3477,7 +3477,7 @@ ComputeUtilM(const int& M, const double& lambda1,
              const Eigen::Matrix<double,-1,1>& g,
              const Eigen::Matrix<double,-1,1>& price,
              const Eigen::Matrix<double,-1,1>& d, const int& model_num,
-             std::ostream* pstream__ = nullptr) {
+             std::ostream* pstream__) {
   return SimulationFunctions_model_namespace::ComputeUtilM(M, lambda1,
            g_psi_a, a_a_1, mu_a_a_1, psi, g, price, d, model_num, pstream__);
 }
@@ -3486,7 +3486,7 @@ double
 ComputeKtUtilM(const int& M, const double& lambda1,
                const Eigen::Matrix<double,-1,1>& psi,
                const Eigen::Matrix<double,-1,1>& mu, const double& alpha_1,
-               std::ostream* pstream__ = nullptr) {
+               std::ostream* pstream__) {
   return SimulationFunctions_model_namespace::ComputeKtUtilM(M, lambda1, psi,
            mu, alpha_1, pstream__);
 }
@@ -3498,7 +3498,7 @@ HicksianDemand(const double& util, const Eigen::Matrix<double,-1,1>& price,
                const Eigen::Matrix<double,-1,1>& gamma,
                const Eigen::Matrix<double,-1,1>& alpha, const int& nalts,
                const int& algo_gen, const int& model_num, const double&
-               tol_l, const int& max_loop, std::ostream* pstream__ = nullptr) {
+               tol_l, const int& max_loop, std::ostream* pstream__) {
   return SimulationFunctions_model_namespace::HicksianDemand(util, price,
            MUzero, phi, gamma, alpha, nalts, algo_gen, model_num, tol_l,
            max_loop, pstream__);
@@ -3518,7 +3518,7 @@ CalcWTP_rng(const double& income, const Eigen::Matrix<double,-1,1>& quant_j,
             const int& cond_error, const int& draw_mlhs, const int& algo_gen,
             const int& model_num, const int& price_change_only, const double&
             tol, const int& max_loop, boost::ecuyer1988& base_rng__, std::ostream*
-            pstream__ = nullptr) {
+            pstream__) {
   return SimulationFunctions_model_namespace::CalcWTP_rng(income, quant_j,
            price, price_p_policy, psi_p_sims, phi_p_sims, psi_sims, phi_sims,
            gamma_sims, alpha_sims, scale_sims, nerrs, cond_error, draw_mlhs,
@@ -3545,7 +3545,7 @@ CalcMarshallianDemand_rng(const double& income,
                           algo_gen, const int& model_num, const int&
                           price_change_only, const double& tol, const int&
                           max_loop, boost::ecuyer1988& base_rng__, std::ostream*
-                          pstream__ = nullptr) {
+                          pstream__) {
   return SimulationFunctions_model_namespace::CalcMarshallianDemand_rng(
            income, quant_j, price, price_p_policy, psi_p_sims, phi_p_sims,
            psi_sims, phi_sims, gamma_sims, alpha_sims, scale_sims, nerrs,
@@ -3561,7 +3561,7 @@ CalcmdemandOne_rng(const double& income, const Eigen::Matrix<double,-1,1>&
                    const Eigen::Matrix<double,-1,1>& alpha, const double&
                    scale, const int& nerrs, const int& model_num, const int&
                    algo_gen, const double& tol, const int& max_loop,
-                   boost::ecuyer1988& base_rng__, std::ostream* pstream__ = nullptr) {
+                   boost::ecuyer1988& base_rng__, std::ostream* pstream__) {
   return SimulationFunctions_model_namespace::CalcmdemandOne_rng(income,
            price, psi_j, phi_j, gamma_j, alpha, scale, nerrs, model_num,
            algo_gen, tol, max_loop, base_rng__, pstream__);
