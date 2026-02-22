@@ -20,7 +20,7 @@ The travel costs are calculated using the approach described in Lloyd-Smith (202
 \references{
 Federal, Provincial, and Territorial Governments of Canada. 2014.
 “2012 Canadian Nature Survey: Awareness, Participation, and Expenditures in Nature-Based Recreation, Conservation, and Subsistence Activities.” Ottawa, ON: Canadian Councils of Resource Ministers.
-(\href{https://publications.gc.ca/site/eng/9.698872/publication.html}{PubMed})
+(catalogue no. B64-513/1-2012E-PDF)
 
 Lloyd-Smith, P (2022).
 “The Economic Benefits of Recreation in Canada”. Canadian Journal of Economics.
