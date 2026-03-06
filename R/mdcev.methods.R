@@ -233,7 +233,11 @@ print.summary.mdcev <- function(x,...){
 	}
 
 	cat("Parameter estimates -------------------------------- ","\n")
-	if(nrow(x$CoefTable)>options("max.print")) options(max.print=nrow(x$CoefTable)+100)
+	if(nrow(x$CoefTable) > getOption("max.print")) {
+		old_max_print <- getOption("max.print")
+		on.exit(options(max.print = old_max_print), add = TRUE)
+		options(max.print = nrow(x$CoefTable) + 100)
+	}
 	print(x$CoefTable)
 	if(x$stan_data$fixed_scale1 == 1)
 		cat("Note: Scale parameter fixed to 1.",'\n')
