@@ -47,14 +47,11 @@ Once **rstan** is installed, you can install **rmdcev** from CRAN using
 install.packages("rmdcev")
 ```
 
-Or install the latest version of **rmdcev** from GitHub using devtools
+Or install the latest version of **rmdcev** from GitHub using pak
 
 ``` r
-if (!require(devtools)) {
-  install.packages("devtools")
-  library(devtools)
-}
-install_github("plloydsmith/rmdcev", dependencies = TRUE, INSTALL_opts="--no-multiarch")
+if (!require("pak")) install.packages("pak")
+pak::pak("plloydsmith/rmdcev")
 ```
 
 If you have any issues with installation or use of the package, please
