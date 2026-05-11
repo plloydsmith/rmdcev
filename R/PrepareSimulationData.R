@@ -49,8 +49,14 @@ PrepareSimulationData <- function(object, policies, nsims = 30, class = "class1"
 	# Step 4: Individual-level parameter draws (psi, phi, and random gamma/alpha).
 	indiv <- .build_individual_pars(est_sim, est_pars, object, nsims)
 
+	# Step 4b: Fixed psi draws for psi_random models (NULL when not applicable).
+	psi_fixed_draws <- .build_psi_fixed_draws(
+		est_sim,
+		if (!is.null(sd$NPsi_ij_fixed)) sd$NPsi_ij_fixed else 0L
+	)
+
 	# Step 5: Baseline psi and phi utility indices (nsims x J per individual).
-	psi_sims <- .build_psi_sims(indiv$psi_sim_temp, object, npols, nsims)
+	psi_sims <- .build_psi_sims(indiv$psi_sim_temp, object, npols, nsims, psi_fixed_draws)
 	phi_sims <- .build_phi_sims(indiv$phi_sim_temp, object, nsims)
 
 	# Step 6: Policy-scenario psi/phi (zero-dimension matrices when price_change_only).

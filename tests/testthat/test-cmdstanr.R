@@ -18,7 +18,7 @@ test_that("cmdstanr MLE hybrid0 smoke test", {
 	output <- mdcev(~ alt - 1,
 					data = data_rec_small,
 					model = "hybrid0",
-					psi_ascs = 0,
+					psi_ascs = FALSE,
 					algorithm = "MLE",
 					print_iterations = FALSE)
 	# No backend argument -> default is cmdstanr
@@ -53,7 +53,7 @@ test_that("cmdstanr MLE hybrid0 coef and logLik", {
 	output <- mdcev(~ alt - 1,
 					data = data_rec_small,
 					model = "hybrid0",
-					psi_ascs = 0,
+					psi_ascs = FALSE,
 					algorithm = "MLE",
 					print_iterations = FALSE)
 
@@ -73,7 +73,7 @@ test_that("cmdstanr MLE hybrid0 + welfare simulation", {
 	output <- mdcev(~ alt - 1,
 					data = data_rec_small,
 					model = "hybrid0",
-					psi_ascs = 0,
+					psi_ascs = FALSE,
 					algorithm = "MLE",
 					std_errors = "mvn",
 					n_draws = 5,
@@ -86,7 +86,7 @@ test_that("cmdstanr MLE hybrid0 + welfare simulation", {
 	# Zero price change: welfare should be ~0
 	wtp <- mdcev.sim(df_sim$df_indiv, df_common = df_sim$df_common,
 					 sim_options = df_sim$sim_options,
-					 cond_err = 0, nerrs = 1, sim_type = "welfare")
+					 cond_err = FALSE, nerrs = 1, sim_type = "welfare")
 	sum_wtp <- summary(wtp)
 	expect_equal(sum(abs(sum_wtp$CoefTable$mean)), 0, tolerance = 0.1)
 })
@@ -105,7 +105,7 @@ test_that("cmdstanr Bayes hybrid0 fixed smoke test", {
 					model = "hybrid0",
 					algorithm = "Bayes",
 					random_parameters = "fixed",
-					fixed_scale1 = 0,
+					fixed_scale1 = FALSE,
 					print_iterations = FALSE,
 					n_cores = 1,
 					n_chains = 1,
@@ -122,7 +122,7 @@ test_that("cmdstanr Bayes hybrid0 fixed smoke test", {
 
 	wtp <- mdcev.sim(df_sim$df_indiv, df_common = df_sim$df_common,
 					 sim_options = df_sim$sim_options,
-					 cond_err = 1, nerrs = 1, sim_type = "welfare")
+					 cond_err = TRUE, nerrs = 1, sim_type = "welfare")
 	sum_wtp <- summary(wtp)
 	expect_equal(sum(abs(sum_wtp$CoefTable$mean)), 0, tolerance = 0.1)
 })

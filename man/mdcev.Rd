@@ -11,16 +11,16 @@ mdcev(
   formula = NULL,
   data,
   weights = NULL,
-  model = c("alpha", "gamma", "hybrid", "hybrid0", "kt_ee"),
+  model = c("alpha", "gamma", "hybrid", "hybrid0", "kt_ee", "gamma1"),
   n_classes = 1,
-  fixed_scale1 = 0,
-  single_scale = 0,
-  trunc_data = 0,
+  fixed_scale1 = FALSE,
+  single_scale = FALSE,
+  trunc_data = FALSE,
   psi_ascs = NULL,
-  gamma_ascs = 1,
-  seed = "123",
+  gamma_ascs = TRUE,
+  seed = 123L,
   max_iterations = 2000,
-  jacobian_analytical_grad = 1,
+  jacobian_analytical_grad = TRUE,
   initial.parameters = "random",
   hessian = TRUE,
   algorithm = c("MLE", "Bayes"),
@@ -32,11 +32,12 @@ mdcev(
   prior_alpha_shape = 1,
   prior_scale_sd = 1,
   prior_delta_sd = 10,
-  gamma_nonrandom = 0,
-  alpha_nonrandom = 0,
+  gamma_nonrandom = FALSE,
+  alpha_nonrandom = FALSE,
+  psi_random = NULL,
   std_errors = "deltamethod",
   n_draws = 50,
-  keep_loglik = 0,
+  keep_loglik = FALSE,
   random_parameters = "fixed",
   show_stan_warnings = TRUE,
   n_iterations = 200,
@@ -45,6 +46,7 @@ mdcev(
   max_tree_depth = 10,
   adapt_delta = 0.8,
   lkj_shape_prior = 4,
+  backend = "cmdstanr",
   ...
 )
 
@@ -76,8 +78,8 @@ individual specific variables. Note: I is number of individuals and J is number 
 \item{weights}{an optional vector of weights. Default to 1.}
 
 \item{model}{A string indicating which model specification is estimated.
-The options are "alpha", "gamma", "hybrid" and "hybrid0" for the MDCEV model and "kt_ee" for the environmental
-economics Kuhn-Tucker specification.}
+The options are "alpha", "gamma", "hybrid", "hybrid0", and "gamma1" for the MDCEV model and "kt_ee" for the
+environmental economics Kuhn-Tucker specification. The "gamma1" model fixes alpha_0 = 1 (no income effects).}
 
 \item{n_classes}{The number of latent classes. Note that the LC model is automatically estimated as long as the
 prespecified number of classes is set greater than 1.}
@@ -137,9 +139,19 @@ penalized MLE is used and the optimizing objective is augmented with the priors.
 
 \item{prior_delta_sd}{standard deviation for normal prior with mean 0.}
 
-\item{gamma_nonrandom}{indicator set to 1 if gamma parameters should not be random (i.e. no standard deviation).}
+\item{gamma_nonrandom}{Logical. If \code{TRUE}, gamma parameters are not random (no individual-specific standard deviation).}
 
-\item{alpha_nonrandom}{indicator set to 1 if alpha parameters should not be random (i.e. no standard deviation).}
+\item{alpha_nonrandom}{Logical. If \code{TRUE}, alpha parameters are not random (no individual-specific standard deviation).}
+
+\item{psi_random}{A one-sided formula specifying which psi formula terms should be treated as random
+coefficients (i.e. have individual-specific draws with estimated population mean and standard deviation).
+Only applicable when \code{algorithm = "Bayes"} and \code{random_parameters} is \code{"uncorr"} or
+\code{"corr"}. When \code{NULL} (default), all formula terms are random (existing behaviour).
+Alternative-specific constants (from \code{psi_ascs = 1}) are always random regardless of this argument.
+Formula terms not listed in \code{psi_random} become fixed (pooled) point estimates.
+Example: if the psi formula is \code{~ quality + income} and you specify
+\code{psi_random = ~ quality}, then \code{quality} gets an individual-specific coefficient
+while \code{income} is estimated as a single pooled parameter.}
 
 \item{std_errors}{Compute standard errors using the delta method ("deltamethod")
 or multivariate normal draws ("mvn"). The default is "deltamethod". Note that mvn parameter draws should be
@@ -168,6 +180,10 @@ Can set using options(mc.cores = parallel::detectCores()).}
 \item{adapt_delta}{https://mc-stan.org/misc/warnings.html#divergent-transitions-after-warmup}
 
 \item{lkj_shape_prior}{Prior for Cholesky matrix}
+
+\item{backend}{Estimation backend. Either \code{"cmdstanr"} (default) or \code{"rstan"}.
+The cmdstanr backend reads \code{.stan} files from \code{inst/stan/} at runtime.
+The rstan backend uses pre-compiled C++ in \code{src/stanExports_*.h}.}
 
 \item{...}{Additional parameters to pass on to \code{rstan::stan}
 and \code{rstan::sampling}.}

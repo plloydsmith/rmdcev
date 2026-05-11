@@ -11,4 +11,5 @@
 ^cran-comments\.md$
 ^\.claude$
 ^CLAUDE\.md$
+^AGENTS\.md$
 ^inst/benchmarks$

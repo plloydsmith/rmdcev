@@ -6,7 +6,6 @@
 //   DrawError_rng        - draw unconditional or conditional Gumbel errors
 //   CalcAltOrder         - rank non-numeraire alts by MUzero
 //   SortParmMatrix       - sort parameter matrix by descending MUzero
-//   ComputeE             - compute expenditure sum for bisection
 //   ComputeUtilM         - compute utility over M consumed alternatives
 //   ComputeKtUtilM       - compute KT utility over M consumed alternatives
 //   MarshallianDemand    - compute Marshallian demands (hybrid or general)
@@ -39,7 +38,7 @@ functions {
 vector Shuffle_rng(vector inv_temp, int nerrs){
 
 	vector[nerrs] out;
-	vector[nerrs] temp1 = to_vector(uniform_rng(rep_vector(0, nerrs), 1));
+	vector[nerrs] temp1 = to_vector(uniform_rng(rep_vector(0.0, nerrs), 1));
 	out = inv_temp[sort_indices_asc(temp1)];
 
 return out;
@@ -56,13 +55,13 @@ return out;
 vector DrawMlhs_rng(int nerrs, int draw_mlhs){
 
 	vector[nerrs] error;
-	vector[nerrs] temp0 = rep_vector(0, nerrs);
+	vector[nerrs] temp0 = rep_vector(0.0, nerrs);
 
 	if(draw_mlhs == 0){
 		error = to_vector(uniform_rng(temp0, 1));
 	} else {
-		vector[nerrs] temp = to_vector(linspaced_int_array(nerrs, 0, nerrs-1)) / nerrs;
-		error = Shuffle_rng(temp + to_vector(uniform_rng(temp0, 1))/ nerrs, nerrs);
+		vector[nerrs] temp = linspaced_vector(nerrs, 0.0, (nerrs - 1.0) / nerrs);
+		error = Shuffle_rng(temp + to_vector(uniform_rng(temp0, 1)) / nerrs, nerrs);
 	}
 return error;
 }
@@ -107,7 +106,7 @@ array[] vector DrawError_rng(real quant_num, vector quant_j, vector price_j,
 			else
 				vk = psi_j - log(phi_j .* quant_j + gamma_j) + log(phi_j) - log(price_j);
 			// ek = v1 - vk and assume error term is zero for numeraire
-			ek = append_row(0, (v1 - vk) / scale);
+			ek = append_row(0.0, (v1 - vk) / scale);
 		// Calculate errors
 		// For unvisited alternatives, draw from truncated multivariate logistic distribution
 		for(j in 1:(nalts+1))
@@ -128,19 +127,15 @@ return out;
  */
 array[] int CalcAltOrder(vector MUzero, int nalts) {
 
-	array[nalts+1] int order_x;
-	vector[nalts] ord_alts;
 	array[nalts] int order_MU = sort_indices_desc(MUzero[2:(nalts+1)]);
+	array[nalts+1] int order_x = sort_indices_asc(append_row(1.0, to_vector(order_MU) + 1));
 
-	for (j in 1:nalts)
-		ord_alts[j] = j;
-
-	order_x = sort_indices_asc(append_row(1.0, to_vector(ord_alts[order_MU] + 1)));
 return order_x;
 }
 
 /**
- * Sort matrix of parameters/prices by descending MUzero
+ * Sort matrix of parameters/prices by descending MUzero using direct loop fill.
+ * Avoids intermediate vector allocations from chained append_row/append_col.
  * @param MUzero    full MUzero vector (length nalts+1)
  * @param price     full price vector (length nalts+1)
  * @param gamma     full gamma vector (length nalts+1)
@@ -151,30 +146,20 @@ return order_x;
 matrix SortParmMatrix(vector MUzero, vector price, vector gamma, vector alpha_phi, int nalts) {
 
 	matrix[nalts+1, 4] parm_matrix;
-	vector[nalts] MU_j = MUzero[2:(nalts+1)];
-	vector[nalts] price_j = price[2:(nalts+1)];
-	vector[nalts] gamma_j = gamma[2:(nalts+1)];
-	vector[nalts] alpha_phi_j = alpha_phi[2:(nalts+1)];
-	array[nalts] int order_MU = sort_indices_desc(MU_j);	// find ranking of non-numeraire alts by MUzero
+	array[nalts] int order_MU = sort_indices_desc(MUzero[2:(nalts+1)]);
 
-	parm_matrix = append_col(append_row(MUzero[1], MU_j[order_MU]),
-	append_col(append_row(price[1], price_j[order_MU]),
-	append_col(append_row(gamma[1], gamma_j[order_MU]), append_row(alpha_phi[1], alpha_phi_j[order_MU]))));
+	parm_matrix[1, 1] = MUzero[1];
+	parm_matrix[1, 2] = price[1];
+	parm_matrix[1, 3] = gamma[1];
+	parm_matrix[1, 4] = alpha_phi[1];
+	for (k in 1:nalts) {
+		int j = order_MU[k] + 1; // shift from non-numeraire index to full vector index
+		parm_matrix[k+1, 1] = MUzero[j];
+		parm_matrix[k+1, 2] = price[j];
+		parm_matrix[k+1, 3] = gamma[j];
+		parm_matrix[k+1, 4] = alpha_phi[j];
+	}
 return parm_matrix;
-}
-
-/**
- * Compute expenditure sum for bisection: sum_m g_price__phi[m] * (lambda^b[m] / c[m] - d[m])
- * @param M            number of consumed alternatives
- * @param lambda       current lambda value
- * @param g_price__phi gamma*price/phi vector (length >= M)
- * @param b            exponent vector (length >= M)
- * @param c            mu^b vector (length >= M)
- * @param d            indicator vector: 0 for numeraire, 1 for non-numeraire (length >= M)
- * @return scalar expenditure
- */
-real ComputeE(int M, real lambda, vector g_price__phi, vector b, vector c, vector d){
-	return sum(g_price__phi[1:M] .* (pow(lambda, b[1:M]) ./ c[1:M] - d[1:M]));
 }
 
 /**
@@ -187,7 +172,7 @@ real ComputeE(int M, real lambda, vector g_price__phi, vector b, vector c, vecto
  * @param alpha     full alpha vector (length nalts+1)
  * @param nalts     number of non-numeraire alternatives
  * @param algo_gen  0 = hybrid closed-form, 1 = general bisection
- * @param model_num model type (1-5)
+ * @param model_num model type (1-6)
  * @param tol_e     convergence tolerance for bisection on expenditure
  * @param max_loop  maximum bisection iterations
  * @return vector of nalts+1 demands
@@ -201,22 +186,31 @@ vector MarshallianDemand(real income, vector price, vector MUzero, vector phi, v
 	int exit = 0;
 	real E;
 	array[nalts+1] int order_x = CalcAltOrder(MUzero, nalts);
-	vector[nalts+1] X = rep_vector(0, nalts+1);
-	vector[nalts+1] d = append_row(0, rep_vector(1, nalts));
+	vector[nalts+1] X = rep_vector(0.0, nalts+1);
+	vector[nalts+1] d = append_row(0.0, rep_vector(1.0, nalts));
 
-	if (algo_gen == 0) { //Hybrid
+	if (model_num == 6) {
+		// alpha_0 = 1: closed-form demands stored in sorted MUzero order; X[1] = 0
+		real lam6 = MUzero[1];
+		array[nalts] int ord = sort_indices_desc(MUzero[2:(nalts+1)]);
+		for (k in 1:nalts) {
+			int j = ord[k] + 1;
+			X[k+1] = MUzero[j] > lam6 ? gamma[j] * (MUzero[j]/lam6 - 1) : 0;
+		}
+		exit = 1;
+	} else if (algo_gen == 0) { //Hybrid
 		matrix[nalts+1, 4] parm_matrix = SortParmMatrix(MUzero, price, gamma, alpha, nalts);
 		vector[nalts+1] mu = col(parm_matrix, 1); // obtain mu
 		vector[nalts+1] g = col(parm_matrix, 3); // obtain gamma
 		vector[nalts+1] g_price = g .* col(parm_matrix, 2);
 		real alpha_1 = alpha[1];
 		vector[nalts+1] b = g_price .* pow(mu, inv(1 - alpha_1));
+		real sum_g_price = g_price[1]; // running sums updated as M grows
+		real sum_b = b[1];
 
 		while (exit == 0){
 			// Calculate lambda equal to MUzero(M+1)
-			real lambda_num = income + sum(g_price[1:M]) - 1; // minus one for numeraire
-			real lambda_den = sum(b[1:M]);
-			lambda = pow(lambda_num / lambda_den, alpha_1 - 1);
+			lambda = pow((income + sum_g_price - 1) / sum_b, alpha_1 - 1);
 
 			//Compare lambda to baseline utility of the next lowest alternative
 			//(M+1). If lambda exceeds this value then all lower-valued
@@ -225,20 +219,22 @@ vector MarshallianDemand(real income, vector price, vector MUzero, vector phi, v
 				// Compute demands (using eq. 12 in Pinjari and Bhat)
 				X[1:M] = (pow(lambda ./ mu[1:M], inv(alpha_1 - 1)) - d[1:M]) .* g[1:M];
 				exit = 1;
-
-			} else if ( M < nalts + 1)
-				M += 1; // adds one to M
+			} else {
+				M += 1;
+				sum_g_price += g_price[M];
+				sum_b += b[M];
 			}
+		}
 
 	} else { //	General
 		real lambda_l;
 		real lambda_u;
 		matrix[nalts+1, 4] parm_matrix;
 		vector[nalts+1] mu; // obtain mu
-		vector[nalts+1] c;
 		vector[nalts+1] b;
 		vector[nalts+1] g__phi; // obtain gamma/phi
 		vector[nalts+1] g_price__phi; // obtain gamma*price/phi
+		vector[nalts+1] gpo_c; // g_price__phi ./ c precomputed to avoid per-call division in bisection
 
 		if (model_num < 5){
 			parm_matrix = SortParmMatrix(MUzero, price, gamma, alpha, nalts);
@@ -253,23 +249,26 @@ vector MarshallianDemand(real income, vector price, vector MUzero, vector phi, v
 
 		mu = col(parm_matrix, 1); // obtain mu = psi/price
 		g_price__phi = g__phi .* col(parm_matrix, 2); // obtain gamma*price/phi
-		c = pow(mu, b);
+		gpo_c = g_price__phi ./ pow(mu, b); // precompute: g_price__phi / c where c = mu^b
+		real sum_gpd = 0.0; // running sum of g_price__phi[1:M] .* d[1:M]; d[1]=0 so starts at 0
 
 		while (exit == 0){
 			lambda = mu[M + 1];	// Calculate lambda equal to MUzero(M+1)
 
-			E = ComputeE(M, lambda, g_price__phi, b, c, d);
+			E = sum(gpo_c[1:M] .* pow(lambda, b[1:M])) - sum_gpd;
 
 			if (E >= income || M+1 == nalts+1){
-				if (E < income)
+				if (E < income){
 					M += 1;
+					sum_gpd += g_price__phi[M]; // d[M]=1 for M>1
+				}
 
 				lambda_l = E < income ? 0 : lambda;
 				lambda_u = mu[M];
 				lambda = (lambda_l + lambda_u) / 2;
 
 				for (n in 1:max_loop){
-					E = ComputeE(M, lambda, g_price__phi, b, c, d);
+					E = sum(gpo_c[1:M] .* pow(lambda, b[1:M])) - sum_gpd;
 
 					// Update lambda bounds
 					if (E < income)
@@ -286,8 +285,10 @@ vector MarshallianDemand(real income, vector price, vector MUzero, vector phi, v
 
 				exit = 1;
 
-			} else if (E < income && M + 1 < nalts + 1)
+			} else {
 				M += 1; // adds one to M
+				sum_gpd += g_price__phi[M]; // d[M]=1 for M>1
+			}
 		}
 	}
 	// This code puts the choices back in their original order and exports demands
@@ -320,7 +321,7 @@ real ComputeUtilJ(real income, vector quant_j, vector price_j,
 	else
 		util_num = psi[1] * pow(income -  price_j' * quant_j, alpha[1]) / alpha[1];
 
-	if (model_num == 1 || model_num == 4){
+	if (model_num == 1 || model_num == 4 || model_num == 6){
 		util_j = psi[2:(nalts+1)] .* gamma_j .* log(quant_j ./ gamma_j + 1);
 	} else if (model_num == 5){
 		util_j = psi[2:(nalts+1)] .* log((phi_j .* quant_j ./ gamma_j) +1);
@@ -351,17 +352,14 @@ return output;
 real ComputeUtilM(int M, real lambda1, vector g_psi_a, vector a_a_1, vector mu_a_a_1,
 				vector psi, vector g, vector price, vector d, int model_num){
 	real output;
-	vector[M] temp = rep_vector(0, M);
-	temp[1] = g_psi_a[1] * (pow(lambda1, a_a_1[1]) * mu_a_a_1[1] - d[1]); // compute numeraire util
-	if (M > 1){
-		for (m in 2:M){
-			if (model_num == 1)
-				temp[m] = psi[m] * g[m] * log(psi[m] / (lambda1 * price[m]));
-			else
-			 	temp[m] = g_psi_a[m] * (pow(lambda1, a_a_1[m]) * mu_a_a_1[m] - d[m]);
-		}
+	real output_num = g_psi_a[1] * (pow(lambda1, a_a_1[1]) * mu_a_a_1[1] - d[1]);
+	if (M == 1){
+		output = output_num;
+	} else if (model_num == 1) {
+		output = output_num + sum(psi[2:M] .* g[2:M] .* log(psi[2:M] ./ (lambda1 * price[2:M])));
+	} else {
+		output = output_num + sum(g_psi_a[2:M] .* (pow(lambda1, a_a_1[2:M]) .* mu_a_a_1[2:M] - d[2:M]));
 	}
-	output = sum(temp);
 return output;
 }
 
@@ -389,7 +387,7 @@ real ComputeKtUtilM(int M, real lambda1, vector psi, vector mu, real alpha_1){
  * @param alpha     full alpha vector (length nalts+1)
  * @param nalts     number of non-numeraire alternatives
  * @param algo_gen  0 = hybrid closed-form, 1 = general bisection
- * @param model_num model type (1-5)
+ * @param model_num model type (1-6)
  * @param tol_l     convergence tolerance for bisection on lambda
  * @param max_loop  maximum bisection iterations
  * @return vector of nalts+1 demands
@@ -404,10 +402,26 @@ vector HicksianDemand(real util, vector price,
 	real lambda1;
 	real util_new;
 	array[nalts+1] int order_x = CalcAltOrder(MUzero, nalts);
-	vector[nalts+1] X = rep_vector(0, nalts+1); // vector to hold zero demands
-	vector[nalts+1] d = append_row(0, rep_vector(1, nalts));
+	vector[nalts+1] X = rep_vector(0.0, nalts+1); // vector to hold zero demands
+	vector[nalts+1] d = append_row(0.0, rep_vector(1.0, nalts));
 
-	if (algo_gen == 0) { //Hybrid approach to demand simulation (constant alpha's)
+	if (model_num == 6) {
+		// alpha_0 = 1: Hicksian non-numeraire demands same as Marshallian (income-independent)
+		// stored in sorted MUzero order; x0 from utility constraint
+		// util_j = psi_j * gamma_j * log(x_j/gamma_j+1) = mj * price[j] * gamma[j] * log(mj/lam6)
+		real lam6 = MUzero[1];
+		real util_nonnum = 0;
+		array[nalts] int ord = sort_indices_desc(MUzero[2:(nalts+1)]);
+		for (k in 1:nalts) {
+			int j = ord[k] + 1;
+			real mj = MUzero[j];
+			X[k+1] = mj > lam6 ? gamma[j] * (mj/lam6 - 1) : 0;
+			if (X[k+1] > 0)
+				util_nonnum += mj * price[j] * gamma[j] * log(mj / lam6);
+		}
+		X[1] = (util - util_nonnum) / lam6;
+		exit = 1;
+	} else if (algo_gen == 0) { //Hybrid approach to demand simulation (constant alpha's)
 		matrix[nalts+1, 4] parm_matrix = SortParmMatrix(MUzero, price, gamma, alpha, nalts);
 		real alpha_1 = alpha[1]; // all alpha's are equal
 		vector[nalts+1] mu = col(parm_matrix, 1); // obtain mu
@@ -422,16 +436,15 @@ vector HicksianDemand(real util, vector price,
 			c = g_psi .* log(mu);
 		}
 
+		real sum_g_psi = g_psi[1]; // running sums updated as M grows
+		real sum_c = c[1];
+
 		while (exit == 0){
 			// Calculate 1/lambda for a given M
 			if (model_num == 3){
-				real lambda_num = alpha_1 * util + sum(g_psi[1:M]) - g_psi[1]; // utility not expenditure and subtract numeriare psi
-				real lambda_den = sum(c[1:M]);
-				lambda1 = pow(lambda_num / lambda_den, (alpha_1 - 1) / alpha_1); // create 1/lambda term
+				lambda1 = pow((alpha_1 * util + sum_g_psi - g_psi[1]) / sum_c, (alpha_1 - 1) / alpha_1);
 			} else if (model_num == 4){
-				real lambda_num = util - sum(c[1:M]);
-				real lambda_den = sum(g_psi[1:M]);
-				lambda1 = inv(exp(lambda_num / lambda_den)); // create 1/lambda term = 1/exp(expression)
+				lambda1 = inv(exp((util - sum_c) / sum_g_psi));
 			}
 			// Compare 1/lambda to baseline utility of the next lowest alternative
 			// (M+1). If lambda exceeds this value then all lower-valued
@@ -441,9 +454,11 @@ vector HicksianDemand(real util, vector price,
 				// Compute demands (using eq. 12 in Pinjari and Bhat)
 				X[1:M] = (pow(lambda1 ./ mu[1:M], inv(alpha_1 - 1)) - d[1:M]) .* g[1:M];
 				exit = 1;
-
-			} else if (M < nalts + 1)
-				M += 1; // adds one to M
+			} else {
+				M += 1;
+				sum_g_psi += g_psi[M];
+				sum_c += c[M];
+			}
 		}
 	} else { //General approach to demand simulation (het. alpha's)
 		real lambda_l;
@@ -585,18 +600,22 @@ matrix CalcWTP_rng(real income, vector quant_j, vector price,
 						psi_j, phi[2:(nalts+1)], gamma[2:(nalts+1)], alpha, scale,
 						model_num, nalts, nerrs, cond_error, draw_mlhs);
 
+		// Precompute append_row(0, psi_j) once — constant across all err draws
+		vector[nalts + 1] psi0_j = append_row(0.0, psi_j);
+		// Hoist observed demand construction — constant when cond_error == 1
+		vector[nalts + 1] obs_demand = append_row(quant_num, quant_j);
+
 		// Compute Marshallian demands and baseline utility
 		for (err in 1:nerrs){
 			vector[nalts + 1] mdemand;
-			vector[nalts + 1] MUzero_b;
-			vector[nalts + 1] psi_b_err = exp(append_row(0, psi_j) + error[err]);
-			MUzero_b = psi_b_err ./ price;
+			vector[nalts + 1] psi_b_err = exp(psi0_j + error[err]);
+			vector[nalts + 1] MUzero_b = psi_b_err ./ price;
 			if (model_num == 5)
 				MUzero_b = MUzero_b .* phi ./ gamma; // specific form for kt_ee model
 
-			if (cond_error == 1){
-				mdemand = append_row(quant_num, quant_j);
-			} else if(cond_error == 0)
+			if (cond_error == 1)
+				mdemand = obs_demand;
+			else
 				mdemand = MarshallianDemand(income, price, MUzero_b, phi, gamma, alpha,
 										nalts, algo_gen, model_num, tol, max_loop);
 
@@ -615,9 +634,12 @@ matrix CalcWTP_rng(real income, vector quant_j, vector price,
 			else
 				psi_p = psi_j;
 
+			// Precompute append_row(0, psi_p) once — constant across err draws for this policy
+			vector[nalts + 1] psi0_p = append_row(0.0, psi_p);
+
 			for (err in 1:nerrs){
 				vector[nalts + 1] hdemand;
-				vector[nalts + 1] MUzero_p = exp(append_row(0, psi_p) + error[err]) ./ price_p; //change for no psi_p;
+				vector[nalts + 1] MUzero_p = exp(psi0_p + error[err]) ./ price_p;
 				if (model_num == 5)
 					MUzero_p = MUzero_p .* phi ./ gamma; // specific form for kt_ee model
 
@@ -677,7 +699,6 @@ array[] matrix CalcMarshallianDemand_rng(real income, vector quant_j, vector pri
 		real scale = scale_sims[sim];
 		array[nerrs] vector[nalts + 1] error;
 		matrix[npols, nalts + 1] mdemand_pols;
-		vector[nerrs] util;
 
 		if (price_change_only == 0)
 			psi_p_policy = psi_p_sims[sim];
@@ -691,45 +712,28 @@ array[] matrix CalcMarshallianDemand_rng(real income, vector quant_j, vector pri
 						psi_j, phi[2:(nalts+1)], gamma[2:(nalts+1)], alpha, scale,
 						model_num, nalts, nerrs, cond_error, draw_mlhs);
 
-		// Compute Marshallian demands and baseline utility
-		for (err in 1:nerrs){
-			vector[nalts + 1] mdemand_util;
-			vector[nalts + 1] MUzero_b;
-			vector[nalts + 1] psi_b_err = exp(append_row(0, psi_j) + error[err]);
-			MUzero_b = psi_b_err ./ price;
-			if (model_num == 5)
-				MUzero_b = MUzero_b .* phi ./ gamma; // specific form for kt_ee model
-
-			if (cond_error == 1){
-				mdemand_util= append_row(quant_num, quant_j);
-			} else if(cond_error == 0)
-				mdemand_util = MarshallianDemand(income, price, MUzero_b, phi, gamma, alpha,
-										nalts, algo_gen, model_num, tol, max_loop);
-
-			util[err] = ComputeUtilJ(income, mdemand_util[2:(nalts+1)], price[2:(nalts+1)],
-								psi_b_err, phi[2:(nalts+1)], gamma[2:(nalts+1)], alpha,
-								nalts, model_num); // add err to psi_b if no psi_p
-		}
-
 		for (policy in 1:npols){
 			vector[nalts + 1] price_p = price + price_p_policy[policy]; // add price increase
-			vector[nalts] psi_p; //change for no psi_p
-			vector[nalts + 1] mdemand_p = rep_vector(0, nalts + 1);
+			vector[nalts] psi_p;
+			vector[nalts + 1] mdemand_p = rep_vector(0.0, nalts + 1);
 
 			if (price_change_only == 0)
 				psi_p = psi_p_policy[policy]';
 			else
 				psi_p = psi_j;
 
-			for (err in 1:nerrs){
-				vector[nalts + 1] MUzero_p = exp(append_row(0, psi_p) + error[err]) ./ price_p;
-				if (model_num == 5)
-					MUzero_p = MUzero_p .* phi ./ gamma; //change for no psi_p
+			// Precompute append_row(0, psi_p) once — constant across err draws for this policy
+			vector[nalts + 1] psi0_p = append_row(0.0, psi_p);
 
-				mdemand_p = mdemand_p + MarshallianDemand(income, price_p, MUzero_p, phi, gamma, alpha,
-							nalts, algo_gen, model_num, tol, max_loop) / nerrs; // take average
+			for (err in 1:nerrs){
+				vector[nalts + 1] MUzero_p = exp(psi0_p + error[err]) ./ price_p;
+				if (model_num == 5)
+					MUzero_p = MUzero_p .* phi ./ gamma;
+
+				mdemand_p += MarshallianDemand(income, price_p, MUzero_p, phi, gamma, alpha,
+							nalts, algo_gen, model_num, tol, max_loop);
 			}
-		mdemand_pols[policy] = mdemand_p';
+		mdemand_pols[policy] = (mdemand_p / nerrs)';
 		}
 	mdemand_out[sim] = mdemand_pols;
 	}
@@ -759,31 +763,27 @@ vector CalcmdemandOne_rng(real income, vector price,
 					int nerrs, int model_num, int algo_gen, real tol, int max_loop){
 
 	int nalts = num_elements(price) - 1; // subtract numeraire
-	vector[nalts + 1] mdemand = rep_vector(0, nalts + 1);
+	vector[nalts + 1] mdemand = rep_vector(0.0, nalts + 1);
 	vector[nalts + 1] gamma = append_row(1, gamma_j);
 	vector[nalts + 1] phi;
-	array[nerrs] vector[nalts + 1] error;
+	vector[nalts + 1] psi0_j = append_row(0.0, psi_j);
 
 	if (model_num < 5)
 		phi = rep_vector(1, nalts + 1);
 	else
 		phi = append_row(1, phi_j);
 
-	for(err in 1:nerrs)
-		for(g in 1:(nalts+1))
-			error[err, g] = -log(-log(uniform_rng(0, 1))) * scale; //uniform(0,1) draws
-
-	// Compute Marshallian demands and baseline utility
 	for (err in 1:nerrs){
-		vector[nalts + 1] MUzero_b = exp(append_row(0, psi_j) + error[err]) ./ price;
+		vector[nalts + 1] e = -log(-log(to_vector(uniform_rng(rep_vector(0.0, nalts+1), 1)))) * scale;
+		vector[nalts + 1] MUzero_b = exp(psi0_j + e) ./ price;
 		if (model_num == 5)
-			MUzero_b = MUzero_b .* phi ./ gamma; //change for no psi_p
+			MUzero_b = MUzero_b .* phi ./ gamma;
 
-		mdemand = mdemand + MarshallianDemand(income, price, MUzero_b, phi, gamma, alpha,
-					nalts, algo_gen, model_num, tol, max_loop) / nerrs; // take average
+		mdemand += MarshallianDemand(income, price, MUzero_b, phi, gamma, alpha,
+					nalts, algo_gen, model_num, tol, max_loop);
 	}
 
-return mdemand;
+return mdemand / nerrs;
 }
 
 // end of functions

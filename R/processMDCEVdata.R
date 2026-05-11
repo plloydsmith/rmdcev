@@ -1,3 +1,42 @@
+#' @title .split_psi_for_rp
+#' @description Split dat_psi into random and fixed submatrices when psi_random is specified.
+#'   Updates NPsi_ij (random count), dat_psi (random columns), NPsi_ij_fixed (fixed count),
+#'   and dat_psi_fixed (fixed columns) in place.
+#' @noRd
+.split_psi_for_rp <- function(stan_data, psi_random, data) {
+	if (stan_data$NPsi_ij == 0L) return(stan_data)
+
+	psi_rand_vars <- stats::terms(stats::formula(Formula::Formula(psi_random), rhs = 1, lhs = 0))
+	attr(psi_rand_vars, "intercept") <- 0
+	rand_cols <- colnames(stats::model.matrix(psi_rand_vars, data))
+	if (is.null(rand_cols)) rand_cols <- character(0)
+
+	all_cols <- colnames(stan_data$dat_psi)
+	missing  <- setdiff(rand_cols, all_cols)
+	if (length(missing) > 0)
+		stop("psi_random refers to variables not in the psi formula: ",
+		     paste(missing, collapse = ", "), call. = FALSE)
+
+	fixed_cols <- setdiff(all_cols, rand_cols)
+	if (length(fixed_cols) == 0L) return(stan_data)  # all terms already random
+
+	I_J        <- nrow(stan_data$dat_psi)
+	fixed_idx  <- match(fixed_cols, all_cols)
+	rand_idx   <- match(rand_cols,  all_cols)
+
+	stan_data$dat_psi_fixed <- stan_data$dat_psi[seq_len(I_J), fixed_idx, drop = FALSE]
+	stan_data$NPsi_ij_fixed  <- length(fixed_idx)
+
+	if (length(rand_idx) == 0L) {
+		stan_data$dat_psi <- matrix(0, 0, 0)
+		stan_data$NPsi_ij  <- 0L
+	} else {
+		stan_data$dat_psi <- stan_data$dat_psi[seq_len(I_J), rand_idx, drop = FALSE]
+		stan_data$NPsi_ij  <- length(rand_idx)
+	}
+	stan_data
+}
+
 #' @title processMDCEVdata
 #' @description Process MDCEV data
 #' @inheritParams mdcev
@@ -45,6 +84,8 @@ processMDCEVdata <- function(formula, data, model_options){
 		model_num <- 4
 	} else if (model_options$model == "kt_ee"){
 		model_num <- 5
+	} else if (model_options$model == "gamma1"){
+		model_num <- 6
 	} else
 		stop("No model specificied. Choose a model specification")
 
@@ -56,7 +97,16 @@ processMDCEVdata <- function(formula, data, model_options){
 
 	price <- matrix(data[[price.name]], ncol = J, byrow = TRUE)
 	quant <- matrix(data[[quant.name]], ncol = J, byrow = TRUE)
-	income <- as.vector(matrix(data[[income.name]], ncol = J, byrow = TRUE)[,1])
+	if (!is.null(income.name)) {
+		income <- as.vector(matrix(data[[income.name]], ncol = J, byrow = TRUE)[,1])
+	} else if (model_num == 6) {
+		# gamma1 has no income effects; dummy income keeps quant_num = 1 in Stan,
+		# which is multiplied by (alpha_0 - 1) = 0 so it never enters the likelihood or WTP
+		income <- rowSums(price * quant) + 1
+	} else {
+		stop("income is required for model '", model_options$model,
+			 "'. Provide an income column in mdcev.data().", call. = FALSE)
+	}
 
 	# Put data into one list for rstan
 	stan_data <- list(I = I, J = J, NPsi_ij = NPsi_ij, NPhi = NPhi,
@@ -67,9 +117,26 @@ processMDCEVdata <- function(formula, data, model_options){
 			 quant_j = quant,
 			 income = income,
 			 model_num = model_num)
-	stan_data <- c(stan_data, model_options)
-	stan_data$n_classes <- NULL
-	stan_data$model <- NULL
+
+	# Copy exactly the Stan data-block keys from model_options (explicit to avoid
+	# accidental name collisions if model_options gains new keys in the future).
+	stan_keys <- c("fixed_scale1", "single_scale", "trunc_data", "psi_ascs",
+	               "gamma_ascs", "jacobian_analytical_grad", "flat_priors",
+	               "prior_psi_sd", "prior_phi_sd", "prior_gamma_sd",
+	               "prior_alpha_shape", "prior_scale_sd", "prior_delta_sd",
+	               "gamma_nonrandom", "alpha_nonrandom")
+	for (k in stan_keys) stan_data[[k]] <- model_options[[k]]
+
+	# Convert logical flags to integers for Stan (Stan data blocks use int, not logical).
+	bool_keys <- c("fixed_scale1", "single_scale", "trunc_data", "gamma_ascs",
+	               "jacobian_analytical_grad", "flat_priors",
+	               "gamma_nonrandom", "alpha_nonrandom")
+	for (k in bool_keys) {
+		if (!is.null(stan_data[[k]]))
+			stan_data[[k]] <- as.integer(stan_data[[k]])
+	}
+	if (!is.null(stan_data$psi_ascs))
+		stan_data$psi_ascs <- as.integer(stan_data$psi_ascs)
 
 	if (model_options$n_classes > 1){
 		lc.vars <- formula(formula, rhs = 2, lhs = 0)

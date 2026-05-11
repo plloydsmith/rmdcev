@@ -1,7 +1,7 @@
 Package: rmdcev
 Type: Package
 Title: Kuhn-Tucker and Multiple Discrete-Continuous Extreme Value Models
-Version: 1.3.0
+Version: 1.3.3
 Authors@R: c(
     person(given = "Patrick",
            family = "Lloyd-Smith",
@@ -42,11 +42,14 @@ NeedsCompilation: yes
 RoxygenNote: 7.3.3
 Biarch: true
 Suggests:
+    apollo,
     bench,
     knitr,
     rmarkdown,
     testthat (>= 3.0.0),
     cmdstanr
+VignetteBuilder: knitr
+Config/testthat/edition: 3
 Additional_repositories:
     https://stan-dev.r-universe.dev/
 URL: https://github.com/plloydsmith/rmdcev

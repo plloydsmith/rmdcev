@@ -30,7 +30,7 @@ if (model_num == 1 || model_num == 3 || model_num == 5){
 } else if (model_num == 2){
  	A = J + 1;
  	Gamma = 0;
-} else if (model_num == 4){
+} else if (model_num == 4 || model_num == 6){
 	A = 0;
  	Gamma = J;
 }

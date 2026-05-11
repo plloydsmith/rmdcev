@@ -173,7 +173,7 @@ GenerateMDCEVData <- function(
 
 	df_indiv <- c(income_list, price_list, psi_j, phi_j)
 
-	PRNG <- rmdcev_get_rng(seed = 3L)
+	PRNG <- rmdcev_get_rng(seed = sample.int(.Machine$integer.max, 1L))
 	o <- rmdcev_get_stream()
 
 	quant <- purrr::pmap(

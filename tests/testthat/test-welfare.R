@@ -12,7 +12,7 @@ test_that("MLE hybrid0 unconditional welfare", {
 	output <- mdcev(~ alt - 1,
 				   data = data_rec,
 				   model = "hybrid0",
-				   psi_ascs = 0,
+				   psi_ascs = FALSE,
 				   algorithm = "MLE",
 				   std_errors = "mvn",
 				   n_draws = 2,
@@ -25,7 +25,7 @@ test_that("MLE hybrid0 unconditional welfare", {
 
 	wtp <- mdcev.sim(df_sim$df_indiv, df_common = df_sim$df_common,
 					 sim_options = df_sim$sim_options,
-					 cond_err = 0, nerrs = 1, sim_type = "welfare")
+					 cond_err = FALSE, nerrs = 1, sim_type = "welfare")
 	sum_wtp <- summary(wtp)
 
 	expect_equal(sum(abs(sum_wtp$CoefTable$mean)), 0, tolerance = tol)
@@ -36,7 +36,7 @@ test_that("MLE hybrid unconditional welfare", {
 	output <- mdcev(~ alt - 1,
 					data = data_rec,
 					model = "hybrid",
-					psi_ascs = 0,
+					psi_ascs = FALSE,
 					algorithm = "MLE",
 					std_errors = "mvn",
 					n_draws = 2,
@@ -49,7 +49,7 @@ test_that("MLE hybrid unconditional welfare", {
 
 	wtp <- mdcev.sim(df_sim$df_indiv, df_common = df_sim$df_common,
 					 sim_options = df_sim$sim_options,
-					 cond_err = 0, nerrs = 1, sim_type = "welfare")
+					 cond_err = FALSE, nerrs = 1, sim_type = "welfare")
 	sum_wtp <- summary(wtp)
 
 	expect_equal(sum(abs(sum_wtp$CoefTable$mean)), 0, tolerance = tol)
@@ -59,7 +59,7 @@ test_that("MLE gamma unconditional welfare", {
 	output <- mdcev(~ alt - 1,
 				 data = data_rec,
 				 model = "gamma",
-				 psi_ascs = 0,
+				 psi_ascs = FALSE,
 				 algorithm = "MLE",
 				 std_errors = "mvn",
 				 n_draws = 2,
@@ -72,7 +72,7 @@ test_that("MLE gamma unconditional welfare", {
 
 	wtp <- mdcev.sim(df_sim$df_indiv, df_common = df_sim$df_common,
 				 sim_options = df_sim$sim_options,
-				 cond_err = 0, nerrs = 1, sim_type = "welfare")
+				 cond_err = FALSE, nerrs = 1, sim_type = "welfare")
 	sum_wtp <- summary(wtp)
 
 	expect_equal(sum(abs(sum_wtp$CoefTable$mean)), 0, tolerance = tol)
@@ -83,7 +83,7 @@ test_that("MLE alpha unconditional welfare", {
 	output <- mdcev(~ alt - 1,
 				 data = data_rec,
 				 model = "alpha",
-				 psi_ascs = 0,
+				 psi_ascs = FALSE,
 				 algorithm = "MLE",
 				 std_errors = "mvn",
 				 n_draws = 2,
@@ -96,7 +96,7 @@ test_that("MLE alpha unconditional welfare", {
 
 	wtp <- mdcev.sim(df_sim$df_indiv, df_common = df_sim$df_common,
 				 sim_options = df_sim$sim_options,
-				 cond_err = 0, nerrs = 1, sim_type = "welfare")
+				 cond_err = FALSE, nerrs = 1, sim_type = "welfare")
 	sum_wtp <- summary(wtp)
 
 	expect_equal(sum(abs(sum_wtp$CoefTable$mean)), 0, tolerance = tol)
@@ -108,7 +108,7 @@ test_that("MLE kt_ee welfare", {
 
 	output <- mdcev(~ ageindex | 0 | beach,
 					 data = data_rec,
-					 gamma_ascs = 0,
+					 gamma_ascs = FALSE,
 					 model = "kt_ee",
 					 std_errors = "mvn",
 					 n_draws = 30,
@@ -122,7 +122,7 @@ test_that("MLE kt_ee welfare", {
 
 	wtp <- mdcev.sim(df_sim$df_indiv, df_common = df_sim$df_common,
 					 sim_options = df_sim$sim_options,
-					 cond_err = 0, nerrs = 1, sim_type = "welfare")
+					 cond_err = FALSE, nerrs = 1, sim_type = "welfare")
 	sum_wtp <- summary(wtp)
 
 	expect_equal(sum(abs(sum_wtp$CoefTable$mean)), 0, tolerance = tol)
@@ -133,7 +133,7 @@ test_that("MLE hybrid0 deltamethod welfare", {
 	output <- mdcev(~ alt - 1,
 					data = data_rec,
 					model = "hybrid0",
-					psi_ascs = 0,
+					psi_ascs = FALSE,
 					algorithm = "MLE",
 					std_errors = "deltamethod",
 					print_iterations = FALSE,
@@ -145,7 +145,7 @@ test_that("MLE hybrid0 deltamethod welfare", {
 
 	wtp <- mdcev.sim(df_sim$df_indiv, df_common = df_sim$df_common,
 					 sim_options = df_sim$sim_options,
-					 cond_err = 0, nerrs = 1, sim_type = "welfare")
+					 cond_err = FALSE, nerrs = 1, sim_type = "welfare")
 	sum_wtp <- summary(wtp)
 
 	expect_equal(sum(abs(sum_wtp$CoefTable$mean)), 0, tolerance = tol)

@@ -1,0 +1,718 @@
+---
+title: "rmdcev vs Apollo: Parameter Recovery and Timing Benchmark"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{rmdcev vs Apollo: Parameter Recovery and Timing Benchmark}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  collapse  = TRUE,
+  comment   = "#>",
+  eval      = FALSE   # heavy computation — run manually
+)
+```
+
+This vignette compares **rmdcev** and **apollo** on two dimensions:
+
+1. **Parameter recovery** — do both packages converge to the same estimates on synthetic data?
+2. **Timing** — how does wall-clock time scale with sample size ($n$) and number of alternatives ($J$)?
+
+Apollo must be installed separately (`install.packages("apollo")`). All chunks use
+`eval = FALSE`; run the script interactively to reproduce the results.
+
+## Setup
+
+```{r packages}
+library(rmdcev)
+library(apollo)
+library(dplyr)
+library(tidyr)
+library(bench)      # for timing; install.packages("bench") if needed
+```
+
+---
+
+## Helper functions
+
+### Wide-format conversion for Apollo
+
+Apollo requires one row per individual (wide format). This function converts the long-format
+output of `GenerateMDCEVData()` to the wide format Apollo expects, and computes the numeraire
+quantity $x_0 = \text{income} - \sum_j p_j x_j$.
+
+```{r fn-to-wide}
+to_wide <- function(data_long, nalts) {
+  data_long <- as.data.frame(data_long)
+
+  # Individual-level covariates (b-cols that don't vary within id)
+  # b1..b_npsi_j are alt-specific; remaining b-cols are individual-specific
+  all_b  <- grep("^b[0-9]", names(data_long), value = TRUE)
+  # detect individual-specific cols: same value for all rows of an id
+  ind_b  <- all_b[sapply(all_b, function(v) {
+    all(tapply(data_long[[v]], data_long$id, function(x) length(unique(x)) == 1))
+  })]
+
+  ind_vars <- data_long %>% distinct(id, income, across(all_of(ind_b)))
+
+  alt_vars <- data_long %>%
+    select(id, alt, quant, price, all_of(setdiff(all_b, ind_b))) %>%
+    pivot_wider(names_from = alt, values_from = c(quant, price, setdiff(all_b, ind_b)))
+
+  db <- left_join(ind_vars, alt_vars, by = "id")
+
+  # Numeraire quantity
+  pj_xj <- Reduce("+", lapply(1:nalts, function(j) {
+    db[[paste0("price_", j)]] * db[[paste0("quant_", j)]]
+  }))
+  db$quant_num <- db$income - pj_xj
+  db
+}
+```
+
+### Apollo probability function factory
+
+Returns a `apollo_probabilities` closure for the `hybrid0` or `gamma` model with `nalts`
+non-numeraire alternatives, `npsi_j` alt-varying psi covariates and one individual-level
+psi covariate (`b_ind`).
+
+```{r fn-apollo-prob}
+make_apollo_prob <- function(nalts, model = c("hybrid0", "gamma"),
+                              npsi_j = 1, ind_col = "b2") {
+  model <- match.arg(model)
+  alt_names <- paste0("alt", 1:nalts)
+  all_names <- c("outside", alt_names)
+
+  function(apollo_beta, apollo_inputs, functionality = "estimate") {
+    apollo_attach(apollo_beta, apollo_inputs)
+    on.exit(apollo_detach(apollo_beta, apollo_inputs))
+    P <- list()
+
+    # Utility for each non-numeraire alternative
+    V <- setNames(vector("list", nalts + 1), all_names)
+    V[["outside"]] <- 0
+    for (j in seq_len(nalts)) {
+      vj <- get(ind_col) * psi_ind   # individual-specific component
+      for (k in seq_len(npsi_j)) {
+        vj <- vj + get(paste0("b", k, "_", j)) * get(paste0("psi_j", k))
+      }
+      V[[paste0("alt", j)]] <- vj
+    }
+
+    # Alpha: hybrid0 = 0 for all; gamma = free for outside, 0 for others
+    alpha_out <- if (model == "gamma") exp(ln_alpha_out) / (1 + exp(ln_alpha_out)) else 0
+    alpha <- setNames(
+      c(list(alpha_out), lapply(seq_len(nalts), function(j) 0)),
+      all_names
+    )
+
+    gamma <- setNames(
+      c(list(1), lapply(seq_len(nalts), function(j) exp(get(paste0("ln_g", j))))),
+      all_names
+    )
+
+    sigma <- exp(ln_sigma)
+
+    cChoice <- setNames(
+      c(list(quant_num), lapply(seq_len(nalts), function(j) get(paste0("quant_", j)))),
+      all_names
+    )
+    cost <- setNames(
+      c(list(1), lapply(seq_len(nalts), function(j) get(paste0("price_", j)))),
+      all_names
+    )
+    avail <- setNames(
+      c(list(1), lapply(seq_len(nalts), function(j) 1)),
+      all_names
+    )
+
+    mdcev_settings <- list(
+      alternatives     = all_names,
+      budget           = income,
+      V                = V,
+      alpha            = alpha,
+      gamma            = gamma,
+      sigma            = sigma,
+      continuousChoice = cChoice,
+      cost             = cost,
+      avail            = avail
+    )
+
+    P[["model"]] <- apollo_mdcev(mdcev_settings, functionality)
+    P <- apollo_prepareProb(P, apollo_inputs, functionality)
+    return(P)
+  }
+}
+```
+
+### Apollo starting-values vector
+
+```{r fn-apollo-beta}
+make_apollo_beta <- function(nalts, model = c("hybrid0", "gamma"), npsi_j = 1) {
+  model <- match.arg(model)
+  betas <- c(psi_ind = 0)
+  for (k in seq_len(npsi_j)) betas[paste0("psi_j", k)] <- 0
+  for (j in seq_len(nalts)) betas[paste0("ln_g", j)] <- 0
+  if (model == "gamma") betas["ln_alpha_out"] <- 0
+  betas["ln_sigma"] <- 0
+  betas
+}
+```
+
+### Fit both packages, return comparison table
+
+```{r fn-fit-both}
+fit_both <- function(sim, model = "hybrid0", npsi_j = 1, ind_col = "b2") {
+  nalts <- sim$data %>% distinct(alt) %>% nrow()
+
+  # ---- rmdcev ----
+  rmdcev_formula <- as.formula(paste0(
+    "~ ", paste(paste0("b", 1:(npsi_j + 1)), collapse = " + ")
+  ))
+  t_rmdcev <- system.time(
+    fit_r <- mdcev(
+      formula          = rmdcev_formula,
+      data             = sim$data,
+      psi_ascs         = 0,
+      model            = model,
+      algorithm        = "MLE",
+      print_iterations = FALSE,
+      backend          = "rstan"
+    )
+  )
+
+  # ---- Apollo ----
+  database <- to_wide(sim$data, nalts)
+  db_col   <- paste0("b", npsi_j + 1)   # individual-specific column
+
+  apollo_control <- list(
+    modelName       = paste0("apollo_", model),
+    modelDescr      = paste0("Apollo ", model),
+    indivID         = "id",
+    outputDirectory = tempdir(),
+    nCores          = 1
+  )
+  apollo_beta  <- make_apollo_beta(nalts, model, npsi_j)
+  apollo_fixed <- character(0)
+
+  apollo_inputs <- apollo_validateInputs(
+    apollo_beta    = apollo_beta,
+    apollo_fixed   = apollo_fixed,
+    database       = database,
+    apollo_control = apollo_control
+  )
+
+  apollo_prob <- make_apollo_prob(nalts, model, npsi_j, db_col)
+
+  t_apollo <- system.time(
+    fit_a <- apollo_estimate(
+      apollo_beta, apollo_fixed, apollo_prob, apollo_inputs,
+      estimate_settings = list(writeIter = FALSE, hessianRoutine = "none",
+                               printLevel = 0L)
+    )
+  )
+
+  # ---- Extract estimates ----
+  r_psi   <- as.numeric(fit_r$stan_fit$par$psi)
+  r_gamma <- as.numeric(fit_r$stan_fit$par$gamma)
+  r_scale <- as.numeric(fit_r$stan_fit$par$scale)
+
+  a_est   <- fit_a$estimate
+  a_gamma <- exp(a_est[grep("^ln_g", names(a_est))])
+  a_scale <- exp(a_est["ln_sigma"])
+
+  # Map column names: psi_j1 = alt-varying, psi_ind = individual-varying
+  a_psi_j   <- a_est[grep("^psi_j", names(a_est))]
+  a_psi_ind <- a_est["psi_ind"]
+  a_psi     <- c(a_psi_j, a_psi_ind)
+
+  list(
+    ll      = c(rmdcev = fit_r$log.likelihood, apollo = fit_a$LLout),
+    psi     = rbind(rmdcev = r_psi, apollo = a_psi),
+    gamma   = rbind(rmdcev = r_gamma[1:min(5, nalts)],
+                    apollo = a_gamma[1:min(5, nalts)]),
+    scale   = c(rmdcev = r_scale, apollo = as.numeric(a_scale)),
+    time_s  = c(rmdcev = t_rmdcev["elapsed"], apollo = t_apollo["elapsed"])
+  )
+}
+```
+
+---
+
+## 1 · Parameter recovery
+
+We generate data from a known **hybrid0** DGP with $n = 500$, $J = 5$, verify that both
+packages recover the true parameters, and that their log-likelihoods agree.
+
+```{r param-recovery}
+set.seed(42)
+true_psi_j   <- 0.5
+true_psi_ind <- -1.5
+true_gamma   <- rep(5, 5)
+true_scale   <- 1.0
+
+sim_h0 <- GenerateMDCEVData(
+  model       = "hybrid0",
+  nobs        = 500,
+  nalts       = 5,
+  psi_j_parms = true_psi_j,
+  psi_i_parms = true_psi_ind,
+  gamma_parms = true_gamma,
+  scale_parms = true_scale
+)
+
+cmp_h0 <- fit_both(sim_h0, model = "hybrid0", npsi_j = 1)
+
+cat("=== hybrid0 parameter comparison ===\n")
+cat(sprintf("LL:  rmdcev = %.2f   apollo = %.2f\n",
+            cmp_h0$ll["rmdcev"], cmp_h0$ll["apollo"]))
+cat(sprintf("     LL difference = %.6f\n",
+            abs(cmp_h0$ll["rmdcev"] - cmp_h0$ll["apollo"])))
+
+cat("\nPsi (true: psi_j=0.5, psi_ind=-1.5)\n")
+print(round(cmp_h0$psi, 4))
+
+cat("\nGamma (true: all 5)\n")
+print(round(cmp_h0$gamma, 4))
+
+cat(sprintf("\nScale (true: 1.0):  rmdcev=%.4f  apollo=%.4f\n",
+            cmp_h0$scale["rmdcev"], cmp_h0$scale["apollo"]))
+```
+
+Repeat for the **gamma** model (alpha for numeraire is free):
+
+```{r param-recovery-gamma}
+set.seed(42)
+true_alpha <- 0.5
+
+sim_g <- GenerateMDCEVData(
+  model        = "gamma",
+  nobs         = 500,
+  nalts        = 5,
+  psi_j_parms  = true_psi_j,
+  psi_i_parms  = true_psi_ind,
+  gamma_parms  = true_gamma,
+  alpha_parms  = true_alpha,
+  scale_parms  = true_scale
+)
+
+cmp_g <- fit_both(sim_g, model = "gamma", npsi_j = 1)
+
+cat("=== gamma parameter comparison ===\n")
+cat(sprintf("LL:  rmdcev = %.2f   apollo = %.2f\n",
+            cmp_g$ll["rmdcev"], cmp_g$ll["apollo"]))
+cat(sprintf("     LL difference = %.6f\n",
+            abs(cmp_g$ll["rmdcev"] - cmp_g$ll["apollo"])))
+
+cat("\nPsi:\n"); print(round(cmp_g$psi, 4))
+cat("\nGamma (first 5):\n"); print(round(cmp_g$gamma, 4))
+cat(sprintf("\nScale: rmdcev=%.4f  apollo=%.4f\n",
+            cmp_g$scale["rmdcev"], cmp_g$scale["apollo"]))
+```
+
+---
+
+## 2 · Timing benchmark
+
+We time **MLE estimation** across five (n, J) combinations with 3 replicates each.
+Demand simulation timing uses the same grid.
+
+### 2a · MLE estimation timing
+
+```{r timing-setup}
+grid <- expand.grid(
+  n    = c(500, 1000, 5000),
+  J    = c(50, 100),
+  rep  = 1:3,
+  stringsAsFactors = FALSE
+) %>%
+  filter(!(n == 1000 & J == 100))  # keep n=1000 for J=50 only
+```
+
+```{r timing-mle}
+timing_mle <- lapply(seq_len(nrow(grid)), function(i) {
+  n <- grid$n[i]; J <- grid$J[i]; r <- grid$rep[i]
+  set.seed(r * 100 + i)
+
+  sim <- GenerateMDCEVData(
+    model       = "hybrid0",
+    nobs        = n,
+    nalts       = J,
+    psi_j_parms = 0.5,
+    psi_i_parms = -1.5,
+    gamma_parms = rep(5, J),
+    scale_parms = 1.0
+  )
+
+  res <- fit_both(sim, model = "hybrid0", npsi_j = 1)
+  data.frame(n=n, J=J, rep=r,
+             rmdcev_s = res$time_s["rmdcev"],
+             apollo_s = res$time_s["apollo"],
+             ll_diff  = abs(res$ll["rmdcev"] - res$ll["apollo"]))
+})
+
+timing_mle <- do.call(rbind, timing_mle)
+```
+
+```{r timing-mle-summary}
+summary_mle <- timing_mle %>%
+  group_by(n, J) %>%
+  summarise(
+    rmdcev_mean_s = round(mean(rmdcev_s), 1),
+    apollo_mean_s = round(mean(apollo_s), 1),
+    speedup       = round(mean(apollo_s) / mean(rmdcev_s), 1),
+    ll_diff_mean  = signif(mean(ll_diff), 3),
+    .groups = "drop"
+  )
+
+cat("=== MLE estimation timing (seconds, 3 replicates) ===\n")
+print(summary_mle, n = Inf)
+```
+
+---
+
+## 3 · Demand simulation: 1% price increase
+
+We compare predicted demand changes from a 1% cost increase using rmdcev's built-in
+simulation pipeline and Apollo's `apollo_prediction()` function.
+
+### Policy specification
+
+The `price_p` slot in rmdcev takes **additive** price changes. For a 1% increase we
+add $0.01 \times \bar{p}_j$ (1% of the cross-individual mean price for each alternative).
+To ensure identical policies, Apollo's database applies the same constant additive change
+per alternative ($+0.01 \bar{p}_j$) rather than a proportional scale. Apollo's prediction
+is then run twice — baseline and policy — and the difference gives the demand change.
+
+### 3a · Apollo `apollo_prediction()` approach (convergence check, n=500, J=5)
+
+`apollo_prediction()` does source-code inspection and cannot accept factory-generated
+closures, so we write a concrete function for the J=5 convergence check.
+
+```{r sim-apollo-prob5}
+# Concrete apollo_probabilities for J=5 (used only in this section)
+apollo_probabilities_j5 <- function(apollo_beta, apollo_inputs, functionality = "estimate") {
+  apollo_attach(apollo_beta, apollo_inputs)
+  on.exit(apollo_detach(apollo_beta, apollo_inputs))
+  P <- list()
+
+  V <- list(
+    outside = 0,
+    alt1    = psi_ind * b2 + psi_j1 * b1_1,
+    alt2    = psi_ind * b2 + psi_j1 * b1_2,
+    alt3    = psi_ind * b2 + psi_j1 * b1_3,
+    alt4    = psi_ind * b2 + psi_j1 * b1_4,
+    alt5    = psi_ind * b2 + psi_j1 * b1_5
+  )
+  mdcev_settings <- list(
+    alternatives     = c("outside","alt1","alt2","alt3","alt4","alt5"),
+    budget           = income, V = V,
+    alpha            = list(outside=0, alt1=0, alt2=0, alt3=0, alt4=0, alt5=0),
+    gamma            = list(outside=1, alt1=exp(ln_g1), alt2=exp(ln_g2), alt3=exp(ln_g3),
+                            alt4=exp(ln_g4), alt5=exp(ln_g5)),
+    sigma            = exp(ln_sigma),
+    continuousChoice = list(outside=quant_num, alt1=quant_1, alt2=quant_2,
+                            alt3=quant_3, alt4=quant_4, alt5=quant_5),
+    cost             = list(outside=1, alt1=price_1, alt2=price_2,
+                            alt3=price_3, alt4=price_4, alt5=price_5),
+    avail            = list(outside=1, alt1=1, alt2=1, alt3=1, alt4=1, alt5=1)
+  )
+  P[["model"]] <- apollo_mdcev(mdcev_settings, functionality)
+  P <- apollo_prepareProb(P, apollo_inputs, functionality)
+  return(P)
+}
+```
+
+```{r sim-convergence}
+set.seed(42)
+J5   <- 5
+n500 <- 500
+
+sim5 <- GenerateMDCEVData(
+  model       = "hybrid0",
+  nobs        = n500,
+  nalts       = J5,
+  psi_j_parms = 0.5,
+  psi_i_parms = -1.5,
+  gamma_parms = rep(5, J5),
+  scale_parms = 1.0
+)
+
+# ── Fit both packages ──────────────────────────────────────────────────────
+fit_r5 <- mdcev(
+  formula = ~ b1 + b2, data = sim5$data, psi_ascs = 0,
+  model = "hybrid0", algorithm = "MLE",
+  print_iterations = FALSE, backend = "rstan"
+)
+
+database5 <- to_wide(sim5$data, J5)
+ac5 <- list(modelName = "apl_sim5", modelDescr = "sim", indivID = "id",
+            outputDirectory = tempdir(), nCores = 1)
+ab5 <- make_apollo_beta(J5, "hybrid0", npsi_j = 1)
+ai5 <- suppressMessages(
+  apollo_validateInputs(apollo_beta = ab5, apollo_fixed = character(0),
+                        database = database5, apollo_control = ac5))
+fit_a5 <- suppressMessages(suppressWarnings(
+  apollo_estimate(ab5, character(0), apollo_probabilities_j5, ai5,
+    estimate_settings = list(writeIter = FALSE, hessianRoutine = "none",
+                             printLevel = 0L))
+))
+
+# ── 1% price-change policy ─────────────────────────────────────────────────
+baseline_prices <- matrix(as.numeric(fit_r5$stan_data$price_j), nrow = n500)
+price_change    <- 0.01 * colMeans(baseline_prices)   # 1% of mean price per alt
+
+# rmdcev: additive policy vector (0 for numeraire, then per-alt changes)
+policies5 <- CreateBlankPolicies(npols = 2, fit_r5, price_change_only = TRUE)
+policies5$price_p[[2]] <- c(0, price_change)
+
+df_sim5 <- PrepareSimulationData(fit_r5, policies5, nsims = 1)
+
+t_rmdcev5 <- system.time(
+  demand_r5 <- mdcev.sim(
+    df_sim5$df_indiv, df_common = df_sim5$df_common,
+    sim_options = df_sim5$sim_options,
+    cond_err = 0, nerrs = 100, sim_type = "demand"
+  )
+)
+
+# Extract mean demand per alt: demand[[indiv]][[sim]][policy, alt_index]
+mean_demand <- function(demand_list, policy_idx, alt_idx) {
+  mean(sapply(demand_list, function(ind)
+    mean(sapply(ind, function(s) s[policy_idx, alt_idx]))))
+}
+d_base_r   <- sapply(2:(J5 + 1), function(a) mean_demand(demand_r5, 1, a))
+d_policy_r <- sapply(2:(J5 + 1), function(a) mean_demand(demand_r5, 2, a))
+delta_r    <- d_policy_r - d_base_r
+
+# Apollo: predict at baseline and policy databases
+# Policy database: same additive change as rmdcev (+ 0.01 * mean_price_j per alt)
+database5_pol <- database5
+for (j in 1:J5) {
+  database5_pol[[paste0("price_", j)]] <- database5[[paste0("price_", j)]] + price_change[j]
+}
+# Recompute quant_num at observed quantities under new prices
+pj_xj_pol <- Reduce("+", lapply(1:J5, function(j)
+  database5_pol[[paste0("price_", j)]] * database5_pol[[paste0("quant_", j)]]))
+database5_pol$quant_num <- database5_pol$income - pj_xj_pol
+
+ai5_pol <- suppressMessages(
+  apollo_validateInputs(apollo_beta = fit_a5$estimate, apollo_fixed = character(0),
+                        database = database5_pol, apollo_control = ac5))
+
+t_apollo5_base <- system.time(
+  pred_base <- suppressMessages(suppressWarnings(
+    apollo_prediction(fit_a5, apollo_probabilities_j5, ai5,
+                      prediction_settings = list(nRep = 100, silent = TRUE))
+  ))
+)
+t_apollo5_pol <- system.time(
+  pred_pol  <- suppressMessages(suppressWarnings(
+    apollo_prediction(fit_a5, apollo_probabilities_j5, ai5_pol,
+                      prediction_settings = list(nRep = 100, silent = TRUE))
+  ))
+)
+t_apollo5 <- t_apollo5_base + t_apollo5_pol
+
+delta_a <- sapply(1:J5, function(j) {
+  mean(pred_pol[[paste0("alt", j, "_cont_mean")]]) -
+  mean(pred_base[[paste0("alt", j, "_cont_mean")]])
+})
+
+cat("=== Demand change: 1% price increase (n=500, J=5) ===\n")
+cat(sprintf("%-12s %8s %8s %8s\n", "Alt", "rmdcev", "Apollo", "Diff"))
+for (j in 1:J5) {
+  cat(sprintf("alt%-9d %8.4f %8.4f %8.4f\n", j, delta_r[j], delta_a[j],
+              abs(delta_r[j] - delta_a[j])))
+}
+cat(sprintf("\nMean abs difference: %.5f\n", mean(abs(delta_r - delta_a))))
+cat(sprintf("rmdcev %% change: %s%%\n",
+            paste(round(100 * delta_r / d_base_r, 2), collapse = ", ")))
+
+cat(sprintf("\nTiming:  rmdcev %.2f s  |  Apollo (2 predictions) %.2f s\n",
+            t_rmdcev5["elapsed"], t_apollo5["elapsed"]))
+```
+
+### 3b · Demand simulation timing (rmdcev vs Apollo, n=500)
+
+Apollo has no batch simulation pipeline for multiple policies. The equivalent workflow
+requires calling `apollo_prediction()` twice per policy (baseline + policy database) with
+re-validated inputs, looping over policies in R. Because `apollo_prediction()` requires a
+concrete (non-factory) probability function, we generate one dynamically for each J using
+`eval(parse())`.
+
+Both packages use 100 draws (`nerrs = 100` for rmdcev; `nRep = 100` for Apollo). rmdcev
+runs unconditional draws via its compiled C++ engine; Apollo runs its interpreted R loop.
+Timings are the mean of 3 replicates.
+
+```{r make-concrete-prob}
+# Dynamically generate a concrete apollo_probabilities function for any J.
+# apollo_prediction() does source-code inspection and cannot use factory closures,
+# so we build and eval() a function body with the right number of alternatives.
+make_apollo_prob_concrete <- function(nalts, npsi_j = 1, ind_col = "b2") {
+  all_str     <- paste0('c("outside", ', paste0('"alt', seq_len(nalts), '"', collapse = ", "), ")")
+  V_items     <- paste(paste0("alt", seq_len(nalts), " = psi_ind * ", ind_col,
+                              " + psi_j1 * b1_", seq_len(nalts)), collapse = ",\n    ")
+  alpha_items <- paste(c("outside = 0", paste0("alt", seq_len(nalts), " = 0")), collapse = ", ")
+  gamma_items <- paste(c("outside = 1", paste0("alt", seq_len(nalts), " = exp(ln_g", seq_len(nalts), ")")), collapse = ", ")
+  choice_items <- paste(c("outside = quant_num", paste0("alt", seq_len(nalts), " = quant_", seq_len(nalts))), collapse = ", ")
+  cost_items  <- paste(c("outside = 1", paste0("alt", seq_len(nalts), " = price_", seq_len(nalts))), collapse = ", ")
+  avail_items <- paste(c("outside = 1", paste0("alt", seq_len(nalts), " = 1")), collapse = ", ")
+
+  eval(parse(text = sprintf(
+'function(apollo_beta, apollo_inputs, functionality = "estimate") {
+  apollo_attach(apollo_beta, apollo_inputs)
+  on.exit(apollo_detach(apollo_beta, apollo_inputs))
+  P <- list()
+  V <- list(outside = 0, %s)
+  mdcev_settings <- list(
+    alternatives = %s, budget = income, V = V,
+    alpha = list(%s), gamma = list(%s), sigma = exp(ln_sigma),
+    continuousChoice = list(%s), cost = list(%s), avail = list(%s)
+  )
+  P[["model"]] <- apollo_mdcev(mdcev_settings, functionality)
+  P <- apollo_prepareProb(P, apollo_inputs, functionality)
+  return(P)
+}', V_items, all_str, alpha_items, gamma_items, choice_items, cost_items, avail_items)))
+}
+```
+
+```{r timing-sim-grid}
+timing_sim <- lapply(c(50, 100), function(J) {
+  n <- 500
+  set.seed(J)
+
+  sim <- GenerateMDCEVData(
+    model = "hybrid0", nobs = n, nalts = J,
+    psi_j_parms = 0.5, psi_i_parms = -1.5,
+    gamma_parms = rep(5, J), scale_parms = 1.0
+  )
+
+  # ── rmdcev ──────────────────────────────────────────────────────────────
+  fit_r <- mdcev(~ b1 + b2, data = sim$data, psi_ascs = 0, model = "hybrid0",
+                 algorithm = "MLE", print_iterations = FALSE, backend = "rstan")
+  bp   <- matrix(as.numeric(fit_r$stan_data$price_j), nrow = n)
+  pc   <- 0.01 * colMeans(bp)
+  pols <- CreateBlankPolicies(npols = 2, fit_r, price_change_only = TRUE)
+  pols$price_p[[2]] <- c(0, pc)
+  df_s <- PrepareSimulationData(fit_r, pols, nsims = 1)
+
+  rmdcev_times <- sapply(1:3, function(r)
+    system.time(mdcev.sim(df_s$df_indiv, df_common = df_s$df_common,
+                          sim_options = df_s$sim_options,
+                          cond_err = 0, nerrs = 100, sim_type = "demand"))["elapsed"])
+
+  # ── Apollo ──────────────────────────────────────────────────────────────
+  database <- to_wide(sim$data, J)
+  ac  <- list(modelName = paste0("apl_", J), modelDescr = "", indivID = "id",
+              outputDirectory = tempdir(), nCores = 1)
+  ab  <- make_apollo_beta(J, npsi_j = 1)
+  pfn <- make_apollo_prob_concrete(J)
+  ai  <- apollo_validateInputs(apollo_beta = ab, apollo_fixed = character(0),
+                               database = database, apollo_control = ac)
+  fit_a <- apollo_estimate(ab, character(0), pfn, ai,
+             estimate_settings = list(writeIter = FALSE, hessianRoutine = "none",
+                                      printLevel = 0L))
+
+  # Policy database: 1% additive price increase
+  db_pol <- database
+  for (j in seq_len(J)) db_pol[[paste0("price_", j)]] <- database[[paste0("price_", j)]] + pc[j]
+  pj_xj_pol <- Reduce("+", lapply(seq_len(J), function(j)
+    db_pol[[paste0("price_", j)]] * db_pol[[paste0("quant_", j)]]))
+  db_pol$quant_num <- db_pol$income - pj_xj_pol
+  ai_pol <- apollo_validateInputs(apollo_beta = fit_a$estimate, apollo_fixed = character(0),
+                                  database = db_pol, apollo_control = ac)
+
+  apollo_times <- sapply(1:3, function(r) {
+    t1 <- system.time(apollo_prediction(fit_a, pfn, ai,
+           prediction_settings = list(nRep = 100, silent = TRUE)))["elapsed"]
+    t2 <- system.time(apollo_prediction(fit_a, pfn, ai_pol,
+           prediction_settings = list(nRep = 100, silent = TRUE)))["elapsed"]
+    t1 + t2
+  })
+
+  data.frame(n = n, J = J,
+             rmdcev_mean = round(mean(rmdcev_times), 2),
+             rmdcev_sd   = round(sd(rmdcev_times),   2),
+             apollo_mean = round(mean(apollo_times),  2),
+             apollo_sd   = round(sd(apollo_times),    2),
+             speedup     = round(mean(apollo_times) / mean(rmdcev_times), 1))
+})
+
+timing_sim <- do.call(rbind, timing_sim)
+print(timing_sim, row.names = FALSE)
+```
+
+---
+
+## 4 · Results summary
+
+### MLE estimation
+
+Results from a Windows laptop (Intel i7, 16 GB RAM), hybrid0 model, 3 replicates per cell.
+
+| n | J | rmdcev (s) | Apollo (s) | Speedup | LL diff |
+|--:|--:|-----------:|-----------:|--------:|--------:|
+| 500 | 50 | 1.3 | 7.2 | 5.7× | 3.5e-04 |
+| 1000 | 50 | 2.6 | 9.5 | 3.6× | 2.4e-04 |
+| 500 | 100 | 5.1 | 34.4 | 6.8× | 3.6e-04 |
+| 5000 | 50 | 24.3 | 40.2 | 1.7× | 2.3e-03 |
+| 5000 | 100 | 53.1 | 170.0 | 3.2× | 2.5e-02 |
+
+### Demand simulation (100 draws per individual, 3 replicates, n=500)
+
+Fit once per cell; rmdcev timed 3× with 100 unconditional draws via `mdcev.sim()`. Apollo
+timed 3× as two `apollo_prediction()` calls (baseline + policy), the minimum required per
+policy scenario. Apollo has no batch pipeline — each policy requires a separate call with
+re-validated inputs. Results from rmdcev 1.3.2 (Windows laptop, Intel i7, 16 GB RAM).
+
+| n | J | rmdcev mean (s) | rmdcev sd (s) | Apollo mean (s) | Apollo sd (s) | Speedup |
+|--:|--:|----------------:|--------------:|----------------:|--------------:|--------:|
+| 500 | 50 | 1.44 | 0.06 | 15.49 | 2.36 | 10.7× |
+| 500 | 100 | 3.18 | 0.15 | 30.24 | 5.55 | 9.5× |
+
+Simulation time scales approximately linearly with $n \times J$ (rmdcev's compiled C++
+loop runs at ~4–5 million individual-alternative-draw operations per second on this hardware).
+
+### Demand change convergence (n=500, J=5, 1% price increase, same additive policy)
+
+Both packages apply an additive constant of $0.01 \times \bar{p}_j$ per alternative
+and use 100 MC draws (`nerrs = 100` for rmdcev; `nRep = 100` for Apollo).
+rmdcev completed in **0.50 s**; Apollo (two `apollo_prediction()` calls) took **3.60 s** (~7×).
+
+| Alt | rmdcev Δ demand | Apollo Δ demand | \|Diff\| |
+|----:|----------------:|----------------:|---------:|
+| 1 | −1.4993 | −1.4948 | 0.0044 |
+| 2 | −1.4325 | −1.4409 | 0.0085 |
+| 3 | −1.1040 | −1.0960 | 0.0080 |
+| 4 | −1.3146 | −1.3202 | 0.0056 |
+| 5 | −1.2062 | −1.2006 | 0.0057 |
+
+**Mean absolute difference: 0.006** — MC noise from independent RNG streams, not a model discrepancy.
+All alternatives show ~1.5% demand reduction from the 1% cost increase, consistent with
+near-unit elasticity around the estimated satiation parameters.
+
+Key findings:
+
+- **Demand convergence**: when policies are specified identically and both packages use
+  100 draws, rmdcev and Apollo agree to within ~0.006 units across all alternatives.
+  The residual difference reflects MC noise from independent RNG streams, not a model
+  discrepancy.
+- **Simulation speed**: rmdcev's compiled C++ engine is **10.7× faster** at n=500, J=50
+  and **9.5× faster** at n=500, J=100. Apollo's `apollo_prediction()` requires two separate
+  calls per policy (baseline + policy database with re-validated inputs) and runs the
+  Pinjari-Bhat demand loop in interpreted R. rmdcev processes all policies in a single
+  compiled C++ pass, making Apollo impractical for large n × J grids or multi-policy
+  scenarios.
+- **Log-likelihood**: rmdcev and Apollo agree to <0.05 LL units across all MLE cells.
+- **MLE speed**: rmdcev is 1.7–6.8× faster than Apollo, driven by Stan analytical
+  gradients vs Apollo's finite-difference Jacobian. The gap grows with J because each
+  γ parameter requires an extra likelihood evaluation in Apollo.
+
+## Session info
+
+```{r session}
+sessionInfo()
+```

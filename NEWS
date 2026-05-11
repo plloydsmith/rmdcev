@@ -1,3 +1,69 @@
+rmdcev v1.3.3 (Release date: 2026-05-11)
+==============
+
+Bug fixes:
+- Fixed GenerateMDCEVData() always returning identical output regardless of R's RNG state.
+  The internal Stan PRNG seed was hardcoded as 3L; it now draws from R's RNG via
+  sample.int(.Machine$integer.max, 1L), so set.seed() controls reproducibility as expected.
+
+rmdcev v1.3.2 (Release date: 2026-05-08)
+==============
+
+Bug fixes:
+- Fixed incorrect delta-method standard errors for alpha parameters. The Jacobian now
+  correctly uses p*(1-p) at the constrained value rather than exp(-p)/(1+exp(-p))^2,
+  which was treating the constrained alpha as an unconstrained input.
+- Fixed Hessian computation when backend = "cmdstanr": the rstan optimizing call used
+  for Hessian extraction is now initialised at the cmdstanr optimum (par_list) instead
+  of a potentially different starting point, ensuring the Hessian is evaluated at the
+  same mode.
+- Fixed crash in coef.mdcev() when called on Bayesian fitted objects. The function now
+  returns an informative error directing users to summary() for Bayes posteriors.
+
+API changes:
+- Boolean arguments to mdcev() now accept TRUE/FALSE instead of 1/0. Affected arguments:
+  fixed_scale1, single_scale, trunc_data, gamma_ascs, keep_loglik,
+  jacobian_analytical_grad, gamma_nonrandom, alpha_nonrandom.
+- Boolean arguments to mdcev.sim() now default to TRUE/FALSE: cond_err, draw_mlhs.
+- seed argument default changed from "123" (character) to 123L (integer).
+- backend argument is now an explicit named parameter in mdcev() rather than being
+  passed via ....
+
+Internal changes:
+- processMDCEVdata() now copies model options to stan_data via explicit key assignment
+  rather than a bulk list merge, preventing accidental inclusion of non-Stan fields.
+- BayesMDCEV() index construction (start/end) replaced with direct arithmetic.
+- StanSimulate() collapsed from four copy-pasted purrr::pmap branches into a single
+  parameterised call.
+- .build_lc_init() extracted as a private helper from maxlikeMDCEV() for latent class
+  initialisation.
+- .compute_corr_tau() vectorised using a 3D array and vapply instead of group_split
+  and mapply.
+
+rmdcev v1.3.1 (Release date: 2026-05-07)
+==============
+
+New features:
+- Added "gamma1" model specification that fixes alpha_0 = 1 (no income effects). The numeraire
+  utility is linear (U_0 = psi_0 * x0), so the shadow price of income is constant and
+  non-numeraire demands do not depend on income. Non-numeraire alphas are fixed at 0, making
+  this a restricted variant of the gamma model. Supported for MLE and Bayesian estimation,
+  and for welfare simulation (Marshallian and Hicksian demand).
+- Added psi_random argument to mdcev() for Bayesian random-parameter models. Allows the user
+  to specify which psi formula terms should be treated as random coefficients (individual-
+  specific draws) versus fixed (pooled) point estimates. Only applicable when
+  algorithm = "Bayes" and random_parameters is "uncorr" or "corr".
+
+Bug fixes:
+- Fixed typo in StanSimulate.R: scale_sim renamed to scale_sims for consistency.
+
+Tests:
+- Added parameter recovery tests for gamma and hybrid0 models.
+- Added parameter recovery tests for kt_ee model.
+- Added test files for random-parameter models (test-rp.R, test-rp-correlated.R)
+  and for the psi_random feature (test-psi-random.R).
+
+
 rmdcev v1.3.0 (Release date: 2026-02-20)
 ==============
 

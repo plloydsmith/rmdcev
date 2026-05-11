@@ -41,7 +41,7 @@ summary.mdcev <- function(object, printCI=FALSE, ...){
 					Estimate = round(.data$coefs, 3),
 					Std.err = round(ifelse(
 						grepl("alpha", .data$parms),
-						.data$std_err * exp(-.data$coefs) / ((1 + exp(-.data$coefs)))^2,
+						.data$std_err * .data$coefs * (1 - .data$coefs),
 						ifelse(grepl("gamma|scale", .data$parms),
 						       .data$std_err * .data$coefs, .data$std_err)), 3)) %>%
 				mutate(
@@ -87,8 +87,7 @@ summary.mdcev <- function(object, printCI=FALSE, ...){
 			tidyr::pivot_longer(-"sim_id", names_to = "parms", values_to = "value")
 
 		bayes_extra <- get_bayes_summary(object) %>%
-				filter(!grepl(c("log_lik"), .data$parms)) %>%
-				filter(!grepl(c("lp_"), .data$parms))
+				filter(!grepl("log_lik|lp_", .data$parms))
 
 		if (object$random_parameters == "fixed"){
 
@@ -102,36 +101,41 @@ summary.mdcev <- function(object, printCI=FALSE, ...){
 
 		} else {
 
-			output_non_mu <- output[grepl("gamma|alpha|tau|scale", output$parms),]
+			output_non_mu <- output[grepl("gamma|alpha|tau|scale|psi_fixed", output$parms),]
 
 			output <- output %>%
 				filter(grepl("mu", .data$parms)) %>%
 				bind_rows(output_non_mu) %>%
 				arrange(.data$sim_id)
 
-			output$parms <- rep(c(object[["parms_info"]][["parm_names"]][["all_names"]],
-								  object[["parms_info"]][["parm_names"]][["sd_names"]]), max(output$sim_id))
+			all_names <- object[["parms_info"]][["parm_names"]][["all_names"]]
+			sd_names  <- object[["parms_info"]][["parm_names"]][["sd_names"]]
+			expected_rows <- (length(all_names) + length(sd_names)) * max(output$sim_id)
+			if (nrow(output) != expected_rows)
+				stop("Internal error: parameter row count (", nrow(output), ") does not match ",
+				     "expected (", expected_rows, "). Check psi_random / model specification.",
+				     call. = FALSE)
+			output$parms <- rep(c(all_names, sd_names), max(output$sim_id))
 
 			# Transform estimates
 			if(object[["stan_data"]][["gamma_nonrandom"]]==0){
 				output <- output %>%
-					mutate(value = ifelse(grepl(c("gamma"), .data$parms), exp(.data$value), .data$value))
+					mutate(value = ifelse(grepl("gamma", .data$parms), exp(.data$value), .data$value))
 			}
 			if(object[["stan_data"]][["alpha_nonrandom"]]==0){
 				output <- output %>%
-					mutate(value = ifelse(grepl(c("alpha"), .data$parms), 1 / (1 + exp(-.data$value)), .data$value))
+					mutate(value = ifelse(grepl("alpha", .data$parms), 1 / (1 + exp(-.data$value)), .data$value))
 			}
 
 			bayes_extra_non_mu <- bayes_extra %>%
-				filter(grepl(c("gamma|alpha|scale|tau"), .data$parms)) %>%
-				filter(!grepl(c("tau_unif"), .data$parms))
+				filter(grepl("gamma|alpha|scale|tau|psi_fixed", .data$parms)) %>%
+				filter(!grepl("tau_unif", .data$parms))
 
 			bayes_extra <- bayes_extra %>%
-				filter(grepl(c("mu"), .data$parms)) %>%
+				filter(grepl("mu", .data$parms)) %>%
 				bind_rows(bayes_extra_non_mu)
 
-			bayes_extra$parms <- c(object[["parms_info"]][["parm_names"]][["all_names"]],
-								   object[["parms_info"]][["parm_names"]][["sd_names"]])
+			bayes_extra$parms <- c(all_names, sd_names)
 
 			bayes_extra <- bayes_extra %>%
 				select("parms", "n_eff", "Rhat") %>%
@@ -276,8 +280,10 @@ logLik.mdcev <- function(object,...){
 
 #' @export
 coef.mdcev <- function(object, ...){
+	if (object$algorithm != "MLE")
+		stop("coef() is only defined for MLE objects; use summary() for Bayes posteriors.",
+		     call. = FALSE)
 	result <- object$stan_fit[["par"]]
-	# first remove the fixed coefficients if required
 	result$theta <- NULL
 	result$sum_log_lik <- NULL
 	result

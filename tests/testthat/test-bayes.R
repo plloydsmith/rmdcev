@@ -14,7 +14,7 @@ test_that("Bayes hybrid0 specification", {
 					model = "hybrid0",
 					algorithm = "Bayes",
 					random_parameters = "fixed",
-					fixed_scale1 = 0,
+					fixed_scale1 = FALSE,
 					print_iterations = FALSE,
 					n_cores = 1,
 					n_chains = 1,
@@ -35,7 +35,7 @@ test_that("Bayes hybrid0 specification", {
 
 	wtp <- mdcev.sim(df_sim$df_indiv, df_common = df_sim$df_common,
 					 sim_options = df_sim$sim_options,
-					 cond_err = 1, nerrs = 1, sim_type = "welfare")
+					 cond_err = TRUE, nerrs = 1, sim_type = "welfare")
 	sum_wtp <- summary(wtp)
 	expect_equal(sum(abs(sum_wtp$CoefTable$mean)), 0, tolerance = tol)
 })
@@ -47,9 +47,9 @@ test_that("Bayes gamma specification no gamma/psi ascs", {
 					model = "gamma",
 					algorithm = "Bayes",
 					random_parameters = "fixed",
-					psi_ascs = 0,
-					gamma_ascs = 0,
-					fixed_scale1 = 1,
+					psi_ascs = FALSE,
+					gamma_ascs = FALSE,
+					fixed_scale1 = TRUE,
 					print_iterations = FALSE,
 					n_cores = 1,
 					n_chains = 1,
@@ -69,7 +69,7 @@ test_that("Bayes gamma specification no gamma/psi ascs", {
 	df_indiv <- lapply(df_sim$df_indiv, "[", c(1:10))
 	wtp <- mdcev.sim(df_indiv, df_common = df_sim$df_common,
 					 sim_options = df_sim$sim_options,
-					 cond_err = 1, nerrs = 1, sim_type = "welfare")
+					 cond_err = TRUE, nerrs = 1, sim_type = "welfare")
 	sum_wtp <- summary(wtp)
 	expect_equal(sum(abs(sum_wtp$CoefTable$mean)), 0, tolerance = tol)
 })
@@ -100,7 +100,7 @@ test_that("Bayes gamma uncorr specification", {
 	df_indiv <- lapply(df_sim$df_indiv, "[", c(1:10))
 	wtp <- mdcev.sim(df_indiv, df_common = df_sim$df_common,
 					 sim_options = df_sim$sim_options,
-					 cond_err = 1, nerrs = 1, sim_type = "welfare")
+					 cond_err = TRUE, nerrs = 1, sim_type = "welfare")
 	sum_wtp <- summary(wtp)
 	expect_equal(sum(abs(sum_wtp$CoefTable$mean)), 0, tolerance = tol)
 })
@@ -115,7 +115,7 @@ test_that("Bayes gamma corr specification", {
 					print_iterations = FALSE,
 					n_cores = 1,
 					n_chains = 1,
-					fixed_scale1 = 1,
+					fixed_scale1 = TRUE,
 					n_iterations = 10,
 					show_stan_warnings = FALSE,
 					backend = "rstan")
@@ -130,7 +130,7 @@ test_that("Bayes gamma corr specification", {
 	df_indiv <- lapply(df_sim$df_indiv, "[", c(1:10))
 	wtp <- mdcev.sim(df_indiv, df_common = df_sim$df_common,
 					 sim_options = df_sim$sim_options,
-					 cond_err = 1, nerrs = 1, sim_type = "welfare")
+					 cond_err = TRUE, nerrs = 1, sim_type = "welfare")
 	sum_wtp <- summary(wtp)
 	expect_equal(sum(abs(sum_wtp$CoefTable$mean)), 0, tolerance = tol)
 })
@@ -143,8 +143,8 @@ test_that("Bayes gamma corr specification with fixed gamma/alpha", {
 					algorithm = "Bayes",
 					random_parameters = "corr",
 					print_iterations = FALSE,
-					gamma_nonrandom = 1,
-					alpha_nonrandom = 1,
+					gamma_nonrandom = TRUE,
+					alpha_nonrandom = TRUE,
 					n_cores = 1,
 					n_chains = 1,
 					n_iterations = 10,
@@ -161,7 +161,7 @@ test_that("Bayes gamma corr specification with fixed gamma/alpha", {
 	df_indiv <- lapply(df_sim$df_indiv, "[", c(1:10))
 	wtp <- mdcev.sim(df_indiv, df_common = df_sim$df_common,
 					 sim_options = df_sim$sim_options,
-					 cond_err = 1, nerrs = 1, sim_type = "welfare")
+					 cond_err = TRUE, nerrs = 1, sim_type = "welfare")
 	sum_wtp <- summary(wtp)
 	expect_equal(sum(abs(sum_wtp$CoefTable$mean)), 0, tolerance = tol)
 })
@@ -174,9 +174,9 @@ test_that("Test Bayes kt_ee rp fixed", {
 					algorithm = "Bayes",
 					random_parameters = "fixed",
 					print_iterations = FALSE,
-					gamma_nonrandom = 1,
-					alpha_nonrandom = 1,
-					fixed_scale1 = 1,
+					gamma_nonrandom = TRUE,
+					alpha_nonrandom = TRUE,
+					fixed_scale1 = TRUE,
 					n_cores = 1,
 					n_chains = 1,
 					n_iterations = 10,
@@ -200,8 +200,8 @@ test_that("Test Bayes kt_ee rp uncorrelated", {
 					algorithm = "Bayes",
 					random_parameters = "uncorr",
 					print_iterations = FALSE,
-					gamma_ascs = 0,
-					fixed_scale1 = 1,
+					gamma_ascs = FALSE,
+					fixed_scale1 = TRUE,
 					n_cores = 1,
 					n_chains = 1,
 					n_iterations = 10,

@@ -1,6 +1,6 @@
 # Unit tests for helper functions in helperFunctions.R and PrepareSimulationData.R
 
-# ── CreateListsRow / CreateListsCol round-trip ────────────────────────────
+# â”€â”€ CreateListsRow / CreateListsCol round-trip â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 test_that("CreateListsRow splits matrix into rows", {
 	m <- matrix(1:6, nrow = 3, ncol = 2)
@@ -25,7 +25,7 @@ test_that("CreateListsCol handles vector input", {
 	expect_equal(lst[[2]], 20)
 })
 
-# ── GrabParms ─────────────────────────────────────────────────────────────
+# â”€â”€ GrabParms â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 test_that("GrabParms returns correct dimensions", {
 	# Build a minimal est_sim tibble (long format)
@@ -39,7 +39,7 @@ test_that("GrabParms returns correct dimensions", {
 	expect_equal(ncol(result), 2)   # n_psi
 })
 
-# ── CreateBlankPolicies error paths ──────────────────────────────────────
+# â”€â”€ CreateBlankPolicies error paths â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 test_that("CreateBlankPolicies errors when price_change_only=FALSE and n_psi==0", {
 	data(data_rec, package = "rmdcev")
@@ -50,7 +50,7 @@ test_that("CreateBlankPolicies errors when price_change_only=FALSE and n_psi==0"
 	output <- mdcev(~ 0,
 					data = data_small,
 					model = "hybrid0",
-					psi_ascs = 0,
+					psi_ascs = FALSE,
 					algorithm = "MLE",
 					print_iterations = FALSE,
 					backend = "rstan")
@@ -61,7 +61,7 @@ test_that("CreateBlankPolicies errors when price_change_only=FALSE and n_psi==0"
 	)
 })
 
-# ── .extract_parameter_draws nsims-cap warning ────────────────────────────
+# â”€â”€ .extract_parameter_draws nsims-cap warning â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 test_that(".extract_parameter_draws warns when nsims > available draws", {
 	data(data_rec, package = "rmdcev")
@@ -72,7 +72,7 @@ test_that(".extract_parameter_draws warns when nsims > available draws", {
 	output <- mdcev(~ 0,
 					data = data_small,
 					model = "hybrid0",
-					psi_ascs = 0,
+					psi_ascs = FALSE,
 					algorithm = "MLE",
 					std_errors = "mvn",
 					n_draws = 5,

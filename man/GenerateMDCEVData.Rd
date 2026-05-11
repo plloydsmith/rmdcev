@@ -28,8 +28,8 @@ GenerateMDCEVData(
 }
 \arguments{
 \item{model}{A string indicating which model specification is estimated.
-The options are "alpha", "gamma", "hybrid" and "hybrid0" for the MDCEV model and "kt_ee" for the environmental
-economics Kuhn-Tucker specification.}
+The options are "alpha", "gamma", "hybrid", "hybrid0", and "gamma1" for the MDCEV model and "kt_ee" for the
+environmental economics Kuhn-Tucker specification. The "gamma1" model fixes alpha_0 = 1 (no income effects).}
 
 \item{nobs}{Number of individuals}
 

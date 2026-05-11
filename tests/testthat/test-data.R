@@ -44,7 +44,7 @@ test_that("non-id names", {
 		~0,
 		data = data_test,
 		model = "hybrid0",
-		psi_ascs = 0,
+		psi_ascs = FALSE,
 		algorithm = "MLE",
 		backend = "rstan",
 		print_iterations = FALSE
@@ -54,16 +54,16 @@ test_that("non-id names", {
 	expect_s3_class(output, "mdcev")
 })
 
-# ── Module-level setup for CreateParmInfo tests ────────────────────────────
+# â”€â”€ Module-level setup for CreateParmInfo tests â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 formula <- ~ 0 | university + ageindex
 weights <- NULL
 num_price <- NULL
 model <- "hybrid0"
 n_classes <- 1
-fixed_scale1 <- 0
-single_scale <- 0
-trunc_data <- 0
-seed <- "123"
+fixed_scale1 <- FALSE
+single_scale <- FALSE
+trunc_data <- FALSE
+seed <- 123L
 initial.parameters <- NULL
 algorithm <- "MLE"
 flat_priors <- NULL
@@ -76,14 +76,14 @@ prior_gamma_sd <- 10
 prior_alpha_shape <- 1
 prior_scale_sd <- 1
 prior_delta_sd <- 10
-gamma_nonrandom <- 1
+gamma_nonrandom <- TRUE
 psi_ascs <- NULL
-gamma_ascs <- 1
-alpha_nonrandom <- 1
+gamma_ascs <- TRUE
+alpha_nonrandom <- TRUE
 n_draws <- 30
-keep_loglik <- 0
+keep_loglik <- FALSE
 random_parameters <- "fixed"
-jacobian_analytical_grad <- 1
+jacobian_analytical_grad <- TRUE
 
 mle_options <- list(
 	seed = seed,
@@ -132,7 +132,7 @@ parms_info <- rmdcev:::CreateParmInfo(
 	random_parameters
 )
 
-# ── Parameter-count tests ─────────────────────────────────────────────────
+# â”€â”€ Parameter-count tests â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 test_that("hybrid0 parm names", {
 	expect_equal(

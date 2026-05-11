@@ -17,7 +17,7 @@ matrix alpha_j_ll(vector alpha, int I, int J, int model_num) {
 
 	matrix[I, J] alpha_j;
 
-	if (model_num == 1 || model_num == 4 || model_num == 5)
+	if (model_num == 1 || model_num == 4 || model_num == 5 || model_num == 6)
 	  alpha_j = rep_matrix(0, I, J);
 	else if (model_num == 2)
 	  alpha_j = rep_matrix(alpha[2:(J+1)]', I);
@@ -33,6 +33,8 @@ vector alpha_1_ll(vector alpha, int I, int model_num) {
 
 	if (model_num == 4)
 	  alpha_1 = rep_vector(0, I);
+	else if (model_num == 6)
+	  alpha_1 = rep_vector(1, I);
 	else
 	  alpha_1 = rep_vector(alpha[1], I);
 
@@ -42,13 +44,12 @@ return(alpha_1);
 vector mdcev_ll(matrix quant_j, matrix price_j, vector log_num, vector income,
 				vector M, vector log_M_fact, // data
 				matrix lpsi, matrix gamma_j, vector alpha1, matrix alpha_j, real scale_full,// parameters
-				int I, int J, matrix nonzero, int trunc_data)  {//options
+				int I, int J, matrix nonzero, int trunc_data, int model_num)  {//options
 
 	vector[I] log_like;
 	real inv_scale = inv(scale_full);
 	real log_scale = log(scale_full);
 	vector[I] v1    = (alpha1 - 1) .* log_num * inv_scale;
-	vector[I] logf1 = log1m(alpha1) - log_num;
 
 	// logf and v_j share log(quant_j + gamma_j); local block frees log_qpg immediately
 	matrix[I, J] logf;
@@ -59,14 +60,23 @@ vector mdcev_ll(matrix quant_j, matrix price_j, vector log_num, vector income,
 		v_j  = (lpsi + (alpha_j - 1) .* (log_qpg - log(gamma_j)) - log(price_j)) * inv_scale;
 	}
 
-	// log_sum_exp per row: avoids I×J exp(v_j) temporary, numerically stable
+	// log_sum_exp per row: two-arg form avoids append_row allocation per individual
 	vector[I] lse;
-	for (i in 1:I) lse[i] = log_sum_exp(append_row(v1[i], v_j[i]'));
+	for (i in 1:I) lse[i] = log_sum_exp(v1[i], log_sum_exp(v_j[i]'));
 
-	log_like = (1 - M) * log_scale + logf1 + v1
-			 + rows_dot_product(nonzero, logf) + rows_dot_product(nonzero, v_j)
-			 + log(exp(-logf1) + rows_dot_product(nonzero, price_j .* exp(-logf)))
-			 - M .* lse + log_M_fact;
+	if (model_num == 6) {
+		// alpha_0 = 1: logf1 = log(1-1) = -Inf; limit of (logf1 + log(exp(-logf1) + X)) = log(1 + X)
+		log_like = (1 - M) * log_scale
+				 + rows_dot_product(nonzero, logf) + rows_dot_product(nonzero, v_j)
+				 + log(1 + rows_dot_product(nonzero, price_j .* exp(-logf)))
+				 - M .* lse + log_M_fact;
+	} else {
+		vector[I] logf1 = log1m(alpha1) - log_num;
+		log_like = (1 - M) * log_scale + logf1 + v1
+				 + rows_dot_product(nonzero, logf) + rows_dot_product(nonzero, v_j)
+				 + log(exp(-logf1) + rows_dot_product(nonzero, price_j .* exp(-logf)))
+				 - M .* lse + log_M_fact;
+	}
 
 	if (trunc_data == 1){
 		matrix[I, J+1] v_1 = exp(append_col((alpha1 - 1) .* log(income), lpsi - log(price_j)) * inv_scale);
@@ -101,6 +111,9 @@ vector kt_ll(matrix quant_j, matrix price_j, vector log_num, vector income,
     real log_scale = log(scale_full);
     matrix[I, J] g; // demand function
     matrix[I, J] phi_quant_term =  (phi_ij .* quant_j + gamma) ./ phi_ij;
+    matrix[I, J] log_phi_quant_term = log(phi_quant_term);
+    matrix[I, J] log_price_j = log(price_j);
+    matrix[I, J] log_phi_ij  = log(phi_ij);
     vector[I] log_j_det;
     vector[I] alpha_comp = 1 - alpha;
 
@@ -111,20 +124,20 @@ vector kt_ll(matrix quant_j, matrix price_j, vector log_num, vector income,
                     price_j_num, nonzero[i]', J);
     	}
 	} else if (jacobian_analytical_grad == 1){
-		log_j_det = log(alpha_comp) - log_num + rows_dot_product(nonzero, log(inv(phi_quant_term))) +
+		log_j_det = log(alpha_comp) - log_num - rows_dot_product(nonzero, log_phi_quant_term) +
          		log(exp(log_num) ./ alpha_comp + rows_dot_product(nonzero, phi_quant_term .* price_j));
 	}
 	 // Calculate the demand function, g
-  	g =  (-lpsi + log(phi_quant_term .* price_j) - rep_matrix(alpha_comp .* log_num, J)) * inv_scale;
+  	g =  (-lpsi + log_phi_quant_term + log_price_j - rep_matrix(alpha_comp .* log_num, J)) * inv_scale;
 
   	// Calculate the likelihood log(j_det*exp(x))=log(j_det)+x
   	log_like = log_j_det + rows_dot_product(nonzero, -g - log_scale) - exp(-g) * ones_j;
 
 	// adjust for truncation
 	if(trunc_data == 1){
-	  vector[I] like_trunc = exp(-exp(-(-lpsi  + log(price_j) - log(phi_ij) + log(gamma) -
+	  vector[I] like_trunc = exp(-exp(-(-lpsi + log_price_j - log_phi_ij + log(gamma) -
 	                      rep_matrix(alpha_comp .* log(income), J)) * inv_scale) * ones_j);
-      
+
       like_trunc = fmin(like_trunc, 1);
 
    	  log_like = log_like - log1m(like_trunc);

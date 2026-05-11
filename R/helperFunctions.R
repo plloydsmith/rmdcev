@@ -451,6 +451,9 @@ CreatePsi <- function(dat_vars_i, est_pars_i, J, NPsi_ij, psi_ascs, npols) {
 .build_alpha_sims <- function(est_sim, model_num, alpha_nonrandom, nsims, J) {
 	if (model_num == 4) {
 		matrix(0, nsims, J + 1)
+	} else if (model_num == 6) {
+		# alpha_0 = 1 (fixed), alpha_j = 0
+		cbind(matrix(1, nsims, 1), matrix(0, nsims, J))
 	} else if (alpha_nonrandom == 1) {
 		a <- GrabParms(est_sim, "alpha")
 		if (model_num == 1 || model_num == 5) {
@@ -566,7 +569,7 @@ CreatePsi <- function(dat_vars_i, est_pars_i, J, NPsi_ij, psi_ascs, npols) {
 		NULL
 	}
 
-	alpha_rand <- if (alpha_nonrandom == 0) {
+	alpha_rand <- if (alpha_nonrandom == 0 && model_num != 6) {
 		a <- GrabIndividualParms(est_sim, "alpha")
 		if (model_num == 1 || model_num == 5) {
 			a <- lapply(a, function(x) cbind(as.matrix(x), matrix(0, nrow(x), J)))
@@ -600,50 +603,47 @@ CreatePsi <- function(dat_vars_i, est_pars_i, J, NPsi_ij, psi_ascs, npols) {
 #'   respect the estimated correlation structure.
 #' @noRd
 .compute_corr_tau <- function(est_sim, est_sim_mu_tau, object) {
-	# Number of random parameters inferred from est_sim (avoids dependency on est_pars scope)
 	num_rand <- length(grep("^mu\\.", unique(est_sim$parms)))
+	nsims    <- dplyr::n_distinct(est_sim_mu_tau$sim_id)
 
-	# Split tau and L_Omega draws by sim_id for parallel mapply
-	tau_by_sim <- est_sim_mu_tau %>%
-		dplyr::select("sim_id", "parm_id", "tau") %>%
-		dplyr::group_split(.data$sim_id)
-	lomega_by_sim <- est_sim %>%
+	# tau matrix: nsims × num_rand (one row per draw, one col per random parameter)
+	tau_mat <- matrix(est_sim_mu_tau$tau, nrow = nsims, ncol = num_rand, byrow = FALSE)
+
+	# L_Omega entries ordered by sim_id: stack into num_rand × num_rand × nsims array
+	lomega_vals <- est_sim %>%
 		dplyr::filter(grepl("L_Omega", .data$parms)) %>%
 		dplyr::arrange(.data$sim_id) %>%
-		dplyr::group_split(.data$sim_id)
-	sim_ids <- dplyr::distinct(
-		dplyr::arrange(est_sim, .data$sim_id),
-		.data$sim_id
-	)
+		dplyr::pull(.data$value)
+	lomega_arr <- array(lomega_vals, dim = c(num_rand, num_rand, nsims))
 
-	# For each draw: scaled_tau (row vector) = tau (row vector) %*% L_Omega
-	L <- mapply(
-		function(tau_df, lomega_df) {
-			l_omega <- matrix(lomega_df$value, nrow = num_rand, byrow = FALSE)
-			as.vector(tau_df$tau %*% l_omega)
-		},
-		tau_by_sim,
-		lomega_by_sim
-	)
-	L <- matrix(unlist(L), nrow = nrow(sim_ids), byrow = TRUE)
-	colnames(L) <- paste0("parm_id", seq_len(num_rand))
+	# Batch: scaled_tau[s,] = tau_mat[s,] %*% L_Omega[,,s]  for each draw s
+	scaled_tau_mat <- t(vapply(
+		seq_len(nsims),
+		function(s) as.vector(tau_mat[s, , drop = FALSE] %*% lomega_arr[,, s]),
+		numeric(num_rand)
+	))
 
-	scaled_tau <- dplyr::bind_cols(sim_ids, tibble::as_tibble(L)) %>%
-		tidyr::pivot_longer(-"sim_id", names_to = "parm_id", values_to = "tau") %>%
-		dplyr::mutate(parm_id = as.numeric(gsub("[^0-9]", "", .data$parm_id))) %>%
-		dplyr::arrange(.data$sim_id)
-
-	# Return updated est_sim_mu_tau with scaled tau
+	# Return updated est_sim_mu_tau with scaled tau replacing original tau
 	est_sim_mu_tau %>%
 		dplyr::select("sim_id", "parm_id", "mu") %>%
-		dplyr::left_join(scaled_tau, by = c("sim_id", "parm_id"))
+		dplyr::mutate(tau = as.vector(t(scaled_tau_mat)))
+}
+
+#' @title .build_psi_fixed_draws
+#' @description Extract posterior draws for fixed psi parameters (psi_random feature).
+#'   Returns NULL when NPsi_ij_fixed == 0.
+#' @noRd
+.build_psi_fixed_draws <- function(est_sim, NPsi_ij_fixed) {
+	if (is.null(NPsi_ij_fixed) || NPsi_ij_fixed == 0L) return(NULL)
+	GrabParms(est_sim, "^psi_fixed")
 }
 
 #' @title .build_psi_sims
 #' @description Build the baseline psi utility index for each individual.
 #'   Returns a list of I matrices (nsims x J). When n_psi == 0, returns zero matrices.
+#'   When psi_fixed_draws is non-NULL, adds the fixed-psi contribution (psi_random feature).
 #' @noRd
-.build_psi_sims <- function(psi_sim_temp, object, npols, nsims) {
+.build_psi_sims <- function(psi_sim_temp, object, npols, nsims, psi_fixed_draws = NULL) {
 	sd <- object$stan_data
 	if (object$parms_info$n_vars$n_psi > 0) {
 		dat_vars <- tibble::tibble(id = rep(seq_len(sd$I), each = sd$J))
@@ -651,7 +651,7 @@ CreatePsi <- function(dat_vars_i, est_pars_i, J, NPsi_ij, psi_ascs, npols) {
 			dat_vars <- dplyr::bind_cols(dat_vars, tibble::as_tibble(sd$dat_psi))
 		}
 		dat_vars <- dplyr::group_split(dat_vars, .data$id, .keep = FALSE)
-		mapply(
+		psi_sims <- mapply(
 			CreatePsi,
 			dat_vars,
 			psi_sim_temp,
@@ -662,8 +662,26 @@ CreatePsi <- function(dat_vars_i, est_pars_i, J, NPsi_ij, psi_ascs, npols) {
 			SIMPLIFY = FALSE
 		)
 	} else {
-		replicate(sd$I, matrix(0, nsims, sd$J), simplify = FALSE)
+		psi_sims <- replicate(sd$I, matrix(0, nsims, sd$J), simplify = FALSE)
 	}
+
+	# Add fixed psi contribution (psi_random feature)
+	n_fixed <- if (!is.null(sd$NPsi_ij_fixed)) sd$NPsi_ij_fixed else 0L
+	if (!is.null(psi_fixed_draws) && n_fixed > 0L) {
+		dat_fixed <- tibble::tibble(id = rep(seq_len(sd$I), each = sd$J))
+		dat_fixed <- dplyr::bind_cols(dat_fixed, tibble::as_tibble(sd$dat_psi_fixed))
+		dat_fixed_list <- dplyr::group_split(dat_fixed, .data$id, .keep = FALSE)
+		psi_sims <- mapply(
+			function(base_psi, fd) {
+				base_psi + psi_fixed_draws %*% t(as.matrix(fd))
+			},
+			psi_sims,
+			dat_fixed_list,
+			SIMPLIFY = FALSE
+		)
+	}
+
+	psi_sims
 }
 
 #' @title .build_phi_sims

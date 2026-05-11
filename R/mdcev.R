@@ -13,8 +13,8 @@
 #'  individual specific variables. Note: I is number of individuals and J is number of non-numeraire alternatives.
 #' @param weights an optional vector of weights. Default to 1.
 #' @param model A string indicating which model specification is estimated.
-#' The options are "alpha", "gamma", "hybrid" and "hybrid0" for the MDCEV model and "kt_ee" for the environmental
-#' economics Kuhn-Tucker specification.
+#' The options are "alpha", "gamma", "hybrid", "hybrid0", and "gamma1" for the MDCEV model and "kt_ee" for the
+#' environmental economics Kuhn-Tucker specification. The "gamma1" model fixes alpha_0 = 1 (no income effects).
 #' @param n_classes The number of latent classes. Note that the LC model is automatically estimated as long as the
 #' prespecified number of classes is set greater than 1.
 #' @param fixed_scale1 Whether to fix scale at 1.
@@ -58,8 +58,17 @@
 #' @param prior_alpha_shape shape parameter for beta distribution.
 #' @param prior_scale_sd standard deviation for half-normal prior with mean 0.
 #' @param prior_delta_sd standard deviation for normal prior with mean 0.
-#' @param alpha_nonrandom indicator set to 1 if alpha parameters should not be random (i.e. no standard deviation).
-#' @param gamma_nonrandom indicator set to 1 if gamma parameters should not be random (i.e. no standard deviation).
+#' @param alpha_nonrandom Logical. If \code{TRUE}, alpha parameters are not random (no individual-specific standard deviation).
+#' @param gamma_nonrandom Logical. If \code{TRUE}, gamma parameters are not random (no individual-specific standard deviation).
+#' @param psi_random A one-sided formula specifying which psi formula terms should be treated as random
+#'   coefficients (i.e. have individual-specific draws with estimated population mean and standard deviation).
+#'   Only applicable when \code{algorithm = "Bayes"} and \code{random_parameters} is \code{"uncorr"} or
+#'   \code{"corr"}. When \code{NULL} (default), all formula terms are random (existing behaviour).
+#'   Alternative-specific constants (from \code{psi_ascs = 1}) are always random regardless of this argument.
+#'   Formula terms not listed in \code{psi_random} become fixed (pooled) point estimates.
+#'   Example: if the psi formula is \code{~ quality + income} and you specify
+#'   \code{psi_random = ~ quality}, then \code{quality} gets an individual-specific coefficient
+#'   while \code{income} is estimated as a single pooled parameter.
 #' @param lkj_shape_prior Prior for Cholesky matrix
 #' @param n_iterations The number of iterations to use in Bayesian estimation. The default is for the number of
 #' iterations to be split evenly between warmup and posterior draws. The number of warmup draws can be directly controlled using the warmup argument (see \code{rstan::sampling}).
@@ -74,6 +83,9 @@
 #' @param adapt_delta
 #'    https://mc-stan.org/misc/warnings.html#divergent-transitions-after-warmup
 #' @param show_stan_warnings Whether to show warnings from Stan.
+#' @param backend Estimation backend. Either \code{"cmdstanr"} (default) or \code{"rstan"}.
+#'   The cmdstanr backend reads \code{.stan} files from \code{inst/stan/} at runtime.
+#'   The rstan backend uses pre-compiled C++ in \code{src/stanExports_*.h}.
 #' @param ... Additional parameters to pass on to \code{rstan::stan}
 #'     and \code{rstan::sampling}.
 #' @return A object of class mdcev
@@ -93,16 +105,16 @@
 #'}
 mdcev <- function(formula = NULL, data,
 				 weights = NULL,
-				 model = c("alpha", "gamma", "hybrid", "hybrid0", "kt_ee"),
+				 model = c("alpha", "gamma", "hybrid", "hybrid0", "kt_ee", "gamma1"),
 				 n_classes = 1,
-				 fixed_scale1 = 0,
-				 single_scale = 0,
-				 trunc_data = 0,
+				 fixed_scale1 = FALSE,
+				 single_scale = FALSE,
+				 trunc_data = FALSE,
 				 psi_ascs = NULL,
-				 gamma_ascs = 1,
-				 seed = "123",
+				 gamma_ascs = TRUE,
+				 seed = 123L,
 				 max_iterations = 2000,
-				 jacobian_analytical_grad = 1,
+				 jacobian_analytical_grad = TRUE,
 				 initial.parameters = "random",
 				 hessian = TRUE,
 				 algorithm = c("MLE", "Bayes"),
@@ -114,11 +126,12 @@ mdcev <- function(formula = NULL, data,
 				 prior_alpha_shape = 1,
 				 prior_scale_sd = 1,
 				 prior_delta_sd = 10,
-				 gamma_nonrandom = 0,
-				 alpha_nonrandom = 0,
+				 gamma_nonrandom = FALSE,
+				 alpha_nonrandom = FALSE,
+				 psi_random = NULL,
 				 std_errors = "deltamethod",
 				 n_draws = 50,
-				 keep_loglik = 0,
+				 keep_loglik = FALSE,
 				 random_parameters = "fixed",
 				 show_stan_warnings = TRUE,
 				 n_iterations = 200,
@@ -127,6 +140,7 @@ mdcev <- function(formula = NULL, data,
 				 max_tree_depth = 10,
 				 adapt_delta = 0.8,
 				 lkj_shape_prior = 4,
+				 backend = "cmdstanr",
 			     ...)
 {
 
@@ -135,7 +149,7 @@ mdcev <- function(formula = NULL, data,
 	# Check models
 	if (!is.element(algorithm, c("MLE", "Bayes"))) stop("algorithm must be 'MLE' or 'Bayes'")
 	if (!is.element(random_parameters, c("fixed", "uncorr", "corr"))) stop("random_parameters must be 'fixed', 'uncorr' or 'corr'")
-	if (!is.element(model, c("alpha", "gamma", "hybrid", "hybrid0", "kt_ee"))) stop("model must be 'alpha', 'gamma', 'hybrid', 'hybrid0', or 'kt_ee'")
+	if (!is.element(model, c("alpha", "gamma", "hybrid", "hybrid0", "kt_ee", "gamma1"))) stop("model must be 'alpha', 'gamma', 'hybrid', 'hybrid0', 'kt_ee', or 'gamma1'")
 	if (!is.element(std_errors, c("deltamethod", "mvn"))) stop("std_errors must be 'deltamethod' or 'mvn'")
 
 	if (algorithm == "Bayes" && n_classes > 1)
@@ -146,16 +160,16 @@ mdcev <- function(formula = NULL, data,
 
 	if (!inherits(data, "mdcev.data")) stop("Data must be of class mdcev.data")
 
-	if (fixed_scale1 == 1 && single_scale == 1) stop("Cannot set both fixed_scale1 and single_scale to 1")
+	if (isTRUE(fixed_scale1) && isTRUE(single_scale)) stop("Cannot set both fixed_scale1 and single_scale to TRUE")
 
 	if (algorithm == "MLE" && is.null(flat_priors)){
-		flat_priors <- 1
+		flat_priors <- TRUE
 	} else if (algorithm == "Bayes" && is.null(flat_priors))
-		flat_priors <- 0
+		flat_priors <- FALSE
 
 	if (random_parameters == "fixed"){
-		gamma_nonrandom <- 1
-		alpha_nonrandom <- 1
+		gamma_nonrandom <- TRUE
+		alpha_nonrandom <- TRUE
 	}
 
 	if(algorithm == "Bayes" || std_errors == "deltamethod")
@@ -206,6 +220,16 @@ mdcev <- function(formula = NULL, data,
 
 	stan_data <- processMDCEVdata(formula, data, stan_model_options)
 
+	# Always initialise fixed-psi fields; override via split when psi_random is set.
+	stan_data$NPsi_ij_fixed <- 0L
+	stan_data$dat_psi_fixed  <- matrix(0, 0, 0)
+
+	if (algorithm == "Bayes" && random_parameters != "fixed" && !is.null(psi_random)) {
+		if (!inherits(psi_random, "formula"))
+			stop("psi_random must be a one-sided formula, e.g. ~ quality + income", call. = FALSE)
+		stan_data <- .split_psi_for_rp(stan_data, psi_random, data)
+	}
+
 	parms_info <- CreateParmInfo(stan_data, alt_names, algorithm, random_parameters)
 
 		# If no user supplied weights, replace weights with vector of ones
@@ -219,12 +243,14 @@ mdcev <- function(formula = NULL, data,
 							 bayes_options,
 							 keep.samples = FALSE,
 							 include.stanfit = TRUE,
+							 backend = backend,
 				 			 ...)
 
 	} else if (algorithm == "MLE") {
 		result <- maxlikeMDCEV(stan_data,
 							   mle_options,
 							   parms_info,
+							   backend = backend,
 							   ...)
 
 	}

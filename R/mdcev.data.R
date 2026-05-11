@@ -109,7 +109,7 @@ mdcev.data <- function(data,
 	attr(data, "class") <- c("mdcev.data", "data.frame")
 	attr(data, "choice") <- choice.name
 	attr(data, "price") <- price
-	attr(data, "income") <- income
+	attr(data, "income") <- if (!is.null(income)) income else NULL
 	attr(data, "id") <- id.var
 
 	mdcev.datacheck(data)

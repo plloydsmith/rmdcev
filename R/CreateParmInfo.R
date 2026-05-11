@@ -22,12 +22,19 @@ CreateParmInfo <- function(stan_data, alt_names, algorithm, random_parameters){
 	else
 		psi_non_asc_names <- NULL
 
-	# add in alternative-specific attributes
+	# Random psi: ASCs + formula terms in dat_psi (after any psi_random split)
 	n_psi <- n_psi_asc + stan_data$NPsi_ij
 	psi_names <- c(psi_asc_names, psi_non_asc_names)
-
 	if (n_psi > 0)
 		psi_names <- paste0(rep('psi', n_psi), sep="_", psi_names)
+
+	# Fixed formula psi terms (from psi_random split, default 0)
+	n_psi_fixed <- if (!is.null(stan_data$NPsi_ij_fixed)) stan_data$NPsi_ij_fixed else 0L
+	if (n_psi_fixed > 0) {
+		psi_fixed_names <- paste0("psi_", colnames(stan_data[["dat_psi_fixed"]]))
+	} else {
+		psi_fixed_names <- NULL
+	}
 
 	# alpha
 	if (stan_data$model_num == 1 || stan_data$model_num == 5){
@@ -39,7 +46,7 @@ CreateParmInfo <- function(stan_data, alt_names, algorithm, random_parameters){
 	} else if (stan_data$model_num == 3){
 		n_alpha <- 1
 		alpha_names <- 'alpha'
-	} else if (stan_data$model_num == 4){
+	} else if (stan_data$model_num == 4 || stan_data$model_num == 6){
 		n_alpha <- 0
 		alpha_names <- NULL
 	}
@@ -81,10 +88,13 @@ CreateParmInfo <- function(stan_data, alt_names, algorithm, random_parameters){
 					   gamma_names = gamma_names,
 					   alpha_names = alpha_names,
 					   scale_names = scale_names,
-					   all_names   = c(psi_names, phi_names, gamma_names, alpha_names, scale_names))
+					   all_names   = c(psi_names, psi_fixed_names, phi_names,
+					                   gamma_names, alpha_names, scale_names))
 
-	n_parameters <- n_psi + n_phi + n_alpha + n_gamma + n_scale
-	n_vars <- list(n_psi = n_psi, n_phi = n_phi, n_alpha = n_alpha, n_gamma = n_gamma, n_scale = n_scale)
+	n_parameters <- n_psi + n_psi_fixed + n_phi + n_alpha + n_gamma + n_scale
+	n_vars <- list(n_psi = n_psi, n_psi_fixed = n_psi_fixed,
+	               n_phi = n_phi, n_alpha = n_alpha,
+	               n_gamma = n_gamma, n_scale = n_scale)
 
 	if (stan_data$K > 1){
 		n_vars <- lapply(n_vars, function(x){x* stan_data$K})

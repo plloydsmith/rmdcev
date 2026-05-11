@@ -15,6 +15,8 @@ data {
 //  vector[NPsi] psi_ndx;
   int<lower=0, upper=1>  gamma_nonrandom;
   int<lower=0, upper=1>  alpha_nonrandom;
+  int<lower=0> NPsi_ij_fixed;
+  matrix[(NPsi_ij_fixed > 0 ? I * J : 0), NPsi_ij_fixed] dat_psi_fixed;
 }
 
 transformed data {
@@ -38,6 +40,7 @@ transformed data {
 
 parameters {
 //	vector[n_psi_fixed] psi;
+	vector[NPsi_ij_fixed] psi_fixed;
 	vector<lower=0 >[gamma_nonrandom == 1 ? Gamma : 0] gamma;
 	vector<lower=0, upper=1>[alpha_nonrandom == 1 ? A : 0] alpha;
 	vector[RP] mu;                                // means for random parameters
@@ -68,7 +71,7 @@ transformed parameters {
 		beta = rep_matrix(mu', I) + diag_post_multiply(z, tau);
 	}
 
-	if (alpha_nonrandom == 0 && model_num != 4){
+	if (alpha_nonrandom == 0 && model_num != 4 && model_num != 6){
 		alpha_individual_1 = inv_logit(col(beta, RP_a));
 		if (model_num == 1)
 		  	alpha_individual_j = rep_matrix(0, I, J);
@@ -100,10 +103,15 @@ transformed parameters {
 			lpsi = rep_matrix(0, I, J);
 	}
 
-	if (model_num < 5){
+	// Fixed psi contribution (psi_random feature)
+	if (NPsi_ij_fixed > 0)
+		for (i in 1:I)
+			lpsi[i] += (dat_psi_fixed[start[i]:end[i]] * psi_fixed)';
+
+	if (model_num != 5){
 		log_like = mdcev_ll(quant_j, price_j, log_num, income, M, log_M_fact, // data
 			lpsi, gamma_individual, alpha_individual_1, alpha_individual_j, scale_full, 						// parameters
-			I, J, nonzero, trunc_data);
+			I, J, nonzero, trunc_data, model_num);
 	} else if (model_num == 5){
 		matrix[I, J] phi_ij;
 		if (NPhi == 0)
@@ -121,10 +129,11 @@ transformed parameters {
 
 model {
   // priors on the parameters
+  	psi_fixed ~ normal(0, prior_psi_sd);
   	gamma ~ normal(1, prior_gamma_sd);
 	alpha ~ beta(prior_alpha_shape, prior_alpha_shape);
 	to_vector(z) ~ std_normal();
-	to_vector(mu) ~ normal(0, 10);
+	mu ~ normal(0, 10);
 	L_Omega ~ lkj_corr_cholesky(lkj_shape);                 // lkj prior
 	scale ~ normal(0, 1);
 	// no priors for tau because already constrained to uniform
@@ -136,7 +145,6 @@ generated quantities{
    real<upper=0> sum_log_lik = dot_product(log_like, weights);
 
 	{
-	   matrix[RP, RP] L;
 		if (corr == 1){
 			matrix[RP, RP] Omega;
 			Omega = tcrossprod(L_Omega);  // correlation matrix: L * L'

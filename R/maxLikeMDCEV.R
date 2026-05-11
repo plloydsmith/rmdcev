@@ -1,3 +1,59 @@
+#' @title .build_lc_init
+#' @description Build initial parameter values for the Latent Class (LC) optimizing call
+#'   from the converged single-class estimates. Perturbs psi and gamma slightly so all
+#'   classes start at distinct points.
+#' @param single_fit_par Named parameter list from the single-class \code{rstan::optimizing}
+#'   or \code{RunCmdStanOptimizing} result (\code{stan_fit$par}).
+#' @param stan_data Stan data list (needs K, J, model_num, gamma_ascs, NPhi,
+#'   fixed_scale1, single_scale — all already integer at this point).
+#' @return A named list suitable for use as \code{init} in the LC optimizing call.
+#' @noRd
+.build_lc_init <- function(single_fit_par, stan_data) {
+    init.psi <- single_fit_par$psi
+    if (length(init.psi) > 0) {
+        init.shift <- seq(-0.02, 0.02, length.out = length(init.psi))
+        for (i in seq_along(init.psi))
+            init.psi[i] <- init.psi[i] + init.shift[i]
+    }
+    init.psi <- matrix(init.psi,
+                       nrow  = stan_data$K,
+                       ncol  = length(init.psi),
+                       byrow = TRUE)
+
+    init <- list(psi = init.psi)
+
+    if (stan_data$fixed_scale1 == 0L && stan_data$single_scale == 0L)
+        init$scale <- rep(single_fit_par[["scale"]], stan_data$K)
+    else if (stan_data$fixed_scale1 == 0L && stan_data$single_scale == 1L)
+        init$scale <- single_fit_par[["scale"]]
+
+    if (stan_data$model_num %in% c(1, 3, 5))
+        init$alpha <- matrix(rep(single_fit_par$alpha, stan_data$K),
+                             nrow = stan_data$K, ncol = 1)
+    else if (stan_data$model_num == 2)
+        init$alpha <- matrix(rep(single_fit_par$alpha, stan_data$K),
+                             nrow = stan_data$K, ncol = stan_data$J + 1)
+
+    if (stan_data$model_num != 2) {
+        init.gamma <- single_fit_par$gamma
+        init.shift <- seq(-0.02, 0.02, length.out = length(init.gamma))
+        for (i in seq_along(init.gamma))
+            init.gamma[i] <- init.gamma[i] + init.shift[i]
+
+        if (stan_data$gamma_ascs == 1L)
+            init$gamma <- matrix(rep(init.gamma, stan_data$K),
+                                 nrow = stan_data$K, ncol = stan_data$J)
+        else if (stan_data$gamma_ascs == 0L)
+            init$gamma <- matrix(rep(init.gamma, stan_data$K),
+                                 nrow = stan_data$K, ncol = 1)
+    }
+
+    if (stan_data$model_num == 5)
+        init$phi <- matrix(rep(single_fit_par$phi, stan_data$K),
+                           nrow = stan_data$K, ncol = stan_data$NPhi)
+    init
+}
+
 #' @title maxlikeMDCEV
 #' @description Fit a MDCEV model with MLE
 #' @param stan_data data for model formatted from processMDCEVdata
@@ -48,7 +104,7 @@ maxlikeMDCEV <- function(stan_data,
             )
         }
 
-        if (mle_options$keep_loglik == 0)
+        if (!isTRUE(mle_options$keep_loglik))
             stan_fit <- ReduceStanFitSize(stan_fit, parms_info)
 
         result$stan_fit            <- stan_fit
@@ -60,55 +116,9 @@ maxlikeMDCEV <- function(stan_data,
 
     if (mle_options$n_classes > 1) {
         if (!is.list(mle_options$initial.parameters)) {
-            result$mdcev_fit           <- result$stan_fit
+            result$mdcev_fit            <- result$stan_fit
             result$mdcev_log.likelihood <- result$log.likelihood
-
-            # Build LC initial values from single-class estimates
-            init.par  <- stan_fit$par
-            init.psi  <- init.par$psi
-
-            if (length(init.psi) > 0) {
-                init.shift <- seq(-0.02, 0.02, length.out = length(init.psi))
-                for (i in seq_along(init.psi))
-                    init.psi[i] <- init.psi[i] + init.shift[i]
-            }
-            init.psi <- matrix(init.psi,
-                               nrow  = stan_data$K,
-                               ncol  = length(init.psi),
-                               byrow = TRUE)
-
-            init <- list(psi = init.psi)
-
-            if (stan_data$fixed_scale1 == 0 && stan_data$single_scale == 0)
-                init$scale <- rep(stan_fit$par[["scale"]], stan_data$K)
-            else if (stan_data$fixed_scale1 == 0 && stan_data$single_scale == 1)
-                init$scale <- stan_fit$par[["scale"]]
-
-            if (stan_data$model_num %in% c(1, 3, 5))
-                init$alpha <- matrix(rep(init.par$alpha, stan_data$K),
-                                     nrow = stan_data$K, ncol = 1)
-            else if (stan_data$model_num == 2)
-                init$alpha <- matrix(rep(init.par$alpha, stan_data$K),
-                                     nrow = stan_data$K, ncol = stan_data$J + 1)
-
-            if (stan_data$model_num != 2) {
-                init.gamma <- init.par$gamma
-                init.shift <- seq(-0.02, 0.02, length.out = length(init.gamma))
-                for (i in seq_along(init.gamma))
-                    init.gamma[i] <- init.gamma[i] + init.shift[i]
-
-                if (stan_data$gamma_ascs == 1)
-                    init$gamma <- matrix(rep(init.gamma, stan_data$K),
-                                         nrow = stan_data$K, ncol = stan_data$J)
-                else if (stan_data$gamma_ascs == 0)
-                    init$gamma <- matrix(rep(init.gamma, stan_data$K),
-                                         nrow = stan_data$K, ncol = 1)
-            }
-
-            if (stan_data$model_num == 5)
-                init$phi <- matrix(rep(init.par$phi, stan_data$K),
-                                   nrow = stan_data$K, ncol = stan_data$NPhi)
-
+            init <- .build_lc_init(stan_fit$par, stan_data)
         } else {
             init <- mle_options$initial.parameters
         }
@@ -133,7 +143,7 @@ maxlikeMDCEV <- function(stan_data,
             )
         }
 
-        if (mle_options$keep_loglik == 0)
+        if (!isTRUE(mle_options$keep_loglik))
             stan_fit <- ReduceStanFitSize(stan_fit, parms_info)
 
         result$stan_fit         <- stan_fit
@@ -227,7 +237,7 @@ RunCmdStanOptimizing <- function(stan_data, model_name, mle_options, ...) {
                 seed      = mle_options$seed,
                 verbose   = FALSE,
                 iter      = mle_options$max_iterations,
-                init      = if (!is.null(mle_options$init)) mle_options$init else "random",
+                init      = par_list,
                 draws     = mle_options$n_draws,
                 hessian   = TRUE
             )

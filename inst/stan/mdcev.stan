@@ -62,17 +62,17 @@ transformed parameters {
     			lpsi = rep_matrix(0, I, J);
 		}
 
-		if(model_num < 5){
+		if(model_num != 5){
 			matrix[I, J] alpha_j = alpha_j_ll(alpha[k], I, J, model_num);
 
 			if(K == 1) {
 			log_like = mdcev_ll(quant_j, price_j, log_num, income, M, log_M_fact, // data
 				lpsi, gamma_full, alpha_1, alpha_j, scale_full, 						// parameters
-				I, J, nonzero, trunc_data);
+				I, J, nonzero, trunc_data, model_num);
 			} else if (K > 1){
 			log_like_util[k] = mdcev_ll(quant_j, price_j, log_num, income, M, log_M_fact, // data
 				lpsi, gamma_full, alpha_1, alpha_j, scale_full, 						// parameters
-				I, J, nonzero, trunc_data);
+				I, J, nonzero, trunc_data, model_num);
 			}
 		} else if (model_num == 5){
 			matrix[I, J] phi_ij;

@@ -47,8 +47,8 @@
 mdcev.sim <- function(df_indiv, df_common, sim_options,
 					  sim_type = c("welfare", "demand"),
 					  nerrs = 30,
-					  cond_error = 1,
-					  draw_mlhs = 1,
+					  cond_error = TRUE,
+					  draw_mlhs = TRUE,
 					  algo_gen = NULL,
 					  tol = 1e-20,
 					  max_loop = 999,
@@ -72,7 +72,7 @@ mdcev.sim <- function(df_indiv, df_common, sim_options,
 	} else if (is.null(algo_gen)) {
 		if (model_num == 3 || model_num == 4)
 			algo_gen <- 0
-		else if (model_num == 1 || model_num == 2 || model_num == 5)
+		else if (model_num == 1 || model_num == 2 || model_num == 5 || model_num == 6)
 			algo_gen <- 1
 	}
 
@@ -83,14 +83,14 @@ mdcev.sim <- function(df_indiv, df_common, sim_options,
 		message("Using hybrid approach in simulation...")
 	}
 
-	# Organize options in list
-	sim_options[["nerrs"]] <- nerrs
-	sim_options[["cond_error"]] <- cond_error
-	sim_options[["draw_mlhs"]] <- draw_mlhs
-	sim_options[["algo_gen"]] <- algo_gen
-	sim_options[["tol"]] <- tol
-	sim_options[["max_loop"]] <- max_loop
-	sim_options[["sim_type"]] <- sim_type
+	# Organize options in list; cast bool flags to integer for C++ simulation functions
+	sim_options[["nerrs"]]      <- nerrs
+	sim_options[["cond_error"]] <- as.integer(cond_error)
+	sim_options[["draw_mlhs"]]  <- as.integer(draw_mlhs)
+	sim_options[["algo_gen"]]   <- as.integer(algo_gen)
+	sim_options[["tol"]]        <- tol
+	sim_options[["max_loop"]]   <- max_loop
+	sim_options[["sim_type"]]   <- sim_type
 
 	out <- StanSimulate(df_indiv, df_common, sim_options, stan_seed)
 

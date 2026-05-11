@@ -16,24 +16,12 @@ BayesMDCEV <- function(stan_data, bayes_options,
     if (bayes_options$n_iterations <= 0)
         stop("The specified number of iterations must be greater than 0.")
 
-    # Create indices for individual level psi parameters
-    indexes <- tibble::tibble(
-        individual = rep(1:stan_data$I, each = stan_data$J),
-        task = rep(1:stan_data$I, each = stan_data$J),
-        row = 1:(stan_data$I * stan_data$J)
-    ) %>%
-        dplyr::group_by(.data$task) %>%
-        dplyr::summarise(
-            task_individual = dplyr::first(.data$individual),
-            start = dplyr::first(.data$row),
-            end = dplyr::last(.data$row)
-        )
-
-    stan_data$start         <- indexes$start
-    stan_data$end           <- indexes$end
-    stan_data$task_individual <- indexes$task_individual
-    stan_data$task          <- indexes$task
-    stan_data$IJ            <- stan_data$I * stan_data$J
+    # Indices for individual-level psi parameters: each individual has J consecutive rows.
+    stan_data$start           <- seq(1L, by = stan_data$J, length.out = stan_data$I)
+    stan_data$end             <- stan_data$start + stan_data$J - 1L
+    stan_data$task_individual <- seq_len(stan_data$I)
+    stan_data$task            <- seq_len(stan_data$I)
+    stan_data$IJ              <- stan_data$I * stan_data$J
     stan_data$lkj_shape     <- bayes_options$lkj_shape_prior
 
     stan_data$K            <- 1
@@ -174,7 +162,7 @@ RunStanSampling <- function(stan_data, stan.model, bayes_options, ...) {
         cores   = bayes_options$n_cores,
         init    = bayes_options$initial.parameters,
         iter    = bayes_options$n_iterations,
-        seed    = bayes_options$seed,
+        seed    = as.integer(bayes_options$seed),
         control = list(
             max_treedepth = bayes_options$max_tree_depth,
             adapt_delta   = bayes_options$adapt_delta

@@ -11,7 +11,7 @@ test_that("Generate gamma MDCEV data", {
 
 	output <- mdcev(~ b1 + b2 + b3 + b4 + b5 + b6,
 					data = sim.data$data,
-					psi_ascs = 0,
+					psi_ascs = FALSE,
 					model = model,
 					algorithm = "MLE",
 					print_iterations = FALSE,
@@ -27,7 +27,7 @@ test_that("Generate alpha MDCEV data", {
 
 	output <- mdcev(~ b1 + b2 + b3,
 					data = sim.data$data,
-					psi_ascs = 0,
+					psi_ascs = FALSE,
 					model = model,
 					algorithm = "MLE",
 					print_iterations = FALSE,
@@ -42,7 +42,7 @@ test_that("Generate hybrid0 MDCEV data", {
 
 	output <- mdcev(~ b1 + b2 + b3,
 					data = sim.data$data,
-					psi_ascs = 0,
+					psi_ascs = FALSE,
 					model = model,
 					algorithm = "MLE",
 					print_iterations = FALSE,
@@ -61,7 +61,7 @@ test_that("Generate hybrid MDCEV data", {
 
 	output <- mdcev(~ b1 + b2 + b3,
 					data = sim.data$data,
-					psi_ascs = 0,
+					psi_ascs = FALSE,
 					model = model,
 					algorithm = "MLE",
 					print_iterations = FALSE,
