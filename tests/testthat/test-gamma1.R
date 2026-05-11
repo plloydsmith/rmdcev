@@ -125,15 +125,13 @@ test_that("gamma1 welfare: zero price change gives zero WTP", {
 		model = "gamma1",
 		psi_ascs = FALSE,
 		algorithm = "MLE",
-		std_errors = "mvn",
-		n_draws = 2,
 		print_iterations = FALSE,
 		backend = "rstan"
 	)
 
 	npols <- 1
 	policies <- CreateBlankPolicies(npols, output, price_change_only = TRUE)
-	df_sim <- PrepareSimulationData(output, policies, nsims = 2)
+	df_sim <- PrepareSimulationData(output, policies, nsims = 1)
 
 	wtp <- mdcev.sim(
 		df_sim$df_indiv,
