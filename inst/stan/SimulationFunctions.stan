@@ -600,9 +600,9 @@ matrix CalcWTP_rng(real income, vector quant_j, vector price,
 						psi_j, phi[2:(nalts+1)], gamma[2:(nalts+1)], alpha, scale,
 						model_num, nalts, nerrs, cond_error, draw_mlhs);
 
-		// Precompute append_row(0, psi_j) once — constant across all err draws
+		// Precompute append_row(0, psi_j) once -- constant across all err draws
 		vector[nalts + 1] psi0_j = append_row(0.0, psi_j);
-		// Hoist observed demand construction — constant when cond_error == 1
+		// Hoist observed demand construction -- constant when cond_error == 1
 		vector[nalts + 1] obs_demand = append_row(quant_num, quant_j);
 
 		// Compute Marshallian demands and baseline utility
@@ -634,7 +634,7 @@ matrix CalcWTP_rng(real income, vector quant_j, vector price,
 			else
 				psi_p = psi_j;
 
-			// Precompute append_row(0, psi_p) once — constant across err draws for this policy
+			// Precompute append_row(0, psi_p) once -- constant across err draws for this policy
 			vector[nalts + 1] psi0_p = append_row(0.0, psi_p);
 
 			for (err in 1:nerrs){
@@ -722,7 +722,7 @@ array[] matrix CalcMarshallianDemand_rng(real income, vector quant_j, vector pri
 			else
 				psi_p = psi_j;
 
-			// Precompute append_row(0, psi_p) once — constant across err draws for this policy
+			// Precompute append_row(0, psi_p) once -- constant across err draws for this policy
 			vector[nalts + 1] psi0_p = append_row(0.0, psi_p);
 
 			for (err in 1:nerrs){
