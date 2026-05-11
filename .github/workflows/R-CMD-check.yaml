@@ -46,7 +46,7 @@ jobs:
       - name: Install dependencies
         uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          extra-packages: any::rcmdcheck, any::testthat
+          extra-packages: any::rcmdcheck, any::testthat, any::knitr, any::rmarkdown
           dependencies: '"hard"'
 
       # compileAttributes() is called by rstantools::rstan_config() during

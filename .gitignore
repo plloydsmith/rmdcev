@@ -18,6 +18,9 @@ CRAN-RELEASE
 inst/benchmarks
 CLAUDE.md
 .claude/
+AGENTS.md
+vignettes/apollo-benchmark.html
+vignettes/apollo-benchmark_files/
 
 .quarto/
 /doc/

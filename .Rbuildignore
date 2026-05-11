@@ -13,3 +13,6 @@
 ^CLAUDE\.md$
 ^AGENTS\.md$
 ^inst/benchmarks$
+^benchmark_apollo\.R$
+^vignettes/apollo-benchmark\.html$
+^vignettes/apollo-benchmark_files$

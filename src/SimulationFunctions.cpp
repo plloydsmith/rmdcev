@@ -1500,8 +1500,21 @@ MarshallianDemand(const T0__& income, const T1__& price_arg__, const T2__&
     stan::model::assign(d,
       stan::math::append_row(0, stan::math::rep_vector(1, nalts)),
       "assigning variable d");
-    current_statement__ = 164;
-    if (stan::math::logical_eq(algo_gen, 0)) {
+    if (stan::math::logical_eq(model_num, 6)) {
+      local_scalar_t__ lam6 = stan::model::rvalue(MUzero, "MUzero", stan::model::index_uni(1));
+      std::vector<int> ord = stan::math::sort_indices_desc(
+        stan::model::rvalue(MUzero, "MUzero", stan::model::index_min_max(2, (nalts + 1))));
+      for (int k = 1; k <= nalts; ++k) {
+        int j = ord[(k - 1)] + 1;
+        local_scalar_t__ mj = stan::model::rvalue(MUzero, "MUzero", stan::model::index_uni(j));
+        stan::model::assign(X,
+          (stan::math::logical_gt(mj, lam6)
+            ? (stan::model::rvalue(gamma, "gamma", stan::model::index_uni(j)) * (mj / lam6 - 1))
+            : static_cast<local_scalar_t__>(0)),
+          "assigning variable X", stan::model::index_uni((k + 1)));
+      }
+      exit = 1;
+    } else if (stan::math::logical_eq(algo_gen, 0)) {
       current_statement__ = 141;
       stan::math::validate_non_negative_index("parm_matrix", "nalts + 1",
         (nalts + 1));
@@ -1832,7 +1845,8 @@ ComputeUtilJ(const T0__& income, const T1__& quant_j_arg__, const T2__&
     }
     current_statement__ = 183;
     if ((stan::math::primitive_value(stan::math::logical_eq(model_num, 1)) ||
-        stan::math::primitive_value(stan::math::logical_eq(model_num, 4)))) {
+        stan::math::primitive_value(stan::math::logical_eq(model_num, 4)) ||
+        stan::math::primitive_value(stan::math::logical_eq(model_num, 6)))) {
       current_statement__ = 181;
       stan::model::assign(util_j,
         stan::math::elt_multiply(
@@ -2145,8 +2159,28 @@ HicksianDemand(const T0__& util, const T1__& price_arg__, const T2__&
     stan::model::assign(d,
       stan::math::append_row(0, stan::math::rep_vector(1, nalts)),
       "assigning variable d");
-    current_statement__ = 321;
-    if (stan::math::logical_eq(algo_gen, 0)) {
+    if (stan::math::logical_eq(model_num, 6)) {
+      local_scalar_t__ lam6 = stan::model::rvalue(MUzero, "MUzero", stan::model::index_uni(1));
+      local_scalar_t__ util_nonnum = 0;
+      std::vector<int> ord = stan::math::sort_indices_desc(
+        stan::model::rvalue(MUzero, "MUzero", stan::model::index_min_max(2, (nalts + 1))));
+      for (int k = 1; k <= nalts; ++k) {
+        int j = ord[(k - 1)] + 1;
+        local_scalar_t__ mj = stan::model::rvalue(MUzero, "MUzero", stan::model::index_uni(j));
+        local_scalar_t__ xk = stan::math::logical_gt(mj, lam6)
+          ? (stan::model::rvalue(gamma, "gamma", stan::model::index_uni(j)) * (mj / lam6 - 1))
+          : static_cast<local_scalar_t__>(0);
+        stan::model::assign(X, xk, "assigning variable X", stan::model::index_uni((k + 1)));
+        if (stan::math::logical_gt(xk, 0)) {
+          util_nonnum += mj *
+            stan::model::rvalue(price, "price", stan::model::index_uni(j)) *
+            stan::model::rvalue(gamma, "gamma", stan::model::index_uni(j)) *
+            stan::math::log(mj / lam6);
+        }
+      }
+      stan::model::assign(X, (util - util_nonnum) / lam6, "assigning variable X", stan::model::index_uni(1));
+      exit = 1;
+    } else if (stan::math::logical_eq(algo_gen, 0)) {
       current_statement__ = 285;
       stan::math::validate_non_negative_index("parm_matrix", "nalts + 1",
         (nalts + 1));
