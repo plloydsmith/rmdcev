@@ -15,7 +15,8 @@
 #' @param price the variable indicating the price of the non-numeraire
 #'     alternatives. Default is "price"
 #' @param income the variable indicating the income of the individual.
-#'     Default is "income".
+#'     Default is "income". Set to \code{NULL} when using the \code{"gamma1"}
+#'     model, which has no income effects and does not require income data.
 #' @param alt.levels the name of the alternatives: if null,
 #'     they are guessed from the `alt.var` argument,
 #' @param drop.index should the index variables be dropped from the

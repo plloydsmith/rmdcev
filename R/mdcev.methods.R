@@ -252,8 +252,11 @@ print.summary.mdcev <- function(x,...){
 		cat("Note: All non-numeraire gamma's fixed to 1.",'\n')
 	}else if (x$model == "hybrid"){
 		cat("Note: Alpha parameter is equal for all alternatives.",'\n')
-	}else if (x$model == "hybrid0")
+	}else if (x$model == "hybrid0"){
 		cat("Note: All alpha parameters fixed to 0.",'\n')
+	}else if (x$model == "gamma1"){
+		cat("Note: Numeraire alpha fixed to 1, non-numeraire alphas fixed to 0 (no income effects).",'\n')
+	}
 
 	if(x$stan_data$trunc_data == 1)
 		cat("Note: Estimation accounts for truncated form of data.",'\n')
