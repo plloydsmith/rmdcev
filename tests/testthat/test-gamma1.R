@@ -83,7 +83,7 @@ test_that("gamma1 parameter recovery from simulated data", {
 	psi_i_parms <- c(-1.5, 2, -1)
 
 	sim.data <- GenerateMDCEVData(
-		model = "gamma",
+		model = "gamma1",
 		nobs = nobs,
 		nalts = nalts,
 		alpha_parms = 1,

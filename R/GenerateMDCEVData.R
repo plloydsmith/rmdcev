@@ -129,6 +129,11 @@ GenerateMDCEVData <- function(
 		alpha_parms <- rep(0, nalts + 1)
 		parms_true <- rbind(parms_true, gamma_true, scale_true)
 		algo_gen <- 0
+	} else if (model == "gamma1") {
+		model_num <- 6
+		alpha_parms <- c(1, rep(0, nalts))  # alpha_0=1 (fixed), alpha_j=0
+		parms_true <- rbind(parms_true, gamma_true, scale_true)
+		algo_gen <- 0
 	} else if (model == "kt_ee") {
 		model_num <- 5
 
@@ -151,7 +156,7 @@ GenerateMDCEVData <- function(
 		)
 		algo_gen <- 1
 	} else {
-		stop("No model specificied. Choose a model")
+		stop("No model specified. Choose from: 'gamma', 'alpha', 'hybrid', 'hybrid0', 'gamma1', 'kt_ee'")
 	}
 
 	psi_parms <- c(psi_j_parms, psi_i_parms)
