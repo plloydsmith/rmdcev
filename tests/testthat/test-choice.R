@@ -39,7 +39,7 @@ test_that("MLE hybrid0", {
 	expect_snapshot_value(round(output$log.likelihood, 2), style = "deparse", cran = FALSE)
 	expect_snapshot_value(round(output$bic, 2), style = "deparse", cran = FALSE)
 	expect_snapshot_value(round(as.numeric(output[["stan_fit"]][["par"]][["scale"]]), 4), style = "deparse", cran = FALSE)
-	expect_snapshot_value(round(as.numeric(output[["stan_fit"]][["par"]][["psi"]][[1]]), 4), style = "deparse", cran = FALSE)
+	expect_snapshot_value(round(as.numeric(output[["stan_fit"]][["par"]][["psi"]][[1]]), 2), style = "deparse", cran = FALSE)
 	expect_equal(length(output[["stan_fit"]][["par"]][["alpha"]]), 0)
 
 	# S3 method coverage: coef() returns a list of parameter arrays

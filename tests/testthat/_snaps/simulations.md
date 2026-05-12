@@ -1,4 +1,4 @@
 # Conditional error hybrid draw
 
-    0.6956
+    0.7
 

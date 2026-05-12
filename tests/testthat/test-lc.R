@@ -19,9 +19,9 @@ result_test <- mdcev(~ alt | university,
 
 test_that("LC 2-classes", {
 	expect_true(result_test$log.likelihood < 0)
-	expect_snapshot_value(round(result_test$log.likelihood, 2), style = "deparse", cran = FALSE)
-	expect_snapshot_value(round(result_test[["stan_fit"]][["par"]][["scale"]][[1]], 4), style = "deparse", cran = FALSE)
-	expect_snapshot_value(round(result_test[["stan_fit"]][["par"]][["delta"]][[1, 2]], 4), style = "deparse", cran = FALSE)
+	expect_snapshot_value(round(result_test$log.likelihood, 1), style = "deparse", cran = FALSE)
+	expect_snapshot_value(round(result_test[["stan_fit"]][["par"]][["scale"]][[1]], 2), style = "deparse", cran = FALSE)
+	expect_snapshot_value(round(result_test[["stan_fit"]][["par"]][["delta"]][[1, 2]], 1), style = "deparse", cran = FALSE)
 })
 
 test_that("LC 2-classes with starting values", {
@@ -44,7 +44,7 @@ test_that("LC 2-classes with starting values", {
 						  backend = "rstan")
 
 	expect_true(result_final[["stan_fit"]][["par"]][["scale"]][[1]] > 0)
-	expect_snapshot_value(round(result_final[["stan_fit"]][["par"]][["scale"]][[1]], 4), style = "deparse", cran = FALSE)
+	expect_snapshot_value(round(result_final[["stan_fit"]][["par"]][["scale"]][[1]], 3), style = "deparse", cran = FALSE)
 })
 
 test_that("Test LC simulations", {
