@@ -34,7 +34,8 @@ alternatives that is made: it has to be a numerical vector. Default is "choice".
 alternatives. Default is "price"}
 
 \item{income}{the variable indicating the income of the individual.
-Default is "income".}
+Default is "income". Set to \code{NULL} when using the \code{"gamma1"}
+model, which has no income effects and does not require income data.}
 
 \item{alt.levels}{the name of the alternatives: if null,
 they are guessed from the `alt.var` argument,}
