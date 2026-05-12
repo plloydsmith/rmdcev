@@ -270,7 +270,8 @@ get_rstan_model <- function(model_name) {
 #'   returned as an external pointer suitable for passing to the compiled
 #'   Stan simulation functions.  Defined here (not in RcppExports.R) so it
 #'   survives \code{Rcpp::compileAttributes()} regeneration.
-#' @noRd
+#' @param seed Integer seed value (default 0L).
+#' @export
 rmdcev_get_rng <- function(seed = 0L) {
 	if (!requireNamespace("rstan", quietly = TRUE)) {
 		stop("Package 'rstan' is required for simulation. Please install it.")
@@ -283,7 +284,7 @@ rmdcev_get_rng <- function(seed = 0L) {
 #'   the \code{pstream__} argument in compiled Stan simulation functions.
 #'   Defined here (not in RcppExports.R) so it survives
 #'   \code{Rcpp::compileAttributes()} regeneration.
-#' @noRd
+#' @export
 rmdcev_get_stream <- function() {
 	if (!requireNamespace("rstan", quietly = TRUE)) {
 		stop("Package 'rstan' is required for simulation. Please install it.")
