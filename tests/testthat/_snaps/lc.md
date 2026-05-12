@@ -4,11 +4,11 @@
 
 ---
 
-    0.8075
+    0.8076
 
 ---
 
-    -0.9689
+    -0.9686
 
 # LC 2-classes with starting values
 

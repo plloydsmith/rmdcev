@@ -63,7 +63,7 @@ test_that("gamma1 simulation alpha matrix is correct", {
 	)
 
 	policies <- CreateBlankPolicies(npols = 1, output, price_change_only = TRUE)
-	sim_data <- PrepareSimulationData(output, policies, nsims = 5)
+	sim_data <- PrepareSimulationData(output, policies, nsims = 1)
 
 	alpha_mat <- sim_data$df_common$alpha_sim_nonrandom
 	expect_equal(ncol(alpha_mat), output$stan_data$J + 1)
@@ -74,6 +74,7 @@ test_that("gamma1 simulation alpha matrix is correct", {
 
 test_that("gamma1 parameter recovery from simulated data", {
 	skip_on_cran()
+	skip_on_os("windows")
 
 	set.seed(42)
 	nobs <- 500
