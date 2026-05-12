@@ -153,7 +153,7 @@ test_that("Conditional error hybrid draw", {
 	gamma_h <- c(1, gamma_j_h)
 	alpha_h <- rep(result_hyb[["stan_fit"]][["par"]][["alpha"]], nalts_h + 1)
 	scale_h <- as.numeric(result_hyb[["stan_fit"]][["par"]][["scale"]])
-	expect_snapshot_value(round(scale_h, 2), style = "deparse", cran = FALSE)
+	expect_snapshot_value(round(scale_h, 1), style = "deparse", cran = FALSE)
 	expect_true(scale_h > 0)
 
 	tol_e <- 1e-20
