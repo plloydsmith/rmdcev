@@ -16,3 +16,4 @@
 ^benchmark_apollo\.R$
 ^vignettes/apollo-benchmark\.html$
 ^vignettes/apollo-benchmark_files$
+^src/SimulationFunctions\.cpp$
