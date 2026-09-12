@@ -113,6 +113,7 @@ test_that("MLE kt_ee welfare", {
 					 std_errors = "mvn",
 					 n_draws = 30,
 					 algorithm = "MLE",
+					 initial.parameters = 0,
 					 print_iterations = FALSE,
 					 backend = "rstan")
 

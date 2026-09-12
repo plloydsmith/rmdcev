@@ -118,6 +118,7 @@ test_that("MLE kt_ee", {
 					gamma_ascs = FALSE,
 					model = "kt_ee",
 					algorithm = "MLE",
+					initial.parameters = 0,
 					print_iterations = FALSE,
 					backend = "rstan")
 
