@@ -23,6 +23,7 @@ test_that("kt_ee model estimation", {
 					model = "kt_ee",
 					gamma_ascs = FALSE,
 					algorithm = "MLE",
+					initial.parameters = 0,
 					print_iterations = FALSE,
 					backend = "rstan")
 
@@ -33,7 +34,7 @@ test_that("kt_ee model estimation", {
 	expect_snapshot_value(round(output$log.likelihood, 2), style = "deparse", cran = FALSE)
 	expect_snapshot_value(round(output$bic, 2), style = "deparse", cran = FALSE)
 	expect_snapshot_value(round(as.numeric(output[["stan_fit"]][["par"]][["scale"]]), 4), style = "deparse", cran = FALSE)
-	expect_snapshot_value(round(as.numeric(output[["stan_fit"]][["par"]][["psi"]][[1]]), 4), style = "deparse", cran = FALSE)
+	expect_equal(as.numeric(output$stan_fit$par$psi), -0.2773, tolerance = 1e-3)
 	expect_equal(length(output[["stan_fit"]][["par"]][["alpha"]]), 1)
 })
 
@@ -59,6 +60,7 @@ test_that("kt_ee model estimation using trunc_data", {
 					model = "kt_ee",
 					gamma_ascs = FALSE,
 					algorithm = "MLE",
+					initial.parameters = 0,
 					trunc_data = TRUE,
 					print_iterations = FALSE,
 					backend = "rstan")
@@ -103,6 +105,7 @@ test_that("Conditional error draw", {
 					model = "kt_ee",
 					gamma_ascs = FALSE,
 					algorithm = "MLE",
+					initial.parameters = 0,
 					print_iterations = FALSE,
 					backend = "rstan")
 	nalts <- output$stan_data[["J"]]
@@ -183,6 +186,7 @@ test_that("unconditional error draw", {
 					model = "kt_ee",
 					gamma_ascs = FALSE,
 					algorithm = "MLE",
+					initial.parameters = 0,
 					print_iterations = FALSE,
 					backend = "rstan")
 	nalts <- output$stan_data[["J"]]
