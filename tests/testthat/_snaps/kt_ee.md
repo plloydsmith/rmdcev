@@ -10,10 +10,6 @@
 
     0.8918
 
----
-
-    -0.2773
-
 # kt_ee model estimation using num grad
 
     -2770

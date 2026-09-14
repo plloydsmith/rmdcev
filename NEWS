@@ -1,3 +1,13 @@
+rmdcev v1.3.4 (Release date: 2026-09-14)
+==============
+
+Compatibility:
+- Updated test cases for compatibility with the forthcoming rstan 2.39.0. Changes to the
+  Stan RNG engine caused some MLE test cases to fail to initialise from random starting
+  values, so those tests now use initial.parameters = 0, and one kt_ee psi snapshot was
+  replaced with a tolerance-based comparison. Tests pass under both the current CRAN rstan
+  and rstan 2.39.0. Thanks to Andrew Johnson (@andrjohns, #13).
+
 rmdcev v1.3.3 (Release date: 2026-07-20)
 ==============
 
